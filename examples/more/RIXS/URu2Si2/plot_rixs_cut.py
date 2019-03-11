@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+
+font = {'family' : 'Times New Roman' ,
+	    'weight' : 'normal' ,
+		'size'   : '25'}
+
+plt.rc('font',**font)
+
+plt.figure(figsize=(16,8))
+
+data=np.loadtxt('rixs.dat')
+
+nomega, nloss=100,1000
+
+eloss = data[0::nomega,0]
+omega = data[0:nomega,1]
+
+spectra_pi_pol = data[:,2].reshape((nloss, nomega)) + data[:,3].reshape((nloss, nomega))
+spectra_sigma_pol = data[:,4].reshape((nloss, nomega)) + data[:,5].reshape((nloss, nomega))
+
+ax=plt.subplot(1,2,1)
+plt.xlim((-0.1,2.5))
+plt.ylim((0,20))
+plt.plot(eloss, spectra_pi_pol[:,18]*100, linewidth=2, label="99.24 eV")
+plt.plot(eloss, spectra_pi_pol[:,22]*100, linewidth=2, label="100.25 eV")
+plt.plot(eloss, spectra_pi_pol[:,73]*100, linewidth=2, label="113.13 eV")
+
+plt.xlabel(r'Energy loss (eV)')
+plt.ylabel(r'RIXS Intensity (a.u.)')
+ax.xaxis.set_major_locator(MultipleLocator(0.5))
+ax.xaxis.set_minor_locator(MultipleLocator(0.25))
+#ax.yaxis.set_major_locator(MultipleLocator(1))
+#ax.yaxis.set_minor_locator(MultipleLocator(0.5))
+ax.tick_params(axis='x', which='major', length=10, width=3)
+ax.tick_params(axis='x', which='minor', length=5,  width=3)
+ax.tick_params(axis='y', which='major', length=10, width=3)
+ax.tick_params(axis='y', which='minor', length=5,  width=3)
+plt.legend(loc=1, ncol=1, frameon=False, borderpad=0.2, columnspacing=0.5, handlelength=1.8, handletextpad=0.4, fontsize=25)
+plt.text(0.5, 16, r"$\pi$-pol",  fontsize=30)
+
+ax2=plt.subplot(1,2,2)
+plt.xlim((-0.1,2.5))
+plt.ylim((0,30))
+plt.plot(eloss, spectra_sigma_pol[:,18]*100, linewidth=2, label="99.24 eV")
+plt.plot(eloss, spectra_sigma_pol[:,22]*100, linewidth=2, label="100.25 eV")
+plt.plot(eloss, spectra_sigma_pol[:,73]*100, linewidth=2, label="113.13 eV")
+plt.xlabel(r'Energy loss (eV)')
+plt.ylabel(r'RIXS Intensity (a.u.)')
+ax2.xaxis.set_major_locator(MultipleLocator(0.5))
+ax2.xaxis.set_minor_locator(MultipleLocator(0.25))
+#ax2.yaxis.set_major_locator(MultipleLocator(1))
+#ax2.yaxis.set_minor_locator(MultipleLocator(0.5))
+ax2.tick_params(axis='x', which='major', length=10, width=3)
+ax2.tick_params(axis='x', which='minor', length=5 , width=3)
+ax2.tick_params(axis='y', which='major', length=10, width=3)
+ax2.tick_params(axis='y', which='minor', length=5 , width=3)
+plt.legend(loc=1, ncol=1, frameon=False, borderpad=0.2, columnspacing=0.5, handlelength=1.8, handletextpad=0.4, fontsize=25)
+plt.text(0.5, 26, r"$\sigma$-pol",  fontsize=30)
+
+plt.tight_layout(pad=0.8)
+
+plt.savefig("rixs_cut.pdf")
+
+print("Job Done !")

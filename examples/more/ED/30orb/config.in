@@ -1,0 +1,10 @@
+&control
+ ed_solver    =  1       
+ num_val_orbs =  30    
+ neval        =  1          
+ ncv          =  20          
+ nvector      =  1          
+ maxiter      =  500   
+ eigval_tol   =  1E-10 
+ idump        =  .false.   
+&end
