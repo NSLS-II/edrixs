@@ -1,0 +1,1922 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass extbook
+\begin_preamble
+\usepackage{color}
+\usepackage{listings}
+\usepackage{braket}
+\usepackage{hyperref}
+\definecolor{light-gray}{gray}{0.8}
+\definecolor{mygreen}{RGB}{0,153,0}
+\lstset{
+    backgroundcolor=\color{light-gray},
+    commentstyle=\small\ttfamily\color{blue},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{red},
+    stringstyle=\color{mygreen},
+    basicstyle=\small\ttfamily,
+    breakatwhitespace=false,
+    breaklines=false,
+    captionpos=t,
+    columns=fixed,
+    keepspaces=false,
+    numbers=left,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\end_preamble
+\options a4paper,11pt
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "backgroundcolor={\color{light-gray}},commentstyle={\small\ttfamily\color{blue}},keywordstyle={\color{magenta}},numberstyle={\tiny\color{red}},stringstyle={\color{mygreen}},basicstyle={\small\ttfamily},breakatwhitespace=false,breaklines=false,captionpos=t,columns=fixed,keepspaces=false,numbers=none,showspaces=false,showstringspaces=false,showtabs=false,tabsize=2"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+User's guide of EDRIXS code
+\end_layout
+
+\begin_layout Author
+Yilin Wang
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Installation
+\end_layout
+
+\begin_layout Section
+Get EDRIXS
+\end_layout
+
+\begin_layout Standard
+Type the following command in a terminal to get the latest version of EDRIXS
+ code,
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ cd ${EDRIXS_DIR}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ git clone https://github.com/shenmidelin/edrixs.git
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Requirement of tools and libraries
+\end_layout
+
+\begin_layout Standard
+We test the code using Intel's ifort and GNU's gfortran compiler.
+ A MPI library such as OpenMPI or MPICH is needed.
+ For BLAS/LAPACK library, we recommend Intel's MKL or OpenBLAS.
+ For ARPACK library, we recommend arpack-ng (https://github.com/opencollab/arpack
+-ng).
+ Python3, Numpy, Scipy, Sympy, Matplotlib, Sphinx and Numpydoc are required.
+ We recommend to install the latest Anacona package (https://www.anaconda.com/)
+ for the Python3 enviroment and the libraries.
+\end_layout
+
+\begin_layout Section
+Tips for compiling Arpack library
+\end_layout
+
+\begin_layout Standard
+Get the latest version of arpack-ng by typing,
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ git clone https://github.com/opencollab/arpack-ng.git
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Compile it by typing,
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ ./bootstrap
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+with ifort+MKL,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Preview
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ ./configure --prefix=${ARPACK_DIR} --enable-mpi 
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+> --with-blas="-L${MKLROOT}/lib/intel64 -lmkl_core -lmkl_sequential -lmkl_rt"
+ 
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+> FC=ifort F77=ifort MPIFC=mpif90 MPIF77=mpif90
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+or with gfortran+OpenBLAS,
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ ./configure --prefix=${ARPACK_DIR} --enable-mpi    
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+> --with-blas="-L${OPENBLAS_DIR}/lib -lopenblas"     
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+> FC=gfortran F77=gfortran MPIFC=mpif90 MPIF77=mpif90
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+$ make
+\end_layout
+
+\begin_layout Plain Layout
+
+$ make check
+\end_layout
+
+\begin_layout Plain Layout
+
+$ make install
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+You may need to install autotools: autoconf, automake, libtool.
+ 
+\end_layout
+
+\begin_layout Section
+Use MacPorts on MacOSX
+\end_layout
+
+\begin_layout Standard
+On MacOSX, the gfortran compiler, MPI, openblas, arpack-ng can be installed
+ easily using MacPorts.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ sudo port install gcc8
+\end_layout
+
+\begin_layout Plain Layout
+
+$ sudo port select gcc mp-gcc8
+\end_layout
+
+\begin_layout Plain Layout
+
+$ sudo port install arpack +openblas +mpich
+\end_layout
+
+\begin_layout Plain Layout
+
+$ sudo port select --set mpi mpich-mp-fortran
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+where, all the binary files are installed in 
+\shape italic
+/opt/local/bin
+\shape default
+ and all the library files are installed in
+\shape italic
+ /opt/local/lib
+\shape default
+.
+ 
+\end_layout
+
+\begin_layout Section
+Compile the fortran source code
+\end_layout
+
+\begin_layout Standard
+Go to the fortran source directory and edit the make.sys file to set the
+ Fotran compiler and Lapack and Arpack libraries.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ cd edrixs/src/fortran
+\end_layout
+
+\begin_layout Plain Layout
+
+$ cp make.sys.ifort make.sys  (or cp make.sys.gfortran make.sys)
+\end_layout
+
+\begin_layout Plain Layout
+
+$ vim make.sys
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+F90 = mpif90
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# ifort+MKL
+\end_layout
+
+\begin_layout Plain Layout
+
+LIBS = -L${MKLROOT}/lib/intel64 -lmkl_core -lmkl_sequential -lmkl_rt 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+       -L${ARPACK_DIR}/lib/ -lparapck.a -larpack
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# gfortran+OpenBLAS
+\end_layout
+
+\begin_layout Plain Layout
+
+# LIBS = -L${OPENBLAS_DIR}/lib -lopenblas -L${ARPACK_DIR}/lib/ -lparapck.a
+ -larpack
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+where, MKLROOT is the root directory of MKL library and ARPACK_DIR is the
+ root directory of the Arpack libraries.
+ Then, type
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ make
+\end_layout
+
+\begin_layout Plain Layout
+
+$ make install
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+to compile and install the executable files (.x) to edrixs/bin directory.
+ After that, please add the following two lines in .bashrc or .bash_profile,
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+export PATH=${EDRIXS_DIR}/edrixs/bin:$PATH
+\end_layout
+
+\begin_layout Plain Layout
+
+export PYTHONPATH=${EDRIXS_DIR}/edrixs/src/python:$PYTHONPATH
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Compile the documentation of Python API 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ cd edrixs/docs
+\end_layout
+
+\begin_layout Plain Layout
+
+$ mkdir build
+\end_layout
+
+\begin_layout Plain Layout
+
+$ sphinx-build -b html source build
+\end_layout
+
+\begin_layout Plain Layout
+
+$ make html
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Open the file 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+${EDRIXS_DIR}/edrixs/docs/build/index.html
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+in a browser to read the Python API documentation.
+\end_layout
+
+\begin_layout Chapter
+Inputs and outputs
+\end_layout
+
+\begin_layout Section
+config.in
+\end_layout
+
+\begin_layout Subsection
+integer :: ed_solver
+\end_layout
+
+\begin_layout Standard
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default: 1
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The type of ED solver:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+ed_solver = 0, full diagonalization, all the eigenvalues can be obtained,
+ for small size problem 
+\begin_inset Formula $n<1000$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+ed_solver = 1, standard Lanczos algorithm without re-orthogonalization,
+ for roughly finding one ground state.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+ed_solver = 2, use parallel Arpack library, for finding a few lowest excited
+ states.
+\end_layout
+
+\begin_layout Subsection
+integer :: num_val_orbs
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+For ed.x, xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 2
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Number of valence orbitals (including spin).
+\end_layout
+
+\begin_layout Subsection
+integer :: num_core_orbs
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+For xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 2
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Number of deep core orbitals (including spin).
+\end_layout
+
+\begin_layout Subsection
+integer :: neval
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 1
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Number of eigenvalues are obtained.
+\end_layout
+
+\begin_layout Subsection
+integer :: nvector
+\end_layout
+
+\begin_layout Standard
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 1
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Number of eigenvectors are obtained.
+\end_layout
+
+\begin_layout Subsection
+integer :: ncv
+\end_layout
+
+\begin_layout Standard
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : neval + 2
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Used by ed_solver = 2, control the converged speed, ncv
+\begin_inset Formula $\geq$
+\end_inset
+
+ neval +2.
+\end_layout
+
+\begin_layout Subsection
+integer :: num_gs
+\end_layout
+
+\begin_layout Standard
+For xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 1
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Number of ground states are used in XAS or RIXS calculations.
+\end_layout
+
+\begin_layout Subsection
+integer :: maxiter
+\end_layout
+
+\begin_layout Standard
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 500
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Maximum Lanczos iterations.
+\end_layout
+
+\begin_layout Subsection
+integer :: min_ndim
+\end_layout
+
+\begin_layout Standard
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 1000
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+If the dimension of the Hamitlonian is smaller than min_ndim, ed_solver
+ will be automatically set to be 0, Lapack will be used.
+\end_layout
+
+\begin_layout Subsection
+integer :: nkryl
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+For xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 500
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Maximum iterations of building Krylov subspace.
+\end_layout
+
+\begin_layout Subsection
+integer :: linsys_max
+\end_layout
+
+\begin_layout Standard
+For rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 500
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Maximum iterations for solving the linear equations by using MINRES.
+\end_layout
+
+\begin_layout Subsection
+logical :: idump
+\end_layout
+
+\begin_layout Standard
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : .false.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Whether to write out the eigenvectors to file eigvec.xxx.
+\end_layout
+
+\begin_layout Subsection
+real(kind=8) :: linsys_tol
+\end_layout
+
+\begin_layout Standard
+For rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 1E-8
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Tolerance for solving the linear equations.
+\end_layout
+
+\begin_layout Subsection
+real(kind=8) :: eigval_tol
+\end_layout
+
+\begin_layout Standard
+For ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 1E-8
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Tolerance for finding eigenvalues.
+\end_layout
+
+\begin_layout Subsection
+real(kind=8) :: omega_in
+\end_layout
+
+\begin_layout Standard
+For rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 0.0
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The energy of incident x-ray at which the RIXS spectrum is measured.
+\end_layout
+
+\begin_layout Subsection
+real(kind=8) :: gamma_in
+\end_layout
+
+\begin_layout Standard
+For rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Default : 0.1
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The broadening factor of the core-hole life-time (eV).
+\end_layout
+
+\begin_layout Section
+fock_x.in (x=i,n,f)
+\end_layout
+
+\begin_layout Standard
+Input for ed.x, xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Use decimal numbers to represent the Fock basis.
+ The following is an example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\small},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  220 
+\end_layout
+
+\begin_layout Plain Layout
+
+  511 
+\end_layout
+
+\begin_layout Plain Layout
+
+  767 
+\end_layout
+
+\begin_layout Plain Layout
+
+  895 
+\end_layout
+
+\begin_layout Plain Layout
+
+  959 
+\end_layout
+
+\begin_layout Plain Layout
+
+  991
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The number 
+\begin_inset Quotes eld
+\end_inset
+
+220
+\begin_inset Quotes erd
+\end_inset
+
+ in the first line is the total number of Fock basis, and the decimal numbers
+ in the following lines are the Fock basis.
+ Please note that these numbers should be in an ascending order.
+\end_layout
+
+\begin_layout Section
+hopping_x.in (x=i,n)
+\end_layout
+
+\begin_layout Standard
+Input for ed.x, xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The nonzeros elments of the two-fermion terms 
+\begin_inset Formula $t_{\alpha,\beta}$
+\end_inset
+
+ in Hamiltonians 
+\begin_inset Formula $\hat{{H}_{i}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{H}_{n}$
+\end_inset
+
+ or any other operators 
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+.
+ The following is an example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\small},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+                 112          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1         1      0.175000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1         3     -0.021213203436     -0.021213203436          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1         4     -0.247487373415      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1         5     -0.000000000000      0.030000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1         7     -0.000000000000      0.146969384464          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1         8     -0.073484692232     -0.073484692541          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1         9     -0.103923048381      0.103923048381          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1        10      0.000000000219     -0.103923048600          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1        11     -0.029393876893     -0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1        12      0.014696938508     -0.014696938446          
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The number in the first line is the number of the nonzeros of 
+\begin_inset Formula $t_{\alpha,\beta}$
+\end_inset
+
+, the following lines are the nonzero elements.
+ The first column is the first index 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and the second column is the second index 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ The third and fourth columns are the real and imaginary parts of the element
+ 
+\begin_inset Formula $t_{\alpha,\beta}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+coulomb_x.in (x=i,n)
+\end_layout
+
+\begin_layout Standard
+Input for ed.x, xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The nonzeros elments of the four-fermion terms 
+\begin_inset Formula $U_{\alpha,\beta,\gamma,\delta}$
+\end_inset
+
+ in Hamiltonians 
+\begin_inset Formula $\hat{{H}_{i}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{H}_{n}$
+\end_inset
+
+ or any other operators 
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+.
+ The following is an example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\small},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+                 152          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     1     1     1      0.850000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     2     2     1      0.850000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     3     1     3      0.150000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     3     3     1      0.700000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     4     2     3      0.150000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     4     4     1      0.700000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     5     1     5      0.300000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     5     3     3     -0.150000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     5     5     1      0.850000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1     6     2     5      0.300000000000      0.000000000000          
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The number in the first line is the number of the nonzeros of 
+\begin_inset Formula $U_{\alpha,\beta,\gamma,\delta}$
+\end_inset
+
+, the following lines are the nonzero elements.
+ The first to the fourth columns are the indices 
+\begin_inset Formula $\alpha,\beta,\gamma,\delta$
+\end_inset
+
+, respectively.
+ The last two columns are the real and imaginary parts of the element 
+\begin_inset Formula $U_{\alpha,\beta,\gamma,\delta}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+transop_xas.in & transop_rixs_x.in (x=i,f)
+\end_layout
+
+\begin_layout Standard
+Input for xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The nonzeros elments of the transition operators 
+\begin_inset Formula $D_{\alpha,\beta}$
+\end_inset
+
+ in XAS and RIXS calculations.
+ The following is an example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\small},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+                  24          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1        15      0.080393652075      0.488641941854          
+\end_layout
+
+\begin_layout Plain Layout
+
+  1        17      0.000000000000      0.097631072228          
+\end_layout
+
+\begin_layout Plain Layout
+
+  2        16      0.080393652075      0.488641941854          
+\end_layout
+
+\begin_layout Plain Layout
+
+  2        18      0.000000000000      0.097631072228          
+\end_layout
+
+\begin_layout Plain Layout
+
+  3        13      0.080393652075     -0.488641941854          
+\end_layout
+
+\begin_layout Plain Layout
+
+  3        17     -0.080393652075     -0.488641941854          
+\end_layout
+
+\begin_layout Plain Layout
+
+  4        14      0.080393652075     -0.488641941854          
+\end_layout
+
+\begin_layout Plain Layout
+
+  4        18     -0.080393652075     -0.488641941854
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The number in the first line is the number of the nonzeros 
+\begin_inset Formula $D_{\alpha,\beta}$
+\end_inset
+
+.
+ The following lines are the nonzero elements.
+ The first column is the first index 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and the second column is the second index 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ The third and fourth columns are the real and imaginary parts of the element
+ 
+\begin_inset Formula $D_{\alpha,\beta}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+eigvals.dat
+\end_layout
+
+\begin_layout Standard
+Output from ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The eigenvalues obtained from ED solver.
+ The following is an example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\small},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  1      -64.3102435734     
+\end_layout
+
+\begin_layout Plain Layout
+
+  2      -64.3102435734     
+\end_layout
+
+\begin_layout Plain Layout
+
+  3      -64.3102435734     
+\end_layout
+
+\begin_layout Plain Layout
+
+  4      -64.3102435734     
+\end_layout
+
+\begin_layout Plain Layout
+
+  5      -63.5680930356     
+\end_layout
+
+\begin_layout Plain Layout
+
+  6      -63.5680930355     
+\end_layout
+
+\begin_layout Plain Layout
+
+  7      -63.5680930355     
+\end_layout
+
+\begin_layout Plain Layout
+
+  8      -63.3445562508     
+\end_layout
+
+\begin_layout Plain Layout
+
+  9      -63.3445562508    
+\end_layout
+
+\begin_layout Plain Layout
+
+  10     -63.3445562508
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The first column is the index, and the second column is the eigenvalues
+ (eV).
+\end_layout
+
+\begin_layout Section
+denmat.dat
+\end_layout
+
+\begin_layout Standard
+Output from ed.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The density matrix 
+\begin_inset Formula $\Braket{\Gamma_{i}|\hat{f}_{\alpha}^{\dagger}\hat{f}_{\beta}|\Gamma_{i}}$
+\end_inset
+
+ obtained from ED solver.
+ The following is an example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\small},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  1    1    1        0.3970514690       -0.0000000000     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    2        0.0492650492       -0.0110465040     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    3        0.1641162863        0.0280312207     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    4       -0.0428648754        0.0000000000     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    5       -0.1046733922        0.0082840204     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    6       -0.0047905834       -0.0076967959     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    7       -0.2227170168        0.0000000000     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    8        0.0163052360       -0.0036560575     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1    9        0.0615741278        0.0100115957     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1    1   10       -0.0136551480        0.0000000000
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The first column are the indices of the eigenstates 
+\begin_inset Formula $\Ket{\Gamma_{i}}$
+\end_inset
+
+.
+ The second and third column are the orbital indices 
+\begin_inset Formula $\alpha,\beta$
+\end_inset
+
+, respectively.
+ The last two column are the real and imaginary parts of the elments of
+ the densiy matrix.
+\end_layout
+
+\begin_layout Section
+eigvec.
+\begin_inset Formula $i$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Output from ed.x, binary file
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The wavefunction of each eigenvector obtatined from ED solver, used later
+ by xas.x and rixs.x.
+\end_layout
+
+\begin_layout Section
+xas_poles.
+\begin_inset Formula $i$
+\end_inset
+
+ & rixs_poles.
+\begin_inset Formula $i$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Output from xas.x and rixs.x
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+Parameters 
+\begin_inset Formula $\alpha,\beta$
+\end_inset
+
+ of the tridiagonal matrix generated by Lanczos process,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\begin{array}{ccccc}
+\alpha_{1} & \beta_{2}\\
+\beta_{2} & \alpha_{2} & \beta_{3}\\
+ & \beta_{3} & \alpha_{3} & \ddots\\
+ &  & \ddots & \ddots & \beta_{n}\\
+ &  &  & \beta_{n} & \alpha_{n}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The following is an example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\small},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  #number_of_poles:          500 
+\end_layout
+
+\begin_layout Plain Layout
+
+  #enegry:                  -64.3102435734 
+\end_layout
+
+\begin_layout Plain Layout
+
+  #normalization:             0.6460959156     
+\end_layout
+
+\begin_layout Plain Layout
+
+  1      -69.6522949784        2.3222847588     
+\end_layout
+
+\begin_layout Plain Layout
+
+  2      -63.8752918165        2.9676823607     
+\end_layout
+
+\begin_layout Plain Layout
+
+  3      -58.1138926713        5.9882311024     
+\end_layout
+
+\begin_layout Plain Layout
+
+  4      -54.7529810716        8.2661269876     
+\end_layout
+
+\begin_layout Plain Layout
+
+  5      -58.0794041399       10.2511871133     
+\end_layout
+
+\begin_layout Plain Layout
+
+  6      -50.5589161715       10.0207070382     
+\end_layout
+
+\begin_layout Plain Layout
+
+  7      -48.8412482141       10.8058123445     
+\end_layout
+
+\begin_layout Plain Layout
+
+  8      -45.6761682831       12.7882369948     
+\end_layout
+
+\begin_layout Plain Layout
+
+  9      -37.4086274742       15.3864546117    
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+The first line is the total number of 
+\begin_inset Formula $\alpha,\beta$
+\end_inset
+
+.
+ The second line is the energy of the ground state.
+ The third line is a normalization factor.
+ The following lines are 
+\begin_inset Formula $\alpha,\beta$
+\end_inset
+
+, where, the first column are incides, the second and third column are 
+\begin_inset Formula $\alpha,\beta$
+\end_inset
+
+, respectively.
+ 
+\end_layout
+
+\begin_layout Chapter
+Conventions used in the code
+\end_layout
+
+\begin_layout Section
+orbital orders
+\end_layout
+
+\begin_layout Standard
+All the valence orbitals should be put in front of all the core orbitals.
+ For example, for single atom 
+\begin_inset Formula $2p\rightarrow5d$
+\end_inset
+
+ transition, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\overset{1-10}{\overbrace{{\color{red}1101001100}}}\;\overset{11-16}{\overbrace{{\color{blue}111011}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where, 1-10 are 
+\begin_inset Formula $5d$
+\end_inset
+
+ valence orbitals and 11-16 are 
+\begin_inset Formula $2p$
+\end_inset
+
+ core orbitals; for two-site 
+\begin_inset Formula $2p\rightarrow5d$
+\end_inset
+
+ transition, 1-20 are 
+\begin_inset Formula $5d$
+\end_inset
+
+ valence orbitals and 21-32 are 
+\begin_inset Formula $2p$
+\end_inset
+
+ core orbitals.
+\end_layout
+
+\begin_layout Standard
+When building Fock basis, only valence orbitals are considered.
+ xas.x and rixs.x will take care of the core orbitals internally.
+ 
+\end_layout
+
+\end_body
+\end_document

@@ -105,7 +105,7 @@ def get_fock_bin_by_N(*args):
 
         args[3]: number of occupancy for 2nd-shell,
 
-        ......
+        ...
 
         args[ :math:`2N-2`]: number of orbitals for :math:`N` th-shell,
 
