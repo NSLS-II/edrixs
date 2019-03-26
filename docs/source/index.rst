@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-edrixs Documentation
+EDRIXS Documentation
 ====================
 
 .. toctree::
@@ -12,3 +12,4 @@ edrixs Documentation
    installation
    usage
    release-history
+   reference/index

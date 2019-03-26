@@ -1,0 +1,20 @@
+# Use Intel's ifort + MKL
+# Be sure to compile arpack-ng with the same ifort + MKL.
+
+#-------------------------------------------------------------------------
+# MPI+ifort compiler
+F90    = mpif90
+LINKER = $(F90)
+ARCHIVER = ar -ruv
+
+#-------------------------------------------------------------------------
+CPP    = -fpp   
+CHECK  = -warn all #-check all,noarg_temp_created -traceback -g 
+CDUMP  = -nogen-interfaces
+LEVEL  = -O3 -xHost  -fPIC 
+
+#-------------------------------------------------------------------------
+FFLAGS = -c $(CPP) $(CHECK) $(CDUMP) $(LEVEL)
+
+#-------------------------------------------------------------------------
+LIBS = -L${MKLROOT}/lib/intel64 -lmkl_core -lmkl_sequential -lmkl_rt  -L/home/yilinwang/soft/arpack-ng-3.6.2/lib -lparpack -larpack

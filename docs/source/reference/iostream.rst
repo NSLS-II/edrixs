@@ -1,0 +1,4 @@
+iostream
+==========
+.. automodule:: iostream
+   :members:

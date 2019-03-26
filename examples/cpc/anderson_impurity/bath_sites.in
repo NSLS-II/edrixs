@@ -1,0 +1,6 @@
+#  Bath energy level (e) and hybridization strength (v) obatined by fitting the hybridization
+#  function from a converged DFT+DMFT calculation of Ba2YOsO6, 3 bath sites per orbital.
+#  e1 (j=1/2)          v1 (j=1/2)          e2 (j=3/2)          v2 (j=3/2)
+  -3.528372861516216   2.131943931119928  -3.538890277572901   2.108388983547592
+  -1.207615555008166   0.481470627582356  -1.308137924011529   0.517200653226272
+   6.183392524170465   1.618130554107574   5.578400781316763   1.674013405873617
