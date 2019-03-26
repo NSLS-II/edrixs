@@ -42,7 +42,7 @@ setup(
     author="Brookhaven National Lab",
     author_email='dama@bnl.gov',
     url='https://github.com/mrakitin/edrixs',
-    packages=find_packages(exclude=['docs', 'tests']),
+    packages=find_packages(exclude=['docs', 'tests', 'bin', 'examples', 'src']),
     entry_points={
         'console_scripts': [
             # 'some.module:some_function',
@@ -54,6 +54,7 @@ setup(
             # When adding files here, remember to update MANIFEST.in as well,
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',
+            "edrixs/*"
             ]
         },
     install_requires=requirements,
