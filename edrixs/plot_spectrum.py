@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
-from .utils import boltz_dist
+from edrixs.utils import boltz_dist
+
 
 def plot_spectrum(file_list, omega_mesh, gamma_mesh, T, fname, om_shift=0.0):
     """
