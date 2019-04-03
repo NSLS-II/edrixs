@@ -12,7 +12,7 @@ edrixs
 An open source toolkit for simulating RIXS spectra based on ED
 
 * Free software: 3-clause BSD license
-* Documentation: (COMING SOON!) https://mrakitin.github.io/edrixs.
+* Documentation: https://nsls-ii.github.io/edrixs.
 
 Features
 --------
