@@ -1,4 +1,4 @@
 manybody_operator
 =================
-.. automodule:: manybody_operator
+.. automodule:: edrixs.manybody_operator
    :members:
