@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import numpy as np
-from edrixs.basis_transform import tmat_c2r, tmat_r2c, transform_utensor
-from sympy.physics.wigner import gaunt
 
+import numpy as np
+from .basis_transform import tmat_c2r, tmat_r2c, transform_utensor
+from sympy.physics.wigner import gaunt
 
 def get_gaunt(l1, l2):
     """
