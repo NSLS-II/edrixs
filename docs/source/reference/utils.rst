@@ -1,4 +1,4 @@
 utils
 =====
-.. automodule:: utils
+.. automodule:: edrixs.utils
    :members:

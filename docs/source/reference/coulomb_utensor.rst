@@ -5,5 +5,5 @@
 
 coulomb_utensor
 ===============
-.. automodule:: coulomb_utensor
+.. automodule:: edrixs.coulomb_utensor
    :members:

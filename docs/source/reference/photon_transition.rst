@@ -1,4 +1,4 @@
 photon_transition
 =================
-.. automodule:: photon_transition
+.. automodule:: edrixs.photon_transition
    :members:

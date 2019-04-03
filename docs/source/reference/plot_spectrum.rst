@@ -1,4 +1,4 @@
 plot_spectrum
 =============
-.. automodule:: plot_spectrum
+.. automodule:: edrixs.plot_spectrum
    :members:

@@ -1,4 +1,4 @@
 iostream
 ==========
-.. automodule:: iostream
+.. automodule:: edrixs.iostream
    :members:

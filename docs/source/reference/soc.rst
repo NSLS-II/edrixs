@@ -1,4 +1,4 @@
 soc
 ===
-.. automodule:: soc
+.. automodule:: edrixs.soc
    :members:
