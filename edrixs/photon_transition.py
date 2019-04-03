@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-from basis_transform       import tmat_c2r, tmat_r2c
+from .basis_transform      import tmat_c2r, tmat_r2c
 from sympy.physics.wigner  import clebsch_gordan 
 
 def dipole_trans_oper(l1, l2):

@@ -3,12 +3,13 @@
 import sys
 import numpy as np
 from soc                import  atom_hsoc
-from iostream           import  write_tensor, write_tensor_nonzeros
-from fock_basis         import  get_fock_bin_by_N
-from coulomb_utensor    import  get_umat_slater, get_F0
-from basis_transform    import  cb_op, cb_op2, tmat_r2c
-from photon_transition  import  get_trans_oper
-from manybody_operator  import  two_fermion, four_fermion
+
+from edrixs.iostream           import  write_tensor, write_tensor_nonzeros
+from edrixs.fock_basis         import  get_fock_bin_by_N
+from edrixs.coulomb_utensor    import  get_umat_slater, get_F0
+from edrixs.basis_transform    import  cb_op, cb_op2, tmat_r2c
+from edrixs.photon_transition  import  get_trans_oper
+from edrixs.manybody_operator  import  two_fermion, four_fermion
 
 if __name__ == "__main__":
     '''

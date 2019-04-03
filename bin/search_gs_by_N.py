@@ -7,7 +7,8 @@ import subprocess
 import shutil
 import numpy as np
 import argparse
-from fock_basis import write_fock_dec_by_N
+
+from edrixs.fock_basis import write_fock_dec_by_N
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Search ground states by total occupancy number for Anderson impurity model.")

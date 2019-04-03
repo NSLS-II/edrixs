@@ -2,11 +2,11 @@
 
 import sys
 import numpy as np
-from soc                import  atom_hsoc
-from iostream           import  write_tensor, write_emat, write_umat
-from fock_basis         import  write_fock_dec_by_N, get_fock_bin_by_N
-from coulomb_utensor    import  get_umat_slater, get_F0
-from manybody_operator  import  two_fermion, four_fermion
+from edrixs.soc                import  atom_hsoc
+from edrixs.iostream           import  write_tensor, write_emat, write_umat
+from edrixs.fock_basis         import  write_fock_dec_by_N, get_fock_bin_by_N
+from edrixs.coulomb_utensor    import  get_umat_slater, get_F0
+from edrixs.manybody_operator  import  two_fermion, four_fermion
 
 if __name__ == "__main__":
     norbs = 14

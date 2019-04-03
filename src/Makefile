@@ -24,13 +24,13 @@ opavg: $(objects) opavg_main.o
 	$(F90) $(FFLAGS) $*.f90
 
 install:
-	cp *.x ../../bin 	
+	cp *.x ../bin 	
 
 clean:
 	rm -f *.mod
 	rm -f *.o
 	rm -f *.x
-	rm -f ../../bin/ed.x
-	rm -f ../../bin/xas.x
-	rm -f ../../bin/rixs.x
-	rm -f ../../bin/opavg.x
+	rm -f ../bin/ed.x
+	rm -f ../bin/xas.x
+	rm -f ../bin/rixs.x
+	rm -f ../bin/opavg.x

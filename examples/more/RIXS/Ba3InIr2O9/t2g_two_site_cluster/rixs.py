@@ -3,9 +3,9 @@ import sys
 import numpy as np
 import copy
 
-from utils             import boltz_dist
-from rixs_utils        import scattering_mat
-from photon_transition import get_wavevector_rixs,dipole_polvec_rixs
+from edrixs.utils             import boltz_dist
+from edrixs.rixs_utils        import scattering_mat
+from edrixs.photon_transition import get_wavevector_rixs,dipole_polvec_rixs
 
 np.set_printoptions(precision=10, linewidth=200, suppress=True)
 

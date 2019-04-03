@@ -3,7 +3,8 @@
 import sys
 import argparse
 import numpy as np
-from plot_spectrum import plot_spectrum
+
+from edrixs.plot_spectrum import plot_spectrum
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Post-process pole files to get XAS or RIXS spectrum.")

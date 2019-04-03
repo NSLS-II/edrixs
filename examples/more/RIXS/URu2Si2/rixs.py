@@ -3,9 +3,10 @@
 import copy
 import numpy as np
 from scipy import signal
-from photon_transition import dipole_polvec_rixs
-from utils import boltz_dist
-from rixs_utils import scattering_mat
+
+from edrixs.photon_transition import dipole_polvec_rixs
+from edrixs.utils import boltz_dist
+from edrixs.rixs_utils import scattering_mat
 
 if __name__ == "__main__":
     '''

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import numpy as np
-from photon_transition import dipole_polvec_xas
-from utils import boltz_dist
+
+from edrixs.photon_transition import dipole_polvec_xas
+from edrixs.utils             import boltz_dist
 
 if __name__ == "__main__":
     '''

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import numpy as np
-from iostream           import  write_emat, write_umat
+from edrixs.iostream import  write_emat, write_umat
 
 def get_hopping_coulomb():
     N_site = 16

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-from basis_transform import tmat_c2r, tmat_r2c, transform_utensor
+from .basis_transform import tmat_c2r, tmat_r2c, transform_utensor
 from sympy.physics.wigner import gaunt
 
 def get_gaunt(l1, l2):
@@ -741,16 +741,3 @@ def get_umat_kanamori(norbs, U, J):
     """
 
     return get_umat_kanamori_ge(norbs, U, U-2*J, J, J, J)
-
-if __name__ == "__main__":
-    from iostream import write_tensor_nonzeros
-    np.set_printoptions(precision=4, linewidth=200, suppress=True)
-    l1, l2 = 3,3
-    res = get_gaunt(l1,l2)
-    f=open('test_gaunt.dat', 'w')
-    for k in range(l1+l2+1):
-        for m1 in range(2*l1+1):
-            for m2 in range(2*l2+1):
-                if abs(res[k,m1,m2]) > 1E-10:
-                    f.write("{:10d}{:10d}{:10d}{:20.10f}\n".format(k, m1-l1, m2-l2, res[k,m1,m2]))
-    f.close()

@@ -9,17 +9,17 @@ import numpy as np
 from scipy.ndimage      import gaussian_filter1d
 from matplotlib         import pyplot as plt
 from matplotlib.ticker  import AutoMinorLocator, MultipleLocator 
-from soc                import  atom_hsoc
-from iostream           import  write_tensor, write_tensor_nonzeros
-from fock_basis         import  get_fock_bin_by_N
-from coulomb_utensor    import  get_umat_slater, get_F0
-from basis_transform    import  cb_op, cb_op2, tmat_r2c
-from photon_transition  import  get_trans_oper, dipole_polvec_xas, dipole_polvec_rixs
-from angular_momentum   import  get_sx, get_sy, get_sz
 
-from manybody_operator  import  two_fermion, four_fermion
-from utils              import boltz_dist
-from rixs_utils         import   scattering_mat
+from edrixs.soc                import  atom_hsoc
+from edrixs.iostream           import  write_tensor, write_tensor_nonzeros
+from edrixs.fock_basis         import  get_fock_bin_by_N
+from edrixs.coulomb_utensor    import  get_umat_slater, get_F0
+from edrixs.basis_transform    import  cb_op, cb_op2, tmat_r2c
+from edrixs.photon_transition  import  get_trans_oper, dipole_polvec_xas, dipole_polvec_rixs
+from edrixs.angular_momentum   import  get_sx, get_sy, get_sz
+from edrixs.manybody_operator  import  two_fermion, four_fermion
+from edrixs.utils              import  boltz_dist
+from edrixs.rixs_utils         import  scattering_mat
 
 def do_ed(dq10=1.6, d1=0.1, d3=0.75,
           ex_x=0., ex_y=0., ex_z=0.):

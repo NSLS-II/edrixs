@@ -5,15 +5,15 @@ import os
 import shutil
 import numpy as np
 
-from soc                import  atom_hsoc
-from utils              import  UJ_to_UdJH, UdJH_to_F0F2F4
-from iostream           import  write_umat, write_emat
-from fock_basis         import  write_fock_dec_by_N
-from coulomb_utensor    import  get_umat_slater, get_F0
-from basis_transform    import  cb_op, tmat_c2j, transform_utensor
-from photon_transition  import  get_trans_oper, get_wavevector_rixs, dipole_polvec_rixs
-from manybody_operator  import  two_fermion, four_fermion
-from angular_momentum   import  zx_to_rmat, dmat_spinor, rmat_to_euler
+from edrixs.soc                import  atom_hsoc
+from edrixs.utils              import  UJ_to_UdJH, UdJH_to_F0F2F4
+from edrixs.iostream           import  write_umat, write_emat
+from edrixs.fock_basis         import  write_fock_dec_by_N
+from edrixs.coulomb_utensor    import  get_umat_slater, get_F0
+from edrixs.basis_transform    import  cb_op, tmat_c2j, transform_utensor
+from edrixs.photon_transition  import  get_trans_oper, get_wavevector_rixs, dipole_polvec_rixs
+from edrixs.manybody_operator  import  two_fermion, four_fermion
+from edrixs.angular_momentum   import  zx_to_rmat, dmat_spinor, rmat_to_euler
 
 def build_dirs():
     for path in ["search_gs", "ed", "xas", "rixs_pp", "rixs_ps"]:

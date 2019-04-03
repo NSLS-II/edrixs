@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from fock_basis import  get_fock_basis_by_NSz
+from edrixs.fock_basis import  get_fock_basis_by_NSz
 
 if __name__ == "__main__":
     Sz_list=[1, -1]*16

@@ -3,14 +3,14 @@
 import sys
 import numpy as np
 
-from soc                import   atom_hsoc
-from utils              import   UJ_to_UdJH, UdJH_to_F0F2F4
-from iostream           import   write_tensor, write_tensor_nonzeros
-from fock_basis         import   get_fock_bin_by_N
-from coulomb_utensor    import   get_umat_slater, get_F0
-from basis_transform    import   cb_op, cb_op2, tmat_c2r, transform_utensor
-from manybody_operator  import   two_fermion, four_fermion
-from photon_transition  import   get_trans_oper
+from edrixs.soc                import   atom_hsoc
+from edrixs.utils              import   UJ_to_UdJH, UdJH_to_F0F2F4
+from edrixs.iostream           import   write_tensor, write_tensor_nonzeros
+from edrixs.fock_basis         import   get_fock_bin_by_N
+from edrixs.coulomb_utensor    import   get_umat_slater, get_F0
+from edrixs.basis_transform    import   cb_op, cb_op2, tmat_c2r, transform_utensor
+from edrixs.manybody_operator  import   two_fermion, four_fermion
+from edrixs.photon_transition  import   get_trans_oper
 
 if __name__ == "__main__":
     # local axis 

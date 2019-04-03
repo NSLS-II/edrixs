@@ -3,14 +3,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
-from soc               import atom_hsoc
-from utils             import boltz_dist
-from rixs_utils        import scattering_mat
-from fock_basis        import get_fock_bin_by_N
-from coulomb_utensor   import get_umat_slater, get_F0
-from basis_transform   import cb_op, tmat_r2c
-from photon_transition import get_trans_oper, dipole_polvec_rixs
-from manybody_operator import two_fermion, four_fermion
+
+from edrixs.soc               import atom_hsoc
+from edrixs.utils             import boltz_dist
+from edrixs.rixs_utils        import scattering_mat
+from edrixs.fock_basis        import get_fock_bin_by_N
+from edrixs.coulomb_utensor   import get_umat_slater, get_F0
+from edrixs.basis_transform   import cb_op, tmat_r2c
+from edrixs.photon_transition import get_trans_oper, dipole_polvec_rixs
+from edrixs.manybody_operator import two_fermion, four_fermion
 
 font = {'family'  : 'Times New Roman' ,
          'weight' : 'medium' ,
