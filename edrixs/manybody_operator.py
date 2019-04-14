@@ -48,7 +48,7 @@ def one_fermion_annihilation(iorb, lb, rb):
             hmat[jcfg,icfg] += sign
     return hmat
 
-def two_fermion(emat, lb, rb):
+def two_fermion(emat, lb, rb, tol=1E-10):
     """
     Build matrix form of a two-fermionic operator in the given Fock basis,
 
@@ -67,6 +67,9 @@ def two_fermion(emat, lb, rb):
     rb : list of array
         Right fock basis :math:`|F_{r}>`.
 
+    tol : float (default: 1E-10)
+        Only consider the elements of emat that are larger than tol.
+
     Returns
     -------
     hmat : 2d complex array
@@ -79,7 +82,7 @@ def two_fermion(emat, lb, rb):
     for i,j in enumerate(lb):
         indx[tuple(j)] = i 
 
-    a1, a2 = np.nonzero(abs(emat) > 1E-16)
+    a1, a2 = np.nonzero(abs(emat) > tol)
     nonzero = np.stack((a1,a2), axis=-1)
 
     hmat = np.zeros((nl, nr),dtype=np.complex128)
@@ -102,7 +105,7 @@ def two_fermion(emat, lb, rb):
                 hmat[jcfg,icfg] += emat[iorb,jorb]*s1*s2
     return hmat
                  
-def four_fermion(umat, basis):
+def four_fermion(umat, basis, tol=1E-10):
     """
     Build matrix form of a four-fermionic operator in the given Fock basis,
 
@@ -118,6 +121,9 @@ def four_fermion(umat, basis):
     basis : list or array
         Fock basis :math:`|F>`.
 
+    tol : float (default: 1E-10)
+        Only consider the elements of umat that are larger than tol.
+
     Returns
     -------
     hmat : 2d complex array
@@ -130,7 +136,7 @@ def four_fermion(umat, basis):
     for i,j in enumerate(basis):
         indx[tuple(j)] = i 
 
-    a1,a2,a3,a4 = np.nonzero(abs(umat) > 1E-16)
+    a1,a2,a3,a4 = np.nonzero(abs(umat) > tol)
     nonzero = np.stack((a1,a2,a3,a4), axis=-1)
 
     hmat = np.zeros((ncfgs,ncfgs),dtype=np.complex128)
@@ -167,7 +173,8 @@ def four_fermion(umat, basis):
 
 def density_matrix(iorb, jorb, lb, rb):
     """
-    Calculate the matrix form of density operators :math:`\hat{f}_{i}^{\dagger}\hat{f}_{j}` in the given Fock basis,
+    Calculate the matrix form of density operators :math:`\hat{f}_{i}^{\dagger}\hat{f}_{j}` 
+    in the given Fock basis,
 
     .. math::
 
