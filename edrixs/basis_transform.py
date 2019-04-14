@@ -6,13 +6,13 @@ import numpy as np
 
 def cb_op(oper_A, t_mat):
     """
-    Change the basis of an operator :math:`\hat{O}` from one
+    Change the basis of an operator :math:`\\hat{O}` from one
     basis :math:`A`: :math:`\\psi^{A}_{i}` to another
     basis :math:`B`: :math:`\\phi^{B}_{j}`.
 
     .. math::
 
-        O^{\\prime} = T^{\dagger} O T,
+        O^{\\prime} = T^{\\dagger} O T,
 
         T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>.
 
@@ -20,16 +20,17 @@ def cb_op(oper_A, t_mat):
     Parameters
     ----------
     oper_A : 2d array
-        The matrix form of operator :math:`\hat{O}` in basis :math:`A`.
+        The matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
 
     t_mat : 2d array
         The unitary transformation matrix from basis :math:`A` to
-        basis :math:`B`,  namely, :math:`T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
+        basis :math:`B`,  namely,
+        :math:`T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
 
     Returns
     -------
     oper_B : 2d array
-        The matrix form of operator :math:`\hat{O}` in basis :math:`B`.
+        The matrix form of operator :math:`\\hat{O}` in basis :math:`B`.
     """
 
     oper_B = np.dot(np.dot(np.conj(np.transpose(t_mat)), oper_A), t_mat)
@@ -38,17 +39,17 @@ def cb_op(oper_A, t_mat):
 
 def cb_op2(oper_A, TL, TR):
     """
-    Change the basis of an operator :math:`\hat{O}`.
+    Change the basis of an operator :math:`\\hat{O}`.
 
     .. math::
 
-        O^{\\prime} = (TL)^{\dagger} O (TR),
+        O^{\\prime} = (TL)^{\\dagger} O (TR),
 
 
     Parameters
     ----------
     oper_A : 2d array
-        The matrix form of operator :math:`\hat{O}` in basis :math:`A`.
+        The matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
 
     TL : 2d array
         The unitary transformation matrix applied on the left.
@@ -59,7 +60,7 @@ def cb_op2(oper_A, TL, TR):
     Returns
     -------
     oper_B : 2d array
-        The matrix form of operator :math:`\hat{O}` after the transformation.
+        The matrix form of operator :math:`\\hat{O}` after the transformation.
     """
 
     oper_B = np.dot(np.dot(np.conj(np.transpose(TL)), oper_A), TR)
@@ -107,8 +108,9 @@ def tmat_c2r(case, ispin=False):
         # pz=|1,0>
         t_c2r[1, 2] = cone
 
-    # t2g orbitals in the t2g subspace, here, we use the so-called T-P equivalence,
-    # t2g orbitals behave like the effective orbital angular momentum leff=1
+    # t2g orbitals in the t2g subspace, here, we use the so-called
+    # T-P equivalence, t2g orbitals behave like the effective orbital
+    # angular momentum leff=1
     # dzx ~ py,  dzy ~ px, dxy ~ pz
     elif case.strip() == 't2g':
         norbs = 3
@@ -169,7 +171,8 @@ def tmat_c2r(case, ispin=False):
         t_c2r[0, 6] = ci / sqrt2
         t_c2r[6, 6] = ci / sqrt2
     else:
-        print("error in tmat_c2r: Do NOT support tmat_c2r for this case: ", case)
+        print("error in tmat_c2r: Do NOT support tmat_c2r for this case: ",
+              case)
         sys.exit()
 
     # the spin order is: up dn up dn ... up dn
@@ -215,8 +218,9 @@ def tmat_r2c(case, ispin=False):
 
 def tmat_r2cub_f(ispin=False):
     """
-    Get the transformation matrix from real spherical harmonics to the cubic spherical harmonics
-    that is the representation of the cubic point group, only for :math:`f` system.
+    Get the transformation matrix from real spherical harmonics to the
+    cubic spherical harmonics that is the representation of the cubic
+    point group, only for :math:`f` system.
 
     Parameters
     ----------
@@ -274,8 +278,8 @@ def tmat_r2cub_f(ispin=False):
 
 def tmat_cub2r_f(ispin=False):
     """
-    Get the transformation matrix from the cubic spherical harmonics to real spherical harmonics,
-    only for :math:`f` system.
+    Get the transformation matrix from the cubic spherical harmonics to
+    real spherical harmonics, only for :math:`f` system.
 
     Parameters
     ----------
@@ -295,8 +299,8 @@ def tmat_cub2r_f(ispin=False):
 def tmat_c2j(orb_l):
     """
     Get the transformation matrix from the complex spherical harmonics to
-    the :math:`|j^2,j_z>` basis in which the spin-oribt coupling Hamiltonian is diagonal.
-    The orbital order is:
+    the :math:`|j^2,j_z>` basis in which the spin-oribt coupling Hamiltonian
+    is diagonal. The orbital order is:
 
     :math:`|j=l-1/2, -j>, |j=l-1/2, -j+1>, ... |j=l-1/2, +j>,`
 
@@ -389,7 +393,8 @@ def tmat_c2j(orb_l):
 
 def transform_utensor(umat, tmat):
     """
-    Transform the rank-4 Coulomb interaction tensor from one basis to another basis.
+    Transform the rank-4 Coulomb interaction tensor from one basis to
+    another basis.
 
     Parameters
     ----------

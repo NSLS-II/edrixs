@@ -214,8 +214,7 @@ def get_fock_full_N(norb, N):
     for m in range(norb // 2 + 1):
         n = N - m
         if n >= 0 and n <= norb // 2:
-            res.extend([i * 2**(norb // 2) + j for i in half_N[m]
-                        for j in half_N[n]])
+            res.extend([i * 2**(norb // 2) + j for i in half_N[m] for j in half_N[n]])
     return res
 
 

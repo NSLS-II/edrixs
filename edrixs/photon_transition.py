@@ -93,13 +93,7 @@ def trans_oper_t2gs():
     for i in range(5):
         op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
         op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(
-            np.conj(
-                np.transpose(
-                    tmat_r2c(
-                        't2g',
-                        True))),
-            op_t2g[i])
+        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
 
     return op_t2g
 
@@ -111,13 +105,7 @@ def trans_oper_t2gp():
     for i in range(3):
         op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
         op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(
-            np.conj(
-                np.transpose(
-                    tmat_r2c(
-                        't2g',
-                        True))),
-            op_t2g[i])
+        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
 
     return op_t2g
 
@@ -129,13 +117,7 @@ def trans_oper_t2gd():
     for i in range(5):
         op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
         op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(
-            np.conj(
-                np.transpose(
-                    tmat_r2c(
-                        't2g',
-                        True))),
-            op_t2g[i])
+        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
 
     return op_t2g
 
@@ -147,13 +129,7 @@ def trans_oper_t2gf():
     for i in range(3):
         op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
         op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(
-            np.conj(
-                np.transpose(
-                    tmat_r2c(
-                        't2g',
-                        True))),
-            op_t2g[i])
+        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
 
     return op_t2g
 
@@ -318,13 +294,15 @@ def dipole_polvec_rixs(thin, thout, phi, alpha, beta, local_axis=np.eye(3)):
         with respect to the global :math:`xyz` -axis.
     """
 
-    ei = np.cos(alpha) * np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
-                                   -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
-                                   np.sin(np.pi / 2.0 - thin)]) + np.sin(alpha) * np.array([-np.sin(phi), np.cos(phi), 0])
+    ei = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
+                    -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
+                    np.sin(np.pi / 2.0 - thin)]) * np.cos(alpha)
+          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
 
-    ef = np.cos(beta) * np.array([np.cos(phi) * np.cos(np.pi / 2.0 - thout),
-                                  np.sin(phi) * np.cos(np.pi / 2.0 - thout),
-                                  np.sin(np.pi / 2.0 - thout)]) + np.sin(beta) * np.array([-np.sin(phi), np.cos(phi), 0])
+    ef = (np.array([np.cos(phi) * np.cos(np.pi / 2.0 - thout),
+                    np.sin(phi) * np.cos(np.pi / 2.0 - thout),
+                    np.sin(np.pi / 2.0 - thout)]) * np.cos(beta)
+          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(beta))
 
     ei_global = np.dot(local_axis, ei)
     ef_global = np.dot(local_axis, ef)
@@ -359,9 +337,10 @@ def dipole_polvec_xas(thin, phi, alpha, local_axis=np.eye(3)):
         global :math:`xyz` -axis.
     """
 
-    ei = np.cos(alpha) * np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
-                                   -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
-                                   np.sin(np.pi / 2.0 - thin)]) + np.sin(alpha) * np.array([-np.sin(phi), np.cos(phi), 0])
+    ei = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
+                    -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
+                    np.sin(np.pi / 2.0 - thin)]) * np.cos(alpha)
+          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
 
     ei_global = np.dot(local_axis, ei)
 

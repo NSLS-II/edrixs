@@ -283,8 +283,8 @@ class SymKVec(KVec):
             kpt_curr = self.hsymkpt[i, :]
             for j in range(nkpt_per_path):
                 ikpt = (i - 1) * nkpt_per_path + j
-                self.kvec[ikpt, :] = float(
-                    j) / float(nkpt_per_path - 1) * (kpt_curr - kpt_prev) + kpt_prev
+                self.kvec[ikpt, :] = (float(j) / float(nkpt_per_path - 1) *
+                                      (kpt_curr - kpt_prev) + kpt_prev)
 
     def from_hsymkpt_uni(self, step):
         """

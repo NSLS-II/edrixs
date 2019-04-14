@@ -6,7 +6,7 @@ import numpy as np
 
 def atom_hsoc(case, soc):
     """
-    Return atomic spin-orbit coupling matrix :math:`\\vec{l}\cdot\\vec{s}`
+    Return atomic spin-orbit coupling matrix :math:`\\vec{l}\\cdot\\vec{s}`
     in complex spherical harmonics basis.
 
     Parameters

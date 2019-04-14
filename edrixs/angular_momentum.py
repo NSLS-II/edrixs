@@ -86,8 +86,8 @@ def get_lminus(l, ispin=False):
 
 def get_lx(l, ispin=False):
     """
-    Get the matrix form of the orbital angular momentum operator :math:`l_x` in the
-    complex spherical harmonics basis,
+    Get the matrix form of the orbital angular momentum
+    operator :math:`l_x` in the complex spherical harmonics basis,
 
     .. math::
 
@@ -119,8 +119,8 @@ def get_lx(l, ispin=False):
 
 def get_ly(l, ispin=False):
     """
-    Get the matrix form of the orbital angular momentum operator :math:`l_y` in the
-    complex spherical harmonics basis,
+    Get the matrix form of the orbital angular momentum
+    operator :math:`l_y` in the complex spherical harmonics basis,
 
     .. math::
 
@@ -152,8 +152,8 @@ def get_ly(l, ispin=False):
 
 def get_lz(l, ispin=False):
     """
-    Get the matrix form of the orbital angular momentum operator :math:`l_z` in the
-    complex spherical harmonics basis.
+    Get the matrix form of the orbital angular momentum
+    operator :math:`l_z` in the complex spherical harmonics basis.
 
     Parameters
     ----------
@@ -224,9 +224,11 @@ def get_sx(l):
     Returns
     -------
     sx : 2d complex array.
-        Matrix form of :math:`s_x`, the dimension is :math:`2(2l+1) \\times 2(2l+1)`,
+        Matrix form of :math:`s_x`, the dimension
+        is :math:`2(2l+1) \\times 2(2l+1)`,
 
-        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ..., \\|+l, up\\>, \\|+l,down\\>.
+        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
+        \\|+l, up\\>, \\|+l,down\\>.
     """
 
     norbs = 2 * (2 * l + 1)
@@ -251,9 +253,11 @@ def get_sy(l):
     Returns
     -------
     sy : 2d complex array.
-        Matrix form of :math:`s_y`, the dimension is :math:`2(2l+1) \\times 2(2l+1)`, spin order is:
+        Matrix form of :math:`s_y`, the dimension
+        is :math:`2(2l+1) \\times 2(2l+1)`, spin order is:
 
-        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ..., \\|+l, up\\>, \\|+l,down\\>
+        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
+        \\|+l, up\\>, \\|+l,down\\>
     """
 
     norbs = 2 * (2 * l + 1)
@@ -278,9 +282,11 @@ def get_sz(l):
     Returns
     -------
     sz : 2d complex array.
-        Matrix form of :math:`s_z`, the dimension is :math:`2(2l+1) \\times 2(2l+1)`.
+        Matrix form of :math:`s_z`, the dimension
+        is :math:`2(2l+1) \\times 2(2l+1)`.
 
-        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ..., \\|+l, up\\>, \\|+l,down\\>
+        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
+        \\|+l, up\\>, \\|+l,down\\>
     """
 
     norbs = 2 * (2 * l + 1)
@@ -294,8 +300,8 @@ def get_sz(l):
 
 def euler_to_rmat(alpha, beta, gamma):
     """
-    Given Euler angle: :math:`\\alpha, \\beta, \\gamma`, generate the :math:`3\\times 3`
-    rotational matrix :math:`R`.
+    Given Euler angle: :math:`\\alpha, \\beta, \\gamma`,
+    generate the :math:`3\\times 3` rotational matrix :math:`R`.
 
     Parameters
     ----------
@@ -315,15 +321,11 @@ def euler_to_rmat(alpha, beta, gamma):
     """
 
     rmat = np.zeros((3, 3), dtype=np.float64)
-    rmat[0, 0] = np.cos(alpha) * np.cos(beta) * \
-        np.cos(gamma) - np.sin(alpha) * np.sin(gamma)
-    rmat[0, 1] = -np.sin(gamma) * np.cos(alpha) * \
-        np.cos(beta) - np.sin(alpha) * np.cos(gamma)
+    rmat[0, 0] = np.cos(alpha) * np.cos(beta) * np.cos(gamma) - np.sin(alpha) * np.sin(gamma)
+    rmat[0, 1] = -np.sin(gamma) * np.cos(alpha) * np.cos(beta) - np.sin(alpha) * np.cos(gamma)
     rmat[0, 2] = np.cos(alpha) * np.sin(beta)
-    rmat[1, 0] = np.sin(alpha) * np.cos(beta) * \
-        np.cos(gamma) + np.cos(alpha) * np.sin(gamma)
-    rmat[1, 1] = -np.sin(gamma) * np.sin(alpha) * \
-        np.cos(beta) + np.cos(alpha) * np.cos(gamma)
+    rmat[1, 0] = np.sin(alpha) * np.cos(beta) * np.cos(gamma) + np.cos(alpha) * np.sin(gamma)
+    rmat[1, 1] = -np.sin(gamma) * np.sin(alpha) * np.cos(beta) + np.cos(alpha) * np.cos(gamma)
     rmat[1, 2] = np.sin(alpha) * np.sin(beta)
     rmat[2, 0] = -np.cos(gamma) * np.sin(beta)
     rmat[2, 1] = np.sin(beta) * np.sin(gamma)
@@ -405,7 +407,8 @@ def where_is_angle(sina, cosa):
 
 def dmat_spinor(alpha, beta, gamma):
     """
-    Given three Euler angle: :math:`\\alpha, \\beta, \\gamma`, return the transformation
+    Given three Euler angle: :math:`\\alpha, \\beta, \\gamma`,
+    return the transformation
     matrix for :math:`\\frac{1}{2}`-spinor.
 
     Parameters
@@ -437,7 +440,8 @@ def zx_to_rmat(z, x):
     """
     Given :math:`z` vector and :math:`x` vector, calculate :math:`y` vector
     which satisfies the right-hand Cartesian coordinate and normalize them to
-    unit if needed, and then return the :math:`3\\times 3` rotational matrix :math:`R`.
+    unit if needed, and then return the :math:`3\\times 3`
+    rotational matrix :math:`R`.
 
     Parameters
     ----------

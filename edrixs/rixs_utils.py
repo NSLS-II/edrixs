@@ -9,8 +9,8 @@ def scattering_mat(eval_i, eval_n, trans_mat_abs,
 
     .. math::
 
-        F^{ab}_{fi} = \sum_{n}\\frac{<f|T_{a}|n><n|T_{b}|i>}{\omega_{in}
-                    - E_{n} + E_{i} + i\Gamma_{n}},
+        F^{ab}_{fi} = \\sum_{n}\\frac{<f|T_{a}|n><n|T_{b}|i>}{\\omega_{in}
+                    - E_{n} + E_{i} + i\\Gamma_{n}},
 
     where, :math:`T_{a}` and :math:`T_{b}` are components of transition
     operators( :math:`a,b=x,y,z`).

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import numpy as np
 from .basis_transform import tmat_c2r, tmat_r2c, transform_utensor
 from sympy.physics.wigner import gaunt
@@ -11,9 +12,10 @@ def get_gaunt(l1, l2):
 
     .. math::
 
-        C_{l_1,l_2}(k,m_1,m_2)=\\sqrt{\\frac{4\pi}{2k+1}} \\int \\mathop{d\\phi}
-              \\mathop{d\\theta} sin(\\theta) Y_{l_1}^{m_1\\star}(\\theta,\\phi)
-                     Y_{k}^{m_1-m_2}(\\theta,\\phi) Y_{l_2}^{m_2}(\\theta,\\phi)
+        C_{l_1,l_2}(k,m_1,m_2)=\\sqrt{\\frac{4\\pi}{2k+1}} \\int
+        \\mathop{d\\phi} \\mathop{d\\theta} sin(\\theta)
+        Y_{l_1}^{m_1\\star}(\\theta,\\phi) Y_{k}^{m_1-m_2}(\\theta,\\phi)
+        Y_{l_2}^{m_2}(\\theta,\\phi)
 
     Parameters
     ----------
@@ -37,20 +39,21 @@ def get_gaunt(l1, l2):
 
     Notes
     -----
-    It should be noted that :math:`C_{l_1,l_2}(k,m_1,m_2)` is nonvanishing only when
+    It should be noted that :math:`C_{l_1,l_2}(k,m_1,m_2)` is
+    nonvanishing only when
 
     :math:`k + l_1 + l_2 = \\text{even}`,
 
     and
 
-    :math:`|l_1 -  l_2| \\leq k \leq l_1 + l_2`.
+    :math:`|l_1 -  l_2| \\leq k \\leq l_1 + l_2`.
 
     Please see Ref. [1]_ p. 10 for more details.
 
     References
     ----------
-    .. [1] Sugano S, Tanabe Y and Kamimura H. 1970. Multiplets of Transition-Metal Ions in
-       Crystals. Academic Press, New York and London.
+    .. [1] Sugano S, Tanabe Y and Kamimura H. 1970. Multiplets of
+       Transition-Metal Ions in Crystals. Academic Press, New York and London.
 
     Examples
     --------
@@ -65,8 +68,7 @@ def get_gaunt(l1, l2):
     from sympy import N
     res = np.zeros((l1 + l2 + 1, 2 * l1 + 1, 2 * l2 + 1), dtype=np.float64)
     for k in range(l1 + l2 + 1):
-        if not (np.mod(l1 + l2 + k, 2) ==
-                0 and np.abs(l1 - l2) <= k <= l1 + l2):
+        if not (np.mod(l1 + l2 + k, 2) == 0 and np.abs(l1 - l2) <= k <= l1 + l2):
             continue
         for i1, m1 in enumerate(range(-l1, l1 + 1)):
             for i2, m2 in enumerate(range(-l2, l2 + 1)):
@@ -82,22 +84,27 @@ def umat_slater(l_list, fk):
 
     .. math::
 
-        U_{m_{l_i}m_{s_i}, m_{l_j}m_{s_j}, m_{l_t}m_{s_t}, m_{l_u}m_{s_u}}^{i,j,t,u}
+        U_{m_{l_i}m_{s_i}, m_{l_j}m_{s_j}, m_{l_t}m_{s_t},
+        m_{l_u}m_{s_u}}^{i,j,t,u}
         =\\frac{1}{2} \\delta_{m_{s_i},m_{s_t}}\\delta_{m_{s_j},m_{s_u}}
         \\delta_{m_{l_i}+m_{l_j}, m_{l_t}+m_{l_u}}
-        \\sum_{k}C_{l_i,l_t}(k,m_{l_i},m_{l_t})C_{l_u,l_j}(k,m_{l_u},m_{l_j})F^{k}_{i,j,t,u}
+        \\sum_{k}C_{l_i,l_t}(k,m_{l_i},m_{l_t})C_{l_u,l_j}
+        (k,m_{l_u},m_{l_j})F^{k}_{i,j,t,u}
 
-    where :math:`m_s` is the magnetic quantum number for spin and :math:`m_l` is the
-     magnetic quantum number for orbital. :math:`F^{k}_{i,j,t,u}`
-    are Slater integrals. :math:`C_{l_i,l_j}(k,m_{l_i},m_{l_j})` are Gaunt coefficients.
+    where :math:`m_s` is the magnetic quantum number for spin
+    and :math:`m_l` is the magnetic quantum number for orbital.
+    :math:`F^{k}_{i,j,t,u}` are Slater integrals.
+    :math:`C_{l_i,l_j}(k,m_{l_i},m_{l_j})` are Gaunt coefficients.
 
     Parameters
     ----------
     l_list: list of int
-        contains the quantum number of orbital angular momentum :math:`l` for each shell.
+        contains the quantum number of orbital angular momentum
+        :math:`l` for each shell.
     fk: dict of float
-        contains all the possible Slater integrals between the shells in l_list, the key
-        is a tuple of 5 ints (:math:`k,i,j,t,u`), where :math:`k` is the order,
+        contains all the possible Slater integrals between the shells
+        in l_list, the key is a tuple of 5 ints (:math:`k,i,j,t,u`),
+        where :math:`k` is the order,
         :math:`i,j,t,u` are the shell indices begin with 1.
 
     Returns
@@ -172,8 +179,7 @@ def umat_slater(l_list, fk):
             for m1 in range(-l1, l1 + 1):
                 for m2 in range(-l2, l2 + 1):
                     for k in k_list:
-                        if np.mod(l1 + l2 + k, 2) == 0 and np.abs(l1 -
-                                                                  l2) <= k <= l1 + l2:
+                        if (np.mod(l1 + l2 + k, 2) == 0 and np.abs(l1 - l2) <= k <= l1 + l2):
                             ck[(k, l1, m1, l2, m2)] = ck_tmp[k, m1 + l1, m2 + l2]
                         else:
                             ck[(k, l1, m1, l2, m2)] = 0
@@ -197,8 +203,7 @@ def umat_slater(l_list, fk):
                     for k in k_list:
                         tmp_key = (k, i1, i2, i3, i4)
                         if tmp_key in list(fk.keys()):
-                            res += ck[(k, l1, m1, l3, m3)] * \
-                                ck[(k, l4, m4, l2, m2)] * fk[tmp_key]
+                            res += ck[(k, l1, m1, l3, m3)] * ck[(k, l4, m4, l2, m2)] * fk[tmp_key]
                     umat[orb1, orb2, orb4, orb3] = res
 
     umat = umat / 2.0
@@ -240,8 +245,7 @@ def get_umat_slater_t2g(F0, F2, F4):
     umat = transform_utensor(umat, tmat_c2r('d', True))
     t2g_indx = [2, 3, 4, 5, 8, 9]
     umat_t2g = np.zeros((6, 6, 6, 6), dtype=np.complex128)
-    umat_t2g[:, :, :, :] = umat[t2g_indx][:,
-                                          t2g_indx][:, :, t2g_indx][:, :, :, t2g_indx]
+    umat_t2g[:, :, :, :] = umat[t2g_indx][:, t2g_indx][:, :, t2g_indx][:, :, :, t2g_indx]
     # t2g to c
     umat_t2g[:, :, :, :] = transform_utensor(umat_t2g, tmat_r2c('t2g', True))
 
@@ -359,15 +363,9 @@ def get_umat_slater_t2gp(F0_dd, F2_dd, F4_dd,
                          F0_pp, F2_pp):
 
     umat = get_umat_slater_dp(
-        F0_dd,
-        F2_dd,
-        F4_dd,
-        F0_dp,
-        F2_dp,
-        G1_dp,
-        G3_dp,
-        F0_pp,
-        F2_pp)
+        F0_dd, F2_dd, F4_dd,
+        F0_dp, F2_dp, G1_dp, G3_dp,
+        F0_pp, F2_pp)
     tmat = np.eye(16, dtype=np.complex128)
     tmat[0:10, 0:10] = tmat_c2r('d', True)
     umat = transform_utensor(umat, tmat)
@@ -678,7 +676,8 @@ def get_F0(case, *args):
         return 1.0 / 14.0 * G0 + 2.0 / 105.0 * G2 + 1.0 / 77.0 * G4 + 50.0 / 3003.0 * G6
 
     else:
-        print("error in get_F0():  Unknown case name")
+        print("error in get_F0():  Unknown case name:", case)
+        sys.exit()
 
 
 umat_func_dict = {

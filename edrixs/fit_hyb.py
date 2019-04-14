@@ -6,28 +6,28 @@ from scipy.optimize import curve_fit
 
 def fit_func(x, *args):
     """
-    Given frequency :math:`\omega`, bath energy level :math:`\epsilon_{l}` and
+    Given frequency :math:`\\omega`, bath energy level :math:`\\epsilon_{l}` and
     the hybridization strength :math:`V_{l}`,
     return the hybridization function,
 
     .. math::
 
-        \Delta(\omega)=\sum_{l=1}^{N}\\frac{|V_{l}|^2}{\omega-\epsilon_{l}}.
+        \\Delta(\\omega)=\\sum_{l=1}^{N}\\frac{|V_{l}|^2}{\\omega-\\epsilon_{l}}.
 
     Parameters
     ----------
     x : 1d float array
-        Frequency :math:`\omega`, the first half is the real part and
+        Frequency :math:`\\omega`, the first half is the real part and
         the second half is the imaginary part.
 
     args : 1d float array
-        The first half is the bath energy level :math:`\epsilon_{l}` and the
+        The first half is the bath energy level :math:`\\epsilon_{l}` and the
         second half if the hybridization strength :math:`V_{l}`.
 
     Returns
     -------
     y : 1d float array
-        The calculated hybridization function :math:`\Delta(\omega)`, the
+        The calculated hybridization function :math:`\\Delta(\\omega)`, the
         first half is the real part and the second half is the imaginary part.
     """
 
@@ -50,35 +50,35 @@ def fit_func(x, *args):
 
 def fit_hyb(x, y, N, p0):
     """
-    Given the hybridization function :math:`\Delta(\omega)`,
+    Given the hybridization function :math:`\\Delta(\\omega)`,
     call function curve_fit in scipy to
-    fit bath energy levels :math:`\epsilon_{l}` and
+    fit bath energy levels :math:`\\epsilon_{l}` and
     hybridization strength :math:`V_{l}`.
 
     .. math::
 
-        \Delta(\omega)=\sum_{l=1}^{N}\\frac{|V_{l}|^2}{\omega-\epsilon_{l}}.
+        \\Delta(\\omega)=\\sum_{l=1}^{N}\\frac{|V_{l}|^2}{\\omega-\\epsilon_{l}}.
 
 
     Parameters
     ----------
     x : 1d complex array
-        Frequency :math:`\omega`.
+        Frequency :math:`\\omega`.
 
     y : 1d complex array
-        Hybridization function :math:`\Delta(\omega)`.
+        Hybridization function :math:`\\Delta(\\omega)`.
 
     N : int
         Number of bath sites
 
     p0 : N-length 1d float array
-        Initial guess, the first half is :math:`\epsilon_{l}` and
+        Initial guess, the first half is :math:`\\epsilon_{l}` and
         the second half is :math:`V_{l}`.
 
     Returns
     -------
     e : N-length 1d float array
-        The fitted bath energy levels :math:`\epsilon_{l}`.
+        The fitted bath energy levels :math:`\\epsilon_{l}`.
 
     v : N-length 1d float array
         The fitted hybridization strength :math:`V_{l}`.
@@ -96,17 +96,17 @@ def fit_hyb(x, y, N, p0):
 
 def get_hyb(x, e, v):
     """
-    Given the fitted :math:`\epsilon_{l}` and :math:`V_{l}`, calcualte the
-    hybridization function :math:`\Delta(\omega)`,
+    Given the fitted :math:`\\epsilon_{l}` and :math:`V_{l}`, calcualte the
+    hybridization function :math:`\\Delta(\\omega)`,
 
     .. math::
 
-        \Delta(\omega)=\sum_{l=1}^{N}\\frac{|V_{l}|^2}{\omega-\epsilon_{l}}.
+        \\Delta(\\omega)=\\sum_{l=1}^{N}\\frac{|V_{l}|^2}{\\omega-\\epsilon_{l}}.
 
     Parameters
     ----------
     x : 1d complex array
-        Frequency :math:`\omega`.
+        Frequency :math:`\\omega`.
 
     e :  N-length 1d float array
         The fitted bath energy levels.
@@ -117,7 +117,7 @@ def get_hyb(x, e, v):
     Returns
     -------
     y : 1d complex array
-        The calculated hybridization function :math:`\Delta(\omega)`.
+        The calculated hybridization function :math:`\\Delta(\\omega)`.
     """
 
     y = np.zeros(len(x), dtype=np.complex128)

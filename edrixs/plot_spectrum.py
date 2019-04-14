@@ -10,10 +10,10 @@ def plot_spectrum(file_list, omega_mesh, gamma_mesh, T=1.0, fname='spectrum.dat'
     the spectrum using continued fraction formula,
 
     .. math::
-        I(\omega_{i}) =-\\frac{1}{\pi}\\text{Im} \left[ \\frac{1}{x - \\alpha_{0} -
+        I(\\omega_{i}) =-\\frac{1}{\\pi}\\text{Im} \\left[ \\frac{1}{x - \\alpha_{0} -
         \\frac{\\beta_{1}^2}{x-\\alpha_{1} - \\frac{\\beta_{2}^2}{x-\\alpha_{2} - ...}} }\\right],
 
-    where, :math:`x = \omega_{i}+i\Gamma_{i} + E_{g}`.
+    where, :math:`x = \\omega_{i}+i\\Gamma_{i} + E_{g}`.
 
     Parameters
     ----------

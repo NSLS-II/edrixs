@@ -61,8 +61,7 @@ def boltz_dist(gs, T):
     """
 
     beta = kelvin_to_beta(T)
-    res = np.exp(-beta * (gs - min(gs))) / \
-        np.sum(np.exp(-beta * (gs - min(gs))))
+    res = np.exp(-beta * (gs - min(gs))) / np.sum(np.exp(-beta * (gs - min(gs))))
     return res
 
 

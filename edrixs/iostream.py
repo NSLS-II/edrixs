@@ -36,10 +36,8 @@ def write_tensor_2(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
             if only_nonzeros and abs(tensor[i, j]) < tol:
                 continue
             if is_cmplx:
-                fmt_string = (fmt_int + space) * 2 + \
-                    (fmt_float + space) * 2 + '\n'
-                f.write(fmt_string.format(i + 1, j + 1,
-                                          tensor[i, j].real, tensor[i, j].imag))
+                fmt_string = (fmt_int + space) * 2 + (fmt_float + space) * 2 + '\n'
+                f.write(fmt_string.format(i + 1, j + 1, tensor[i, j].real, tensor[i, j].imag))
             else:
                 fmt_string = (fmt_int + space) * 2 + fmt_float + space + '\n'
                 f.write(fmt_string.format(i + 1, j + 1, tensor[i, j]))
@@ -60,15 +58,12 @@ def write_tensor_3(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
                 if only_nonzeros and abs(tensor[i, j, k]) < tol:
                     continue
                 if is_cmplx:
-                    fmt_string = (fmt_int + space) * 3 + \
-                        (fmt_float + space) * 2 + '\n'
+                    fmt_string = (fmt_int + space) * 3 + (fmt_float + space) * 2 + '\n'
                     f.write(fmt_string.format(i + 1, j + 1, k + 1, tensor[i, j, k].real,
                                               tensor[i, j, k].imag))
                 else:
-                    fmt_string = (fmt_int + space) * 3 + \
-                        fmt_float + space + '\n'
-                    f.write("{:10d}{:10d}{:10d}{:20.12E}\n".format(i + 1, j + 1, k + 1,
-                                                                   tensor[i, j, k]))
+                    fmt_string = (fmt_int + space) * 3 + fmt_float + space + '\n'
+                    f.write(fmt_string.format(i + 1, j + 1, k + 1, tensor[i, j, k]))
     f.close()
 
 
@@ -87,15 +82,12 @@ def write_tensor_4(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
                     if only_nonzeros and abs(tensor[i, j, k, l]) < tol:
                         continue
                     if is_cmplx:
-                        fmt_string = (fmt_int + space) * 4 + \
-                            (fmt_float + space) * 2 + '\n'
-                        f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, tensor[i, j, k, l].real,
-                                                  tensor[i, j, k, l].imag))
+                        fmt_string = (fmt_int + space) * 4 + (fmt_float + space) * 2 + '\n'
+                        f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1,
+                                tensor[i, j, k, l].real, tensor[i, j, k, l].imag))
                     else:
-                        fmt_string = (fmt_int + space) * 4 + \
-                            fmt_float + space + '\n'
-                        f.write(fmt_string.format(i + 1, j + 1,
-                                                  k + 1, l + 1, tensor[i, j, k, l]))
+                        fmt_string = (fmt_int + space) * 4 + fmt_float + space + '\n'
+                        f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, tensor[i, j, k, l]))
     f.close()
 
 
@@ -115,15 +107,13 @@ def write_tensor_5(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
                         if only_nonzeros and abs(tensor[i, j, k, l, m]) < tol:
                             continue
                         if is_cmplx:
-                            fmt_string = (fmt_int + space) * 5 + \
-                                (fmt_float + space) * 2 + '\n'
+                            fmt_string = (fmt_int + space) * 5 + (fmt_float + space) * 2 + '\n'
                             f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, m + 1,
-                                                      tensor[i, j, k, l, m].real, tensor[i, j, k, l, m].imag))
+                                    tensor[i, j, k, l, m].real, tensor[i, j, k, l, m].imag))
                         else:
-                            fmt_string = (fmt_int + space) * 4 + \
-                                fmt_float + space + '\n'
-                            f.write(fmt_string.format(i + 1, j + 1, k +
-                                                      1, l + 1, m + 1, tensor[i, j, k, l, m]))
+                            fmt_string = (fmt_int + space) * 4 + fmt_float + space + '\n'
+                            f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, m + 1,
+                                    tensor[i, j, k, l, m]))
     f.close()
 
 
@@ -212,8 +202,7 @@ def write_emat(emat, fname, tol=1E-12, fmt_int='{:10d}', fmt_float='{:.15f}'):
     else:
         f.write("{:20d}\n".format(len(nonzero)))
         for i, j in nonzero:
-            f.write(fmt_string.format(i + 1, j + 1,
-                                      emat[i, j].real, emat[i, j].imag))
+            f.write(fmt_string.format(i + 1, j + 1, emat[i, j].real, emat[i, j].imag))
     f.close()
 
 

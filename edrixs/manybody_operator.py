@@ -10,7 +10,7 @@ def one_fermion_annihilation(iorb, lb, rb):
 
     .. math::
 
-        <F_{l}|\hat{f}_{i}|F_{r}>
+        <F_{l}|\\hat{f}_{i}|F_{r}>
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ def one_fermion_annihilation(iorb, lb, rb):
     Returns
     -------
     hmat : 2d complex array
-        The matrix form of :math:`\hat{f}_{i}`.
+        The matrix form of :math:`\\hat{f}_{i}`.
     """
 
     lb, rb = np.array(lb), np.array(rb)
@@ -56,7 +56,7 @@ def two_fermion(emat, lb, rb, tol=1E-10):
 
     .. math::
 
-        <F_{l}|\sum_{ij}E_{ij}\hat{f}_{i}^{\dagger}\hat{f}_{j}|F_{r}>
+        <F_{l}|\\sum_{ij}E_{ij}\\hat{f}_{i}^{\\dagger}\\hat{f}_{j}|F_{r}>
 
     Parameters
     ----------
@@ -114,7 +114,7 @@ def four_fermion(umat, basis, tol=1E-10):
 
     .. math::
 
-        <F|\sum_{ij}U_{ijkl}\hat{f}_{i}^{\dagger}\hat{f}_{j}^{\dagger}\hat{f}_{k}\hat{f}_{l}|F>
+        <F|\\sum_{ij}U_{ijkl}\\hat{f}_{i}^{\\dagger}\\hat{f}_{j}^{\\dagger}\\hat{f}_{k}\\hat{f}_{l}|F>
 
     Parameters
     ----------
@@ -171,19 +171,18 @@ def four_fermion(umat, basis, tol=1E-10):
                 tmp_basis[lorb] = 1
             jcfg = indx[tuple(tmp_basis)]
             if jcfg != -1:
-                hmat[jcfg, icfg] += umat[lorb, korb,
-                                         jorb, iorb] * s1 * s2 * s3 * s4
+                hmat[jcfg, icfg] += umat[lorb, korb, jorb, iorb] * s1 * s2 * s3 * s4
     return hmat
 
 
 def density_matrix(iorb, jorb, lb, rb):
     """
-    Calculate the matrix form of density operators :math:`\hat{f}_{i}^{\dagger}\hat{f}_{j}`
+    Calculate the matrix form of density operators :math:`\\hat{f}_{i}^{\\dagger}\\hat{f}_{j}`
     in the given Fock basis,
 
     .. math::
 
-        <F_{l}|\hat{f}_{i}^{\dagger}\hat{f}_{j}|F_{r}>
+        <F_{l}|\\hat{f}_{i}^{\\dagger}\\hat{f}_{j}|F_{r}>
 
     Parameters
     ----------
