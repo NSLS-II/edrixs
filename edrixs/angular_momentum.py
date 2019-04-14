@@ -4,7 +4,8 @@ import numpy as np
 
 def get_ladd(l,ispin=False):
     """
-    Get the matrix form of the raising operator :math:`l^+` in the complex spherical harmonics basis
+    Get the matrix form of the raising operator :math:`l^+` in the 
+    complex spherical harmonics basis
 
     .. math::
 
@@ -43,7 +44,8 @@ def get_ladd(l,ispin=False):
 
 def get_lminus(l,ispin=False):
     """
-    Get the matrix form of the lowering operator :math:`l^-` in the complex spherical harmonics basis
+    Get the matrix form of the lowering operator :math:`l^-` in the 
+    complex spherical harmonics basis
 
     .. math::
 
@@ -81,7 +83,8 @@ def get_lminus(l,ispin=False):
 
 def get_lx(l,ispin=False):
     """
-    Get the matrix form of the orbital angular momentum operator :math:`l_x` in the complex spherical harmonics basis,
+    Get the matrix form of the orbital angular momentum operator :math:`l_x` in the 
+    complex spherical harmonics basis,
 
     .. math::
 
@@ -112,7 +115,8 @@ def get_lx(l,ispin=False):
 
 def get_ly(l,ispin=False):
     """
-    Get the matrix form of the orbital angular momentum operator :math:`l_y` in the complex spherical harmonics basis,
+    Get the matrix form of the orbital angular momentum operator :math:`l_y` in the 
+    complex spherical harmonics basis,
 
     .. math::
 
@@ -143,7 +147,8 @@ def get_ly(l,ispin=False):
   
 def get_lz(l,ispin=False):
     """
-    Get the matrix form of the orbital angular momentum operator :math:`l_z` in the complex spherical harmonics basis.
+    Get the matrix form of the orbital angular momentum operator :math:`l_z` in the 
+    complex spherical harmonics basis.
 
     Parameters
     ----------
@@ -201,7 +206,8 @@ def get_pauli():
 
 def get_sx(l):
     """
-    Get the matrix form of spin angular momentum operator :math:`s_x` in the complex spherical harmonics basis.
+    Get the matrix form of spin angular momentum operator :math:`s_x` in the 
+    complex spherical harmonics basis.
 
     Parameters
     ----------
@@ -226,7 +232,8 @@ def get_sx(l):
 
 def get_sy(l):
     """
-    Get the matrix form of spin angular momentum operator :math:`s_y` in the complex spherical harmonics basis.
+    Get the matrix form of spin angular momentum operator :math:`s_y` in the 
+    complex spherical harmonics basis.
 
     Parameters
     ----------
@@ -251,7 +258,8 @@ def get_sy(l):
 
 def get_sz(l):
     """
-    Get the matrix form of spin angular momentum operator :math:`s_z` in the complex spherical harmonics basis.
+    Get the matrix form of spin angular momentum operator :math:`s_z` in the 
+    complex spherical harmonics basis.
 
     Parameters
     ----------
@@ -276,7 +284,8 @@ def get_sz(l):
 
 def euler_to_rmat(alpha, beta, gamma):
     """
-    Given Euler angle: :math:`\\alpha, \\beta, \\gamma`, generate the :math:`3\\times 3` rotational matrix :math:`R`.
+    Given Euler angle: :math:`\\alpha, \\beta, \\gamma`, generate the :math:`3\\times 3` 
+    rotational matrix :math:`R`.
 
     Parameters
     ----------
@@ -309,7 +318,8 @@ def euler_to_rmat(alpha, beta, gamma):
 
 def rmat_to_euler(rmat):
     """
-    Given the :math:`3\\times 3` rotational matrix :math:`R`, return the Euler angles: :math:`\\alpha, \\beta, \\gamma`.
+    Given the :math:`3\\times 3` rotational matrix :math:`R`, return the Euler 
+    angles: :math:`\\alpha, \\beta, \\gamma`.
 
     Parameters
     ----------
@@ -350,7 +360,8 @@ def rmat_to_euler(rmat):
 
 def where_is_angle(sina, cosa):
     """
-    Given sine and cosine of an angle :math:`\\alpha`, return the angle :math:`\\alpha` range from [0, :math:`2\\pi`].
+    Given sine and cosine of an angle :math:`\\alpha`, return the 
+    angle :math:`\\alpha` range from [0, :math:`2\\pi`].
 
     Parameters
     ----------
@@ -406,8 +417,9 @@ def dmat_spinor(alpha,beta,gamma):
 
 def zx_to_rmat(z,x):
     """
-    Given :math:`z` vector and :math:`x` vector, calculate :math:`y` vector which satisfies the right-hand Cartesian coordinate
-    and normalize them to unit if needed, and then return the :math:`3\\times 3` rotational matrix :math:`R`.
+    Given :math:`z` vector and :math:`x` vector, calculate :math:`y` vector 
+    which satisfies the right-hand Cartesian coordinate and normalize them to 
+    unit if needed, and then return the :math:`3\\times 3` rotational matrix :math:`R`.
 
     Parameters
     ----------

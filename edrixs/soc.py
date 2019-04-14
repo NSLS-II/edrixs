@@ -1,10 +1,12 @@
 #/usr/bin/env python
 
+import sys
 import numpy as np
 
 def atom_hsoc(case, soc):
     """
-    Return atomic spin-orbit coupling matrix :math:`\\vec{l}\cdot\\vec{s}` in complex spherical harmonics basis.
+    Return atomic spin-orbit coupling matrix :math:`\\vec{l}\cdot\\vec{s}` 
+    in complex spherical harmonics basis.
     
     Parameters
     ----------
@@ -103,5 +105,5 @@ def atom_hsoc(case, soc):
         return 0.5 * soc * hsoc
 
     else:
-        print("don't support SOC for this case: ", case)
-        return
+        print("error in atom_hsoc: DO NOT support SOC for this case: ", case)
+        sys.exit()

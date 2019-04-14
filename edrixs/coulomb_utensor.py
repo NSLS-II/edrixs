@@ -10,8 +10,9 @@ def get_gaunt(l1, l2):
 
     .. math::
 
-        C_{l_1,l_2}(k,m_1,m_2)=\\sqrt{\\frac{4\pi}{2k+1}} \\int \\mathop{d\\phi} \\mathop{d\\theta} sin(\\theta) Y_{l_1}^{m_1\\star}(\\theta,\\phi) 
-                                Y_{k}^{m_1-m_2}(\\theta,\\phi) Y_{l_2}^{m_2}(\\theta,\\phi)
+        C_{l_1,l_2}(k,m_1,m_2)=\\sqrt{\\frac{4\pi}{2k+1}} \\int \\mathop{d\\phi} 
+              \\mathop{d\\theta} sin(\\theta) Y_{l_1}^{m_1\\star}(\\theta,\\phi) 
+                     Y_{k}^{m_1-m_2}(\\theta,\\phi) Y_{l_2}^{m_2}(\\theta,\\phi)
 
     Parameters
     ----------
@@ -27,14 +28,15 @@ def get_gaunt(l1, l2):
 
         The 1st index (:math:`= 0, 1, ..., l_1+l_2+1`) is the order :math:`k`.
 
-        The 2nd index (:math:`= 0, 1, ... ,2l_1`) is the magnetic quantum number :math:`m_1` plus :math:`l_1`
+        The 2nd index (:math:`= 0, 1, ... ,2l_1`) is the magnetic quantum  
+        number :math:`m_1` plus :math:`l_1`
 
-        The 3nd index (:math:`= 0, 1, ... ,2l_2`) is the magnetic quantum number :math:`m_2` plus :math:`l_2`
+        The 3nd index (:math:`= 0, 1, ... ,2l_2`) is the magnetic quantum 
+        number :math:`m_2` plus :math:`l_2`
 
     Notes
     -----
     It should be noted that :math:`C_{l_1,l_2}(k,m_1,m_2)` is nonvanishing only when
-
 
     :math:`k + l_1 + l_2 = \\text{even}`,
 
@@ -46,7 +48,8 @@ def get_gaunt(l1, l2):
 
     References
     ----------
-    .. [1] Sugano S, Tanabe Y and Kamimura H. 1970. Multiplets of Transition-Metal Ions in Crystals. Academic Press, New York and London.
+    .. [1] Sugano S, Tanabe Y and Kamimura H. 1970. Multiplets of Transition-Metal Ions in 
+       Crystals. Academic Press, New York and London.
 
     Examples
     --------
@@ -65,19 +68,23 @@ def get_gaunt(l1, l2):
             continue 
         for i1, m1 in enumerate(range(-l1, l1+1)):
             for i2, m2 in enumerate(range(-l2, l2+1)):
-                res[k,i1,i2] = N(gaunt(l1, k, l2, -m1, m1-m2, m2))*(-1.0)**m1*np.sqrt(4*np.pi/(2*k+1))
+                res[k,i1,i2] = N(gaunt(l1,k,l2,-m1,m1-m2,m2))*(-1.0)**m1*np.sqrt(4*np.pi/(2*k+1))
     return res
 
 def umat_slater(l_list, fk):
     """
-    Calculate the Coulomb interaction tensor which is parameterized by Slater integrals :math:`F^{k}`:
+    Calculate the Coulomb interaction tensor which is parameterized by 
+    Slater integrals :math:`F^{k}`:
 
     .. math::
 
-        U_{m_{l_i}m_{s_i}, m_{l_j}m_{s_j}, m_{l_t}m_{s_t}, m_{l_u}m_{s_u}}^{i,j,t,u} =\\frac{1}{2} \\delta_{m_{s_i},m_{s_t}}\\delta_{m_{s_j},m_{s_u}}
-        \\delta_{m_{l_i}+m_{l_j}, m_{l_t}+m_{l_u}} \\sum_{k}C_{l_i,l_t}(k,m_{l_i},m_{l_t})C_{l_u,l_j}(k,m_{l_u},m_{l_j})F^{k}_{i,j,t,u}
+        U_{m_{l_i}m_{s_i}, m_{l_j}m_{s_j}, m_{l_t}m_{s_t}, m_{l_u}m_{s_u}}^{i,j,t,u} 
+        =\\frac{1}{2} \\delta_{m_{s_i},m_{s_t}}\\delta_{m_{s_j},m_{s_u}}
+        \\delta_{m_{l_i}+m_{l_j}, m_{l_t}+m_{l_u}} 
+        \\sum_{k}C_{l_i,l_t}(k,m_{l_i},m_{l_t})C_{l_u,l_j}(k,m_{l_u},m_{l_j})F^{k}_{i,j,t,u}
 
-    where :math:`m_s` is the magnetic quantum number for spin and :math:`m_l` is the magnetic quantum number for orbital. :math:`F^{k}_{i,j,t,u}`
+    where :math:`m_s` is the magnetic quantum number for spin and :math:`m_l` is the 
+     magnetic quantum number for orbital. :math:`F^{k}_{i,j,t,u}`
     are Slater integrals. :math:`C_{l_i,l_j}(k,m_{l_i},m_{l_j})` are Gaunt coefficients.
 
     Parameters
@@ -85,7 +92,8 @@ def umat_slater(l_list, fk):
     l_list: list of int
         contains the quantum number of orbital angular momentum :math:`l` for each shell.
     fk: dict of float
-        contains all the possible Slater integrals between the shells in l_list, the key is a tuple of 5 ints (:math:`k,i,j,t,u`), where :math:`k` is the order,
+        contains all the possible Slater integrals between the shells in l_list, the key 
+        is a tuple of 5 ints (:math:`k,i,j,t,u`), where :math:`k` is the order,
         :math:`i,j,t,u` are the shell indices begin with 1.
 
     Returns
@@ -502,7 +510,8 @@ def get_umat_slater_ff(F0_f1f1, F2_f1f1, F4_f1f1, F6_f1f1,
 
 def get_umat_kanamori_ge(norbs, U1, U2, J, Jx, Jp):
     """
-    Calculate the Coulomb interaction tensor for a Kanamori-type interaction. For the general case, it is parameterized by :math:`U_1, U_2, J, J_x, J_p`.
+    Calculate the Coulomb interaction tensor for a Kanamori-type interaction. 
+    For the general case, it is parameterized by :math:`U_1, U_2, J, J_x, J_p`.
 
     Parameters
     ----------
@@ -670,7 +679,8 @@ def get_umat_slater(case, *args):
         - 'pp':   a :math:`p`-shell (:math:`l=1`) and another :math:`p`-shell (:math:`l=1`)
         - 'ds':   a :math:`d`-shell (:math:`l=2`) and another :math:`s`-shell (:math:`l=0`)
         - 'dp':   a :math:`d`-shell (:math:`l=2`) and another :math:`p`-shell (:math:`l=1`)
-        - 't2gp': a :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`) and another :math:`p`-shell (:math:`l=1`)
+        - 't2gp': a :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`) 
+                  and another :math:`p`-shell (:math:`l=1`)
         - 'dd':   a :math:`d`-shell (:math:`l=2`) and another :math:`d`-shell (:math:`l=2`)
         - 'fs':   a :math:`f`-shell (:math:`l=3`) and another :math:`s`-shell (:math:`l=0`)
         - 'fp':   a :math:`f`-shell (:math:`l=3`) and another :math:`p`-shell (:math:`l=1`)
@@ -689,11 +699,14 @@ def get_umat_slater(case, *args):
         - for case 'ds': F0_dd, F2_dd, F4_dd, F0_ds, G2_ds, F0_ss
         - for case 'dp': F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp, F0_pp, F2_pp
         - for case 't2gp': F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp, F0_pp, F2_pp
-        - for case 'dd': F0_d1d1, F2_d1d1, F4_d1d1, F0_d1d2, F2_d1d2, F4_d1d2, G0_d1d2, G2_d1d2, G4_d1d2, F0_d2d2, F2_d2d2, F4_d2d2
+        - for case 'dd': F0_d1d1, F2_d1d1, F4_d1d1, F0_d1d2, F2_d1d2, F4_d1d2, G0_d1d2, 
+          G2_d1d2, G4_d1d2, F0_d2d2, F2_d2d2, F4_d2d2
         - for case 'fs':  F0_ff, F2_ff, F4_ff, F6_ff, F0_fs, G3_fs, F0_ss
         - for case 'fp':  F0_ff, F2_ff, F4_ff, F6_ff, F0_fp, F2_fp, G2_fp, G4_fp, F0_pp, F2_pp
-        - for case 'fd':  F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd, F0_dd, F2_dd, F4_dd
-        - for case 'ff':  F0_f1f1, F2_f1f1, F4_f1f1, F6_f1f1, F0_f1f2, F2_f1f2, F4_f1f2, F6_f1f2, G0_f1f2, G2_f1f2, G4_f1f2, G6_f1f2, F0_f2f2, F2_f2f2, F4_f2f2, F6_f2f2
+        - for case 'fd':  F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd, 
+          F0_dd, F2_dd, F4_dd
+        - for case 'ff':  F0_f1f1, F2_f1f1, F4_f1f1, F6_f1f1, F0_f1f2, F2_f1f2, F4_f1f2, F6_f1f2, 
+          G0_f1f2, G2_f1f2, G4_f1f2, G6_f1f2, F0_f2f2, F2_f2f2, F4_f2f2, F6_f2f2
                                                              
         The order of these arguments are important.          
                                                              
@@ -713,7 +726,8 @@ def get_umat_slater(case, *args):
 
 def get_umat_kanamori(norbs, U, J):
     """
-    Calculate the Coulomb interaction tensor for a Kanamori-type interaction. For the :math:`t2g`-shell case, it is parameterized by :math:`U, J`.
+    Calculate the Coulomb interaction tensor for a Kanamori-type interaction. 
+    For the :math:`t2g`-shell case, it is parameterized by :math:`U, J`.
 
     Parameters
     ----------

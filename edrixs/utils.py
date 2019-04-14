@@ -63,7 +63,8 @@ def boltz_dist(gs, T):
 
 def UJ_to_UdJH(U,J):
     """
-    Given :math:`U` and :math:`J`, return :math:`U_d` and :math:`J_H`.
+    Given Kanamori :math:`U` and :math:`J`, return :math:`U_d` and :math:`J_H`,
+    for :math:`t2g`-orbitals.
 
     Parameters
     ----------
@@ -91,7 +92,8 @@ def UJ_to_UdJH(U,J):
 
 def UdJH_to_UJ(Ud,JH):
     """
-    Given :math:`U_d` and :math:`J_H`, return :math:`U` and :math:`J`.
+    Given :math:`U_d` and :math:`J_H`, return Kanamori :math:`U` and :math:`J`,
+    for :math:`t2g`-orbitals.
 
     Parameters
     ----------
@@ -104,10 +106,10 @@ def UdJH_to_UJ(Ud,JH):
     Returns
     -------
     U : float
-        Coulomb interaction :math:`U`.
+        Coulomb interaction :math:`U` in Kanamori form.
 
     J : float
-        Hund's coupling :math:`J`.
+        Hund's coupling :math:`J` in Kanamori form.
     """
 
     F2=14.0/1.625*JH
@@ -119,7 +121,8 @@ def UdJH_to_UJ(Ud,JH):
 
 def UdJH_to_F0F2F4(Ud,JH):
     """
-    Given :math:`U_d` and :math:`J_H`, return :math:`F_0`, :math:`F_2` and :math:`F_4`.
+    Given :math:`U_d` and :math:`J_H`, return :math:`F_0`, :math:`F_2` and :math:`F_4`,
+    for :math:`d`-orbitals.
 
     Parameters
     ----------
@@ -149,7 +152,8 @@ def UdJH_to_F0F2F4(Ud,JH):
 
 def UdJH_to_F0F2F4F6(Ud,JH):
     """
-    Given :math:`U_d` and :math:`J_H`, return :math:`F_0`, :math:`F_2`, :math:`F_4` and :math:`F_6`.
+    Given :math:`U_d` and :math:`J_H`, return :math:`F_0`, :math:`F_2`, :math:`F_4` and :math:`F_6`,
+    for :math:`f`-orbitals.
 
     Parameters
     ----------
@@ -184,7 +188,8 @@ def UdJH_to_F0F2F4F6(Ud,JH):
 
 def F0F2F4_to_UdJH(F0, F2, F4):
     """
-    Given :math:`F_0`, :math:`F_2` and :math:`F_4`, return :math:`U_d` and :math:`J_H`. 
+    Given :math:`F_0`, :math:`F_2` and :math:`F_4`, return :math:`U_d` and :math:`J_H`,
+    for :math:`d`-orbitals.
 
     Parameters
     ----------
@@ -213,7 +218,8 @@ def F0F2F4_to_UdJH(F0, F2, F4):
 
 def F0F2F4_to_UJ(F0, F2, F4):
     """
-    Given :math:`F_0`, :math:`F_2` and :math:`F_4`, return :math:`U` and :math:`J`. 
+    Given :math:`F_0`, :math:`F_2` and :math:`F_4`, return :math:`U` and :math:`J`,
+    for :math:`t2g`-orbitals.
 
     Parameters
     ----------
@@ -242,7 +248,8 @@ def F0F2F4_to_UJ(F0, F2, F4):
 
 def F0F2F4F6_to_UdJH(F0, F2, F4, F6):
     """
-    Given :math:`F_0`, :math:`F_2`, :math:`F_4` and :math:`F_6`, return :math:`U_d` and :math:`J_H`. 
+    Given :math:`F_0`, :math:`F_2`, :math:`F_4` and :math:`F_6`, 
+    return :math:`U_d` and :math:`J_H`, for :math:`f`-orbitals.
 
     Parameters
     ----------

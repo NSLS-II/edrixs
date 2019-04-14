@@ -152,7 +152,8 @@ transop_func_dict={
 
 def get_trans_oper(case):
     """
-    Get the matrix of transition operators between two atomic shell in the complex spherical harmonics basis.
+    Get the matrix of transition operators between two atomic shell in the complex 
+    spherical harmonics basis.
 
     Parameters
     ----------
@@ -221,8 +222,12 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
     hbarc=1.973270533*1000 # eV*A
     kin_len =ein/hbarc
     kout_len=eout/hbarc
-    K_in  = kin_len  * np.array([-np.cos(thin)*np.cos(phi),  -np.cos(thin)*np.sin(phi),  -np.sin(thin)])
-    K_out = kout_len * np.array([-np.cos(thout)*np.cos(phi), -np.cos(thout)*np.sin(phi), np.sin(thout)]) 
+    K_in  = kin_len  * np.array([-np.cos(thin)*np.cos(phi),  
+                                 -np.cos(thin)*np.sin(phi),  
+                                 -np.sin(thin)])
+    K_out = kout_len * np.array([-np.cos(thout)*np.cos(phi), 
+                                 -np.cos(thout)*np.sin(phi), 
+                                  np.sin(thout)]) 
 
     K_in_global = np.dot(local_axis, K_in) 
     K_out_global = np.dot(local_axis, K_out) 
@@ -246,28 +251,35 @@ def dipole_polvec_rixs(thin, thout, phi, alpha, beta, local_axis=np.eye(3)):
         The azimuthal angle (radian).
 
     alpha : float
-        The angle between the polarization vector of the incident photon and the scattering plane (radian)
+        The angle between the polarization vector of the incident photon and 
+        the scattering plane (radian)
 
     beta : float
-        The angle between the polarization vector of the scattered photon and the scattering plane (radian)
+        The angle between the polarization vector of the scattered photon and 
+        the scattering plane (radian)
 
     local_axis : :math:`3 \\times 3` float array
-        The local :math:`z` -axis, the angle thin and thout are defined with respect to this axis.
+        The local :math:`z` -axis, the angle thin and thout are defined with 
+        respect to this axis.
 
     Returns
     -------
     ei_in_global : 3-length float array
-        The polarization vector of the incident photon, with respect to the global :math:`xyz` -axis.
+        The polarization vector of the incident photon, 
+        with respect to the global :math:`xyz` -axis.
 
     ef_out_global : 3-length float array
-        The polarization vector of the scattered photon with respect to the global :math:`xyz` -axis.
+        The polarization vector of the scattered photon 
+        with respect to the global :math:`xyz` -axis.
     """
 
-    ei = np.cos(alpha)*np.array([-np.cos(phi)*np.cos(np.pi/2.0-thin), -np.sin(phi)*np.cos(np.pi/2.0-thin),  
-                               np.sin(np.pi/2.0-thin)]) + np.sin(alpha) * np.array([-np.sin(phi), np.cos(phi), 0])
+    ei = np.cos(alpha)*np.array([-np.cos(phi)*np.cos(np.pi/2.0-thin), 
+                                 -np.sin(phi)*np.cos(np.pi/2.0-thin),  
+         np.sin(np.pi/2.0-thin)]) + np.sin(alpha) * np.array([-np.sin(phi), np.cos(phi), 0])
 
-    ef = np.cos(beta) *np.array([ np.cos(phi)*np.cos(np.pi/2.0-thout), np.sin(phi)*np.cos(np.pi/2.0-thout), 
-                               np.sin(np.pi/2.0-thout)]) + np.sin(beta)  * np.array([-np.sin(phi), np.cos(phi), 0])
+    ef = np.cos(beta) *np.array([ np.cos(phi)*np.cos(np.pi/2.0-thout), 
+                                  np.sin(phi)*np.cos(np.pi/2.0-thout), 
+         np.sin(np.pi/2.0-thout)]) + np.sin(beta)  * np.array([-np.sin(phi), np.cos(phi), 0])
 
     ei_global = np.dot(local_axis, ei)
     ef_global = np.dot(local_axis, ef)
@@ -287,19 +299,24 @@ def dipole_polvec_xas(thin, phi, alpha, local_axis=np.eye(3)):
         The azimuthal angle (radian).
 
     alpha : float
-        The angle between the polarization vector of the incident photon and the scattering plane (radian)
+        The angle between the polarization vector of the incident photon and 
+        the scattering plane (radian)
 
     local_axis : :math:`3 \\times 3` float array
-        The local :math:`z` -axis, the angle thin and thout are defined with respect to this axis.
+        The local :math:`z` -axis, the angle thin and thout are defined with 
+        respect to this axis.
 
     Returns
     -------
     ei_in_global : 3-length float array
-        The polarization vector of the incident photon, with resepct to the global :math:`xyz` -axis.
+        The polarization vector of the incident photon, with resepct to the 
+        global :math:`xyz` -axis.
     """
 
-    ei = np.cos(alpha)*np.array([-np.cos(phi)*np.cos(np.pi/2.0-thin), -np.sin(phi)*np.cos(np.pi/2.0-thin),  
-                               np.sin(np.pi/2.0-thin)]) + np.sin(alpha) * np.array([-np.sin(phi), np.cos(phi), 0])
+    ei = np.cos(alpha)*np.array([-np.cos(phi)*np.cos(np.pi/2.0-thin), 
+                                 -np.sin(phi)*np.cos(np.pi/2.0-thin),  
+         np.sin(np.pi/2.0-thin)]) + np.sin(alpha) * np.array([-np.sin(phi), np.cos(phi), 0])
+
     ei_global = np.dot(local_axis, ei)
 
     return ei_global

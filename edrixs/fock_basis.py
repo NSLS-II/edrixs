@@ -53,7 +53,8 @@ def combination(n,m):
  
 def fock_bin(n, k):
     """
-    Return all the possible :math:`n`-length binary where :math:`k` of :math:`n` digitals are set to 1.  
+    Return all the possible :math:`n`-length binary 
+    where :math:`k` of :math:`n` digitals are set to 1.  
 
     Parameters
     ----------
@@ -231,7 +232,8 @@ def get_fock_basis_by_NLz(norb, N, lz_list):
     Returns
     -------
     res : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers :math:`L_{z}`, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good 
+        quantum numbers :math:`L_{z}`, the value is a list of int.
 
     Examples
     --------
@@ -269,7 +271,8 @@ def get_fock_basis_by_NSz(norb, N, sz_list):
     Returns
     -------
     res : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers :math:`S_{z}`, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good quantum 
+        numbers :math:`S_{z}`, the value is a list of int.
 
     Examples
     --------
@@ -307,7 +310,8 @@ def get_fock_basis_by_NJz(norb, N, jz_list):
     Returns
     -------
     res : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers :math:`j_{z}`, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good quantum 
+        numbers :math:`j_{z}`, the value is a list of int.
 
     Examples
     --------
@@ -351,7 +355,8 @@ def get_fock_basis_by_N_abelian(norb, N, a_list):
     Returns
     -------
     basis : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good quantum numbers, 
+        the value is a list of int.
     """
 
     result=get_fock_full_N(norb, N)
@@ -388,7 +393,8 @@ def get_fock_basis_by_N_LzSz(norb, N, lz_list, sz_list):
     Returns
     -------
     basis : dict
-        A dictionary containing the decimal digitals, the key is a tuple containing good quantum numbers ( :math:`l_{z}`, :math:`s_{z}`), the value is a list of int.
+        A dictionary containing the decimal digitals, the key is a tuple containing good quantum 
+        numbers ( :math:`l_{z}`, :math:`s_{z}`), the value is a list of int.
 
     Examples
     --------
@@ -430,13 +436,15 @@ def get_fock_basis_by_N_LzSz(norb, N, lz_list, sz_list):
         for j in range(min_Sz, max_Sz+1):
             basis[(i,j)] = [] 
     for n in result:
-        Lz, Sz=np.sum([ [ lz_list[i], sz_list[i] ] for i in range(0, n.bit_length()) if (n >> i & 1) ], axis=0)
+        Lz, Sz=np.sum([ [ lz_list[i], sz_list[i] ] for i in range(0, n.bit_length()) 
+                        if (n >> i & 1) ], axis=0 )
         basis[(Lz,Sz)].append(n)
     return basis
 
 def write_fock_dec_by_N(N, r, fname='fock_i.in'):
     """
-    Get decimal digitals to represent Fock states, sort them by ascending order and then write them to file.
+    Get decimal digitals to represent Fock states, sort them by 
+    ascending order and then write them to file.
 
     Parameters
     ----------

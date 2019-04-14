@@ -264,7 +264,8 @@ class SymKVec(KVec):
 
     def from_hsymkpt(self, nkpt_per_path=20):
         """
-        Given starting and end :math:`k` points of each segment, and the number of points per each segment,
+        Given starting and end :math:`k` points of each segment, 
+        and the number of points per each segment,
         return the high symmetry :math:`k` points.
 
         Parameters
@@ -280,7 +281,7 @@ class SymKVec(KVec):
             kpt_curr = self.hsymkpt[i  ,:]
             for j in range(nkpt_per_path):
                 ikpt = (i-1)*nkpt_per_path + j 
-                self.kvec[ikpt,:] = float(j)/float(nkpt_per_path-1) * (kpt_curr - kpt_prev) + kpt_prev     
+                self.kvec[ikpt,:] = float(j)/float(nkpt_per_path-1) * (kpt_curr-kpt_prev)+kpt_prev     
 
     def from_hsymkpt_uni(self, step):
         """

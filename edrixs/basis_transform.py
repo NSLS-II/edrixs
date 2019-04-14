@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+import sys
 import numpy as np
 
 def cb_op(oper_A, t_mat):
     """
-    Change the basis of an operator :math:`\hat{O}` from one basis :math:`A`: :math:`\\psi^{A}_{i}` to another basis :math:`B`: :math:`\\phi^{B}_{j}`. 
+    Change the basis of an operator :math:`\hat{O}` from one 
+    basis :math:`A`: :math:`\\psi^{A}_{i}` to another 
+    basis :math:`B`: :math:`\\phi^{B}_{j}`. 
 
     .. math::
 
@@ -19,7 +22,8 @@ def cb_op(oper_A, t_mat):
         The matrix form of operator :math:`\hat{O}` in basis :math:`A`.
 
     t_mat : 2d array
-        The unitary transformation matrix from basis :math:`A` to basis :math:`B`,  namely, :math:`T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
+        The unitary transformation matrix from basis :math:`A` to 
+        basis :math:`B`,  namely, :math:`T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
 
     Returns    
     -------
@@ -61,7 +65,8 @@ def cb_op2(oper_A, TL, TR):
 
 def tmat_c2r(case, ispin=False):
     """
-    Get the unitary transformation matrix from the basis of complex spherical harmonics to real spherical harmonics.
+    Get the unitary transformation matrix from the basis of complex 
+    spherical harmonics to real spherical harmonics.
     
     Parameters
     ----------
@@ -161,8 +166,8 @@ def tmat_c2r(case, ispin=False):
         t_c2r[0, 6] =  ci/sqrt2
         t_c2r[6, 6] =  ci/sqrt2
     else:
-        print("don't support tmat_c2r for this case: ", case)
-        return
+        print("error in tmat_c2r: Do NOT support tmat_c2r for this case: ", case)
+        sys.exit()
 
     # the spin order is: up dn up dn ... up dn
     if ispin:
@@ -178,7 +183,8 @@ def tmat_c2r(case, ispin=False):
 
 def tmat_r2c(case, ispin=False):
     """
-    Get the unitary transformation matrix from the basis of complex spherical harmonics to real spherical harmonics.
+    Get the unitary transformation matrix from the basis of complex 
+    spherical harmonics to real spherical harmonics.
     
     Parameters
     ----------
@@ -263,7 +269,8 @@ def tmat_r2cub_f(ispin=False):
 
 def tmat_cub2r_f(ispin=False):
     """
-    Get the transformation matrix from the cubic spherical harmonics to real spherical harmonics, only for :math:`f` system.
+    Get the transformation matrix from the cubic spherical harmonics to real spherical harmonics, 
+    only for :math:`f` system.
 
     Parameters
     ---------- 
@@ -370,7 +377,8 @@ def tmat_c2j(l):
         return t_c2j
 
     else:
-        print("NOT Implemented for this angular momentrum !!!", l)
+        print("error in tmat_c2j: Have NOT implemented for this case: ", l)
+        sys.exit()
 
 def transform_utensor(umat, tmat):
     """
@@ -410,13 +418,18 @@ def transform_utensor(umat, tmat):
                                 continue
                             else:
                                 for l in range(n):
-                                    umat_new[i,j,k,l] += np.conj(tmat[ii,i]) * np.conj(tmat[jj,j]) * umat[ii,jj,kk,ll] * tmat[kk,k] * tmat[ll,l]
+                                    umat_new[i,j,k,l] += ( np.conj(tmat[ii,i]) * 
+                                                           np.conj(tmat[jj,j]) * 
+                                                             umat[ii,jj,kk,ll] * 
+                                                                    tmat[kk,k] * 
+                                                                    tmat[ll,l] )
 
     return umat_new
 
 def fourier_hr2hk(norbs, nkpt, kvec, nrpt, rvec, deg_rpt, hr):
     """
-    Fourier transform a tight-binding Hamiltonian :math:`H(r)` from real space to :math:`k` space :math:`H(k)`,
+    Fourier transform a tight-binding Hamiltonian :math:`H(r)` from 
+    real space to :math:`k` space :math:`H(k)`,
     for Wannier90.
 
     Parameters

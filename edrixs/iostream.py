@@ -2,7 +2,8 @@
 import sys
 import numpy as np
 
-def write_tensor_1(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', fmt_float='{:.15f}'):
+def write_tensor_1(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', 
+                  fmt_float='{:.15f}'):
     (n1, ) = tensor.shape
     is_cmplx = False
     if tensor.dtype==np.complex or tensor.dtype==np.complex128:
@@ -20,7 +21,8 @@ def write_tensor_1(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
             f.write(fmt_string.format(i+1, tensor[i]))
     f.close()
 
-def write_tensor_2(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', fmt_float='{:.15f}'):
+def write_tensor_2(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', 
+                  fmt_float='{:.15f}'):
     (n1, n2) = tensor.shape
     is_cmplx = False
     if tensor.dtype==np.complex or tensor.dtype==np.complex128:
@@ -39,7 +41,8 @@ def write_tensor_2(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
                 f.write(fmt_string.format(i+1, j+1, tensor[i,j]))
     f.close()
 
-def write_tensor_3(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', fmt_float='{:.15f}'):
+def write_tensor_3(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', 
+                   fmt_float='{:.15f}'):
     (n1, n2, n3) = tensor.shape
     is_cmplx = False
     if tensor.dtype==np.complex or tensor.dtype==np.complex128:
@@ -53,13 +56,16 @@ def write_tensor_3(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
                     continue
                 if is_cmplx:
                     fmt_string=(fmt_int + space)*3 + (fmt_float + space)*2 + '\n'
-                    f.write(fmt_string.format(i+1, j+1, k+1, tensor[i,j,k].real, tensor[i,j,k].imag))
+                    f.write(fmt_string.format(i+1, j+1, k+1, tensor[i,j,k].real, 
+                            tensor[i,j,k].imag))
                 else:
                     fmt_string=(fmt_int + space)*3 + fmt_float + space + '\n'
-                    f.write("{:10d}{:10d}{:10d}{:20.12E}\n".format(i+1, j+1, k+1, tensor[i,j,k]))
+                    f.write("{:10d}{:10d}{:10d}{:20.12E}\n".format(i+1, j+1, k+1, 
+                            tensor[i,j,k]))
     f.close()
 
-def write_tensor_4(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', fmt_float='{:.15f}'):
+def write_tensor_4(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', 
+                   fmt_float='{:.15f}'):
     (n1, n2, n3, n4) = tensor.shape
     is_cmplx = False
     if tensor.dtype==np.complex or tensor.dtype==np.complex128:
@@ -81,7 +87,8 @@ def write_tensor_4(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
                         f.write(fmt_string.format(i+1, j+1, k+1, l+1, tensor[i,j,k,l]))
     f.close()
 
-def write_tensor_5(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', fmt_float='{:.15f}'):
+def write_tensor_5(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', 
+                   fmt_float='{:.15f}'):
     (n1, n2, n3, n4, n5) = tensor.shape
     is_cmplx = False
     if tensor.dtype==np.complex or tensor.dtype==np.complex128:
@@ -97,16 +104,17 @@ def write_tensor_5(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
                             continue
                         if is_cmplx:
                             fmt_string=(fmt_int + space)*5 + (fmt_float + space)*2 + '\n'
-                            f.write(fmt_string.format(i+1, j+1, k+1, l+1, m+1, tensor[i,j,k,l,m].real, 
-                                    tensor[i,j,k,l,m].imag))
+                            f.write(fmt_string.format(i+1, j+1, k+1, l+1, m+1, 
+                                    tensor[i,j,k,l,m].real, tensor[i,j,k,l,m].imag))
                         else:
                             fmt_string=(fmt_int + space)*4 + fmt_float + space + '\n'
                             f.write(fmt_string.format(i+1, j+1, k+1, l+1, m+1, tensor[i,j,k,l,m]))
     f.close()
 
-def write_tensor(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', fmt_float='{:.15f}'):
+def write_tensor(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}', 
+                 fmt_float='{:.15f}'):
     """
-    Write :math:`n` -dimension numpy array to file, currently, :math:`n` can be 1, 2, 3, 4.
+    Write :math:`n` -dimension numpy array to file, currently, :math:`n` can be 1, 2, 3, 4, 5.
 
     Parameters
     ----------
@@ -120,7 +128,8 @@ def write_tensor(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
         Only write nonzero elements. 
 
     tol : float (default: 1E-10)
-        Only write the elements when their absolute value are larger than tol and only_nonzeros=True. 
+        Only write the elements when their absolute value are larger than tol 
+        and only_nonzeros=True. 
 
     fmt_int : str (default: '{:10d}')
         The format for printing integer numbers.
