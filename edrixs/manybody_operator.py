@@ -79,7 +79,7 @@ def two_fermion(emat, lb, rb):
     for i,j in enumerate(lb):
         indx[tuple(j)] = i 
 
-    a1, a2 = np.nonzero(abs(emat) > 1E-10)
+    a1, a2 = np.nonzero(abs(emat) > 1E-16)
     nonzero = np.stack((a1,a2), axis=-1)
 
     hmat = np.zeros((nl, nr),dtype=np.complex128)
@@ -130,7 +130,7 @@ def four_fermion(umat, basis):
     for i,j in enumerate(basis):
         indx[tuple(j)] = i 
 
-    a1,a2,a3,a4 = np.nonzero(abs(umat) > 1E-10)
+    a1,a2,a3,a4 = np.nonzero(abs(umat) > 1E-16)
     nonzero = np.stack((a1,a2,a3,a4), axis=-1)
 
     hmat = np.zeros((ncfgs,ncfgs),dtype=np.complex128)

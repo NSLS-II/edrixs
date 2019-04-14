@@ -393,20 +393,20 @@ def transform_utensor(umat, tmat):
     n = umat.shape[0]
     umat_new = np.zeros((n,n,n,n), dtype=np.complex128)
 
-    a1,a2,a3,a4 = np.nonzero(abs(umat) > 1E-10)
+    a1,a2,a3,a4 = np.nonzero(abs(umat) > 1E-16)
     nonzero = np.stack((a1,a2,a3,a4), axis=-1)
 
     for ii,jj,kk,ll in nonzero:
         for i in range(n):
-            if abs(tmat[ii,i]) < 1E-10:
+            if abs(tmat[ii,i]) < 1E-16:
                 continue
             else:
                 for j in range(n):
-                    if abs(tmat[jj,j]) < 1E-10:
+                    if abs(tmat[jj,j]) < 1E-16:
                         continue
                     else:
                         for k in range(n):
-                            if abs(tmat[kk,k]) < 1E-10:
+                            if abs(tmat[kk,k]) < 1E-16:
                                 continue
                             else:
                                 for l in range(n):

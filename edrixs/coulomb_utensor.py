@@ -50,11 +50,11 @@ def get_gaunt(l1, l2):
 
     Examples
     --------
-    >>> from coulomb_utensor import get_gaunt
+    >>> import edrixs
     
     Get gaunt coefficients between :math:`p`-shell and :math:`d`-shell
 
-    >>> g = get_gaunt(1, 2)
+    >>> g = edrixs.get_gaunt(1, 2)
 
     """
 
@@ -101,7 +101,7 @@ def umat_slater(l_list, fk):
 
     Examples
     --------
-    >>> from coulomb_utensor import umat_slater
+    >>> import edrixs
 
     For only one :math:`d`-shell
 
@@ -111,7 +111,7 @@ def umat_slater(l_list, fk):
     >>> fk[(0,1,1,1,1)] = F0
     >>> fk[(2,1,1,1,1)] = F2
     >>> fk[(4,1,1,1,1)] = F4
-    >>> umat_d = umat_slater(l_list, fk) 
+    >>> umat_d = edrixs.umat_slater(l_list, fk) 
 
     For one :math:`d`-shell and one :math:`p`-shell
 
@@ -138,7 +138,8 @@ def umat_slater(l_list, fk):
 
     >>> fk[(0,2,2,2,2)] = F0_pp
     >>> fk[(2,2,2,2,2)] = F2_pp
-
+  
+    >>> umat_dp = edrixs.umat_slater(l_list, fk)
     """
 
     k_list=list(range(0, 2*max(l_list)+1))

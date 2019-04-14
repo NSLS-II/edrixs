@@ -11,7 +11,9 @@ def dipole_trans_oper(l1, l2):
     op=np.zeros((3,n1,n2), dtype=np.complex128)
     for i1, m1 in enumerate(range(-l1,l1+1)): 
         for i2, m2 in enumerate(range(-l2,l2+1)):
-            tmp1, tmp2, tmp3 = clebsch_gordan(l2, 1, l1, m2, -1, m1),  clebsch_gordan(l2, 1, l1, m2, 1, m1), clebsch_gordan(l2, 1, l1, m2, 0, m1)
+            tmp1 = clebsch_gordan(l2, 1, l1, m2, -1, m1)
+            tmp2 = clebsch_gordan(l2, 1, l1, m2,  1, m1)
+            tmp3 = clebsch_gordan(l2, 1, l1, m2,  0, m1)
             tmp1, tmp2, tmp3 = N(tmp1), N(tmp2), N(tmp3)
             op[0, i1, i2] = (tmp1 - tmp2) * np.sqrt(2.0)/2.0
             op[1, i1, i2] = (tmp1 + tmp2) * 1j * np.sqrt(2.0)/2.0
@@ -29,9 +31,11 @@ def quadrupole_trans_oper(l1, l2):
     op=np.zeros((5,n1,n2), dtype=np.complex128)
     for i1, m1 in enumerate(range(-l1,l1+1)): 
         for i2, m2 in enumerate(range(-l2,l2+1)):
-            t1, t2 = clebsch_gordan(l2, 2, l1, m2, -2, m1), clebsch_gordan(l2, 2, l1, m2, 2, m1)
-            t3 = clebsch_gordan(l2, 2, l1, m2, 0, m1)
-            t4, t5 = clebsch_gordan(l2, 2, l1, m2, -1, m1), clebsch_gordan(l2, 2, l1, m2, 1, m1)
+            t1 = clebsch_gordan(l2, 2, l1, m2, -2, m1)
+            t2 = clebsch_gordan(l2, 2, l1, m2,  2, m1)
+            t3 = clebsch_gordan(l2, 2, l1, m2,  0, m1)
+            t4 = clebsch_gordan(l2, 2, l1, m2, -1, m1)
+            t5 = clebsch_gordan(l2, 2, l1, m2,  1, m1)
             t1, t2, t3, t4, t5 = N(t1), N(t2), N(t3), N(t4), N(t5)
 
             op[0, i1, i2] =  (t1+t2)/np.sqrt(2.0)
@@ -299,7 +303,3 @@ def dipole_polvec_xas(thin, phi, alpha, local_axis=np.eye(3)):
     ei_global = np.dot(local_axis, ei)
 
     return ei_global
-
-if __name__ == "__main__":
-    np.set_printoptions(precision=4, linewidth=200, suppress=True)
-    print(get_trans_oper('fp'))

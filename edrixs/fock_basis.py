@@ -26,7 +26,8 @@ def combination(n,m):
 
     Examples
     --------
-    >>> combination(6, 2)
+    >>> import edrixs
+    >>> edrixs.combination(6, 2)
     15
 
     """
@@ -69,7 +70,8 @@ def fock_bin(n, k):
 
     Examples
     --------
-    >>> fock_bin(4, 2)
+    >>> import edrixs
+    >>> edrixs.fock_bin(4, 2)
     [[1, 1, 0, 0],
      [1, 0, 1, 0],
      [1, 0, 0, 1],
@@ -118,7 +120,8 @@ def get_fock_bin_by_N(*args):
 
     Examples
     --------
-    >>> get_fock_bin_by_N(4, 2)
+    >>> import edrixs
+    >>> edrixs.get_fock_bin_by_N(4, 2)
     [[1, 1, 0, 0],
      [1, 0, 1, 0],
      [1, 0, 0, 1],
@@ -126,7 +129,7 @@ def get_fock_bin_by_N(*args):
      [0, 1, 0, 1],
      [0, 0, 1, 1]] 
 
-    >>> get_fock_bin_by_N(4, 2, 2, 1) 
+    >>> edrixs.get_fock_bin_by_N(4, 2, 2, 1) 
     [[1, 1, 0, 0, 1, 0],
      [1, 0, 1, 0, 1, 0],
      [1, 0, 0, 1, 1, 0],
@@ -185,7 +188,8 @@ def get_fock_full_N(norb, N):
 
     Examples
     --------
-    >>> fock_bin(4,2)
+    >>> import edrixs
+    >>> edrixs.fock_bin(4,2)
     [[1, 1, 0, 0],
      [1, 0, 1, 0],
      [0, 1, 1, 0],
@@ -193,7 +197,8 @@ def get_fock_full_N(norb, N):
      [0, 1, 0, 1],
      [0, 0, 1, 1]] 
 
-    >>> get_fock_full_N(4,2)
+    >>> import edrixs
+    >>> edrixs.get_fock_full_N(4,2)
     [3, 5, 6, 9, 10, 12] 
 
     """
@@ -230,7 +235,8 @@ def get_fock_basis_by_NLz(norb, N, lz_list):
 
     Examples
     --------
-    >>> get_fock_basis_by_NLz(6, 2, [-1, -1, 0, 0, 1, 1])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_NLz(6, 2, [-1, -1, 0, 0, 1, 1])
     {
      -2: [3],
      -1: [5, 6, 9, 10],
@@ -267,7 +273,8 @@ def get_fock_basis_by_NSz(norb, N, sz_list):
 
     Examples
     --------
-    >>> get_fock_basis_by_NSz(6, 2, [1, -1, 1, -1, 1, -1])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_NSz(6, 2, [1, -1, 1, -1, 1, -1])
     {
      -2: [10, 34, 40],
      -1: [],
@@ -304,7 +311,8 @@ def get_fock_basis_by_NJz(norb, N, jz_list):
 
     Examples
     --------
-    >>> get_fock_basis_by_NJz(6, 2, [-1, 1, -3, -1, 1, 3])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_NJz(6, 2, [-1, 1, -3, -1, 1, 3])
     {
      -6: [],
      -5: [],
@@ -384,7 +392,8 @@ def get_fock_basis_by_N_LzSz(norb, N, lz_list, sz_list):
 
     Examples
     --------
-    >>> get_fock_basis_by_N_LzSz(6, 2, [-1, -1, 0, 0, 1, 1], [1, -1, 1, -1, 1, -1])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_N_LzSz(6, 2, [-1, -1, 0, 0, 1, 1], [1, -1, 1, -1, 1, -1])
     {
      (-2, -2): [],
      (-2, -1): [],
@@ -447,7 +456,8 @@ def write_fock_dec_by_N(N, r, fname='fock_i.in'):
 
     Examples
     --------
-    >>> write_fock_dec_by_N(4, 2, 'fock_i.in')
+    >>> import edrixs
+    >>> edrixs.write_fock_dec_by_N(4, 2, 'fock_i.in')
     file fock_i.in looks like
     15
     3
