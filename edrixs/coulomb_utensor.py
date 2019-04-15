@@ -72,8 +72,8 @@ def get_gaunt(l1, l2):
             continue
         for i1, m1 in enumerate(range(-l1, l1 + 1)):
             for i2, m2 in enumerate(range(-l2, l2 + 1)):
-                res[k, i1, i2] = N(gaunt(l1, k, l2, -m1, m1 - m2, m2)) * \
-                    (-1.0)**m1 * np.sqrt(4 * np.pi / (2 * k + 1))
+                res[k, i1, i2] = (N(gaunt(l1, k, l2, -m1, m1 - m2, m2)) *
+                                  (-1.0)**m1 * np.sqrt(4 * np.pi / (2 * k + 1)))
     return res
 
 

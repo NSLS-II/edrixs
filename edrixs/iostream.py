@@ -111,7 +111,7 @@ def write_tensor_5(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
                             f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, m + 1,
                                     tensor[i, j, k, l, m].real, tensor[i, j, k, l, m].imag))
                         else:
-                            fmt_string = (fmt_int + space) * 4 + fmt_float + space + '\n'
+                            fmt_string = (fmt_int + space) * 5 + fmt_float + space + '\n'
                             f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, m + 1,
                                     tensor[i, j, k, l, m]))
     f.close()
