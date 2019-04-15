@@ -14,11 +14,8 @@ if __name__ == "__main__":
     parser.add_argument('-N2', type=int, default=0, help='Occupancy number')
     parser.add_argument('-maxiter', type=int, default=1000,
                         help='Maximum iterations of Lanczos process')
-    parser.add_argument(
-        '-tol',
-        type=float,
-        default=1E-10,
-        help='Tolerance for eigenvalue of ground state')
+    parser.add_argument('-tol', type=float, default=1E-10,
+                        help='Tolerance for eigenvalue of ground state')
     parser.add_argument('-mpi_cmd', type=str, default='mpi_cmd.dat',
                         help='File containing the MPI command')
     args = parser.parse_args()
@@ -56,10 +53,7 @@ if __name__ == "__main__":
         mpi_args = f.readline().split()
         f.close()
         # For mpi_cmd: mpirun -np number_of_cpus  ed.x
-        # if number_fo_cpus > ndim, please reduce number_of_cpus to ndim
-        # if ndim < int(args[-2]):
-        #    args[-2] = str(ndim)
-
+        # if number_fo_cpus > ndim, please reduce the number_of_cpus to ndim
         subprocess.check_call(mpi_args)
 
         eig_f = open('eigvals.dat', 'r')
@@ -67,8 +61,8 @@ if __name__ == "__main__":
         eig_f.close()
 
         data = np.loadtxt('denmat.dat')
-        den = data[:, 3].reshape((nvector, Norb, Norb)) + 1j * \
-            data[:, 4].reshape((nvector, Norb, Norb))
+        den = (data[:, 3].reshape((nvector, Norb, Norb)) +
+                1j * data[:, 4].reshape((nvector, Norb, Norb)))
         nd = np.sum(den[0].diagonal()[0:Nimp])
         nd = nd.real
         print(occu, ndim, e_gs, nd, file=flog)
