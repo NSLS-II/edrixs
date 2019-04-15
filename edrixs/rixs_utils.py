@@ -41,7 +41,7 @@ def scattering_mat(eval_i, eval_n, trans_mat_abs,
         The calculated scattering magnitude, :math:`F^{ab}_{fi}`.
     """
 
-    num_gs = trans_mat_abs.shape[2],
+    num_gs = trans_mat_abs.shape[2]
     num_ex = trans_mat_abs.shape[1]
     num_fs = trans_mat_emi.shape[1]
 

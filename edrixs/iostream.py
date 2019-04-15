@@ -3,7 +3,7 @@ import sys
 import numpy as np
 
 
-def write_tensor_1(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
+def write_tensor_1(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}',
                    fmt_float='{:.15f}'):
     (n1, ) = tensor.shape
     is_cmplx = False
@@ -23,7 +23,7 @@ def write_tensor_1(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
     f.close()
 
 
-def write_tensor_2(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
+def write_tensor_2(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}',
                    fmt_float='{:.15f}'):
     (n1, n2) = tensor.shape
     is_cmplx = False
@@ -44,7 +44,7 @@ def write_tensor_2(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
     f.close()
 
 
-def write_tensor_3(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
+def write_tensor_3(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}',
                    fmt_float='{:.15f}'):
     (n1, n2, n3) = tensor.shape
     is_cmplx = False
@@ -67,7 +67,7 @@ def write_tensor_3(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
     f.close()
 
 
-def write_tensor_4(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
+def write_tensor_4(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}',
                    fmt_float='{:.15f}'):
     (n1, n2, n3, n4) = tensor.shape
     is_cmplx = False
@@ -91,7 +91,7 @@ def write_tensor_4(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
     f.close()
 
 
-def write_tensor_5(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
+def write_tensor_5(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}',
                    fmt_float='{:.15f}'):
     (n1, n2, n3, n4, n5) = tensor.shape
     is_cmplx = False
@@ -117,7 +117,7 @@ def write_tensor_5(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}
     f.close()
 
 
-def write_tensor(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
+def write_tensor(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}',
                  fmt_float='{:.15f}'):
     """
     Write :math:`n` -dimension numpy array to file, currently, :math:`n` can be 1, 2, 3, 4, 5.
@@ -130,7 +130,7 @@ def write_tensor(tensor, fname, only_nonzeros=True, tol=1E-10, fmt_int='{:10d}',
     fname : str
         File name.
 
-    only_nonzeros : logical (default: True)
+    only_nonzeros : logical (default: False)
         Only write nonzero elements.
 
     tol : float (default: 1E-10)
@@ -193,7 +193,7 @@ def write_emat(emat, fname, tol=1E-12, fmt_int='{:10d}', fmt_float='{:.15f}'):
     a1, a2 = np.nonzero(abs(emat) > tol)
     nonzero = np.stack((a1, a2), axis=-1)
 
-    space = "  "
+    space = "    "
     fmt_string = (fmt_int + space) * 2 + (fmt_float + space) * 2 + '\n'
     f = open(fname, 'w')
     if len(nonzero) == 0:
@@ -233,7 +233,7 @@ def write_umat(umat, fname, tol=1E-12, fmt_int='{:10d}', fmt_float='{:.15f}'):
     a1, a2, a3, a4 = np.nonzero(abs(umat) > tol)
     nonzero = np.stack((a1, a2, a3, a4), axis=-1)
 
-    space = "  "
+    space = "    "
     fmt_string = (fmt_int + space) * 4 + (fmt_float + space) * 2 + '\n'
     f = open(fname, 'w')
     if len(nonzero) == 0:
