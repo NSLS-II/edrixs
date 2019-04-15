@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
         data = np.loadtxt('denmat.dat')
         den = (data[:, 3].reshape((nvector, Norb, Norb)) +
-                1j * data[:, 4].reshape((nvector, Norb, Norb)))
+               1j * data[:, 4].reshape((nvector, Norb, Norb)))
         nd = np.sum(den[0].diagonal()[0:Nimp])
         nd = nd.real
         print(occu, ndim, e_gs, nd, file=flog)
