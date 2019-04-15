@@ -152,7 +152,7 @@ $ cd ${EDRIXS_DIR}
 
 \begin_layout Plain Layout
 
-$ git clone https://github.com/shenmidelin/edrixs.git
+$ git clone https://github.com/NSLS-II/edrixs.git
 \end_layout
 
 \begin_layout Plain Layout
@@ -444,6 +444,42 @@ where, all the binary files are installed in
 \end_layout
 
 \begin_layout Section
+Install Python APIs
+\end_layout
+
+\begin_layout Standard
+To install the Python APIs to your standard Python paths, just type
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$ python setup.py install
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Compile the fortran source code
 \end_layout
 
@@ -466,7 +502,7 @@ begin{verbatim}
 
 \begin_layout Plain Layout
 
-$ cd edrixs/src/fortran
+$ cd src
 \end_layout
 
 \begin_layout Plain Layout
@@ -599,12 +635,7 @@ begin{verbatim}
 
 \begin_layout Plain Layout
 
-export PATH=${EDRIXS_DIR}/edrixs/bin:$PATH
-\end_layout
-
-\begin_layout Plain Layout
-
-export PYTHONPATH=${EDRIXS_DIR}/edrixs/src/python:$PYTHONPATH
+export PATH=${EDRIXS_DIR}/bin:$PATH
 \end_layout
 
 \begin_layout Plain Layout
@@ -636,7 +667,7 @@ begin{verbatim}
 
 \begin_layout Plain Layout
 
-$ cd edrixs/docs
+$ cd docs
 \end_layout
 
 \begin_layout Plain Layout
@@ -685,7 +716,7 @@ begin{verbatim}
 
 \begin_layout Plain Layout
 
-${EDRIXS_DIR}/edrixs/docs/build/index.html
+${EDRIXS_DIR}/docs/build/index.html
 \end_layout
 
 \begin_layout Plain Layout
