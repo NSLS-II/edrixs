@@ -44,8 +44,8 @@ if __name__ == "__main__":
     eval_n = data[:, 1]
     ncfgs_n, ncfgs_i = len(eval_n), len(eval_i)
     data = np.loadtxt('trans_mat.dat')
-    trans_mat = data[:, 3].reshape((3, ncfgs_n, ncfgs_i)) + 1j * \
-        data[:, 4].reshape((3, ncfgs_n, ncfgs_i))
+    trans_mat = (data[:, 3].reshape((3, ncfgs_n, ncfgs_i)) +
+                 1j * data[:, 4].reshape((3, ncfgs_n, ncfgs_i)))
 
     # We calculate XAS for 5 different polarizations
     xas = np.zeros((5, nom), dtype=np.float64)

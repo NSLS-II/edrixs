@@ -22,8 +22,8 @@ if __name__ == '__main__':
     eval_ex = data[:, 1]
 
     data = np.loadtxt('trans_mat.dat')
-    trans_mat_abs = data[:, 4].reshape((4, 3, ncfgs_ex, ncfgs_gs)) + \
-        1j * data[:, 5].reshape((4, 3, ncfgs_ex, ncfgs_gs))
+    trans_mat_abs = (data[:, 4].reshape((4, 3, ncfgs_ex, ncfgs_gs)) +
+                     1j * data[:, 5].reshape((4, 3, ncfgs_ex, ncfgs_gs)))
     trans_mat_emi = np.zeros((4, 3, ncfgs_gs, ncfgs_ex), dtype=np.complex128)
     for i in range(4):
         for j in range(3):

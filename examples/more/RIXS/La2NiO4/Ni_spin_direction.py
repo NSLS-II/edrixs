@@ -383,8 +383,8 @@ for phi, color in zip(phis, colors):
     om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op,
                                                     om_mesh=np.array([res_e]),
                                                     gamma_n=1, emi_res=.07, T=20)
-    Intensity = rixs[:2].sum((0, 2))
-    ax_spin.plot(eloss_mesh, Intensity, color=color,
+    intensity = rixs[:2].sum((0, 2))
+    ax_spin.plot(eloss_mesh, intensity, color=color,
                  label=r'$\phi = {:.3f}$'.format(phi))
 
 ax_spin.set_xlabel('Energy loss (eV)')

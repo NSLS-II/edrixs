@@ -76,8 +76,8 @@ if __name__ == "__main__":
     ncfgs_n, ncfgs_i = len(eval_n), len(eval_i)
     # the transition operator for the absorption process
     data = np.loadtxt('trans_mat.dat')
-    trans_mat_abs = data[:, 3].reshape((3, ncfgs_n, ncfgs_i)) + \
-        1j * data[:, 4].reshape((3, ncfgs_n, ncfgs_i))
+    trans_mat_abs = (data[:, 3].reshape((3, ncfgs_n, ncfgs_i)) +
+                     1j * data[:, 4].reshape((3, ncfgs_n, ncfgs_i)))
     # the transition operator for the emission process
     trans_mat_emi = np.zeros((3, ncfgs_i, ncfgs_n), dtype=np.complex128)
     for i in range(3):
@@ -102,8 +102,9 @@ if __name__ == "__main__":
                     F_magnitude[:, :] += ef[m] * F_fi[m, n] * ei[n]
             for m in gs_list:
                 for n in range(ncfgs_i):
-                    rixs[j, :, i] += np.abs(F_magnitude[n, m])**2 * gamma_f / np.pi / \
-                        ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 + gamma_f**2) * gs_prob[m]
+                    rixs[j, :, i] += (np.abs(F_magnitude[n, m])**2 * gamma_f / np.pi /
+                                      ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 +
+                                       gamma_f**2) * gs_prob[m])
     f = open('rixs.dat', 'w')
     for i in range(neloss):
         for j in range(nom):

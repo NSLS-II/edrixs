@@ -37,8 +37,8 @@ if __name__ == "__main__":
     eval_n = data[:, 1]
     ncfgs_n, ncfgs_i = len(eval_n), len(eval_i)
     data = np.loadtxt('trans_mat.dat')
-    trans_mat = data[:, 3].reshape((3, ncfgs_n, ncfgs_i)) + 1j * \
-        data[:, 4].reshape((3, ncfgs_n, ncfgs_i))
+    trans_mat = (data[:, 3].reshape((3, ncfgs_n, ncfgs_i)) +
+                 1j * data[:, 4].reshape((3, ncfgs_n, ncfgs_i)))
 
     print("edrixs >>> calculating XAS ...")
     xas = np.zeros(nom, dtype=np.float64)

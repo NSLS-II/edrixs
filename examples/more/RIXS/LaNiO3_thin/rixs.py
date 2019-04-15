@@ -75,8 +75,9 @@ if __name__ == "__main__":
                     F_magnitude[:, :] += ef[m] * F_fi[m, n] * ei[n]
             for m in gs_list:
                 for n in range(ncfgs_i):
-                    rixs[j, :, i] += np.abs(F_magnitude[n, m])**2 * gamma_f / np.pi / \
-                        ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 + gamma_f**2) * gs_prob[m]
+                    rixs[j, :, i] += (np.abs(F_magnitude[n, m])**2 * gamma_f / np.pi /
+                                      ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 +
+                                       gamma_f**2) * gs_prob[m])
     # gaussian broadening
     inc_res = 0.17
     emi_res = 0.12
