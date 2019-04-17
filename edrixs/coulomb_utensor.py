@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import sys
 import numpy as np
 from .basis_transform import tmat_c2r, tmat_r2c, transform_utensor
 from sympy.physics.wigner import gaunt
@@ -676,8 +675,7 @@ def get_F0(case, *args):
         return 1.0 / 14.0 * G0 + 2.0 / 105.0 * G2 + 1.0 / 77.0 * G4 + 50.0 / 3003.0 * G6
 
     else:
-        print("error in get_F0():  Unknown case name:", case)
-        sys.exit()
+        raise Exception("error in get_F0():  Unknown case name:", case)
 
 
 umat_func_dict = {

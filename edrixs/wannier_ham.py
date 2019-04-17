@@ -52,36 +52,32 @@ class HR():
             A HR object.
         """
 
-        try:
-            with open(fname, 'r') as f:
-                # skip the header (1 line)
-                f.readline()
-                nwann = int(f.readline().strip())
-                nrpt = int(f.readline().strip())
-                # the degeneracy of R points
-                nline = nrpt // 15 + 1
-                tmp = []
-                for i in range(nline):
-                    tmp.extend(f.readline().strip().split())
-                tmp = [np.int(item) for item in tmp]
-                deg_rpt = np.array(tmp, dtype=np.int)
-                # read hr for each r-point
-                rpts = np.zeros((nrpt, 3), dtype=np.int)
-                hr = np.zeros((nrpt, nwann, nwann), dtype=np.complex128)
-                for i in range(nrpt):
-                    for j in range(nwann):
-                        for k in range(nwann):
-                            rx, ry, rz, hr_i, hr_j, hr_real, hr_imag = f.readline().strip().split()
-                            rpts[i, :] = int(rx), int(ry), int(rz)
-                            if int(rx) == 0 and int(ry) == 0 and int(rz) == 0:
-                                irpt0 = i
-                            hr[i, k, j] = np.float64(
-                                hr_real) + np.float64(hr_imag) * 1j
-                # construct the HR instance
-                return HR(nwann, nrpt, irpt0, rpts, deg_rpt, hr)
-
-        except IOError:
-            print("File:" + "\"" + fname + "\"" + " doesn't exist!")
+        with open(fname, 'r') as f:
+            # skip the header (1 line)
+            f.readline()
+            nwann = int(f.readline().strip())
+            nrpt = int(f.readline().strip())
+            # the degeneracy of R points
+            nline = nrpt // 15 + 1
+            tmp = []
+            for i in range(nline):
+                tmp.extend(f.readline().strip().split())
+            tmp = [np.int(item) for item in tmp]
+            deg_rpt = np.array(tmp, dtype=np.int)
+            # read hr for each r-point
+            rpts = np.zeros((nrpt, 3), dtype=np.int)
+            hr = np.zeros((nrpt, nwann, nwann), dtype=np.complex128)
+            for i in range(nrpt):
+                for j in range(nwann):
+                    for k in range(nwann):
+                        rx, ry, rz, hr_i, hr_j, hr_real, hr_imag = f.readline().strip().split()
+                        rpts[i, :] = int(rx), int(ry), int(rz)
+                        if int(rx) == 0 and int(ry) == 0 and int(rz) == 0:
+                            irpt0 = i
+                        hr[i, k, j] = np.float64(
+                            hr_real) + np.float64(hr_imag) * 1j
+            # construct the HR instance
+            return HR(nwann, nrpt, irpt0, rpts, deg_rpt, hr)
 
     @staticmethod
     def copy_hr(other):
@@ -212,16 +208,13 @@ class KVec():
         """
 
         tmp = []
-        try:
-            with open(fname, 'r') as f:
-                for line in f:
-                    line = line.strip().split()
-                    if line != []:
-                        tmp.append(line)
-                self.kvec = np.array(tmp, dtype=np.float64)
-                self.nkpt = len(tmp)
-        except IOError:
-            print("File" + "\"" + fname + "\"" + "doesn't exists!")
+        with open(fname, 'r') as f:
+            for line in f:
+                line = line.strip().split()
+                if line != []:
+                    tmp.append(line)
+            self.kvec = np.array(tmp, dtype=np.float64)
+            self.nkpt = len(tmp)
 
 
 class SymKVec(KVec):

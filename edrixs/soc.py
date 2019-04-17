@@ -1,6 +1,5 @@
 # /usr/bin/env python
 
-import sys
 import numpy as np
 
 
@@ -106,5 +105,4 @@ def atom_hsoc(case, soc):
         return 0.5 * soc * hsoc
 
     else:
-        print("error in atom_hsoc: DO NOT support SOC for this case: ", case)
-        sys.exit()
+        raise Exception("error in atom_hsoc: DO NOT support SOC for this case: ", case)

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import numpy as np
 
 
@@ -162,8 +161,7 @@ def write_tensor(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}'
         write_tensor_5(tensor, fname, only_nonzeros=only_nonzeros, tol=tol,
                        fmt_int=fmt_int, fmt_float=fmt_float)
     else:
-        print("error in write_tensor: ndim >5, not implemented !")
-        sys.exit()
+        raise Exception("error in write_tensor: ndim >5, not implemented !")
 
 
 def write_emat(emat, fname, tol=1E-12, fmt_int='{:10d}', fmt_float='{:.15f}'):

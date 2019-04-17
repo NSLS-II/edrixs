@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import sys
 import numpy as np
 
 
@@ -171,9 +170,7 @@ def tmat_c2r(case, ispin=False):
         t_c2r[0, 6] = ci / sqrt2
         t_c2r[6, 6] = ci / sqrt2
     else:
-        print("error in tmat_c2r: Do NOT support tmat_c2r for this case: ",
-              case)
-        sys.exit()
+        raise Exception("error in tmat_c2r: Do NOT support tmat_c2r for this case: ", case)
 
     # the spin order is: up dn up dn ... up dn
     if ispin:
@@ -387,8 +384,7 @@ def tmat_c2j(orb_l):
         return t_c2j
 
     else:
-        print("error in tmat_c2j: Have NOT implemented for this case: ", orb_l)
-        sys.exit()
+        raise Exception("error in tmat_c2j: Have NOT implemented for this case: ", orb_l)
 
 
 def transform_utensor(umat, tmat):
