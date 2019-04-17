@@ -2,8 +2,9 @@
 
 import numpy as np
 
+
 class HR():
-    """ 
+    """
     Class for post-process of the Wannier90 tight-binding (TB) Hamiltonian in real space.
 
     Parameters
@@ -17,7 +18,7 @@ class HR():
     irpt0 : int
         Index of the point (0,0,0).
 
-    rpts : float array 
+    rpts : float array
         The coordinates of :math:`r` points.
 
     deg_rpt : int array
@@ -27,12 +28,10 @@ class HR():
         Hamiltonian :math:`H(r)` from Wannier90.
     """
 
-
-
     def __init__(self, nwann, nrpt, irpt0, rpts, deg_rpt, hr):
-        self.nwann=nwann
+        self.nwann = nwann
         self.nrpt = nrpt
-        self.irpt0 = irpt0 
+        self.irpt0 = irpt0
         self.deg_rpt = deg_rpt
         self.rpts = rpts
         self.hr = hr
@@ -44,7 +43,7 @@ class HR():
 
         Parameters
         ----------
-        fname : str 
+        fname : str
             The file that contains the Wannier90 output file: "case_hr.dat".
 
         Returns
@@ -53,35 +52,32 @@ class HR():
             A HR object.
         """
 
-        try: 
-            with open(fname, 'r') as f:
-                # skip the header (1 line)
-                f.readline()
-                nwann = int(f.readline().strip()) 
-                nrpt = int(f.readline().strip())
-                # the degeneracy of R points
-                nline = nrpt//15 + 1
-                tmp = []
-                for i in range(nline):
-                    tmp.extend(f.readline().strip().split())   
-                tmp = [np.int(item) for item in tmp]
-                deg_rpt = np.array(tmp, dtype=np.int)
-                # read hr for each r-point
-                rpts = np.zeros((nrpt,3), dtype=np.int) 
-                hr = np.zeros((nrpt, nwann, nwann), dtype=np.complex128)
-                for i in range(nrpt):
-                    for j in range(nwann):
-                        for k in range(nwann):
-                            rx, ry, rz, hr_i, hr_j, hr_real, hr_imag = f.readline().strip().split() 
-                            rpts[i,:] = int(rx), int(ry), int(rz) 
-                            if int(rx) == 0 and int(ry) == 0 and int(rz) == 0:
-                                irpt0 = i  
-                            hr[i,k,j] = np.float64(hr_real) + np.float64(hr_imag) * 1j
-                # construct the HR instance
-                return HR(nwann, nrpt, irpt0, rpts, deg_rpt, hr)
-
-        except IOError:
-            print("File:" + "\"" + fname + "\"" +  " doesn't exist!")
+        with open(fname, 'r') as f:
+            # skip the header (1 line)
+            f.readline()
+            nwann = int(f.readline().strip())
+            nrpt = int(f.readline().strip())
+            # the degeneracy of R points
+            nline = nrpt // 15 + 1
+            tmp = []
+            for i in range(nline):
+                tmp.extend(f.readline().strip().split())
+            tmp = [np.int(item) for item in tmp]
+            deg_rpt = np.array(tmp, dtype=np.int)
+            # read hr for each r-point
+            rpts = np.zeros((nrpt, 3), dtype=np.int)
+            hr = np.zeros((nrpt, nwann, nwann), dtype=np.complex128)
+            for i in range(nrpt):
+                for j in range(nwann):
+                    for k in range(nwann):
+                        rx, ry, rz, hr_i, hr_j, hr_real, hr_imag = f.readline().strip().split()
+                        rpts[i, :] = int(rx), int(ry), int(rz)
+                        if int(rx) == 0 and int(ry) == 0 and int(rz) == 0:
+                            irpt0 = i
+                        hr[i, k, j] = np.float64(
+                            hr_real) + np.float64(hr_imag) * 1j
+            # construct the HR instance
+            return HR(nwann, nrpt, irpt0, rpts, deg_rpt, hr)
 
     @staticmethod
     def copy_hr(other):
@@ -99,16 +95,16 @@ class HR():
             Return a new HR object.
         """
 
-        return HR( other.nwann, 
-                   other.nrpt, 
-                   other.irpt0, 
-                   np.copy(other.rpts), 
-                   np.copy(other.deg_rpt), 
-                   np.copy(other.hr) )
+        return HR(other.nwann,
+                  other.nrpt,
+                  other.irpt0,
+                  np.copy(other.rpts),
+                  np.copy(other.deg_rpt),
+                  np.copy(other.hr))
 
     def get_hr0(self, ispin=False):
         """
-        Return the on-site term :math:`H(r=0)`. 
+        Return the on-site term :math:`H(r=0)`.
 
         Parameters
         ----------
@@ -123,13 +119,13 @@ class HR():
 
         if ispin:
             norbs = 2 * self.nwann
-            hr0_spin = np.zeros((norbs, norbs), dtype=np.complex128) 
-            hr0_spin[0:norbs:2, 0:norbs:2] = self.hr[self.irpt0,:,:]
-            hr0_spin[1:norbs:2, 1:norbs:2] = self.hr[self.irpt0,:,:]
+            hr0_spin = np.zeros((norbs, norbs), dtype=np.complex128)
+            hr0_spin[0:norbs:2, 0:norbs:2] = self.hr[self.irpt0, :, :]
+            hr0_spin[1:norbs:2, 1:norbs:2] = self.hr[self.irpt0, :, :]
             return hr0_spin
         else:
-            return self.hr[self.irpt0,:,:]
-            
+            return self.hr[self.irpt0, :, :]
+
     def get_hr(self, ispin):
         """
         Return the Hamiltonian of :math:`H(r)`.
@@ -146,27 +142,28 @@ class HR():
         """
 
         # with spin, spin order: up dn up dn up dn
-        if ispin==1:
-            norbs = 2 * self.nwann 
+        if ispin == 1:
+            norbs = 2 * self.nwann
             hr_spin = np.zeros((self.nrpt, norbs, norbs), dtype=np.complex128)
             hr_spin[:, 0:norbs:2, 0:norbs:2] = self.hr
             hr_spin[:, 1:norbs:2, 1:norbs:2] = self.hr
             return hr_spin
         # with spin, spin order: up up up dn dn dn
-        elif ispin==2:
-            norbs = 2 * self.nwann 
+        elif ispin == 2:
+            norbs = 2 * self.nwann
             hr_spin = np.zeros((self.nrpt, norbs, norbs), dtype=np.complex128)
             hr_spin[:, 0:self.nwann, 0:self.nwann] = self.hr
             hr_spin[:, self.nwann:norbs, self.nwann:norbs] = self.hr
             return hr_spin
         # without spin
         else:
-            return self.hr[:,:,:]
+            return self.hr[:, :, :]
+
 
 class KVec():
     """
     Define :math:`k` points in BZ, high symmetry line or uniform grid.
-    
+
     Parameters
     ----------
     kpt_type : str
@@ -190,8 +187,8 @@ class KVec():
 
     def set_base(self, kbase):
         """
-        Set the basis of the primitive reciprocal. 
-  
+        Set the basis of the primitive reciprocal.
+
         Parameters
         ----------
         kbase : :math:`3 \\times 3` float array
@@ -200,7 +197,7 @@ class KVec():
 
         self.kbase = np.array(kbase, dtype=np.float64)
 
-    def kvec_from_file(self,fname):
+    def kvec_from_file(self, fname):
         """
         Read :math:`k` points from file.
 
@@ -211,21 +208,18 @@ class KVec():
         """
 
         tmp = []
-        try: 
-            with open(fname, 'r') as f:
-                for line in f:
-                    line = line.strip().split()
-                    if line != []:
-                        tmp.append(line)
-                self.kvec = np.array(tmp, dtype=np.float64)
-                self.nkpt = len(tmp)
-        except IOError:
-            print("File" + "\"" + fname + "\"" + "doesn't exists!")
+        with open(fname, 'r') as f:
+            for line in f:
+                line = line.strip().split()
+                if line != []:
+                    tmp.append(line)
+            self.kvec = np.array(tmp, dtype=np.float64)
+            self.nkpt = len(tmp)
 
- 
+
 class SymKVec(KVec):
     """
-    Class for defining :math:`k` points in high symmetry line, derived from :class:`KVec`. 
+    Class for defining :math:`k` points in high symmetry line, derived from :class:`KVec`.
 
     Parameters
     ----------
@@ -249,22 +243,24 @@ class SymKVec(KVec):
         Return length of :math:`k` points segments.
         """
 
-        self.klen = np.zeros(self.nkpt, dtype=np.float64)          
+        self.klen = np.zeros(self.nkpt, dtype=np.float64)
         self.klen[0] = 0.0
         prev_kpt = self.kvec[0]
-        
-        for i in range(1,self.nkpt):
-            curr_kpt = self.kvec[i,:]
+
+        for i in range(1, self.nkpt):
+            curr_kpt = self.kvec[i, :]
             tmp_kpt = curr_kpt - prev_kpt
-            kx = np.dot(tmp_kpt, self.kbase[:,0])
-            ky = np.dot(tmp_kpt, self.kbase[:,1])
-            kz = np.dot(tmp_kpt, self.kbase[:,2])
-            self.klen[i] = self.klen[i-1] + np.sqrt(np.dot((kx,ky,kz), (kx,ky,kz)))
+            kx = np.dot(tmp_kpt, self.kbase[:, 0])
+            ky = np.dot(tmp_kpt, self.kbase[:, 1])
+            kz = np.dot(tmp_kpt, self.kbase[:, 2])
+            self.klen[i] = self.klen[i - 1] + \
+                np.sqrt(np.dot((kx, ky, kz), (kx, ky, kz)))
             prev_kpt = curr_kpt
 
     def from_hsymkpt(self, nkpt_per_path=20):
         """
-        Given starting and end :math:`k` points of each segment, and the number of points per each segment,
+        Given starting and end :math:`k` points of each segment,
+        and the number of points per each segment,
         return the high symmetry :math:`k` points.
 
         Parameters
@@ -273,14 +269,15 @@ class SymKVec(KVec):
             Number of :math:`k` points per each segment.
         """
 
-        self.nkpt = nkpt_per_path * (len(self.hsymkpt)-1)
-        self.kvec = np.zeros((self.nkpt,3), dtype=np.float64)
-        for i in range(1,len(self.hsymkpt)):
-            kpt_prev = self.hsymkpt[i-1,:]
-            kpt_curr = self.hsymkpt[i  ,:]
+        self.nkpt = nkpt_per_path * (len(self.hsymkpt) - 1)
+        self.kvec = np.zeros((self.nkpt, 3), dtype=np.float64)
+        for i in range(1, len(self.hsymkpt)):
+            kpt_prev = self.hsymkpt[i - 1, :]
+            kpt_curr = self.hsymkpt[i, :]
             for j in range(nkpt_per_path):
-                ikpt = (i-1)*nkpt_per_path + j 
-                self.kvec[ikpt,:] = float(j)/float(nkpt_per_path-1) * (kpt_curr - kpt_prev) + kpt_prev     
+                ikpt = (i - 1) * nkpt_per_path + j
+                self.kvec[ikpt, :] = (float(j) / float(nkpt_per_path - 1) *
+                                      (kpt_curr - kpt_prev) + kpt_prev)
 
     def from_hsymkpt_uni(self, step):
         """
@@ -293,24 +290,24 @@ class SymKVec(KVec):
         """
 
         kvec = []
-        self.hsym_dis = np.zeros(len(self.hsymkpt),dtype=np.float64)
-        self.hsym_dis[0]=0.0
-        for i in range(0,len(self.hsymkpt)-1):
-            kpt_prev = self.hsymkpt[i,:]
-            kpt_curr = self.hsymkpt[i+1,:]
-            tmp = np.dot(self.kbase.transpose(), kpt_curr-kpt_prev)
-            dis = np.sqrt(np.dot(tmp,tmp))
-            self.hsym_dis[i+1]=self.hsym_dis[i] + dis
-            pts = np.arange(0,dis,step) / dis
+        self.hsym_dis = np.zeros(len(self.hsymkpt), dtype=np.float64)
+        self.hsym_dis[0] = 0.0
+        for i in range(0, len(self.hsymkpt) - 1):
+            kpt_prev = self.hsymkpt[i, :]
+            kpt_curr = self.hsymkpt[i + 1, :]
+            tmp = np.dot(self.kbase.transpose(), kpt_curr - kpt_prev)
+            dis = np.sqrt(np.dot(tmp, tmp))
+            self.hsym_dis[i + 1] = self.hsym_dis[i] + dis
+            pts = np.arange(0, dis, step) / dis
             for ipt in pts:
-                kvec.append(ipt * (kpt_curr-kpt_prev) + kpt_prev)
-        self.kvec = np.array(kvec,dtype=np.float64)
+                kvec.append(ipt * (kpt_curr - kpt_prev) + kpt_prev)
+        self.kvec = np.array(kvec, dtype=np.float64)
         self.nkpt = len(self.kvec)
-    
+
 
 class UniKVec(KVec):
     """
-    Class for defining uniform :math:`k` points grid, derived from :class:`KVec`. 
+    Class for defining uniform :math:`k` points grid, derived from :class:`KVec`.
 
     Parameters
     ----------
@@ -327,25 +324,25 @@ class UniKVec(KVec):
         Return uniform :math:`k` points.
         """
 
-        delta=0.001
-        nx,ny,nz = self.grid
+        delta = 0.001
+        nx, ny, nz = self.grid
         self.nkpt = nx * ny * nz
         self.kvec = np.zeros((self.nkpt, 3), dtype=np.float64)
         ikpt = 0
         for i in range(nx):
-            if nx==1:
-                kx=0.0
+            if nx == 1:
+                kx = 0.0
             else:
-                kx = float(i)/float(nx)  
+                kx = float(i) / float(nx)
             for j in range(ny):
-                if ny==1:
-                    ky=0.0
+                if ny == 1:
+                    ky = 0.0
                 else:
-                    ky = float(j)/float(ny)  
+                    ky = float(j) / float(ny)
                 for k in range(nz):
-                    if nz==1:
-                        kz=0.0
+                    if nz == 1:
+                        kz = 0.0
                     else:
-                        kz = float(k)/float(nz)  
+                        kz = float(k) / float(nz)
                     ikpt = ikpt + 1
-                    self.kvec[ikpt-1,:] = kx+delta,ky+delta,kz+delta
+                    self.kvec[ikpt - 1, :] = kx + delta, ky + delta, kz + delta

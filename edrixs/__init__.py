@@ -1,4 +1,3 @@
-from .soc import *
 from .angular_momentum import *
 from .basis_transform import *
 from .coulomb_utensor import *

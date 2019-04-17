@@ -3,7 +3,8 @@
 import numpy as np
 import itertools
 
-def combination(n,m):
+
+def combination(n, m):
     """
     Calculate the combination :math:`C_{n}^{m}`,
 
@@ -26,39 +27,42 @@ def combination(n,m):
 
     Examples
     --------
-    >>> combination(6, 2)
+    >>> import edrixs
+    >>> edrixs.combination(6, 2)
     15
 
     """
 
-    if m>n or n <0 or m <0:
+    if m > n or n < 0 or m < 0:
         print("wrong number in combination")
-        return 
-    if m==0 or n==m:
+        return
+    if m == 0 or n == m:
         return 1
-    
-    largest = max(m, n-m)
-    smallest = min(m, n-m)
+
+    largest = max(m, n - m)
+    smallest = min(m, n - m)
     numer = 1.0
-    for i in range(largest+1, n+1):
+    for i in range(largest + 1, n + 1):
         numer *= i
 
     denom = 1.0
-    for i in range(1,smallest+1):
+    for i in range(1, smallest + 1):
         denom *= i
 
-    res = int(numer/denom)
+    res = int(numer / denom)
     return res
- 
+
+
 def fock_bin(n, k):
     """
-    Return all the possible :math:`n`-length binary where :math:`k` of :math:`n` digitals are set to 1.  
+    Return all the possible :math:`n`-length binary
+    where :math:`k` of :math:`n` digitals are set to 1.
 
     Parameters
     ----------
     n : int
         Binary length :math:`n`.
- 
+
     k : int
         How many digitals are set to be 1.
 
@@ -69,17 +73,18 @@ def fock_bin(n, k):
 
     Examples
     --------
-    >>> fock_bin(4, 2)
+    >>> import edrixs
+    >>> edrixs.fock_bin(4, 2)
     [[1, 1, 0, 0],
      [1, 0, 1, 0],
      [1, 0, 0, 1],
      [0, 1, 1, 0],
      [0, 1, 0, 1],
-     [0, 0, 1, 1]] 
+     [0, 0, 1, 1]]
 
     """
 
-    if n==0:
+    if n == 0:
         return [[0]]
 
     res = []
@@ -90,12 +95,13 @@ def fock_bin(n, k):
         res.append(s)
     return res
 
+
 def get_fock_bin_by_N(*args):
     """
     Get binary form to represent a Fock state.
 
     Parameters
-    ---------- 
+    ----------
     args : ints
         args[0]: number of orbitals for 1st-shell,
 
@@ -112,21 +118,22 @@ def get_fock_bin_by_N(*args):
         args[ :math:`2N-1`]: number of occupancy for :math:`N` th-shell.
 
     Returns
-    ------- 
+    -------
     result : list of int list
-        The binary form of Fock states. 
+        The binary form of Fock states.
 
     Examples
     --------
-    >>> get_fock_bin_by_N(4, 2)
+    >>> import edrixs
+    >>> edrixs.get_fock_bin_by_N(4, 2)
     [[1, 1, 0, 0],
      [1, 0, 1, 0],
      [1, 0, 0, 1],
      [0, 1, 1, 0],
      [0, 1, 0, 1],
-     [0, 0, 1, 1]] 
+     [0, 0, 1, 1]]
 
-    >>> get_fock_bin_by_N(4, 2, 2, 1) 
+    >>> edrixs.get_fock_bin_by_N(4, 2, 2, 1)
     [[1, 1, 0, 0, 1, 0],
      [1, 0, 1, 0, 1, 0],
      [1, 0, 0, 1, 1, 0],
@@ -144,29 +151,31 @@ def get_fock_bin_by_N(*args):
 
     n = len(args)
 
-    if n%2 != 0:
+    if n % 2 != 0:
         print("Error: number of arguments is not even")
         return
 
-    if n==2:
-        return fock_bin(args[0], args[1]) 
+    if n == 2:
+        return fock_bin(args[0], args[1])
     else:
-        result=[]
+        result = []
         res1 = fock_bin(args[0], args[1])
         res2 = get_fock_bin_by_N(*args[2:])
         for ifock in res2:
-            for jfock in res1: 
-                result.append( jfock + ifock )
-        return result        
+            for jfock in res1:
+                result.append(jfock + ifock)
+        return result
+
 
 def get_fock_half_N(N):
-    res=[[] for i in range(N+1)]
+    res = [[] for i in range(N + 1)]
     for i in range(2**N):
         occu = bin(i).count('1')
         res[occu].append(i)
     return res
 
-def get_fock_full_N(norb, N): 
+
+def get_fock_full_N(norb, N):
     """
     Get the decimal digitals to represent Fock states.
 
@@ -185,32 +194,35 @@ def get_fock_full_N(norb, N):
 
     Examples
     --------
-    >>> fock_bin(4,2)
+    >>> import edrixs
+    >>> edrixs.fock_bin(4,2)
     [[1, 1, 0, 0],
      [1, 0, 1, 0],
      [0, 1, 1, 0],
      [1, 0, 0, 1],
      [0, 1, 0, 1],
-     [0, 0, 1, 1]] 
+     [0, 0, 1, 1]]
 
-    >>> get_fock_full_N(4,2)
-    [3, 5, 6, 9, 10, 12] 
+    >>> import edrixs
+    >>> edrixs.get_fock_full_N(4,2)
+    [3, 5, 6, 9, 10, 12]
 
     """
 
-    res=[]
-    half_N = get_fock_half_N(norb//2) 
-    for m in range(norb//2+1):
-        n = N - m 
-        if n>=0 and n <=norb//2:
-            res.extend([i*2**(norb//2) + j for i in half_N[m] for j in half_N[n]])
+    res = []
+    half_N = get_fock_half_N(norb // 2)
+    for m in range(norb // 2 + 1):
+        n = N - m
+        if n >= 0 and n <= norb // 2:
+            res.extend([i * 2**(norb // 2) + j for i in half_N[m] for j in half_N[n]])
     return res
- 
+
+
 def get_fock_basis_by_NLz(norb, N, lz_list):
     """
     Get decimal digitals to represent Fock states, use good quantum number:
 
-    - orbital angular momentum :math:`L_{z}`    
+    - orbital angular momentum :math:`L_{z}`
 
     Parameters
     ----------
@@ -221,33 +233,36 @@ def get_fock_basis_by_NLz(norb, N, lz_list):
         Number of total occupancy.
 
     lz_list : list of int
-        Quantum number :math:`l_{z}` for each orbital. 
+        Quantum number :math:`l_{z}` for each orbital.
 
     Returns
     -------
     res : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers :math:`L_{z}`, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good
+        quantum numbers :math:`L_{z}`, the value is a list of int.
 
     Examples
     --------
-    >>> get_fock_basis_by_NLz(6, 2, [-1, -1, 0, 0, 1, 1])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_NLz(6, 2, [-1, -1, 0, 0, 1, 1])
     {
      -2: [3],
      -1: [5, 6, 9, 10],
       0: [12, 17, 18, 33, 34],
       1: [20, 36, 24, 40],
       2: [48]
-    } 
+    }
     """
 
     res = get_fock_basis_by_N_abelian(norb, N, lz_list)
     return res
 
+
 def get_fock_basis_by_NSz(norb, N, sz_list):
     """
     Get decimal digitals to represent Fock states, use good quantum number:
 
-    - spin angular momentum :math:`S_{z}`    
+    - spin angular momentum :math:`S_{z}`
 
     Parameters
     ----------
@@ -258,16 +273,18 @@ def get_fock_basis_by_NSz(norb, N, sz_list):
         Number of total occupancy.
 
     sz_list : list of int
-        Quantum number :math:`s_{z}` for each orbital. 
+        Quantum number :math:`s_{z}` for each orbital.
 
     Returns
     -------
     res : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers :math:`S_{z}`, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good quantum
+        numbers :math:`S_{z}`, the value is a list of int.
 
     Examples
     --------
-    >>> get_fock_basis_by_NSz(6, 2, [1, -1, 1, -1, 1, -1])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_NSz(6, 2, [1, -1, 1, -1, 1, -1])
     {
      -2: [10, 34, 40],
      -1: [],
@@ -280,11 +297,12 @@ def get_fock_basis_by_NSz(norb, N, sz_list):
     res = get_fock_basis_by_N_abelian(norb, N, sz_list)
     return res
 
+
 def get_fock_basis_by_NJz(norb, N, jz_list):
     """
     Get decimal digitals to represent Fock states, use good quantum number:
 
-    - total angular momentum :math:`J_{z}`    
+    - total angular momentum :math:`J_{z}`
 
     Parameters
     ----------
@@ -295,16 +313,18 @@ def get_fock_basis_by_NJz(norb, N, jz_list):
         Number of total occupancy.
 
     jz_list : list of int
-        Quantum number :math:`j_{z}` for each orbital. 
+        Quantum number :math:`j_{z}` for each orbital.
 
     Returns
     -------
     res : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers :math:`j_{z}`, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good quantum
+        numbers :math:`j_{z}`, the value is a list of int.
 
     Examples
     --------
-    >>> get_fock_basis_by_NJz(6, 2, [-1, 1, -3, -1, 1, 3])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_NJz(6, 2, [-1, 1, -3, -1, 1, 3])
     {
      -6: [],
      -5: [],
@@ -325,6 +345,7 @@ def get_fock_basis_by_NJz(norb, N, jz_list):
     res = get_fock_basis_by_N_abelian(norb, N, jz_list)
     return res
 
+
 def get_fock_basis_by_N_abelian(norb, N, a_list):
     """
     Get decimal digitals to represent Fock states, use some Abelian good quantum number.
@@ -338,30 +359,32 @@ def get_fock_basis_by_N_abelian(norb, N, a_list):
         Number of total occupancy.
 
     a_list : list of int
-        Quantum number of the Abelian symmetry for each orbital. 
+        Quantum number of the Abelian symmetry for each orbital.
 
     Returns
     -------
     basis : dict
-        A dictionary containing the decimal digitals, the key is good quantum numbers, the value is a list of int.
+        A dictionary containing the decimal digitals, the key is good quantum numbers,
+        the value is a list of int.
     """
 
-    result=get_fock_full_N(norb, N)
-    min_a, max_a = min(a_list)*N, max(a_list)*N
-    basis={}
-    for i in range(min_a, max_a+1):
-        basis[i] = [] 
+    result = get_fock_full_N(norb, N)
+    min_a, max_a = min(a_list) * N, max(a_list) * N
+    basis = {}
+    for i in range(min_a, max_a + 1):
+        basis[i] = []
     for n in result:
-        a=sum([a_list[i] for i in range(0, n.bit_length()) if (n >> i & 1) ])
+        a = sum([a_list[i] for i in range(0, n.bit_length()) if (n >> i & 1)])
         basis[a].append(n)
     return basis
+
 
 def get_fock_basis_by_N_LzSz(norb, N, lz_list, sz_list):
     """
     Get decimal digitals to represent Fock states, use good quantum number:
 
-    - orbital angular momentum :math:`L_{z}`    
-    - spin angular momentum :math:`S_{z}`    
+    - orbital angular momentum :math:`L_{z}`
+    - spin angular momentum :math:`S_{z}`
 
     Parameters
     ----------
@@ -372,19 +395,21 @@ def get_fock_basis_by_N_LzSz(norb, N, lz_list, sz_list):
         Number of total occupancy.
 
     lz_list : list of int
-        Quantum number :math:`l_{z}` for each orbital. 
+        Quantum number :math:`l_{z}` for each orbital.
 
     sz_list : list of int
-        Quantum number :math:`s_{z}` for each orbital. 
+        Quantum number :math:`s_{z}` for each orbital.
 
     Returns
     -------
     basis : dict
-        A dictionary containing the decimal digitals, the key is a tuple containing good quantum numbers ( :math:`l_{z}`, :math:`s_{z}`), the value is a list of int.
+        A dictionary containing the decimal digitals, the key is a tuple containing good quantum
+        numbers ( :math:`l_{z}`, :math:`s_{z}`), the value is a list of int.
 
     Examples
     --------
-    >>> get_fock_basis_by_N_LzSz(6, 2, [-1, -1, 0, 0, 1, 1], [1, -1, 1, -1, 1, -1])
+    >>> import edrixs
+    >>> edrixs.get_fock_basis_by_N_LzSz(6, 2, [-1, -1, 0, 0, 1, 1], [1, -1, 1, -1, 1, -1])
     {
      (-2, -2): [],
      (-2, -1): [],
@@ -413,21 +438,24 @@ def get_fock_basis_by_N_LzSz(norb, N, lz_list, sz_list):
        (2, 2): []
     }
     """
-    result=get_fock_full_N(norb, N)
-    min_Lz, max_Lz = min(lz_list)*N, max(lz_list)*N
-    min_Sz, max_Sz = min(sz_list)*N, max(sz_list)*N
-    basis={}
-    for i in range(min_Lz, max_Lz+1):
-        for j in range(min_Sz, max_Sz+1):
-            basis[(i,j)] = [] 
+    result = get_fock_full_N(norb, N)
+    min_Lz, max_Lz = min(lz_list) * N, max(lz_list) * N
+    min_Sz, max_Sz = min(sz_list) * N, max(sz_list) * N
+    basis = {}
+    for i in range(min_Lz, max_Lz + 1):
+        for j in range(min_Sz, max_Sz + 1):
+            basis[(i, j)] = []
     for n in result:
-        Lz, Sz=np.sum([ [ lz_list[i], sz_list[i] ] for i in range(0, n.bit_length()) if (n >> i & 1) ], axis=0)
-        basis[(Lz,Sz)].append(n)
+        Lz, Sz = np.sum([[lz_list[i], sz_list[i]] for i in range(0, n.bit_length())
+                         if (n >> i & 1)], axis=0)
+        basis[(Lz, Sz)].append(n)
     return basis
+
 
 def write_fock_dec_by_N(N, r, fname='fock_i.in'):
     """
-    Get decimal digitals to represent Fock states, sort them by ascending order and then write them to file.
+    Get decimal digitals to represent Fock states, sort them by
+    ascending order and then write them to file.
 
     Parameters
     ----------
@@ -447,7 +475,8 @@ def write_fock_dec_by_N(N, r, fname='fock_i.in'):
 
     Examples
     --------
-    >>> write_fock_dec_by_N(4, 2, 'fock_i.in')
+    >>> import edrixs
+    >>> edrixs.write_fock_dec_by_N(4, 2, 'fock_i.in')
     file fock_i.in looks like
     15
     3
@@ -466,14 +495,14 @@ def write_fock_dec_by_N(N, r, fname='fock_i.in'):
     40
     48
 
-    where, the first line is the total numer of Fock states, 
+    where, the first line is the total numer of Fock states,
     and the following lines are the Fock states in decimal form.
     """
 
-    res=get_fock_full_N(N,r) 
+    res = get_fock_full_N(N, r)
     res.sort()
     ndim = len(res)
-    f=open(fname, 'w')
+    f = open(fname, 'w')
     print(ndim, file=f)
     for item in res:
         print(item, file=f)
