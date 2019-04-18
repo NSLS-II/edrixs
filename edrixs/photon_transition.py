@@ -207,6 +207,28 @@ def get_trans_oper(case):
     return res
 
 
+def get_wavevector_in(thin, phi, ein, local_axis=np.eye(3)):
+    hbarc = 1.973270533 * 1000  # eV*A
+    kin_len = ein / hbarc
+    K_in = kin_len * np.array([-np.cos(thin) * np.cos(phi),
+                               -np.cos(thin) * np.sin(phi),
+                               -np.sin(thin)])
+    K_in_global = np.dot(local_axis, K_in)
+
+    return K_in_global
+
+
+def get_wavevector_out(thout, phi, eout, local_axis=np.eye(3)):
+    hbarc = 1.973270533 * 1000  # eV*A
+    kout_len = eout / hbarc
+    K_out = kout_len * np.array([-np.cos(thout) * np.cos(phi),
+                                 -np.cos(thout) * np.sin(phi),
+                                 np.sin(thout)])
+    K_out_global = np.dot(local_axis, K_out)
+
+    return K_out_global
+
+
 def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
     """
     Return the wave vector of incident and scattered photons, for RIXS calculation.
@@ -240,25 +262,34 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
         The wave vector of the scattered photon, with respect to the global :math:`xyz` -axis.
     """
 
-    hbarc = 1.973270533 * 1000  # eV*A
-    kin_len = ein / hbarc
-    kout_len = eout / hbarc
-    K_in = kin_len * np.array([-np.cos(thin) * np.cos(phi),
-                               -np.cos(thin) * np.sin(phi),
-                               -np.sin(thin)])
-    K_out = kout_len * np.array([-np.cos(thout) * np.cos(phi),
-                                 -np.cos(thout) * np.sin(phi),
-                                 np.sin(thout)])
-
-    K_in_global = np.dot(local_axis, K_in)
-    K_out_global = np.dot(local_axis, K_out)
+    K_in_global = get_wavevector_in(thin, phi, ein, local_axis)
+    K_out_global = get_wavevector_out(thout, phi, eout, local_axis)
 
     return K_in_global, K_out_global
 
 
-def dipole_polvec_rixs(thin, thout, phi, alpha, beta, local_axis=np.eye(3)):
+def linear_polvec_in(thin, phi, alpha, local_axis=np.eye(3)):
+    ei = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
+                    -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
+                    np.sin(np.pi / 2.0 - thin)]) * np.cos(alpha)
+          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
+
+    return np.dot(local_axis, ei)
+
+
+def linear_polvec_out(thout, phi, beta, local_axis=np.eye(3)):
+    ef = (np.array([np.cos(phi) * np.cos(np.pi / 2.0 - thout),
+                    np.sin(phi) * np.cos(np.pi / 2.0 - thout),
+                    np.sin(np.pi / 2.0 - thout)]) * np.cos(beta)
+          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(beta))
+
+    return np.dot(local_axis, ef)
+
+
+def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3),
+                       case=('linear', 'linear')):
     """
-    Return the polarization vector of incident and scattered photons, for RIXS calculation.
+    Return polarization vector of incident and scattered photons, for RIXS calculation.
 
     Parameters
     ----------
@@ -283,36 +314,52 @@ def dipole_polvec_rixs(thin, thout, phi, alpha, beta, local_axis=np.eye(3)):
         The local :math:`z` -axis, the angle thin and thout are defined with
         respect to this axis.
 
+    case : tuple of two strings
+        Specify types of polarization for incident and scattered photons.
+        case[0] for incident photon, case[1] for scattered photon.
+        'linear': Linear polarization
+        'left'  : Left-circular polarization.
+        'right' : Right-circular polarization.
+
     Returns
     -------
-    ei_in_global : 3-length float array
-        The polarization vector of the incident photon,
+    ei_in_global : 3-length complex array
+        The linear polarization vector of the incident photon,
         with respect to the global :math:`xyz` -axis.
 
-    ef_out_global : 3-length float array
-        The polarization vector of the scattered photon
+    ef_out_global : 3-length complex array
+        The linear polarization vector of the scattered photon
         with respect to the global :math:`xyz` -axis.
     """
 
-    ei = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
-                    -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
-                    np.sin(np.pi / 2.0 - thin)]) * np.cos(alpha)
-          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
+    ex = linear_polvec_in(thin, phi, 0, local_axis)
+    ey = linear_polvec_in(thin, phi, np.pi/2.0, local_axis)
+    if case[0].strip() == 'linear':
+        ei_global = linear_polvec_in(thin, phi, alpha, local_axis)
+    elif case[0].strip() == 'left':
+        ei_global = (ex + 1j * ey) / np.sqrt(2.0)
+    elif case[0].strip() == 'right':
+        ei_global = (ex - 1j * ey) / np.sqrt(2.0)
+    else:
+        raise Exception("Unknown polarization case for incident photon: ", case[0])
 
-    ef = (np.array([np.cos(phi) * np.cos(np.pi / 2.0 - thout),
-                    np.sin(phi) * np.cos(np.pi / 2.0 - thout),
-                    np.sin(np.pi / 2.0 - thout)]) * np.cos(beta)
-          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(beta))
-
-    ei_global = np.dot(local_axis, ei)
-    ef_global = np.dot(local_axis, ef)
+    ex = linear_polvec_out(thout, phi, 0, local_axis)
+    ey = linear_polvec_out(thout, phi, np.pi/2.0, local_axis)
+    if case[1].strip() == 'linear':
+        ef_global = linear_polvec_out(thout, phi, beta, local_axis)
+    elif case[1].strip() == 'left':
+        ef_global = (ex + 1j * ey) / np.sqrt(2.0)
+    elif case[1].strip() == 'right':
+        ef_global = (ex - 1j * ey) / np.sqrt(2.0)
+    else:
+        raise Exception("Unknown polarization case for scattered photon: ", case[1])
 
     return ei_global, ef_global
 
 
-def dipole_polvec_xas(thin, phi, alpha, local_axis=np.eye(3)):
+def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=np.eye(3), case='linear'):
     """
-    Return the polarization vector of incident photons, for XAS calculation.
+    Return the linear polarization vector of incident photons, for XAS calculation.
 
     Parameters
     ----------
@@ -330,31 +377,41 @@ def dipole_polvec_xas(thin, phi, alpha, local_axis=np.eye(3)):
         The local :math:`z` -axis, the angle thin and thout are defined with
         respect to this axis.
 
+    case : string
+        'linear': Linear polarization.
+        'left'  : Left-circular polarization.
+        'right' : Right-circular polarization.
+
     Returns
     -------
-    ei_in_global : 3-length float array
-        The polarization vector of the incident photon, with resepct to the
+    ei_global : 3-length float array
+        The linear polarization vector of the incident photon, with resepct to the
         global :math:`xyz` -axis.
     """
 
-    ei = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
-                    -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
-                    np.sin(np.pi / 2.0 - thin)]) * np.cos(alpha)
-          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
-
-    ei_global = np.dot(local_axis, ei)
+    ex = linear_polvec_in(thin, phi, 0, local_axis)
+    ey = linear_polvec_in(thin, phi, np.pi/2.0, local_axis)
+    if case.strip() == 'linear':
+        ei_global = linear_polvec_in(thin, phi, alpha, local_axis)
+    elif case.strip() == 'left':
+        ei_global = (ex + 1j * ey) / np.sqrt(2.0)
+    elif case.strip() == 'right':
+        ei_global = (ex - 1j * ey) / np.sqrt(2.0)
+    else:
+        raise Exception("Unknown polarization case for incident photon: ", case)
 
     return ei_global
 
 
-def get_quadrupolar_polvec(polvec, wavevec):
+def quadrupole_polvec(polvec, wavevec):
     """
-    Given dipolar polarization vector, return quadrupolar polarization vector.
+    Given dipolar polarization vector and wave-vector, return quadrupolar polarization vector.
 
     Parameters
     ----------
-    polvec : 3 elements of float array
-        Dipolar polarization vector of photon, :math:`\\epsilon_{x}, \\epsilon_{y}, \\epsilon_{z}`
+    polvec : 3 elements of complex array
+        Dipolar polarization vector of photon, :math:`\\epsilon_{x}, \\epsilon_{y}, \\epsilon_{z}`,
+        NOTE: they can be complex when the polarization is circular.
 
     wavevec : 3 elements of float array
         Wavevector of photon, :math:`k_{x}, k_{y}, k_{z}`.
@@ -365,7 +422,7 @@ def get_quadrupolar_polvec(polvec, wavevec):
         Quadrupolar polarization vector.
     """
 
-    quad_vec = np.zeros(5, dtype=np.float)
+    quad_vec = np.zeros(5, dtype=np.complex)
     kvec = wavevec / np.sqrt(np.dot(wavevec, wavevec))
 
     quad_vec[0] = 0.5 * (2 * polvec[2] * kvec[2] - polvec[0] * kvec[0] - polvec[1] * kvec[1])
