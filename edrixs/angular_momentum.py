@@ -472,6 +472,68 @@ def zx_to_rmat(z, x):
     return rmat
 
 
+def get_wigner_dmat(quant_2j, alpha, beta, gamma):
+    """
+    Given quantum number and Euler angles, return the Wigner-D matrix.
+
+    Parameters
+    ----------
+    quant_2j : int
+        Twice of the quantum number j: 2j, for example, quant_2j=1 means j=1/2,
+        quant_2j=2 means j=1
+
+    alpha : float number
+        The first Euler angle :math:`\\alpha` in radian [0, :math:`2\\pi`].
+
+    beta : float number
+        The second Euler angle :math:`\\beta` in radian [0, :math:`\\pi`].
+
+    gamma : float number
+        The third Euler angle :math:`\\gamma` in radian [0, :math:`2\\pi`].
+
+    Returns
+    -------
+    result : 2d complex array, shape(quant_2j+1, quant_2j+1)
+        The Wigner D-matrix.
+        For :math:`j=1/2`, the orbital order is: +1/2 (spin up), -1/2 (spin down).
+        For :math:`j>1/2`, the orbital order is: :math:`-j, -j+1, ..., +j`
+
+    Examples
+    --------
+    >>> import edrixs
+
+    spin-1/2 D-matrix
+    >>> edrixs.get_wigner_dmat(1, 1, 2, 3)
+    array([[-0.224845-0.491295j, -0.454649-0.708073j],
+           [ 0.454649-0.708073j, -0.224845+0.491295j]])
+
+    j=1 D-matrix
+    >>> edrixs.get_wigner_dmat(2, 1, 2, 3)
+    array([[-0.190816-0.220931j,  0.347398+0.541041j, -0.294663-0.643849j],
+           [ 0.636536-0.090736j, -0.416147+0.j      , -0.636536-0.090736j],
+           [-0.294663+0.643849j, -0.347398+0.541041j, -0.190816+0.220931j]])
+    """
+
+    from sympy.physics.quantum.spin import Rotation
+    from sympy import N, S
+    ndim = quant_2j + 1
+    result = np.zeros((ndim, ndim), dtype=np.complex)
+    # For j=1/2, we use different orbital order: first +1/2, then -1/2
+    if quant_2j == 1:
+        for i, mi in enumerate(range(quant_2j, -quant_2j-1, -2)):
+            for j, mj in enumerate(range(quant_2j, -quant_2j-1, -2)):
+                rot = Rotation.D(S(quant_2j)/2, S(mi)/2, S(mj)/2, alpha, beta, gamma)
+                result[i, j] = N(rot.doit())
+    # For j > 1/2, the order is -j, -j+1, ..., +j
+    else:
+        for i, mi in enumerate(range(-quant_2j, quant_2j+1, 2)):
+            for j, mj in enumerate(range(-quant_2j, quant_2j+1, 2)):
+                rot = Rotation.D(S(quant_2j)/2, S(mi)/2, S(mj)/2, alpha, beta, gamma)
+                result[i, j] = N(rot.doit())
+
+    return result
+
+
 def cf_cubic_d(ten_dq):
     """
     Given 10Dq, return cubic crystal field matrix for d orbitals
