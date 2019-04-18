@@ -287,3 +287,14 @@ def F0F2F4F6_to_UdJH(F0, F2, F4, F6):
     Ud = F0
     JH = (286 * F2 + 195 * F4 + 250 * F6) / 6435.0
     return Ud, JH
+
+
+def info_atomic_shell():
+    info = {'s': (0, 0, 1,),
+            'p': (1, 1, 3),
+            't2g': (2, 1, 3),
+            'd': (2, 2, 5),
+            'f': (3, 3, 7)
+            }
+
+    return info

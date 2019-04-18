@@ -345,3 +345,33 @@ def dipole_polvec_xas(thin, phi, alpha, local_axis=np.eye(3)):
     ei_global = np.dot(local_axis, ei)
 
     return ei_global
+
+
+def get_quadrupolar_polvec(polvec, wavevec):
+    """
+    Given dipolar polarization vector, return quadrupolar polarization vector.
+
+    Parameters
+    ----------
+    polvec : 3 elements of float array
+        Dipolar polarization vector of photon, :math:`\\epsilon_{x}, \\epsilon_{y}, \\epsilon_{z}`
+
+    wavevec : 3 elements of float array
+        Wavevector of photon, :math:`k_{x}, k_{y}, k_{z}`.
+
+    Returns
+    -------
+    quad_vec : 5 elements of float array
+        Quadrupolar polarization vector.
+    """
+
+    quad_vec = np.zeros(5, dtype=np.float)
+    kvec = wavevec / np.sqrt(np.dot(wavevec, wavevec))
+
+    quad_vec[0] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[0] - polvec[1] * kvec[1])
+    quad_vec[1] = 0.5 * (2 * polvec[2] * kvec[2] - polvec[0] * kvec[0] - polvec[1] * kvec[1])
+    quad_vec[2] = np.sqrt(3.0)/2.0 * (polvec[1] * kvec[2] + kvec[2] * kvec[1])
+    quad_vec[3] = np.sqrt(3.0)/2.0 * (polvec[2] * kvec[0] + kvec[0] * kvec[2])
+    quad_vec[4] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[1] + kvec[1] * kvec[0])
+
+    return quad_vec
