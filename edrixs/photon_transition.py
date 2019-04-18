@@ -40,10 +40,10 @@ def quadrupole_trans_oper(l1, l2):
             t5 = clebsch_gordan(l2, 2, l1, m2, 1, m1)
             t1, t2, t3, t4, t5 = N(t1), N(t2), N(t3), N(t4), N(t5)
 
-            op[0, i1, i2] = (t1 + t2) / np.sqrt(2.0)
-            op[1, i1, i2] = t3
+            op[0, i1, i2] = t3
+            op[1, i1, i2] = (t4 - t5) / np.sqrt(2.0)
             op[2, i1, i2] = (t4 + t5) * 1j / np.sqrt(2.0)
-            op[3, i1, i2] = (t4 - t5) / np.sqrt(2.0)
+            op[3, i1, i2] = (t1 + t2) / np.sqrt(2.0)
             op[4, i1, i2] = (t1 - t2) * 1j / np.sqrt(2.0)
 
     op_spin = np.zeros((5, 2 * n1, 2 * n2), dtype=np.complex128)
@@ -368,10 +368,10 @@ def get_quadrupolar_polvec(polvec, wavevec):
     quad_vec = np.zeros(5, dtype=np.float)
     kvec = wavevec / np.sqrt(np.dot(wavevec, wavevec))
 
-    quad_vec[0] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[0] - polvec[1] * kvec[1])
-    quad_vec[1] = 0.5 * (2 * polvec[2] * kvec[2] - polvec[0] * kvec[0] - polvec[1] * kvec[1])
+    quad_vec[0] = 0.5 * (2 * polvec[2] * kvec[2] - polvec[0] * kvec[0] - polvec[1] * kvec[1])
+    quad_vec[1] = np.sqrt(3.0)/2.0 * (polvec[2] * kvec[0] + kvec[0] * kvec[2])
     quad_vec[2] = np.sqrt(3.0)/2.0 * (polvec[1] * kvec[2] + kvec[2] * kvec[1])
-    quad_vec[3] = np.sqrt(3.0)/2.0 * (polvec[2] * kvec[0] + kvec[0] * kvec[2])
+    quad_vec[3] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[0] - polvec[1] * kvec[1])
     quad_vec[4] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[1] + kvec[1] * kvec[0])
 
     return quad_vec
