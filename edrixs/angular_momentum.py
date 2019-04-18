@@ -469,3 +469,76 @@ def zx_to_rmat(z, x):
     rmat[:, 2] = zz
 
     return rmat
+
+
+def cf_cubic_d(ten_dq):
+    """
+    Given 10Dq, return cubic crystal field matrix for d orbitals
+    in the complex harmonics basis.
+
+    Parameters
+    ----------
+    ten_dq : float scalar
+        The splitting between :math:`eg` and :math:`t2g` orbitals.
+
+    Returns
+    -------
+    cf : :math:`5\\times5` complex array
+        The matrix form of crystal field Hamiltonian in complex harmonics basis.
+    """
+
+    tmp = np.zeros((5, 5), dtype=np.complex)
+    tmp[0, 0] = 0.6 * ten_dq  # dz2
+    tmp[1, 1] = -0.4 * ten_dq  # dzx
+    tmp[2, 2] = -0.4 * ten_dq  # dzy
+    tmp[3, 3] = 0.6 * ten_dq  # dx2-y2
+    tmp[4, 4] = -0.4 * ten_dq  # dxy
+    cf = np.zeros((10, 10), dtype=np.complex)
+    cf[0:10:2, 0:10:2] = tmp
+    cf[1:10:2, 1:10:2] = tmp
+
+    cf[:, :] = cb_op(cf, tmat_r2c('d', True))
+
+    return cf
+
+
+def cf_tetragonal_d(ten_dq, d1, d3):
+    """
+    Given 10Dq, d1, d3, return tetragonal crystal field matrix for d orbitals
+    in the complex harmonics basis.
+
+    Parameters
+    ----------
+    ten_dq : float scalar
+        Parameter used to label cubic crystal splitting.
+
+    d1 : float scalar
+        Paramter used to label tetragonal splitting.
+
+    d3 : float scalar
+        Paramter used to label tetragonal splitting.
+
+    Returns
+    -------
+    cf : :math:`5\\times5` complex array
+        The matrix form of crystal field Hamiltonian in complex harmonics basis.
+    """
+
+    dt = (3.0 * d3 - 4.0 * d1) / 35
+    ds = (d3 + d1) / 7.0
+    dq = ten_dq / 10.0
+
+    tmp = np.zeros((5, 5), dtype=np.complex)
+    tmp[0, 0] = 6 * dq - 2 * ds - 6 * dt  # d3z2-r2
+    tmp[1, 1] = -4 * dq - 1 * ds + 4 * dt  # dzx
+    tmp[2, 2] = -4 * dq - 1 * ds + 4 * dt  # dzy
+    tmp[3, 3] = 6 * dq + 2 * ds - 1 * dt  # dx2-y2
+    tmp[4, 4] = -4 * dq + 2 * ds - 1 * dt  # dxy
+
+    cf = np.zeros((10, 10), dtype=np.complex)
+    cf[0:10:2, 0:10:2] = tmp
+    cf[1:10:2, 1:10:2] = tmp
+
+    cf[:, :] = cb_op(cf, tmat_r2c('d', True))
+
+    return cf
