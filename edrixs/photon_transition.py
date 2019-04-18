@@ -207,26 +207,27 @@ def get_trans_oper(case):
     return res
 
 
-def get_wavevector_in(thin, phi, ein, local_axis=np.eye(3)):
+def unit_wavevector(theta, phi, local_axis=np.eye(3), direction='in'):
+    if direction.strip() == 'in':
+        unit_k = np.array([-np.cos(theta) * np.cos(phi),
+                           -np.cos(theta) * np.sin(phi),
+                           -np.sin(theta)])
+        unit_k = np.dot(local_axis, unit_k)
+    elif direction.strip() == 'out':
+        unit_k = np.array([-np.cos(theta) * np.cos(phi),
+                           -np.cos(theta) * np.sin(phi),
+                           np.sin(theta)])
+        unit_k = np.dot(local_axis, unit_k)
+    else:
+        raise Exception("Unknown direction in unit_wavevector: ", direction)
+
+    return unit_k
+
+
+def wavevector_with_length(theta, phi, energy, local_axis=np.eye(3), direction='in'):
     hbarc = 1.973270533 * 1000  # eV*A
-    kin_len = ein / hbarc
-    K_in = kin_len * np.array([-np.cos(thin) * np.cos(phi),
-                               -np.cos(thin) * np.sin(phi),
-                               -np.sin(thin)])
-    K_in_global = np.dot(local_axis, K_in)
-
-    return K_in_global
-
-
-def get_wavevector_out(thout, phi, eout, local_axis=np.eye(3)):
-    hbarc = 1.973270533 * 1000  # eV*A
-    kout_len = eout / hbarc
-    K_out = kout_len * np.array([-np.cos(thout) * np.cos(phi),
-                                 -np.cos(thout) * np.sin(phi),
-                                 np.sin(thout)])
-    K_out_global = np.dot(local_axis, K_out)
-
-    return K_out_global
+    k_len = energy / hbarc
+    return k_len * unit_wavevector(theta, phi, local_axis, direction)
 
 
 def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
@@ -262,28 +263,29 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
         The wave vector of the scattered photon, with respect to the global :math:`xyz` -axis.
     """
 
-    K_in_global = get_wavevector_in(thin, phi, ein, local_axis)
-    K_out_global = get_wavevector_out(thout, phi, eout, local_axis)
+    K_in_global = wavevector_with_length(thin, phi, ein, local_axis, direction='in')
+    K_out_global = wavevector_with_length(thout, phi, eout, local_axis, direction='out')
 
     return K_in_global, K_out_global
 
 
-def linear_polvec_in(thin, phi, alpha, local_axis=np.eye(3)):
-    ei = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - thin),
-                    -np.sin(phi) * np.cos(np.pi / 2.0 - thin),
-                    np.sin(np.pi / 2.0 - thin)]) * np.cos(alpha)
-          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
+def linear_polvec(theta, phi, alpha, local_axis=np.eye(3), case='in'):
+    if case.strip() == 'in':
+        polvec = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - theta),
+                            -np.sin(phi) * np.cos(np.pi / 2.0 - theta),
+                            np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha)
+                  + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
+        polvec = np.dot(local_axis, polvec)
+    elif case.strip() == 'out':
+        polvec = (np.array([np.cos(phi) * np.cos(np.pi / 2.0 - theta),
+                            np.sin(phi) * np.cos(np.pi / 2.0 - theta),
+                            np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha)
+                  + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
+        polvec = np.dot(local_axis, polvec)
+    else:
+        raise Exception("Unknown case in linear_polvec: ", case)
 
-    return np.dot(local_axis, ei)
-
-
-def linear_polvec_out(thout, phi, beta, local_axis=np.eye(3)):
-    ef = (np.array([np.cos(phi) * np.cos(np.pi / 2.0 - thout),
-                    np.sin(phi) * np.cos(np.pi / 2.0 - thout),
-                    np.sin(np.pi / 2.0 - thout)]) * np.cos(beta)
-          + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(beta))
-
-    return np.dot(local_axis, ef)
+    return polvec
 
 
 def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3),
@@ -332,10 +334,10 @@ def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3)
         with respect to the global :math:`xyz` -axis.
     """
 
-    ex = linear_polvec_in(thin, phi, 0, local_axis)
-    ey = linear_polvec_in(thin, phi, np.pi/2.0, local_axis)
+    ex = linear_polvec(thin, phi, 0, local_axis, case='in')
+    ey = linear_polvec(thin, phi, np.pi/2.0, local_axis, case='in')
     if case[0].strip() == 'linear':
-        ei_global = linear_polvec_in(thin, phi, alpha, local_axis)
+        ei_global = linear_polvec(thin, phi, alpha, local_axis, case='in')
     elif case[0].strip() == 'left':
         ei_global = (ex + 1j * ey) / np.sqrt(2.0)
     elif case[0].strip() == 'right':
@@ -343,10 +345,10 @@ def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3)
     else:
         raise Exception("Unknown polarization case for incident photon: ", case[0])
 
-    ex = linear_polvec_out(thout, phi, 0, local_axis)
-    ey = linear_polvec_out(thout, phi, np.pi/2.0, local_axis)
+    ex = linear_polvec(thout, phi, 0, local_axis, case='out')
+    ey = linear_polvec(thout, phi, np.pi/2.0, local_axis, case='out')
     if case[1].strip() == 'linear':
-        ef_global = linear_polvec_out(thout, phi, beta, local_axis)
+        ef_global = linear_polvec(thout, phi, beta, local_axis, case='out')
     elif case[1].strip() == 'left':
         ef_global = (ex + 1j * ey) / np.sqrt(2.0)
     elif case[1].strip() == 'right':
@@ -389,10 +391,10 @@ def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=np.eye(3), case='linear')
         global :math:`xyz` -axis.
     """
 
-    ex = linear_polvec_in(thin, phi, 0, local_axis)
-    ey = linear_polvec_in(thin, phi, np.pi/2.0, local_axis)
+    ex = linear_polvec(thin, phi, 0, local_axis, case='in')
+    ey = linear_polvec(thin, phi, np.pi/2.0, local_axis, case='in')
     if case.strip() == 'linear':
-        ei_global = linear_polvec_in(thin, phi, alpha, local_axis)
+        ei_global = linear_polvec(thin, phi, alpha, local_axis, case='in')
     elif case.strip() == 'left':
         ei_global = (ex + 1j * ey) / np.sqrt(2.0)
     elif case.strip() == 'right':

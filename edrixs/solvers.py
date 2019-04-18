@@ -10,12 +10,15 @@ from .angular_momentum import rmat_to_euler, get_wigner_dmat
 from .manybody_operator import two_fermion, four_fermion
 from .fock_basis import get_fock_bin_by_N
 from .basis_transform import cb_op2, tmat_r2c
-from .photon_transition import get_trans_oper, get_quadrupolar_polvec
+from .photon_transition import get_trans_oper, quadrupole_polvec
+from .photon_transition import dipole_polvec_xas, dipole_polvec_rixs, unit_wavevector
+from .rixs_utils import scattering_mat
 
 
-def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0, v_soc=(0.0, 0.0), c_soc=0.0,
+def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
+            v_soc=(0.0, 0.0), c_soc=0.0,
             v_noccu=1, slater=([0], [0]), ext_B=np.zeros(3),
-            cf_mat=None, other_mat=None, loc_axis=np.eye(3)):
+            cf_mat=None, other_mat=None, local_axis=np.eye(3)):
     """
     Perform ED for two atomic shell case, one Valence-shell plus one Core-shell.
     For example, for Ni-L3 edge RIXS, they are 3d valence shell and 2p core shell.
@@ -131,16 +134,16 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0, v_soc=(0.0, 0.0), 
     if npol == 3:
         for i in range(3):
             for j in range(3):
-                tmp_g[i] += loc_axsi[i,j] * tmp[j]
+                tmp_g[i] += local_axis[i, j] * tmp[j]
 
     # quadrupolar transition
     elif npol == 5:
-        alpha, beta, gamma = rmat_to_euler(loc_axis)
+        alpha, beta, gamma = rmat_to_euler(local_axis)
         wignerD = get_wigner_dmat(4, alpha, beta, gamma)
         rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
         for i in range(5):
             for j in range(5):
-                tmp_g[i] += rotmat[i,j] * tmp[j]
+                tmp_g[i] += rotmat[i, j] * tmp[j]
     else:
         raise Exception("Have NOT implemented this case: ", npol)
 
@@ -151,14 +154,17 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0, v_soc=(0.0, 0.0), 
         T_abs[i] = two_fermion(tmp2[i], basis_n, basis_i)
         T_abs[i] = cb_op2(T_abs[i], evec_n, evec_i)
 
-    return eval_i, eval_n, T_abs_g
+    return eval_i, eval_n, T_abs
 
 
 def xas_1v1c(eval_i, eval_n, T_abs,
-             ominc_mesh=np.linspace(-10, 10, 100),
-             gamma=np.ones(100)*0.1,
-             pol=np.ones(3)/np.sqrt(3.0),
-             kvec=np.array([0, 0, 1]),
+             thin=np.pi/2.0,
+             phi=0,
+             alpha=0,
+             case='linear',
+             scattering_plane_axis=np.eye(3),
+             ominc_mesh=np.linspace(1e-6, 10, 100),
+             gamma_c=0.1,
              gs=[0],
              temperature=1.0):
 
@@ -167,16 +173,18 @@ def xas_1v1c(eval_i, eval_n, T_abs,
     xas = np.zeros(n_om, dtype=np.float)
     gamma_core = np.zeros(n_om, dtype=np.float)
     prob = boltz_dist([eval_i[i] for i in gs], temperature)
-    if np.isscalar(gamma):
-        gamma_core[:] = np.ones(n_om) * gamma
+    if np.isscalar(gamma_c):
+        gamma_core[:] = np.ones(n_om) * gamma_c
     else:
-        gamma_core[:] = gamma
+        gamma_core[:] = gamma_c
 
     polvec = np.zeros(npol, dtype=np.complex)
     if npol == 3:  # Dipolar transition
-        polvec[:] = pol
+        polvec[:] = dipole_polvec_xas(thin, phi, alpha, scattering_plane_axis, case)
     if npol == 5:  # Quadrupolar transition
-        polvec[:] = quadrupolar_polvec(pol, kvec)
+        pol = dipole_polvec_xas(thin, phi, alpha, scattering_plane_axis, case)
+        kvec = unit_wavevector(thin, phi, scattering_plane_axis, 'in')
+        polvec[:] = quadrupole_polvec(pol, kvec)
 
     for i, om in enumerate(ominc_mesh):
         for j in gs:
@@ -186,3 +194,70 @@ def xas_1v1c(eval_i, eval_n, T_abs,
             xas[i] += (prob[j] * np.sum(np.abs(F_mag)**2 * gamma_core[i] / np.pi /
                        ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2)))
     return xas
+
+
+def rixs_1v1c(eval_i, eval_n, T_abs,
+              thin=np.pi/4.0,
+              thout=np.pi/4.0,
+              phi=0,
+              alpha=[(0, 0)],
+              pol=[('linear', 'linear')],
+              scattering_plane_axis=np.eye(3),
+              ominc_mesh=np.linspace(1E-6, 10, 100),
+              eloss_mesh=np.linspace(-0.1, 1, 100),
+              gamma_c=0.1,
+              gamma_f=0.01,
+              gs=[0],
+              temperature=1.0):
+
+    n_ominc = len(ominc_mesh)
+    n_eloss = len(eloss_mesh)
+    gamma_core = np.zeros(n_ominc, dtype=np.float)
+    gamma_final = np.zeros(n_eloss, dtype=np.float)
+    if np.isscalar(gamma_c):
+        gamma_core[:] = np.ones(n_ominc) * gamma_c
+    else:
+        gamma_core[:] = gamma_c
+
+    if np.isscalar(gamma_f):
+        gamma_final[:] = np.ones(n_eloss) * gamma_f
+    else:
+        gamma_final[:] = gamma_f
+
+    prob = boltz_dist([eval_i[i] for i in gs], temperature)
+    rixs = np.zeros((len(pol), len(eloss_mesh), len(ominc_mesh)), dtype=np.float)
+    ntrans, n, m = T_abs.shape
+    T_emi = np.zeros((ntrans, m, n), dtype=np.complex128)
+    for i in range(ntrans):
+        T_emi[i] = np.conj(np.transpose(T_abs[i]))
+    polvec_i = np.zeros(ntrans, dtype=np.complex)
+    polvec_f = np.zeros(ntrans, dtype=np.complex)
+
+    # Calculate RIXS
+    for i, om in enumerate(ominc_mesh):
+        F_fi = scattering_mat(eval_i, eval_n, T_abs[:, :, gs], T_emi, om, gamma_core[i])
+        for j, pol_type in enumerate(pol):
+            ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha[j][0], alpha[j][1],
+                                        scattering_plane_axis, pol_type)
+            # dipolar transition
+            if ntrans == 3:
+                polvec_i[:] = ei
+                polvec_f[:] = ef
+            # quadrupolar transition
+            elif ntrans == 5:
+                ki = unit_wavevector(thin, phi, scattering_plane_axis, direction='in')
+                kf = unit_wavevector(thout, phi, scattering_plane_axis, direction='out')
+                polvec_i[:] = quadrupole_polvec(ei, ki)
+                polvec_f[:] = quadrupole_polvec(ef, kf)
+            else:
+                raise Exception("Have NOT implemented this type of transition operators")
+            # scattering magnitude with polarization vectors
+            F_mag = np.zeros((len(eval_i), len(gs)), dtype=np.complex)
+            for m in range(ntrans):
+                for n in range(ntrans):
+                    F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
+            for m in gs:
+                for n in range(len(eval_i)):
+                    rixs[j, :, i] += (prob[m] * np.abs(F_mag[n, m])**2 * gamma_final / np.pi /
+                                      ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 + gamma_final**2))
+    return rixs
