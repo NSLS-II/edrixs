@@ -6,15 +6,16 @@ from .coulomb_utensor import get_umat_slater
 from .iostream import write_tensor
 from .soc import atom_hsoc
 from .angular_momentum import get_sx, get_sy, get_sz, get_lx, get_ly, get_lz
+from .angular_momentum import rmat_to_euler, get_wigner_dmat
 from .manybody_operator import two_fermion, four_fermion
 from .fock_basis import get_fock_bin_by_N
-from .basis_transform import cb_op2
+from .basis_transform import cb_op2, tmat_r2c
 from .photon_transition import get_trans_oper, get_quadrupolar_polvec
 
 
 def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0, v_soc=(0.0, 0.0), c_soc=0.0,
-            v_noccu=1, slater=([0], [0]), ext_B=np.zeros(3, dtype=np.float),
-            cf_mat=None, other_mat=None, loc_axis=np.eye(3, dtype=np.float)):
+            v_noccu=1, slater=([0], [0]), ext_B=np.zeros(3),
+            cf_mat=None, other_mat=None, loc_axis=np.eye(3)):
     """
     Perform ED for two atomic shell case, one Valence-shell plus one Core-shell.
     For example, for Ni-L3 edge RIXS, they are 3d valence shell and 2p core shell.
@@ -123,26 +124,32 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0, v_soc=(0.0, 0.0), 
 
     # Build dipolar transition operators in local-xyz axis
     tmp = get_trans_oper(case)
-    npol = tmp.shape[0]
-    tmp2 = np.zeros((npol, ntot, ntot), dtype=np.complex)
-    T_abs = np.zeros((npol, ncfg_n, ncfg_i), dtype=np.complex)
-    T_abs_g = np.zeros((npol, ncfg_n, ncfg_i), dtype=np.complex)
-
-    for i in range(npol):
-        tmp2[i, 0:v_norb, v_norb:ntot] = tmp[i]
-        T_abs[i] = two_fermion(tmp2[i], basis_n, basis_i)
-        T_abs[i] = cb_op2(T_abs[i], evec_n, evec_i)
-
+    npol, n, m = tmp.shape
+    tmp_g = np.zeros((npol, n, m), dtype=np.complex)
     # Transform the transition operators to global-xyz axis
     # dipolar transition
     if npol == 3:
         for i in range(3):
-            T_abs_g[i] = (T_abs[0] * loc_axis[i, 0] +
-                          T_abs[1] * loc_axis[i, 1] +
-                          T_abs[2] * loc_axis[i, 2])
-    # TODO
+            for j in range(3):
+                tmp_g[i] += loc_axsi[i,j] * tmp[j]
+
     # quadrupolar transition
-    # else if npol == 5:
+    elif npol == 5:
+        alpha, beta, gamma = rmat_to_euler(loc_axis)
+        wignerD = get_wigner_dmat(4, alpha, beta, gamma)
+        rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
+        for i in range(5):
+            for j in range(5):
+                tmp_g[i] += rotmat[i,j] * tmp[j]
+    else:
+        raise Exception("Have NOT implemented this case: ", npol)
+
+    tmp2 = np.zeros((npol, ntot, ntot), dtype=np.complex)
+    T_abs = np.zeros((npol, ncfg_n, ncfg_i), dtype=np.complex)
+    for i in range(npol):
+        tmp2[i, 0:v_norb, v_norb:ntot] = tmp_g[i]
+        T_abs[i] = two_fermion(tmp2[i], basis_n, basis_i)
+        T_abs[i] = cb_op2(T_abs[i], evec_n, evec_i)
 
     return eval_i, eval_n, T_abs_g
 
@@ -165,11 +172,11 @@ def xas_1v1c(eval_i, eval_n, T_abs,
     else:
         gamma_core[:] = gamma
 
-    polvec = np.zeros(npol, dtype=np.float)
+    polvec = np.zeros(npol, dtype=np.complex)
     if npol == 3:  # Dipolar transition
         polvec[:] = pol
     if npol == 5:  # Quadrupolar transition
-        polvec[:] = get_quadrupolar_polvec(pol, kvec)
+        polvec[:] = quadrupolar_polvec(pol, kvec)
 
     for i, om in enumerate(ominc_mesh):
         for j in gs:
