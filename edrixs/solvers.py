@@ -232,15 +232,16 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     return eval_i, eval_n, T_abs
 
 
-def xas_1v1c(eval_i, eval_n, T_abs,
-             thin=np.pi/2.0,
-             phi=0,
-             scattering_plane_axis=np.eye(3),
-             poltype=[('isotropic', 0)],
-             ominc_mesh=np.linspace(1e-6, 10, 100),
+def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
              gamma_c=0.1,
+             thin=1.0,
+             phi=0.0,
+             poltype=[('isotropic', 0.0)],
              gs_list=[0],
-             temperature=1.0):
+             temperature=1.0,
+             scattering_plane_axis=np.eye(3)
+             ):
+
     """
     Calculate XAS for one valence shell plus one core shell.
 
@@ -255,25 +256,6 @@ def xas_1v1c(eval_i, eval_n, T_abs,
     T_abs : 3d complex array
         The transition operators in the eigenstates basis.
 
-    thin : float number
-        The incident angle of photon.
-
-    phi : float number
-        Azimuthal angle in radian, defined with respect to the
-        :math:`x`-axis: scattering_plane_axis[:,0].
-
-    scattering_plane_axis : 3*3 float array
-        The local axis defining the scattering plane. The scattering plane is defined in
-        the local :math:`zx`-plane.
-        local :math:`x`-axis: scattering_plane_axis[:,0]
-        local :math:`y`-axis: scattering_plane_axis[:,1]
-        local :math:`z`-axis: scattering_plane_axis[:,2]
-
-    poltype : list of tuples
-        Type of polarization, options are
-        ('linear', alpha), where alpha is the angle between the polarization vector and
-        the scattering plane. ('left', 0), ('right', 0), ('isotropic', 0).
-
     ominc_mesh : 1d float array
         The mesh of the incident energy of photon.
 
@@ -281,12 +263,30 @@ def xas_1v1c(eval_i, eval_n, T_abs,
         The core-hole life-time broadening factor. It can be a constant value
         or incident energy dependent.
 
+    thin : float number
+        The incident angle of photon.
+
+    phi : float number
+        Azimuthal angle in radian, defined with respect to the
+        :math:`x`-axis: scattering_plane_axis[:,0].
+
+    poltype : list of tuples
+        Type of polarization, options are
+        ('linear', alpha), where alpha is the angle between the polarization vector and
+        the scattering plane. ('left', 0), ('right', 0), ('isotropic', 0).
+
     gs_list : 1d int list
         The indices of initial states which will be used as initial states in XAS calculations.
 
     temperature : float number
         Temperature (in K) for boltzmann distribution.
 
+    scattering_plane_axis : 3*3 float array
+        The local axis defining the scattering plane. The scattering plane is defined in
+        the local :math:`zx`-plane.
+        local :math:`x`-axis: scattering_plane_axis[:,0]
+        local :math:`y`-axis: scattering_plane_axis[:,1]
+        local :math:`z`-axis: scattering_plane_axis[:,2]
 
     Returns
     -------
@@ -329,18 +329,17 @@ def xas_1v1c(eval_i, eval_n, T_abs,
     return xas
 
 
-def rixs_1v1c(eval_i, eval_n, T_abs,
-              thin=np.pi/4.0,
-              thout=np.pi/4.0,
-              phi=0,
-              scattering_plane_axis=np.eye(3),
-              poltype=[('linear', 0, 'linear', 0)],
-              ominc_mesh=np.linspace(1E-6, 10, 100),
-              eloss_mesh=np.linspace(-0.1, 1, 100),
+def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
               gamma_c=0.1,
               gamma_f=0.01,
+              thin=1.0,
+              thout=1.0,
+              phi=0.0,
+              poltype=[('linear', 0.0, 'linear', 0.0)],
               gs_list=[0],
-              temperature=1.0):
+              temperature=1.0,
+              scattering_plane_axis=np.eye(3)
+              ):
     """
     Calculate RIXS for one valence shell plus one core shell.
 
@@ -354,26 +353,6 @@ def rixs_1v1c(eval_i, eval_n, T_abs,
 
     T_abs : 3d complex array
         The transition operators in the eigenstates basis.
-
-    thin : float number
-        The incident angle of photon.
-
-    thout : float number
-        The scattered angle of photon.
-
-    phi : float number
-        Azimuthal angle in radian, defined with respect to the
-        :math:`x`-axis: scattering_plane_axis[:,0].
-
-    scattering_plane_axis : 3*3 float array
-        The local axis defining the scattering plane. The scattering plane is defined in
-        the local :math:`zx`-plane.
-        local :math:`x`-axis: scattering_plane_axis[:,0]
-        local :math:`y`-axis: scattering_plane_axis[:,1]
-        local :math:`z`-axis: scattering_plane_axis[:,2]
-
-    poltype : list of 4-elements-tuples
-        Type of polarizations.
 
     ominc_mesh : 1d float array
         The mesh of the incident energy of photon.
@@ -389,12 +368,31 @@ def rixs_1v1c(eval_i, eval_n, T_abs,
         The final states life-time broadening factor. It can be a constant value
         or energy loss dependent.
 
+    thin : float number
+        The incident angle of photon.
+
+    thout : float number
+        The scattered angle of photon.
+
+    phi : float number
+        Azimuthal angle in radian, defined with respect to the
+        :math:`x`-axis: scattering_plane_axis[:,0].
+
+    poltype : list of 4-elements-tuples
+        Type of polarizations.
+
     gs_list : 1d int list
         The indices of initial states which will be used as initial states in RIXS calculations.
 
     temperature : float number
         Temperature (in K) for boltzmann distribution.
 
+    scattering_plane_axis : 3*3 float array
+        The local axis defining the scattering plane. The scattering plane is defined in
+        the local :math:`zx`-plane.
+        local :math:`x`-axis: scattering_plane_axis[:,0]
+        local :math:`y`-axis: scattering_plane_axis[:,1]
+        local :math:`z`-axis: scattering_plane_axis[:,2]
 
     Returns
     -------
@@ -417,7 +415,7 @@ def rixs_1v1c(eval_i, eval_n, T_abs,
         gamma_final[:] = gamma_f
 
     prob = boltz_dist([eval_i[i] for i in gs_list], temperature)
-    rixs = np.zeros((len(eloss_mesh), len(ominc_mesh), len(poltype)), dtype=np.float)
+    rixs = np.zeros((len(ominc_mesh), len(eloss_mesh), len(poltype)), dtype=np.float)
     ntrans, n, m = T_abs.shape
     T_emi = np.zeros((ntrans, m, n), dtype=np.complex128)
     for i in range(ntrans):
@@ -450,6 +448,6 @@ def rixs_1v1c(eval_i, eval_n, T_abs,
                     F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
             for m in gs_list:
                 for n in range(len(eval_i)):
-                    rixs[:, i, j] += (prob[m] * np.abs(F_mag[n, m])**2 * gamma_final / np.pi /
+                    rixs[i, :, j] += (prob[m] * np.abs(F_mag[n, m])**2 * gamma_final / np.pi /
                                       ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 + gamma_final**2))
     return rixs

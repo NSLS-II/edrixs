@@ -78,20 +78,20 @@ if __name__ == "__main__":
                     rixs[j, :, i] += (np.abs(F_magnitude[n, m])**2 * gamma_f / np.pi /
                                       ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 +
                                        gamma_f**2) * gs_prob[m])
-    ## gaussian broadening
-    #inc_res = 0.17
-    #emi_res = 0.12
-    #gauss = np.zeros((neloss, nom))
-    #mid_in = (min(om_mesh) + max(om_mesh)) / 2.0
-    #mid_out = (min(eloss_mesh) + max(eloss_mesh)) / 2.0
-    #for i in range(nom):
-    #    for j in range(neloss):
-    #        tmp_num = 2 * np.pi * inc_res * emi_res
-    #        gauss[j, i] = np.exp(-((mid_in - om_mesh[i]) ** 2 / (2 * inc_res**2) +
-    #                               (mid_out - eloss_mesh[j])**2 / (2 * emi_res**2))) / tmp_num
-    #for i in range(4):
-    #    rixs[i, :, :] = signal.fftconvolve(rixs[i, :, :], gauss, mode='same')
-    #print("edrixs >>> done !")
+    # gaussian broadening
+    inc_res = 0.17
+    emi_res = 0.12
+    gauss = np.zeros((neloss, nom))
+    mid_in = (min(om_mesh) + max(om_mesh)) / 2.0
+    mid_out = (min(eloss_mesh) + max(eloss_mesh)) / 2.0
+    for i in range(nom):
+        for j in range(neloss):
+            tmp_num = 2 * np.pi * inc_res * emi_res
+            gauss[j, i] = np.exp(-((mid_in - om_mesh[i]) ** 2 / (2 * inc_res**2) +
+                                   (mid_out - eloss_mesh[j])**2 / (2 * emi_res**2))) / tmp_num
+    for i in range(4):
+        rixs[i, :, :] = signal.fftconvolve(rixs[i, :, :], gauss, mode='same')
+    print("edrixs >>> done !")
 
     f = open('rixs.dat', 'w')
     for i in range(neloss):
