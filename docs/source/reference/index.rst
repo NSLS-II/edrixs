@@ -27,6 +27,7 @@ included in EDRIXS, describing what they are and what they do.
    plot_spectrum
    rixs_utils
    soc
+   solvers
    utils
    wannier_ham
 
