@@ -45,9 +45,9 @@ poltype_rixs = [('linear', 0, 'linear', 0), ('linear', 0, 'linear', np.pi/2.0)] 
 
 # Energy grid
 ominc_xas = np.linspace(off - 10, off + 20, 1000)  # for XAS
-ominc_rixs_L3 = np.linspace(-5.9 + off, -0.9 + off, 100) # incident energy at L3 edge
-ominc_rixs_L2 = np.linspace(10.4 + off, 14.9 + off, 100) # incident energy at L3 edge
-eloss = np.linspace(-0.5, 5.0, 1000) # energy loss for RIXS
+ominc_rixs_L3 = np.linspace(-5.9 + off, -0.9 + off, 100)  # incident energy at L3 edge
+ominc_rixs_L2 = np.linspace(10.4 + off, 14.9 + off, 100)  # incident energy at L3 edge
+eloss = np.linspace(-0.5, 5.0, 1000)  # energy loss for RIXS
 
 # Run ED
 result = edrixs.ed_1v1c(v_name='d', c_name='p', v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
@@ -69,7 +69,7 @@ rixs_L2 = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc_rixs_L2, eloss, gamma
                            gs_list=[0, 1, 2], temperature=300)
 
 # Plot
-fig = plt.figure(figsize=(16,14))
+fig = plt.figure(figsize=(16, 14))
 mpl.rcParams['font.size'] = 20
 
 ax1 = plt.subplot(2, 2, 1)
@@ -81,9 +81,9 @@ plt.title(r'(a) Energy of multiplets')
 
 ax2 = plt.subplot(2, 2, 2)
 plt.grid()
-plt.plot(ominc_xas, xas[:,0], '-')
-plt.xlabel(r'Incident Energy (eV)') 
-plt.ylabel(r'XAS Intensity (a.u.)') 
+plt.plot(ominc_xas, xas[:, 0], '-')
+plt.xlabel(r'Incident Energy (eV)')
+plt.ylabel(r'XAS Intensity (a.u.)')
 plt.title(r'(b) Isotropic XAS')
 
 ax3 = plt.subplot(2, 2, 3)
