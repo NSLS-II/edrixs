@@ -24,3 +24,7 @@ FFLAGS = -c $(CPP) $(CHECK) $(CDUMP) $(LEVEL)
 
 #-------------------------------------------------------------------------
 LIBS = -L/opt/local/lib -lopenblas -lparpack -larpack
+F2PY   = f2py
+F2PYC  = $(F90)
+F2PYL  = $(LIBS)
+F2PYFLAGS = --fcompiler=gnu --f77exec=$(F90) --f90exec=$(F90) --opt='-O2'

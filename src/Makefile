@@ -6,7 +6,7 @@ objects=m_constants.o m_control.o m_types.o m_global.o utils.o io.o fock.o spmv.
 
 default: all
 
-all: ed xas rixs opavg
+all: ed xas rixs opavg pylib
 
 ed: $(objects) ed_main.o 
 	$(LINKER) $(objects) ed_main.o -o ed.x  $(LIBS)
@@ -19,6 +19,9 @@ rixs: $(objects) rixs_main.o
 
 opavg: $(objects) opavg_main.o
 	$(LINKER) $(objects) opavg_main.o -o opavg.x  $(LIBS)
+
+pylib: $(objects)
+	$(F2PY) -c $(F2PYFLAGS) -m fedrixs $(F2PYL) pyapi.f90 $(objects)
 
 .f90.o:
 	$(F90) $(FFLAGS) $*.f90
