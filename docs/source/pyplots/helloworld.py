@@ -105,4 +105,5 @@ plt.ylabel(r'Incident Energy (eV)')
 plt.title(r'(d) RIXS map at $L_2$ edge (LH)')
 plt.subplots_adjust(left=0.1, right=0.90, bottom=0.08, top=0.90,
                     wspace=0.2, hspace=0.3)
+plt.savefig('helloworld.png')
 plt.show()
