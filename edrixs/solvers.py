@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
+import scipy
 from .utils import info_atomic_shell, boltz_dist
 from .coulomb_utensor import get_umat_slater
 from .iostream import write_tensor, write_emat, write_umat
@@ -91,6 +92,7 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
         The matrices of transition operators in the eigenvector basis,
         and they are defined with respect to the global :math:`xyz`-axis.
     """
+    print("edrixs >>> Running ED ...")
     v_name = v_name.strip()
     c_name = c_name.strip()
     info_shell = info_atomic_shell()
@@ -185,16 +187,20 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     print("    Dimension of the intermediate Hamiltonian: ", ncfg_n)
 
     # Build many-body Hamiltonian in Fock basis
+    print("edrixs >>> Building Many-body Hamiltonians ...")
     hmat_i = np.zeros((ncfg_i, ncfg_i), dtype=np.complex)
     hmat_n = np.zeros((ncfg_n, ncfg_n), dtype=np.complex)
     hmat_i[:, :] += two_fermion(emat_i, basis_i, basis_i)
     hmat_i[:, :] += four_fermion(umat_i, basis_i)
     hmat_n[:, :] += two_fermion(emat_n, basis_n, basis_n)
     hmat_n[:, :] += four_fermion(umat_n, basis_n)
+    print("edrixs >>> Done !")
 
     # Do exact-diagonalization to get eigenvalues and eigenvectors
-    eval_i, evec_i = np.linalg.eigh(hmat_i)
-    eval_n, evec_n = np.linalg.eigh(hmat_n)
+    print("edrixs >>> Exact Diagonalization of Hamiltonians ...")
+    eval_i, evec_i = scipy.linalg.eigh(hmat_i)
+    eval_n, evec_n = scipy.linalg.eigh(hmat_n)
+    print("edrixs >>> Done !")
 
     if verbose == 1:
         write_tensor(eval_i, 'eval_i.dat')
@@ -229,6 +235,7 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
         T_abs[i] = two_fermion(tmp2[i], basis_n, basis_i)
         T_abs[i] = cb_op2(T_abs[i], evec_n, evec_i)
 
+    print("edrixs >>> ED Done !")
     return eval_i, eval_n, T_abs
 
 
@@ -294,6 +301,7 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
         The calculated XAS spectra.
     """
 
+    print("edrixs >>> Running XAS ...")
     n_om = len(ominc_mesh)
     npol, ncfg_n = T_abs.shape[0], T_abs.shape[1]
     xas = np.zeros((n_om, len(poltype)), dtype=np.float)
@@ -326,6 +334,8 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
                     F_mag += T_abs[k, :, j] * polvec[k]
                 xas[i, it] += (prob[j] * np.sum(np.abs(F_mag)**2 * gamma_core[i] / np.pi /
                                ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2)))
+
+    print("edrixs >>> XAS Done !")
     return xas
 
 
@@ -400,6 +410,7 @@ def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
         The calculated RIXS spectra.
     """
 
+    print("edrixs >>> Running RIXS ... ")
     n_ominc = len(ominc_mesh)
     n_eloss = len(eloss_mesh)
     gamma_core = np.zeros(n_ominc, dtype=np.float)
@@ -450,4 +461,6 @@ def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
                 for n in range(len(eval_i)):
                     rixs[i, :, j] += (prob[m] * np.abs(F_mag[n, m])**2 * gamma_final / np.pi /
                                       ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 + gamma_final**2))
+
+    print("edrixs >>> RIXS Done !")
     return rixs

@@ -1,103 +1,61 @@
 #!/usr/bin/env python
 
-
 import numpy as np
-from scipy import signal
 import edrixs
 
 if __name__ == "__main__":
-    '''
-    Purpose: This example shows how to calculate RIXS spectrum.
-             This example use purely python code.
-    '''
+    # Atomic shell settings
+    # ---------------------
+    # Slater integrals
+    F2_dd, F4_dd = 12.234 * 0.65, 7.598 * 0.65
+    F0_dd = edrixs.get_F0('d', F2_dd, F4_dd)
+    G1_dp, G3_dp = 5.787 * 0.7, 3.291 * 0.7
+    F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
+    F2_dp = 7.721 * 0.95
+    slater = ([F0_dd, F2_dd, F4_dd], [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])
 
-    # PARAMETERS
-    # -----------
-    # the parameters for the experimental RIXS geometry are taken from [PRL 117, 147401 (2016)]
-    # the incident angle of X-ray
-    thin, thout = 15 / 180.0 * np.pi, 75 / 180.0 * np.pi
-    # azimuthal angle
-    phi = 0.0
-    # core-hole life-time broadening
-    gamma_n = 0.20
-    # resolution of RIXS excitations
-    gamma_f = 0.10
-    # energy offset of the incident X-ray
-    om_offset = 857.4
-    # set energy mesh of the incident X-ray (eV)
-    # L3 edge
-    om1, om2 = -5.9, -0.9
-    # L2 dege
-    # om1, om2 = 10.9, 14.9
-    nom = 100
-    om_mesh = np.linspace(om1, om2, nom)
-    # energy loss mesh
-    neloss = 1000
-    eloss_mesh = np.linspace(-0.5, 5.0, neloss)
-    # ground state list
-    gs_list = list(range(0, 3))
-    # temperature
-    T = 300
-    # END of PARAMETERS
-    # ------------------
+    # Spin-orbit coupling strength
+    zeta_d_i, zeta_d_n, zeta_p_n = 0.083, 0.102, 11.24
 
-    # load data, the eigenvalues of the initial and the intermediate Hamiltonian,
-    # and the transition matrix
-    data = np.loadtxt('eval_i.dat')
-    eval_i = data[:, 1]
-    data = np.loadtxt('eval_n.dat')
-    eval_n = data[:, 1]
-    ncfgs_n, ncfgs_i = len(eval_n), len(eval_i)
-    # the transition operator for the absorption process
-    data = np.loadtxt('trans_mat.dat')
-    trans_mat_abs = (data[:, 3].reshape((3, ncfgs_n, ncfgs_i)) +
-                     1j * data[:, 4].reshape((3, ncfgs_n, ncfgs_i)))
-    # the transition operator for the emission process
-    trans_mat_emi = np.zeros((3, ncfgs_i, ncfgs_n), dtype=np.complex128)
-    for i in range(3):
-        trans_mat_emi[i] = np.conj(np.transpose(trans_mat_abs[i]))
+    # Tetragonal crystal field splitting
+    dq10, d1, d3 = 1.3, 0.05, 0.2
+    cf = edrixs.cf_tetragonal_d(dq10, d1, d3)
 
-    # We calculate RIXS for \pi-\pi, \pi-\sigma, \sigma-\pi, \sigma-\sigma polarizations
-    rixs = np.zeros((4, neloss, nom), dtype=np.float64)
-    gs_prob = edrixs.boltz_dist([eval_i[i] for i in gs_list], T)
-    polvec_list = [(0, 0), (0, np.pi / 2.0), (np.pi / 2.0, 0), (np.pi / 2.0, np.pi / 2.0)]
+    # Energy shift of the core level
+    off = 857.4
 
-    print("edrixs >>> calculating RIXS ...")
-    for i, om_inc in enumerate(om_mesh):
-        print("    incident X-ray energy:  ", i, "   ", om_inc)
-        F_fi = edrixs.scattering_mat(eval_i, eval_n, trans_mat_abs[:, :, gs_list],
-                                     trans_mat_emi, om_inc, gamma_n)
-        for j, (alpha, beta) in enumerate(polvec_list):
-            ei, ef = edrixs.dipole_polvec_rixs(thin, thout, phi, alpha, beta)
-            F_magnitude = np.zeros((ncfgs_i, len(gs_list)), dtype=np.complex128)
-            for m in range(3):
-                for n in range(3):
-                    F_magnitude[:, :] += ef[m] * F_fi[m, n] * ei[n]
-            for m in gs_list:
-                for n in range(ncfgs_i):
-                    rixs[j, :, i] += (np.abs(F_magnitude[n, m])**2 * gamma_f / np.pi /
-                                      ((eloss_mesh - (eval_i[n] - eval_i[m]))**2 +
-                                       gamma_f**2) * gs_prob[m])
-    # gaussian broadening
-    inc_res = 0.17
-    emi_res = 0.12
-    gauss = np.zeros((neloss, nom))
-    mid_in = (min(om_mesh) + max(om_mesh)) / 2.0
-    mid_out = (min(eloss_mesh) + max(eloss_mesh)) / 2.0
-    for i in range(nom):
-        for j in range(neloss):
-            tmp_num = 2 * np.pi * inc_res * emi_res
-            gauss[j, i] = np.exp(-((mid_in - om_mesh[i]) ** 2 / (2 * inc_res**2) +
-                                   (mid_out - eloss_mesh[j])**2 / (2 * emi_res**2))) / tmp_num
-    for i in range(4):
-        rixs[i, :, :] = signal.fftconvolve(rixs[i, :, :], gauss, mode='same')
-    print("edrixs >>> done !")
-
-    f = open('rixs.dat', 'w')
-    for i in range(neloss):
-        for j in range(nom):
-            str_form = "{:20.10f}" * 6 + "\n"
-            line = str_form.format(eloss_mesh[i], om_mesh[j] + om_offset,
-                                   rixs[0, i, j], rixs[1, i, j], rixs[2, i, j], rixs[3, i, j])
-            f.write(line)
-    f.close()
+    # XAS and RIXS settings
+    # ---------------------
+    ominc_xas = np.linspace(off - 10, off + 20, 1000)
+    thin, thout, phi = 15 / 180.0 * np.pi, 75 / 180.0 * np.pi, 0.0
+    poltype_xas = [('linear', 0.0), ('linear', np.pi / 2.0),
+                   ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
+    gamma_c, gamma_f = 0.2, 0.1
+    # L3-edge
+    ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 100)
+    # L2-edge
+    # ominc_rixs = np.linspace(10.9 + off, 14.9 + off, 100)
+    eloss = np.linspace(-0.5, 5.0, 1000)
+    poltype_rixs = [('linear', 0, 'linear', 0),
+                    ('linear', 0, 'linear', np.pi/2.0),
+                    ('linear', np.pi/2.0, 'linear', 0.0),
+                    ('linear', np.pi/2.0, 'linear', np.pi/2.0)]
+    # Run ED
+    result = edrixs.ed_1v1c(v_name='d', c_name='p', v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
+                            c_level=-off, v_noccu=8, slater=slater, cf_mat=cf)
+    eval_i, eval_n, trans_op = result
+    # Run XAS
+    xas = edrixs.xas_1v1c(eval_i, eval_n, trans_op, ominc_xas, gamma_c, thin, phi,
+                          poltype=poltype_xas, gs_list=[0, 1, 2], temperature=300)
+    np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+    # Run RIXS
+    rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc_rixs, eloss, gamma_c, gamma_f,
+                            thin, thout, phi, poltype=poltype_rixs,
+                            gs_list=[0, 1, 2], temperature=300)
+    rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
+    rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
+    np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
+    np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
+    # Plot RIXS map
+    edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
+    edrixs.plot_rixs_map(rixs_sigma, ominc_rixs, eloss, "rixsmap_sigma.pdf")

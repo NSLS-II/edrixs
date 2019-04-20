@@ -2,6 +2,7 @@
 
 
 import numpy as np
+import scipy
 import edrixs
 
 if __name__ == "__main__":
@@ -49,6 +50,6 @@ if __name__ == "__main__":
     print("edrixs >>> Done!")
 
     print("edrixs >>> diagonalize Hamiltonian ...")
-    eval_i, evec_i = np.linalg.eigh(hmat_i)
+    eval_i, evec_i = scipy.linalg.eigh(hmat_i)
     print("edrixs >>> Done!")
     edrixs.write_tensor(eval_i, "eval_i.dat", fmt_float='{:20.10f}')
