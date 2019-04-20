@@ -112,7 +112,7 @@ subroutine partition_task(nprocs, m, n, end_indx)
 end subroutine partition_task 
 
 subroutine get_needed_indx(nblock, ham_csr, needed)
-    use m_control, only: myid, nprocs
+    use m_control, only: myid, nprocs, new_comm
     use m_types
     use mpi
     implicit none
@@ -133,9 +133,9 @@ subroutine get_needed_indx(nblock, ham_csr, needed)
                 needed(myid+1, i) =  1 
             endif
         enddo
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        call MPI_ALLREDUCE(needed, needed_mpi, size(needed), MPI_INTEGER, MPI_SUM, MPI_COMM_WORLD, ierror)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
+        call MPI_ALLREDUCE(needed, needed_mpi, size(needed), MPI_INTEGER, MPI_SUM, new_comm, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         needed = needed_mpi
     endif
 
@@ -144,6 +144,7 @@ end subroutine get_needed_indx
 
 subroutine get_number_nonzeros(nblock, ham_csr, num_nonzeros)
     use m_constants, only: dp
+    use m_control, only: new_comm
     use m_types
     use mpi
     implicit none
@@ -161,9 +162,9 @@ subroutine get_number_nonzeros(nblock, ham_csr, num_nonzeros)
     do i=1,nblock
         num_nonzeros = num_nonzeros + ham_csr(i)%nnz 
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-    call MPI_ALLREDUCE(num_nonzeros, num_nonzeros_mpi, 1, MPI_INTEGER8, MPI_SUM, MPI_COMM_WORLD, ierror)
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
+    call MPI_ALLREDUCE(num_nonzeros, num_nonzeros_mpi, 1, MPI_INTEGER8, MPI_SUM, new_comm, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     num_nonzeros = num_nonzeros_mpi
 
     return

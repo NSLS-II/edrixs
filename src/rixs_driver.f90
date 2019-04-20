@@ -46,15 +46,6 @@ subroutine rixs_driver()
 
     ndim_n = ndim_n_nocore * num_core_orbs
 
-    if (ndim_i < nprocs .or. ndim_n < nprocs .or. ndim_f < nprocs) then
-        if (myid==master) then
-            print *, "edrixs >>> ERROR: number of CPU processors:", nprocs, "is larger than ndim_i:", ndim_i
-            print *, "           or ndim_n:", ndim_n, "or ndim_f:", ndim_f
-            print *, "           Please reduce the number of CPU processors and RE-START !"
-            STOP
-        endif
-    endif
-
     if (myid == master) then
         print *, "edrixs >>> RIXS Begin ..."
         print *
@@ -96,7 +87,7 @@ subroutine rixs_driver()
         call alloc_tran_csr(nblock)
         call build_transop_i(ndim_n_nocore, ndim_i, fock_n, fock_i, num_val_orbs,&
           num_core_orbs, nblock, end_indx, ntran_rixs_i, transop_rixs_i, tran_csr)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         call dealloc_fock_i()
         call dealloc_fock_n()
         call get_needed_indx(nblock, tran_csr, needed)
@@ -121,8 +112,8 @@ subroutine rixs_driver()
 
         allocate(phi_vec(mloc))
         phi_vec = czero
-        call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, mloc, nloc, tran_csr, eigvecs, phi_vec)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call pspmv_csr(new_comm, nblock, end_indx, needed, mloc, nloc, tran_csr, eigvecs, phi_vec)
+        call MPI_BARRIER(new_comm, ierror)
         call dealloc_tran_csr(nblock)
         deallocate(eigvecs)
         if (myid==master) then
@@ -140,7 +131,7 @@ subroutine rixs_driver()
         omega = dcmplx(omega_in+eigvals, gamma_in) 
         call build_ham_n(ndim_n_nocore, fock_n, num_val_orbs, num_core_orbs, nblock, end_indx2, &
                         nhopp_n, hopping_n, ncoul_n, coulomb_n, omega, rtemp, ham_csr)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         call dealloc_fock_n()
         call get_needed_indx(nblock, ham_csr, needed2)
         call get_number_nonzeros(nblock, ham_csr, num_of_nonzeros)
@@ -157,7 +148,7 @@ subroutine rixs_driver()
         allocate(x_vec(mloc))
         x_vec = czero 
         call pminres_csr(nblock, end_indx2, needed2, mloc, ham_csr, phi_vec, x_vec, info)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         deallocate(phi_vec)
         call dealloc_ham_csr(nblock)
         if (myid==master) then
@@ -177,7 +168,7 @@ subroutine rixs_driver()
         call read_fock_n()
         call build_transop_f(ndim_f, ndim_n_nocore, fock_f, fock_n, num_val_orbs, &
            num_core_orbs, nblock, end_indx, ntran_rixs_f, transop_rixs_f, tran_csr)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         call dealloc_fock_f()
         call dealloc_fock_n()
         call get_needed_indx(nblock, tran_csr, needed)
@@ -191,8 +182,8 @@ subroutine rixs_driver()
         endif
         allocate(phi_vec(mloc))
         phi_vec = czero
-        call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, mloc, nloc, tran_csr, x_vec, phi_vec)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call pspmv_csr(new_comm, nblock, end_indx, needed, mloc, nloc, tran_csr, x_vec, phi_vec)
+        call MPI_BARRIER(new_comm, ierror)
         deallocate(x_vec)
         call dealloc_tran_csr(nblock)
 
@@ -206,7 +197,7 @@ subroutine rixs_driver()
         omega = dcmplx(0.0_dp, 0.0_dp) 
         call read_fock_f()
         call build_ham_i(ndim_f, fock_f, nblock, end_indx2, nhopp_i, hopping_i, ncoul_i, coulomb_i, omega, rtemp, ham_csr)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         call dealloc_fock_f()
         call get_needed_indx(nblock, ham_csr, needed2)
         call get_number_nonzeros(nblock, ham_csr, num_of_nonzeros)
@@ -225,7 +216,7 @@ subroutine rixs_driver()
         krylov_alpha = zero
         krylov_beta  = zero
         call build_krylov_mp(nblock, end_indx2, needed2, mloc, ham_csr, phi_vec, nkryl, neff, krylov_alpha, krylov_beta, norm)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         call dealloc_ham_csr(nblock)
         deallocate(phi_vec)
         write(char_I, '(I5)') igs

@@ -46,14 +46,6 @@ subroutine opavg_driver()
     call read_coulomb_i()
     call read_fock_i()
 
-    if (ndim_i < nprocs) then
-        if (myid==master) then
-            print *, "edrixs >>> ERROR: number of CPU processors ", nprocs, "is larger than ndim_i: ", ndim_i
-        endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        STOP
-    endif
-
     if (myid == master) then
         write(mystd,"(a20, i15)")   "num_val_orbs:  ", num_val_orbs
         write(mystd,"(a20, i15)")   "nhopp_i:       ", nhopp_i
@@ -75,7 +67,7 @@ subroutine opavg_driver()
     nloc = end_indx(2,2,myid+1)-end_indx(1,2,myid+1) + 1
     call alloc_ham_csr(nblock)
     call build_ham_i(ndim_i, fock_i, nblock, end_indx, nhopp_i, hopping_i, ncoul_i, coulomb_i, omega, rtemp, ham_csr)
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     call dealloc_fock_i()
     call get_needed_indx(nblock, ham_csr, needed)
     call get_number_nonzeros(nblock, ham_csr, num_of_nonzeros)
@@ -106,13 +98,13 @@ subroutine opavg_driver()
         call read_eigvecs(fname, ndim_i, v_vector_mpi, eigvals(igs))
         v_vector = v_vector_mpi(end_indx(1,2,myid+1): end_indx(1,2,myid+1)) 
         deallocate(v_vector_mpi)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham_csr, v_vector, w_vector)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
+        call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham_csr, v_vector, w_vector)
+        call MPI_BARRIER(new_comm, ierror)
         temp1 = czero 
         temp1_mpi = czero 
         temp1 = dot_product(v_vector, w_vector)
-        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
         opavg(igs) = temp1_mpi
     enddo
 

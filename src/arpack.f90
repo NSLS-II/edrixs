@@ -3,7 +3,7 @@ subroutine diag_ham_arpack(nblock, end_indx, needed, nloc, nev, ham, eval, &
                    n_vecs, evec, ncv, maxiter, tol, info, actual_step, nconv)
 
     use m_constants, only: dp, czero
-    use m_control,   only: nprocs
+    use m_control,   only: nprocs, new_comm
     use m_types
     use mpi
 
@@ -73,12 +73,12 @@ subroutine diag_ham_arpack(nblock, end_indx, needed, nloc, nev, ham, eval, &
     selec     = .true.
 
     do while (.true.)
-        call pznaupd(MPI_COMM_WORLD, ido, bmat, nloc, which, nev, tol, resid, ncv, &
+        call pznaupd(new_comm, ido, bmat, nloc, which, nev, tol, resid, ncv, &
                      v, nloc, iparam, ipntr, workd, workl, lworkl, rwork, info)
 
         if (ido .eq. -1 .or. ido .eq. 1) then
             workd(ipntr(2):ipntr(2)+nloc-1) = czero
-            call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham, &
+            call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, &
                                                      workd(ipntr(1)), workd(ipntr(2)))
         else
             EXIT
@@ -91,7 +91,7 @@ subroutine diag_ham_arpack(nblock, end_indx, needed, nloc, nev, ham, eval, &
         return
     else 
         rvec = .true.
-        call pzneupd(MPI_COMM_WORLD, rvec, 'A', selec, d, v, nloc, sigma, workev, &
+        call pzneupd(new_comm, rvec, 'A', selec, d, v, nloc, sigma, workev, &
                           bmat, nloc, which, nev, tol, resid, ncv, v, nloc, iparam, &
                           ipntr, workd, workl, lworkl, rwork, info)
         if (info .ne. 0) then

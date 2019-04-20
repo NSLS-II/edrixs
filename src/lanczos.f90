@@ -5,7 +5,7 @@ module m_lanczos
     !! use parallel Lanczos method to find the ground state
     subroutine diag_ham_lanczos(nblock, end_indx, needed, nloc, nev, max_niter, eval_tol, ham, eval, n_vec, evec)
         use m_constants, only: dp, zero, czero, mystd
-        use m_control, only: nprocs , myid, master
+        use m_control, only: nprocs , myid, master, new_comm
         use m_types
         use mpi
     
@@ -66,7 +66,7 @@ module m_lanczos
         temp1 = czero 
         temp1_mpi = czero 
         temp1 = dot_product(work_vec(:,1), work_vec(:,1))
-        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
         temp1 = sqrt(real(temp1_mpi))
         work_vec(:,1) = work_vec(:,1) / temp1
         evec(:,1) = work_vec(:,1)
@@ -77,15 +77,15 @@ module m_lanczos
     
         do i=1,max_niter
             ! matrix-vector product
-            call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+            call MPI_BARRIER(new_comm, ierror)
             work_vec(:,prev) = -beta(i-1) * work_vec(:,prev)
-            call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
-            call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+            call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
+            call MPI_BARRIER(new_comm, ierror)
             ! compute alpha_i
             temp1 = czero 
             temp1_mpi = czero 
             temp1 = dot_product(work_vec(:,curr), work_vec(:,prev))
-            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
             alpha(i) = real(temp1_mpi)
     
             if (mod(i,10) == 0 .or. i==max_niter) then
@@ -112,7 +112,7 @@ module m_lanczos
             temp1 = czero 
             temp1_mpi = czero 
             temp1 = dot_product(work_vec(:,prev), work_vec(:,prev))
-            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
             beta(i) = sqrt(real(temp1_mpi))
             ! beta is too small, exit
             if (abs(beta(i)) < 1E-10) then
@@ -145,10 +145,10 @@ module m_lanczos
                 evec(:,j) = evec(:,j) + krylov_eigvec(i,j) * work_vec(:,curr)
             enddo 
             if (i<nkrylov) then
-                call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+                call MPI_BARRIER(new_comm, ierror)
                 work_vec(:,prev) = -alpha(i) * work_vec(:,curr) - beta(i-1) * work_vec(:,prev)
-                call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
-                call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+                call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
+                call MPI_BARRIER(new_comm, ierror)
                 work_vec(:,prev) = work_vec(:,prev) / beta(i)
                 temp_indx = curr
                 curr = prev
@@ -209,7 +209,7 @@ module m_lanczos
     !! return the actual dimension of the Krylov space, the normalization parameter of V0, alpha and beta 
     subroutine build_krylov_mp(nblock, end_indx, needed, nloc, ham, init_vec, maxn, neff, alpha, beta, norm)
         use m_constants, only: dp, zero, czero, mystd
-        use m_control, only: nprocs, myid, master
+        use m_control, only: nprocs, myid, master, new_comm
         use m_types
         use mpi
     
@@ -254,7 +254,7 @@ module m_lanczos
         temp1 = czero 
         temp1_mpi = czero 
         temp1 = dot_product(work_vec(:,1), work_vec(:,1))
-        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
         norm = real(temp1_mpi)
         !print *, norm
         temp1 = sqrt(real(temp1_mpi))
@@ -270,15 +270,15 @@ module m_lanczos
             endif
             neff = i
             ! matrix-vector product
-            call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+            call MPI_BARRIER(new_comm, ierror)
             work_vec(:,prev) = -beta(i-1) * work_vec(:,prev)
-            call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
-            call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+            call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
+            call MPI_BARRIER(new_comm, ierror)
             ! compute alpha_i
             temp1 = czero 
             temp1_mpi = czero 
             temp1 = dot_product(work_vec(:,curr), work_vec(:,prev))
-            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
             alpha(i) = real(temp1_mpi)
     
             work_vec(:,prev) = work_vec(:,prev) - alpha(i) * work_vec(:,curr)
@@ -286,7 +286,7 @@ module m_lanczos
             temp1 = czero 
             temp1_mpi = czero 
             temp1 = dot_product(work_vec(:,prev), work_vec(:,prev))
-            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+            call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
             beta(i) = sqrt(real(temp1_mpi))
             ! beta is too small, exit
             if (abs(beta(i)) < 1E-10) then

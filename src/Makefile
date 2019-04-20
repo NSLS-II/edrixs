@@ -6,7 +6,7 @@ objects=m_constants.o m_control.o m_types.o m_global.o utils.o io.o fock.o spmv.
 
 default: all
 
-all: ed xas rixs opavg pylib
+all: ed xas rixs opavg libedrixs
 
 ed: $(objects) ed_main.o 
 	$(LINKER) $(objects) ed_main.o -o ed.x  $(LIBS)
@@ -19,6 +19,9 @@ rixs: $(objects) rixs_main.o
 
 opavg: $(objects) opavg_main.o
 	$(LINKER) $(objects) opavg_main.o -o opavg.x  $(LIBS)
+
+libedrixs: $(objects)
+	$(ARCHIVER) libedrixsfortran.a $(objects)
 
 pylib: $(objects)
 	$(F2PY) -c $(F2PYFLAGS) -m fedrixs  $(F2PYL) pyapi.f90 $(objects)
@@ -35,8 +38,6 @@ clean:
 	rm -f *.so
 	rm -rf *.so.dSYM
 	rm -f *.x
-	rm -f ../bin/ed.x
-	rm -f ../bin/xas.x
-	rm -f ../bin/rixs.x
-	rm -f ../bin/opavg.x
+	rm -f *.a
+	rm -f ../bin/*.x      
 

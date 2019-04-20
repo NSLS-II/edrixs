@@ -62,14 +62,6 @@ subroutine ed_driver()
     call read_coulomb_i()
     call read_fock_i()
 
-    if (ndim_i < nprocs) then
-        if (myid==master) then
-            print *, "edrixs >>> ERROR: number of CPU processors ", nprocs, "is larger than ndim_i: ", ndim_i
-        endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        STOP
-    endif
-
     if (ndim_i < min_ndim ) then
         if (myid==master) then
             print *, "edrixs >>> ndim_i:", ndim_i, " is smaller than min_ndim:", min_ndim
@@ -115,7 +107,7 @@ subroutine ed_driver()
     nloc = end_indx(2,2,myid+1)-end_indx(1,2,myid+1) + 1
     call alloc_ham_csr(nblock)
     call build_ham_i(ndim_i, fock_i, nblock, end_indx, nhopp_i, hopping_i, ncoul_i, coulomb_i, omega, rtemp, ham_csr)
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     call get_needed_indx(nblock, ham_csr, needed)
     call get_number_nonzeros(nblock, ham_csr, num_of_nonzeros)
     call dealloc_fock_i()
@@ -145,13 +137,13 @@ subroutine ed_driver()
         do i=1,nblock
             call csr_to_full(ndim_i, ndim_i, ham_csr(i), ham_full_mpi)
         enddo
-        call MPI_ALLREDUCE(ham_full_mpi, ham_full, size(ham_full_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(ham_full_mpi, ham_full, size(ham_full_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
         if (myid==master) then
             call full_diag_ham(ndim_i, ham_full, eigval_full, eigvecs_full) 
         endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(eigval_full,   size(eigval_full),  MPI_DOUBLE_PRECISION, master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(eigvecs_full,  size(eigvecs_full), MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
+        call MPI_BCAST(eigval_full,   size(eigval_full),  MPI_DOUBLE_PRECISION, master, new_comm, ierror)
+        call MPI_BCAST(eigvecs_full,  size(eigvecs_full), MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
         eigvals = eigval_full(1:neval)
         eigvecs = eigvecs_full(:,1:nvector)
         deallocate(ham_full)
@@ -178,7 +170,7 @@ subroutine ed_driver()
             print *
         endif
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     call dealloc_ham_csr(nblock)
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
@@ -208,7 +200,7 @@ subroutine ed_driver()
             do i=1,nprocs
                if (myid+1 /= i) then
                    call MPI_ISEND(eigvecs(:,k), nloc, MPI_DOUBLE_COMPLEX, i-1, &
-                          i*(10*nprocs)+myid+1, MPI_COMM_WORLD, request, ierror)
+                          i*(10*nprocs)+myid+1, new_comm, request, ierror)
                endif
             enddo
             eigvecs_mpi(end_indx(1,2,myid+1):end_indx(2,2,myid+1)) = eigvecs(:,k)
@@ -218,11 +210,11 @@ subroutine ed_driver()
                if (myid+1 /= i) then
                    call MPI_RECV(eigvecs_mpi(end_indx(1,2,i):end_indx(2,2,i)), &
                         end_indx(2,2,i)-end_indx(1,2,i)+1, MPI_DOUBLE_COMPLEX, &
-                       -1, (myid+1)*(10*nprocs)+i, MPI_COMM_WORLD, stat, ierror)
+                       -1, (myid+1)*(10*nprocs)+i, new_comm, stat, ierror)
                endif
             enddo
         endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
 
         do icfg=end_indx(1,1,myid+1), end_indx(2,1,myid+1)
             do j=1,num_val_orbs
@@ -265,8 +257,8 @@ subroutine ed_driver()
         endif
     enddo  ! over k=1, nvector
 
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-    call MPI_ALLREDUCE(denmat_mpi, denmat, size(denmat_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
+    call MPI_ALLREDUCE(denmat_mpi, denmat, size(denmat_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
     call write_denmat(nvector, num_val_orbs, denmat)
 
     call dealloc_fock_i()

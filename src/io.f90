@@ -44,24 +44,24 @@ subroutine config()
         close(mytmp)
     endif
 
-    call MPI_BCAST(ed_solver,       1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(num_val_orbs,    1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(num_core_orbs,   1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(neval,           1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(nvector,         1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(num_gs,          1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(maxiter,         1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(min_ndim,        1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(ncv,             1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(nkryl,           1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(linsys_max,      1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(idump,           1, MPI_LOGICAL, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(eigval_tol,      1, MPI_DOUBLE_PRECISION, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(linsys_tol,      1, MPI_DOUBLE_PRECISION, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(omega_in,        1, MPI_DOUBLE_PRECISION, master, MPI_COMM_WORLD, ierror)
-    call MPI_BCAST(gamma_in,        1, MPI_DOUBLE_PRECISION, master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(ed_solver,       1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(num_val_orbs,    1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(num_core_orbs,   1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(neval,           1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(nvector,         1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(num_gs,          1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(maxiter,         1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(min_ndim,        1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(ncv,             1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(nkryl,           1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(linsys_max,      1, MPI_INTEGER, master, origin_comm, ierror)
+    call MPI_BCAST(idump,           1, MPI_LOGICAL, master, origin_comm, ierror)
+    call MPI_BCAST(eigval_tol,      1, MPI_DOUBLE_PRECISION, master, origin_comm, ierror)
+    call MPI_BCAST(linsys_tol,      1, MPI_DOUBLE_PRECISION, master, origin_comm, ierror)
+    call MPI_BCAST(omega_in,        1, MPI_DOUBLE_PRECISION, master, origin_comm, ierror)
+    call MPI_BCAST(gamma_in,        1, MPI_DOUBLE_PRECISION, master, origin_comm, ierror)
 
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(origin_comm, ierror)
 
     return
 end subroutine config
@@ -69,7 +69,7 @@ end subroutine config
 !!>>> read hopping terms for initial configuration
 subroutine read_hopping_i()
     use m_constants, only: dp, mystd, mytmp
-    use m_control,   only: myid, master, nhopp_i
+    use m_control,   only: myid, master, new_comm, nhopp_i
     use m_global,    only: hopping_i, alloc_hopping_i
     use mpi
 
@@ -101,17 +101,17 @@ subroutine read_hopping_i()
         close(mytmp)
     endif 
 
-    call MPI_BCAST(nhopp_i,  1, MPI_INTEGER,  master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(nhopp_i,  1, MPI_INTEGER,  master, new_comm, ierror)
     if (myid /= master) then
         call alloc_hopping_i()
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     do i=1,nhopp_i
-        call MPI_BCAST(hopping_i(i)%ind1, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(hopping_i(i)%ind2, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(hopping_i(i)%val,  1, MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(hopping_i(i)%ind1, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(hopping_i(i)%ind2, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(hopping_i(i)%val,  1, MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
 
     return
 end subroutine read_hopping_i
@@ -119,7 +119,7 @@ end subroutine read_hopping_i
 !!>>> read Coulomb interaction terms for initial configuration
 subroutine read_coulomb_i()
     use m_constants, only: dp, mystd, mytmp
-    use m_control,   only: myid, master, ncoul_i
+    use m_control,   only: myid, master, new_comm, ncoul_i
     use m_global,    only: coulomb_i, alloc_coulomb_i
     use mpi
 
@@ -153,19 +153,19 @@ subroutine read_coulomb_i()
         close(mytmp)
     endif 
 
-    call MPI_BCAST(ncoul_i, 1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(ncoul_i, 1, MPI_INTEGER, master, new_comm, ierror)
     if (myid /= master) then
         call alloc_coulomb_i()
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     do i=1,ncoul_i
-        call MPI_BCAST(coulomb_i(i)%ind1, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_i(i)%ind2, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_i(i)%ind3, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_i(i)%ind4, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_i(i)%val,  1, MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(coulomb_i(i)%ind1, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_i(i)%ind2, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_i(i)%ind3, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_i(i)%ind4, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_i(i)%val,  1, MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
 
     return
 end subroutine read_coulomb_i
@@ -201,7 +201,7 @@ end subroutine read_fock_i
 !!>>> read hopping terms for intermediate configuration
 subroutine read_hopping_n()
     use m_constants, only: dp, mystd, mytmp
-    use m_control,   only: myid, master, nhopp_n
+    use m_control,   only: myid, master, new_comm, nhopp_n
     use m_global,    only: hopping_n, alloc_hopping_n
     use mpi
 
@@ -234,17 +234,17 @@ subroutine read_hopping_n()
         close(mytmp)
     endif 
 
-    call MPI_BCAST(nhopp_n, 1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(nhopp_n, 1, MPI_INTEGER, master, new_comm, ierror)
     if (myid /= master) then
         call alloc_hopping_n()
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     do i=1,nhopp_n
-        call MPI_BCAST(hopping_n(i)%ind1, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(hopping_n(i)%ind2, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(hopping_n(i)%val,  1, MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(hopping_n(i)%ind1, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(hopping_n(i)%ind2, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(hopping_n(i)%val,  1, MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
 
     return
 end subroutine read_hopping_n
@@ -252,7 +252,7 @@ end subroutine read_hopping_n
 !!>>> read Coulomb interaction terms for intermediate configuration
 subroutine read_coulomb_n()
     use m_constants, only: dp, mystd, mytmp
-    use m_control,   only: myid, master, ncoul_n
+    use m_control,   only: myid, master, new_comm, ncoul_n
     use m_global,    only: coulomb_n, alloc_coulomb_n
     use mpi
 
@@ -286,19 +286,19 @@ subroutine read_coulomb_n()
         close(mytmp)
     endif 
 
-    call MPI_BCAST(ncoul_n, 1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(ncoul_n, 1, MPI_INTEGER, master, new_comm, ierror)
     if (myid /= master) then
         call alloc_coulomb_n()
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     do i=1,ncoul_n
-        call MPI_BCAST(coulomb_n(i)%ind1, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_n(i)%ind2, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_n(i)%ind3, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_n(i)%ind4, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(coulomb_n(i)%val,  1, MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(coulomb_n(i)%ind1, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_n(i)%ind2, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_n(i)%ind3, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_n(i)%ind4, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(coulomb_n(i)%val,  1, MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
 
     return
 end subroutine read_coulomb_n
@@ -363,7 +363,7 @@ end subroutine read_fock_f
 !! read transition operators for XAS 
 subroutine read_transop_xas()
     use m_constants, only: dp, mystd, mytmp
-    use m_control,   only: myid, master, ntran_xas
+    use m_control,   only: myid, master, new_comm, ntran_xas
     use m_global,    only: transop_xas, alloc_transop_xas
     use mpi
 
@@ -395,17 +395,17 @@ subroutine read_transop_xas()
         close(mytmp)
     endif 
 
-    call MPI_BCAST(ntran_xas, 1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(ntran_xas, 1, MPI_INTEGER, master, new_comm, ierror)
     if (myid /= master) then
         call alloc_transop_xas()
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     do i=1,ntran_xas
-        call MPI_BCAST(transop_xas(i)%ind1, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(transop_xas(i)%ind2, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(transop_xas(i)%val,  1, MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(transop_xas(i)%ind1, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(transop_xas(i)%ind2, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(transop_xas(i)%val,  1, MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
 
     return
 end subroutine read_transop_xas
@@ -413,7 +413,7 @@ end subroutine read_transop_xas
 !! read transition operators for absorption process of RIXS
 subroutine read_transop_rixs_i()
     use m_constants, only: dp, mystd, mytmp
-    use m_control, only: myid, master, ntran_rixs_i
+    use m_control, only: myid, master, new_comm, ntran_rixs_i
     use m_global, only: transop_rixs_i, alloc_transop_rixs_i
     use mpi
 
@@ -446,17 +446,17 @@ subroutine read_transop_rixs_i()
         close(mytmp)
     endif 
 
-    call MPI_BCAST(ntran_rixs_i, 1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(ntran_rixs_i, 1, MPI_INTEGER, master, new_comm, ierror)
     if (myid /= master) then
         call alloc_transop_rixs_i()
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     do i=1,ntran_rixs_i
-        call MPI_BCAST(transop_rixs_i(i)%ind1, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(transop_rixs_i(i)%ind2, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(transop_rixs_i(i)%val,  1, MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(transop_rixs_i(i)%ind1, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(transop_rixs_i(i)%ind2, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(transop_rixs_i(i)%val,  1, MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
 
     return
 end subroutine read_transop_rixs_i
@@ -464,7 +464,7 @@ end subroutine read_transop_rixs_i
 !! read transition operators for emission process of RIXS
 subroutine read_transop_rixs_f()
     use m_constants, only: dp, mystd, mytmp
-    use m_control,   only: myid, master, ntran_rixs_f
+    use m_control,   only: myid, master, new_comm, ntran_rixs_f
     use m_global,    only: transop_rixs_f, alloc_transop_rixs_f
     use mpi
 
@@ -496,17 +496,17 @@ subroutine read_transop_rixs_f()
         close(mytmp)
     endif 
 
-    call MPI_BCAST(ntran_rixs_f, 1, MPI_INTEGER, master, MPI_COMM_WORLD, ierror)
+    call MPI_BCAST(ntran_rixs_f, 1, MPI_INTEGER, master, new_comm, ierror)
     if (myid /= master) then
         call alloc_transop_rixs_f()
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     do i=1,ntran_rixs_f
-        call MPI_BCAST(transop_rixs_f(i)%ind1, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(transop_rixs_f(i)%ind2, 1, MPI_INTEGER,        master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(transop_rixs_f(i)%val,  1, MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(transop_rixs_f(i)%ind1, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(transop_rixs_f(i)%ind2, 1, MPI_INTEGER,        master, new_comm, ierror)
+        call MPI_BCAST(transop_rixs_f(i)%val,  1, MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
     enddo
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
 
     return
 end subroutine read_transop_rixs_f
