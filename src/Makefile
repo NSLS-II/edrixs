@@ -21,7 +21,7 @@ opavg: $(objects) opavg_main.o
 	$(LINKER) $(objects) opavg_main.o -o opavg.x  $(LIBS)
 
 pylib: $(objects)
-	$(F2PY) -c $(F2PYFLAGS) -m fedrixs $(F2PYL) pyapi.f90 $(objects)
+	$(F2PY) -c $(F2PYFLAGS) -m fedrixs  $(F2PYL) pyapi.f90 $(objects)
 
 .f90.o:
 	$(F90) $(FFLAGS) $*.f90
@@ -32,8 +32,11 @@ install:
 clean:
 	rm -f *.mod
 	rm -f *.o
+	rm -f *.so
+	rm -rf *.so.dSYM
 	rm -f *.x
 	rm -f ../bin/ed.x
 	rm -f ../bin/xas.x
 	rm -f ../bin/rixs.x
 	rm -f ../bin/opavg.x
+

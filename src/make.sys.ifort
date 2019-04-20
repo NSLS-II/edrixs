@@ -21,4 +21,4 @@ LIBS = -L${MKLROOT}/lib/intel64 -lmkl_core -lmkl_sequential -lmkl_rt  -L/home/yi
 F2PY   = f2py
 F2PYC  = $(F90)
 F2PYL  = $(LIBS)
-F2PYFLAGS = --fcompiler=intelem --f77exec=$(F90) --f90exec=$(F90) --opt='-O2'
+F2PYFLAGS = --fcompiler=intelem --f90exec=$(F90) --opt='-O3'
