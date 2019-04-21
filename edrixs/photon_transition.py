@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import numpy as np
-from .basis_transform import tmat_c2r, tmat_r2c
 from sympy.physics.wigner import clebsch_gordan
+from .basis_transform import tmat_c2r, tmat_r2c, tmat_c2j, cb_op2
+from .utils import case_to_shell_name, info_atomic_shell
 
 
 def dipole_trans_oper(l1, l2):
@@ -54,122 +55,6 @@ def quadrupole_trans_oper(l1, l2):
     return op_spin
 
 
-def trans_oper_ps():
-    return dipole_trans_oper(1, 0)
-
-
-def trans_oper_pp():
-    return quadrupole_trans_oper(1, 1)
-
-
-def trans_oper_pd():
-    return dipole_trans_oper(1, 2)
-
-
-def trans_oper_pf():
-    return quadrupole_trans_oper(1, 3)
-
-
-def trans_oper_ds():
-    return quadrupole_trans_oper(2, 0)
-
-
-def trans_oper_dp():
-    return dipole_trans_oper(2, 1)
-
-
-def trans_oper_dd():
-    return quadrupole_trans_oper(2, 2)
-
-
-def trans_oper_df():
-    return dipole_trans_oper(2, 3)
-
-
-def trans_oper_t2gs():
-    op = quadrupole_trans_oper(2, 0)
-    op_t2g = np.zeros((5, 6, 2), dtype=np.complex128)
-    indx = [2, 3, 4, 5, 8, 9]
-    for i in range(5):
-        op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
-        op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
-
-    return op_t2g
-
-
-def trans_oper_t2gp():
-    op = dipole_trans_oper(2, 1)
-    op_t2g = np.zeros((3, 6, 6), dtype=np.complex128)
-    indx = [2, 3, 4, 5, 8, 9]
-    for i in range(3):
-        op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
-        op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
-
-    return op_t2g
-
-
-def trans_oper_t2gd():
-    op = quadrupole_trans_oper(2, 2)
-    op_t2g = np.zeros((5, 6, 10), dtype=np.complex128)
-    indx = [2, 3, 4, 5, 8, 9]
-    for i in range(5):
-        op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
-        op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
-
-    return op_t2g
-
-
-def trans_oper_t2gf():
-    op = dipole_trans_oper(2, 3)
-    op_t2g = np.zeros((3, 6, 14), dtype=np.complex128)
-    indx = [2, 3, 4, 5, 8, 9]
-    for i in range(3):
-        op[i] = np.dot(np.conj(np.transpose(tmat_c2r('d', True))), op[i])
-        op_t2g[i] = op[i, indx]
-        op_t2g[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_t2g[i])
-
-    return op_t2g
-
-
-def trans_oper_fs():
-    return dipole_trans_oper(3, 0)
-
-
-def trans_oper_fp():
-    return quadrupole_trans_oper(3, 1)
-
-
-def trans_oper_fd():
-    return dipole_trans_oper(3, 2)
-
-
-def trans_oper_ff():
-    return quadrupole_trans_oper(3, 3)
-
-
-transop_func_dict = {
-    'ps': trans_oper_ps,
-    'pp': trans_oper_pp,
-    'pd': trans_oper_pd,
-    'pf': trans_oper_pf,
-    't2gs': trans_oper_t2gs,
-    't2gp': trans_oper_t2gp,
-    't2gd': trans_oper_t2gd,
-    't2gf': trans_oper_t2gf,
-    'ds': trans_oper_ds,
-    'dp': trans_oper_dp,
-    'dd': trans_oper_dd,
-    'df': trans_oper_df,
-    'fs': trans_oper_fs,
-    'fp': trans_oper_fp,
-    'fd': trans_oper_fd,
-    'ff': trans_oper_ff
-}
-
-
 def get_trans_oper(case):
     """
     Get the matrix of transition operators between two atomic shell in the complex
@@ -177,33 +62,110 @@ def get_trans_oper(case):
 
     Parameters
     ----------
-    case : str
-        A string indicating the two atomic shells, possible options are:
+    case : string
+        A string indicating the two atomic shells, possible transitions are:
 
-        -   'ps':   :math:`s \\rightarrow p` transition
-        -   'pp':   :math:`p \\rightarrow p` transition
-        -   'pd':   :math:`d \\rightarrow p` transition
-        -   'pf':   :math:`f \\rightarrow p` transition
-        -   't2gs':   :math:`s \\rightarrow t_{2g}` transition
-        -   't2gp':   :math:`p \\rightarrow t_{2g}` transition
-        -   't2gd':   :math:`d \\rightarrow t_{2g}` transition
-        -   't2gf':   :math:`f \\rightarrow t_{2g}` transition
-        -   'ds':   :math:`s \\rightarrow d` transition
-        -   'dp':   :math:`p \\rightarrow d` transition
-        -   'dd':   :math:`d \\rightarrow d` transition
-        -   'df':   :math:`f \\rightarrow d` transition
-        -   'fs':   :math:`s \\rightarrow f` transition
-        -   'fp':   :math:`p \\rightarrow f` transition
-        -   'fd':   :math:`d \\rightarrow f` transition
-        -   'ff':   :math:`f \\rightarrow f` transition
+        -   'ss':     :math:`s \\rightarrow s`
+        -   'ps':     :math:`s \\rightarrow p`
+        -   't2gs':   :math:`s \\rightarrow t2g`
+        -   'ds':     :math:`s \\rightarrow d`
+        -   'fs':     :math:`s \\rightarrow f`
+        -   'sp':     :math:`p \\rightarrow s`
+        -   'sp12':   :math:`p_{1/2} \\rightarrow s`
+        -   'sp32':   :math:`p_{3/2} \\rightarrow s`
+        -   'pp':     :math:`p \\rightarrow p`
+        -   'pp12':   :math:`p_{1/2} \\rightarrow p`
+        -   'pp32':   :math:`p_{3/2} \\rightarrow p`
+        -   't2gp':   :math:`p \\rightarrow t2g`
+        -   't2gp12': :math:`p_{1/2} \\rightarrow t2g`
+        -   't2gp32': :math:`p_{3/2} \\rightarrow t2g`
+        -   'dp':     :math:`p \\rightarrow d`
+        -   'dp12':   :math:`p_{1/2} \\rightarrow d`
+        -   'dp32':   :math:`p_{3/2} \\rightarrow d`
+        -   'fp':     :math:`p \\rightarrow f`
+        -   'fp12':   :math:`p_{1/2} \\rightarrow f`
+        -   'fp32':   :math:`p_{3/2} \\rightarrow f`
+        -   'sd':     :math:`d \\rightarrow s`
+        -   'sd32':   :math:`d_{3/2} \\rightarrow s`
+        -   'sd52':   :math:`d_{5/2} \\rightarrow s`
+        -   'pd':     :math:`d \\rightarrow p`
+        -   'pd32':   :math:`d_{3/2} \\rightarrow p`
+        -   'pd52':   :math:`d_{5/2} \\rightarrow p`
+        -   't2gd':   :math:`d \\rightarrow t2g`
+        -   't2gd32': :math:`d_{3/2} \\rightarrow t2g`
+        -   't2gd52': :math:`d_{5/2} \\rightarrow t2g`
+        -   'dd':     :math:`d \\rightarrow d`
+        -   'dd32':   :math:`d_{3/2} \\rightarrow d`
+        -   'dd52':   :math:`d_{5/2} \\rightarrow d`
+        -   'fd':     :math:`d \\rightarrow f`
+        -   'fd32':   :math:`d_{3/2} \\rightarrow f`
+        -   'fd52':   :math:`d_{5/2} \\rightarrow f`
+        -   'sf':     :math:`f \\rightarrow s`
+        -   'sf52':   :math:`f_{5/2} \\rightarrow s`
+        -   'sf72':   :math:`f_{7/2} \\rightarrow s`
+        -   'pf':     :math:`f \\rightarrow p`
+        -   'pf52':   :math:`f_{5/2} \\rightarrow p`
+        -   'pf72':   :math:`f_{7/2} \\rightarrow p`
+        -   't2gf':   :math:`f \\rightarrow t2g`
+        -   't2gf52': :math:`f_{5/2} \\rightarrow t2g`
+        -   't2gf72': :math:`f_{7/2} \\rightarrow t2g`
+        -   'df':     :math:`f \\rightarrow d`
+        -   'df52':   :math:`f_{5/2} \\rightarrow d`
+        -   'df72':   :math:`f_{7/2} \\rightarrow d`
+        -   'ff':     :math:`f \\rightarrow f`
+        -   'ff52':   :math:`f_{5/2} \\rightarrow f`
+        -   'ff72':   :math:`f_{7/2} \\rightarrow f`
 
     Returns
     -------
     res : 2d complex array
         The calculated transition matrix.
     """
+    info = info_atomic_shell()
+    v_name, c_name = case_to_shell_name(case.strip())
+    v_orbl, c_orbl = info[v_name][0], info[c_name][0]
+    v_norb, c_norb = 2 * (2 * v_orbl + 1), 2 * (2 * c_orbl + 1)
+    if (v_orbl + c_orbl) % 2 == 0:
+        op = quadrupole_trans_oper(v_orbl, c_orbl)
+    else:
+        op = dipole_trans_oper(v_orbl, c_orbl)
 
-    res = transop_func_dict[case.strip()]()
+    # truncate to a sub-shell if necessary
+    shell_list2 = ['p12', 'p32', 'd32', 'd52', 'f52', 'f72']
+    left_tmat = np.eye(v_norb, dtype=np.complex)
+    right_tmat = np.eye(c_norb, dtype=np.complex)
+    indx1 = list(range(0, v_norb))
+    indx2 = list(range(0, c_norb))
+    if v_name == 't2g':
+        left_tmat[0:v_norb, 0:v_norb] = tmat_c2r('d', True)
+        indx1 = [2, 3, 4, 5, 8, 9]
+    if c_name in shell_list2:
+        right_tmat[0:c_norb, 0:c_norb] = tmat_c2j(c_orbl)
+        if c_name == 'p12':
+            indx2 = [0, 1]
+        if c_name == 'p32':
+            indx2 = [2, 3, 4, 5]
+        if c_name == 'd32':
+            indx2 = [0, 1, 2, 3]
+        if c_name == 'd52':
+            indx2 = [4, 5, 6, 7, 8, 9]
+        if c_name == 'f52':
+            indx2 = [0, 1, 2, 3, 4, 5]
+        if c_name == 'f72':
+            indx2 = [6, 7, 8, 9, 10, 11, 12, 13]
+
+    if (v_orbl + c_orbl) % 2 == 0:
+        npol = 5
+    else:
+        npol = 3
+
+    op_tmp = np.zeros((npol, len(indx1), len(indx2)), dtype=np.complex)
+    for i in range(npol):
+        op[i] = cb_op2(op[i], left_tmat, right_tmat)
+        op_tmp[i] = op[i, indx1][:, indx2]
+        if v_name == 't2g':
+            op_tmp[i] = np.dot(np.conj(np.transpose(tmat_r2c('t2g', True))), op_tmp[i])
+    res = op_tmp
     return res
 
 

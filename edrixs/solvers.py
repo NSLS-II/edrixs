@@ -32,7 +32,7 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
         Valence shell type, can be 's', 'p', 't2g', 'd', 'f'.
 
     c_name : string
-        Core shell type, can be 's', 'p', 'd', 'f'.
+        Core shell type, can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52', 'f', 'f52', 'f72'.
 
     v_level : float number
         Energy level of valence shell.
@@ -102,12 +102,10 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     # Quantum numbers of angular momentum
     v_orbl = info_shell[v_name][0]
     c_orbl = info_shell[c_name][0]
-    # Effective quantum numbers of angular momentum
-    v_orbl_eff = info_shell[v_name][1]
 
     # number of orbitals with spin
-    v_norb = 2 * info_shell[v_name][2]
-    c_norb = 2 * info_shell[c_name][2]
+    v_norb = info_shell[v_name][1]
+    c_norb = info_shell[c_name][1]
     # total number of orbitals
     ntot = v_norb + c_norb
 
@@ -151,7 +149,10 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     # SOC
     emat_i[0:v_norb, 0:v_norb] += atom_hsoc(v_name, v_soc[0])
     emat_n[0:v_norb, 0:v_norb] += atom_hsoc(v_name, v_soc[1])
-    emat_n[v_norb:ntot, v_norb:ntot] += atom_hsoc(c_name, c_soc)
+    # If only sub-core-shell, p12, p32, d32, d52, f52, f72,
+    # do not need add SOC
+    if c_name in ['p', 'd', 'f']:
+        emat_n[v_norb:ntot, v_norb:ntot] += atom_hsoc(c_name, c_soc)
 
     # crystal field
     if cf_mat is not None:
@@ -170,10 +171,14 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     emat_n[v_norb:ntot, v_norb:ntot] += np.eye(c_norb) * c_level
 
     # external magnetic field
-    lx, ly, lz = get_lx(v_orbl_eff, True), get_ly(v_orbl_eff, True), get_lz(v_orbl_eff, True)
-    sx, sy, sz = get_sx(v_orbl_eff), get_sy(v_orbl_eff), get_sz(v_orbl_eff)
     if v_name == 't2g':
+        lx, ly, lz = get_lx(1, True), get_ly(1, True), get_lz(1, True)
+        sx, sy, sz = get_sx(1), get_sy(1), get_sz(1)
         lx, ly, lz = -lx, -ly, -lz
+    else:
+        lx, ly, lz = get_lx(v_orbl, True), get_ly(v_orbl, True), get_lz(v_orbl, True)
+        sx, sy, sz = get_sx(v_orbl), get_sy(v_orbl), get_sz(v_orbl)
+
     if zeeman_on_which.strip() == 'spin':
         zeeman = ext_B[0] * (2 * sx) + ext_B[1] * (2 * sy) + ext_B[2] * (2 * sz)
     elif zeeman_on_which.strip() == 'orbital':
