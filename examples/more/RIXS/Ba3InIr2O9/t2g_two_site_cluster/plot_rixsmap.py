@@ -48,7 +48,7 @@ ax.tick_params(axis='y', which='minor', length=3, width=1.5)
 plt.xlabel(r"Energy loss (eV)")
 plt.ylabel(r"Incident energy (keV)")
 
-plt.subplots_adjust(left=0.2, right=0.98, bottom=0.12, top=0.95, wspace=0.05, hspace=0.02)
+plt.subplots_adjust(left=0.2, right=0.98, bottom=0.2, top=0.95, wspace=0.05, hspace=0.02)
 
 plt.savefig("rixs_map.pdf")
 # plt.show()

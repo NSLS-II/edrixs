@@ -1,106 +1,78 @@
 #!/usr/bin/env python
 
 import numpy as np
-import copy
-import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 import edrixs
 
-np.set_printoptions(precision=10, linewidth=200, suppress=True)
 
-if __name__ == '__main__':
-    a = 10.2
-    atom_pos = a * np.array([[0.50, 0.50, 0.50],
-                             [0.25, 0.25, 0.50],
-                             [0.25, 0.50, 0.25],
-                             [0.50, 0.25, 0.25]], dtype=np.float64)
+if __name__ == "__main__":
+    # local axis
+    natom = 4
+    loc_axis = np.zeros((natom, 3, 3), dtype=np.float64)
+    loc_axis[0] = np.array([[-2.0 / 3.0, +1.0 / 3.0, -2.0 / 3.0],
+                         [+1.0 / 3.0, -2.0 / 3.0, -2.0 / 3.0],
+                         [-2.0 / 3.0, -2.0 / 3.0, +1.0 / 3.0]]).T
+    loc_axis[1] = np.array([[+2.0 / 3.0, -1.0 / 3.0, -2.0 / 3.0],
+                         [-1.0 / 3.0, +2.0 / 3.0, -2.0 / 3.0],
+                         [+2.0 / 3.0, +2.0 / 3.0, +1.0 / 3.0]]).T
+    loc_axis[2] = np.array([[+2.0 / 3.0, -2.0 / 3.0, -1.0 / 3.0],
+                         [+2.0 / 3.0, +1.0 / 3.0, +2.0 / 3.0],
+                         [-1.0 / 3.0, -2.0 / 3.0, +2.0 / 3.0]]).T
+    loc_axis[3] = np.array([[-2.0 / 3.0, +2.0 / 3.0, -1.0 / 3.0],
+                         [-2.0 / 3.0, -1.0 / 3.0, +2.0 / 3.0],
+                         [+1.0 / 3.0, +2.0 / 3.0, +2.0 / 3.0]]).T
 
-    ncfgs_gs, ncfgs_ex = 6, 6
-    data = np.loadtxt('eval_i.dat')
-    eval_gs = data[:, 1]
-    data = np.loadtxt('eval_n.dat')
-    eval_ex = data[:, 1]
+    U, J = 2.0, 0.3
+    Ud, JH = edrixs.UJ_to_UdJH(U, J)
+    F0_dd, F2_dd, F4_dd = edrixs.UdJH_to_F0F2F4(Ud, JH)
+    F0_dd = edrixs.get_F0('d', F2_dd, F4_dd)
 
-    data = np.loadtxt('trans_mat.dat')
-    trans_mat_abs = (data[:, 4].reshape((4, 3, ncfgs_ex, ncfgs_gs)) +
-                     1j * data[:, 5].reshape((4, 3, ncfgs_ex, ncfgs_gs)))
-    trans_mat_emi = np.zeros((4, 3, ncfgs_gs, ncfgs_ex), dtype=np.complex128)
-    for i in range(4):
-        for j in range(3):
-            trans_mat_emi[i, j] = np.conj(np.transpose(trans_mat_abs[i, j]))
-    gamma_c, gamma = 5.0 / 2.0, 0.08
-    phi, thin, thout = 0.0, 45 / 180.0 * np.pi, 45 / 180.0 * np.pi
-    pol_vec = [(0, 0), (0, np.pi / 2.0)]
-    loc_scatt = np.transpose(np.array([[1 / np.sqrt(6.0), 1 / np.sqrt(6.0), -2 / np.sqrt(6.0)],
-                                       [-1 / np.sqrt(2.0), 1 / np.sqrt(2.0), 0],
-                                       [1 / np.sqrt(3.0), 1 / np.sqrt(3.0), 1 / np.sqrt(3.0)]]))
-    omi_shift = 11744.0
-    omi_mesh = np.linspace(-533, -525, 100)
-    eloss_mesh = np.linspace(-0.1, 1.2, 1000)
+    G1_dp, G3_dp = 0.957, 0.569
+    F0_dp, F2_dp = edrixs.get_F0('dp', G1_dp, G3_dp), 1.107
+
+    slater = ([F0_dd, F2_dd, F4_dd], [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])
+
+    zeta_d, zeta_p = 0.45, 1072.6666666666667
+
+    # Trigonal crystal field
+    c = -0.15
+    tmp = np.array([[0, c, c],
+                    [c, 0, c],
+                    [c, c, 0]])
+    cf = np.zeros((6, 6), dtype=np.complex)
+    cf[0:6:2, 0:6:2] += tmp
+    cf[1:6:2, 1:6:2] += tmp
+    cf[:,:] = edrixs.cb_op(cf, edrixs.tmat_r2c('t2g', True))
+
+    gamma_c, gamma_f = 2.5, 0.075
+    thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0
+    scattering_plane = np.array([[1 / np.sqrt(6.0), 1 / np.sqrt(6.0), -2 / np.sqrt(6.0)],
+                                 [-1 / np.sqrt(2.0), 1 / np.sqrt(2.0), 0],
+                                 [1 / np.sqrt(3.0), 1 / np.sqrt(3.0), 1 / np.sqrt(3.0)]]).T
+    om_shift = 11751.333333
+    ominc = np.linspace(-540 + om_shift, -530 + om_shift, 100)
+    eloss = np.linspace(-0.1, 1.2, 1000)
     gs_list = range(0, 2)
-    gs_dist = edrixs.boltz_dist([eval_gs[i] for i in gs_list], 30)
+    poltype_rixs = [('linear', 0.0, 'linear', 0.0),
+                    ('linear', 0.0, 'linear', np.pi / 2.0), 
+                    ('linear', np.pi / 2.0, 'linear', 0.0), 
+                    ('linear', np.pi / 2.0, 'linear', np.pi / 2.0)] 
 
-    rixs = np.zeros((len(pol_vec), len(eloss_mesh), len(omi_mesh)), dtype=np.float64)
-    for omi_ind, omi in enumerate(omi_mesh):
-        print(omi_ind, omi, omi + omi_shift)
-        Ffg_atom = np.zeros((4, 3, 3, ncfgs_gs, len(gs_list)), dtype=np.complex128)
-        for i in range(0, 4):
-            abs_trans = copy.deepcopy(trans_mat_abs[i])
-            emi_trans = copy.deepcopy(trans_mat_emi[i])
-            Ffg_atom[i] = edrixs.scattering_mat(
-                eval_gs, eval_ex, abs_trans[:, :, gs_list], emi_trans, omi, gamma_c)
-        print('------------------------')
-        for ipol, (alpha, beta) in enumerate(pol_vec):
-            ein, eout = omi + omi_shift, omi + omi_shift
-            ei, ef = edrixs.dipole_polvec_rixs(thin, thout, phi, alpha, beta, loc_scatt)
-            kin, kout = edrixs.get_wavevector_rixs(thin, thout, phi, ein, eout, loc_scatt)
-            Q = kout - kin
-            phase = np.zeros(4, dtype=np.complex128)
-            for i in range(0, 4):
-                phase[i] = np.exp(-1j * np.dot(Q, atom_pos[i]))
-            Ffg = np.zeros((ncfgs_gs, len(gs_list)), dtype=np.complex128)
-            for i in range(0, 4):
-                for j in range(3):
-                    for k in range(3):
-                        Ffg[:, :] += ef[j] * Ffg_atom[i, j, k] * phase[i] * ei[k]
-            for i in gs_list:
-                for j in range(ncfgs_gs):
-                    rixs[ipol, :, omi_ind] += np.abs(Ffg[j, i])**2 * gamma / (2 * np.pi) / (
-                        (eloss_mesh - (eval_gs[j] - eval_gs[i]))**2 + (gamma / 2.0)**2) * gs_dist[i]
-    # save rixs cut
-    f = open('rixs_tot.dat', 'w')
-    rixs_tot = np.zeros(len(eloss_mesh), dtype=np.float64)
-    for i in range(len(eloss_mesh)):
-        rixs_tot[i] = np.sum(rixs[0, i, :] + rixs[1, i, :]) / len(omi_mesh)
-        line = "{:20.10f}{:20.10f}\n".format(eloss_mesh[i], rixs_tot[i])
-        f.write(line)
-    f.close()
-
-    # plot rixs map
-    font = {'family': 'Times New Roman',
-            'weight': 'normal',
-            'size': '15'}
-    plt.rc('font', **font)
-    ax = plt.subplot(1, 1, 1)
-    ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
-    om1, om2 = (min(omi_mesh) + omi_shift) / 1000.0, (max(omi_mesh) + omi_shift) / 1000.0
-    los1, los2 = min(eloss_mesh), max(eloss_mesh)
-    plt.ylim([om2, om1])
-    plt.xlim([los1, los2])
-    cax = plt.imshow(
-        np.transpose(
-            rixs[0] + rixs[1]),
-        extent=[
-            los1,
-            los2,
-            om2,
-            om1],
-        origin='upper',
-        aspect='auto',
-        cmap='jet',
-        interpolation='bicubic')
-    plt.plot(eloss_mesh, [11.215] * len(eloss_mesh), '--', color='white')
-    plt.xlabel(r"Energy loss (eV)")
-    plt.ylabel(r"Incident energy (keV)")
-    plt.subplots_adjust(left=0.2, right=0.95, bottom=0.12, top=0.95, wspace=0.05, hspace=0.02)
-    plt.savefig("rixs_map.pdf")
+    rixs = np.zeros((len(ominc), len(eloss), len(poltype_rixs), natom), dtype=np.float)
+    for iatom in range(natom):
+        result = edrixs.ed_1v1c(v_name='t2g', c_name='p', v_soc=(zeta_d, zeta_d),
+                                c_soc=zeta_p, c_level=-om_shift, v_noccu=5, cf_mat=cf,
+                                slater=slater, local_axis=loc_axis[iatom])
+        eval_i, eval_n, trans_op = result
+        rixs[:, :, :, iatom] = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss,
+                                                gamma_c, gamma_f, thin, thout, phi,
+                                                poltype=poltype_rixs, gs_list=gs_list,
+                                                scattering_plane_axis=scattering_plane,
+                                                temperature=300)
+    rixs_tot = np.sum(rixs, axis=3)
+    rixs_pi = np.sum(rixs_tot[:, :, 0:2], axis=2)
+    rixs_sigma = np.sum(rixs_tot[:, :, 2:4], axis=2)
+    np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
+    np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
+    # Plot RIXS map
+    edrixs.plot_rixs_map(rixs_pi, ominc, eloss, "rixsmap_pi.pdf")
+    edrixs.plot_rixs_map(rixs_sigma, ominc, eloss, "rixsmap_sigma.pdf")

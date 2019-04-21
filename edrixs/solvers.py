@@ -19,7 +19,7 @@ from .rixs_utils import scattering_mat
 def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
             v_soc=(0.0, 0.0), c_soc=0.0,
             v_noccu=1, slater=([0], [0]),
-            ext_B=np.zeros(3),
+            ext_B=np.zeros(3), zeeman_on_which='spin',
             cf_mat=None, other_mat=None,
             local_axis=np.eye(3), verbose=0):
     """
@@ -58,6 +58,9 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
 
     ext_B : list of three float numbers
         Vector of external magnetic field, with respect to global :math:`xyz`-axis.
+
+    zeeman_on_which : string
+        Apply Zeeman exchange field on 'spin', 'orbital' or 'both'.
 
     cf_mat : 2d complex array
         Crystal field splitting Hamiltonian of valence electrons in the complex harmonics
@@ -171,7 +174,14 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     sx, sy, sz = get_sx(v_orbl_eff), get_sy(v_orbl_eff), get_sz(v_orbl_eff)
     if v_name == 't2g':
         lx, ly, lz = -lx, -ly, -lz
-    zeeman = ext_B[0] * (lx + 2 * sx) + ext_B[1] * (ly + 2 * sy) + ext_B[2] * (lz + 2 * sz)
+    if zeeman_on_which.strip() == 'spin':
+        zeeman = ext_B[0] * (2 * sx) + ext_B[1] * (2 * sy) + ext_B[2] * (2 * sz)
+    elif zeeman_on_which.strip() == 'orbital':
+        zeeman = ext_B[0] * lx + ext_B[1] * ly + ext_B[2] * lz
+    elif zeeman_on_which.strip() == 'both':
+        zeeman = ext_B[0] * (lx + 2 * sx) + ext_B[1] * (ly + 2 * sy) + ext_B[2] * (lz + 2 * sz)
+    else:
+        raise Exception("Unknown value of zeeman_on_which")
 
     emat_i[0:v_norb, 0:v_norb] += zeeman
     emat_n[0:v_norb, 0:v_norb] += zeeman
