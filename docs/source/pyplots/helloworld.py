@@ -93,8 +93,6 @@ plt.imshow(np.sum(rixs_L3, axis=2),
 plt.xlabel(r'Energy loss (eV)')
 plt.ylabel(r'Incident Energy (eV)')
 plt.title(r'(c) RIXS map at $L_3$ edge  (LH)')
-plt.subplots_adjust(left=0.1, right=0.90, bottom=0.08, top=0.90,
-                    wspace=0.2, hspace=0.3)
 
 ax4 = plt.subplot(2, 2, 4)
 plt.imshow(np.sum(rixs_L2, axis=2),
@@ -103,7 +101,6 @@ plt.imshow(np.sum(rixs_L2, axis=2),
 plt.xlabel(r'Energy loss (eV)')
 plt.ylabel(r'Incident Energy (eV)')
 plt.title(r'(d) RIXS map at $L_2$ edge (LH)')
-plt.subplots_adjust(left=0.1, right=0.90, bottom=0.08, top=0.90,
-                    wspace=0.2, hspace=0.3)
-plt.savefig('helloworld.png')
+
+plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.3)
 plt.show()
