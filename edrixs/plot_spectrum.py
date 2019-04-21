@@ -18,25 +18,19 @@ def plot_spectrum(file_list, omega_mesh, gamma_mesh, T=1.0, fname='spectrum.dat'
 
     Parameters
     ----------
-    file_list : list of string
+    file_list: list of string
         Name of poles file.
-
-    omega_mesh : 1d float array
+    omega_mesh: 1d float array
         The frequency mesh.
-
-    gamma_mesh : 1d float array
+    gamma_mesh: 1d float array
         The broadening factor, in general, it is frequency dependent.
-
-    T : float (default: 1.0K)
+    T: float (default: 1.0K)
         Temperature (K).
-
-    fname : str (default: 'spectrum.dat')
+    fname: str (default: 'spectrum.dat')
         File name to store spectrum.
-
-    om_shift : float (default: 0.0)
+    om_shift: float (default: 0.0)
         Energy shift.
-
-    fmt_float : str (default: '{:.15f}')
+    fmt_float: str (default: '{:.15f}')
         Format for printing float numbers.
     """
 
@@ -101,16 +95,13 @@ def plot_rixs_map(rixs_data, ominc_mesh, eloss_mesh, fname='rixs_map.pdf'):
 
     Parameters
     ----------
-    rixs_data  : 2d float array
+    rixs_data: 2d float array
         Calculated RIXS data as a function of incident energy and energy loss.
-
-    ominc_mesh : 1d float array
+    ominc_mesh: 1d float array
         Incident energy mesh.
-
-    eloss_mesh : 1d float array
+    eloss_mesh: 1d float array
         Energy loss mesh.
-
-    fname : string
+    fname: string
         File name to save RIXS map.
     """
 

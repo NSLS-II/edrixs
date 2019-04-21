@@ -62,7 +62,7 @@ def get_trans_oper(case):
 
     Parameters
     ----------
-    case : string
+    case: string
         A string indicating the two atomic shells, possible transitions are:
 
         -   'ss':     :math:`s \\rightarrow s`
@@ -76,9 +76,9 @@ def get_trans_oper(case):
         -   'pp':     :math:`p \\rightarrow p`
         -   'pp12':   :math:`p_{1/2} \\rightarrow p`
         -   'pp32':   :math:`p_{3/2} \\rightarrow p`
-        -   't2gp':   :math:`p \\rightarrow t2g`
-        -   't2gp12': :math:`p_{1/2} \\rightarrow t2g`
-        -   't2gp32': :math:`p_{3/2} \\rightarrow t2g`
+        -   't2gp':   :math:`p \\rightarrow t_{2g}`
+        -   't2gp12': :math:`p_{1/2} \\rightarrow t_{2g}`
+        -   't2gp32': :math:`p_{3/2} \\rightarrow t_{2g}`
         -   'dp':     :math:`p \\rightarrow d`
         -   'dp12':   :math:`p_{1/2} \\rightarrow d`
         -   'dp32':   :math:`p_{3/2} \\rightarrow d`
@@ -91,9 +91,9 @@ def get_trans_oper(case):
         -   'pd':     :math:`d \\rightarrow p`
         -   'pd32':   :math:`d_{3/2} \\rightarrow p`
         -   'pd52':   :math:`d_{5/2} \\rightarrow p`
-        -   't2gd':   :math:`d \\rightarrow t2g`
-        -   't2gd32': :math:`d_{3/2} \\rightarrow t2g`
-        -   't2gd52': :math:`d_{5/2} \\rightarrow t2g`
+        -   't2gd':   :math:`d \\rightarrow t_{2g}`
+        -   't2gd32': :math:`d_{3/2} \\rightarrow t_{2g}`
+        -   't2gd52': :math:`d_{5/2} \\rightarrow t_{2g}`
         -   'dd':     :math:`d \\rightarrow d`
         -   'dd32':   :math:`d_{3/2} \\rightarrow d`
         -   'dd52':   :math:`d_{5/2} \\rightarrow d`
@@ -106,9 +106,9 @@ def get_trans_oper(case):
         -   'pf':     :math:`f \\rightarrow p`
         -   'pf52':   :math:`f_{5/2} \\rightarrow p`
         -   'pf72':   :math:`f_{7/2} \\rightarrow p`
-        -   't2gf':   :math:`f \\rightarrow t2g`
-        -   't2gf52': :math:`f_{5/2} \\rightarrow t2g`
-        -   't2gf72': :math:`f_{7/2} \\rightarrow t2g`
+        -   't2gf':   :math:`f \\rightarrow t_{2g}`
+        -   't2gf52': :math:`f_{5/2} \\rightarrow t_{2g}`
+        -   't2gf72': :math:`f_{7/2} \\rightarrow t_{2g}`
         -   'df':     :math:`f \\rightarrow d`
         -   'df52':   :math:`f_{5/2} \\rightarrow d`
         -   'df72':   :math:`f_{7/2} \\rightarrow d`
@@ -118,8 +118,18 @@ def get_trans_oper(case):
 
     Returns
     -------
-    res : 2d complex array
+    res: 2d complex array
         The calculated transition matrix.
+
+    Examples
+    --------
+    >>> import edrixs
+    p to d transition
+    >>> trans_dp = get_trans_oper('dp')
+    p to t2g transition
+    >>> trans_t2gp = get_trans_oper('t2gp')
+    p_{3/2} to d transition
+    >>> trans_dp32 = get_trans_oper('dp32')
     """
     info = info_atomic_shell()
     v_name, c_name = case_to_shell_name(case.strip())
@@ -198,30 +208,24 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
 
     Parameters
     ----------
-    thin : float
+    thin: float
         The incident angle in radian.
-
-    thout : float
+    thout: float
         The scattered angle in radian.
-
-    phi : float
+    phi: float
         The azimuthal angle in radian.
-
-    ein : float
+    ein: float
         Energy of the incident photon (eV).
-
-    eout : float
+    eout: float
         Energy of the scattered photon (eV).
-
-    local_axis : :math:`3 \\times 3` float array
+    local_axis: :math:`3 \\times 3` float array
         The local :math:`z` -axis, the angle thin and thout are defined with respect to this axis.
 
     Returns
     -------
-    K_in_global : 3-length float array
+    K_in_global: 3-length float array
         The wave vector of the incident photon, with respect to the global :math:`xyz` -axis.
-
-    K_out_global : 3-length float array
+    K_out_global: 3-length float array
         The wave vector of the scattered photon, with respect to the global :math:`xyz` -axis.
     """
 
@@ -257,28 +261,22 @@ def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3)
 
     Parameters
     ----------
-    thin : float
+    thin: float
         The incident angle  (radian).
-
-    thout : float
+    thout: float
         The scattered angle (radian).
-
-    phi : float
+    phi: float
         The azimuthal angle (radian).
-
-    alpha : float
+    alpha: float
         The angle between the polarization vector of the incident photon and
         the scattering plane (radian)
-
-    beta : float
+    beta: float
         The angle between the polarization vector of the scattered photon and
         the scattering plane (radian)
-
-    local_axis : :math:`3 \\times 3` float array
+    local_axis: :math:`3 \\times 3` float array
         The local :math:`z` -axis, the angle thin and thout are defined with
         respect to this axis.
-
-    case : tuple of two strings
+    case: tuple of two strings
         Specify types of polarization for incident and scattered photons.
         case[0] for incident photon, case[1] for scattered photon.
         'linear': Linear polarization
@@ -287,11 +285,10 @@ def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3)
 
     Returns
     -------
-    ei_in_global : 3-length complex array
+    ei_in_global: 3-length complex array
         The linear polarization vector of the incident photon,
         with respect to the global :math:`xyz` -axis.
-
-    ef_out_global : 3-length complex array
+    ef_out_global: 3-length complex array
         The linear polarization vector of the scattered photon
         with respect to the global :math:`xyz` -axis.
     """
@@ -327,28 +324,24 @@ def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=np.eye(3), case='linear')
 
     Parameters
     ----------
-    thin : float
+    thin: float
         The incident angle  (radian).
-
-    phi : float
+    phi: float
         The azimuthal angle (radian).
-
-    alpha : float
+    alpha: float
         The angle between the polarization vector of the incident photon and
         the scattering plane (radian)
-
-    local_axis : :math:`3 \\times 3` float array
+    local_axis: :math:`3 \\times 3` float array
         The local :math:`z` -axis, the angle thin and thout are defined with
         respect to this axis.
-
-    case : string
+    case: string
         'linear': Linear polarization.
         'left'  : Left-circular polarization.
         'right' : Right-circular polarization.
 
     Returns
     -------
-    ei_global : 3-length float array
+    ei_global: 3-length float array
         The linear polarization vector of the incident photon, with resepct to the
         global :math:`xyz` -axis.
     """
@@ -373,16 +366,15 @@ def quadrupole_polvec(polvec, wavevec):
 
     Parameters
     ----------
-    polvec : 3 elements of complex array
+    polvec: 3 elements of complex array
         Dipolar polarization vector of photon, :math:`\\epsilon_{x}, \\epsilon_{y}, \\epsilon_{z}`,
         NOTE: they can be complex when the polarization is circular.
-
-    wavevec : 3 elements of float array
+    wavevec: 3 elements of float array
         Wavevector of photon, :math:`k_{x}, k_{y}, k_{z}`.
 
     Returns
     -------
-    quad_vec : 5 elements of float array
+    quad_vec: 5 elements of float array
         Quadrupolar polarization vector.
     """
 

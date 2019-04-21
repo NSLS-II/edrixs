@@ -123,23 +123,18 @@ def write_tensor(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}'
 
     Parameters
     ----------
-    tensor : :math:`n` d float or complex array
+    tensor: :math:`n` d float or complex array
         The array needs to be written.
-
-    fname : str
+    fname: str
         File name.
-
-    only_nonzeros : logical (default: False)
+    only_nonzeros: logical (default: False)
         Only write nonzero elements.
-
-    tol : float (default: 1E-10)
+    tol: float (default: 1E-10)
         Only write the elements when their absolute value are larger than tol
         and only_nonzeros=True.
-
-    fmt_int : str (default: '{:10d}')
+    fmt_int: str (default: '{:10d}')
         The format for printing integer numbers.
-
-    fmt_float : str (default: '{:.15f}')
+    fmt_float: str (default: '{:.15f}')
         The format for printing float numbers.
 
     """
@@ -172,19 +167,15 @@ def write_emat(emat, fname, tol=1E-12, fmt_int='{:10d}', fmt_float='{:.15f}'):
 
     Parameters
     ----------
-    emat : 2d complex array
+    emat: 2d complex array
         The array to be written.
-
-    fname : str
+    fname: str
         File name.
-
-    tol : float
+    tol: float
         Precision.
-
-    fmt_int : str (default: '{:10d}')
+    fmt_int: str (default: '{:10d}')
         Format for printing integer numbers.
-
-    fmt_float : str (default: '{:.15f}')
+    fmt_float: str (default: '{:.15f}')
         Format for printing float numbers.
     """
 
@@ -212,19 +203,15 @@ def write_umat(umat, fname, tol=1E-12, fmt_int='{:10d}', fmt_float='{:.15f}'):
 
     Parameters
     ----------
-    umat : 4d complex array
+    umat: 4d complex array
         The array to be written.
-
-    fname : str
+    fname: str
         File name.
-
-    tol : float (default: 1E-12)
+    tol: float (default: 1E-12)
         Precision.
-
-    fmt_int : str (default: '{:10d}')
+    fmt_int: str (default: '{:10d}')
         Format for printing integer numbers.
-
-    fmt_float : str (default: '{:.15f}')
+    fmt_float: str (default: '{:.15f}')
         Format for printing float numbers.
     """
 

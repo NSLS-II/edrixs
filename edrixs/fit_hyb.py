@@ -16,17 +16,16 @@ def fit_func(x, *args):
 
     Parameters
     ----------
-    x : 1d float array
+    x: 1d float array
         Frequency :math:`\\omega`, the first half is the real part and
         the second half is the imaginary part.
-
-    args : 1d float array
+    args: 1d float array
         The first half is the bath energy level :math:`\\epsilon_{l}` and the
         second half if the hybridization strength :math:`V_{l}`.
 
     Returns
     -------
-    y : 1d float array
+    y: 1d float array
         The calculated hybridization function :math:`\\Delta(\\omega)`, the
         first half is the real part and the second half is the imaginary part.
     """
@@ -62,25 +61,21 @@ def fit_hyb(x, y, N, p0):
 
     Parameters
     ----------
-    x : 1d complex array
-        Frequency :math:`\\omega`.
-
-    y : 1d complex array
-        Hybridization function :math:`\\Delta(\\omega)`.
-
-    N : int
+    x: 1d complex array
+       Frequency :math:`\\omega`.
+    y: 1d complex array
+       Hybridization function :math:`\\Delta(\\omega)`.
+    N: int
         Number of bath sites
-
-    p0 : N-length 1d float array
+    p0: N-length 1d float array
         Initial guess, the first half is :math:`\\epsilon_{l}` and
         the second half is :math:`V_{l}`.
 
     Returns
     -------
-    e : N-length 1d float array
+    e: N-length 1d float array
         The fitted bath energy levels :math:`\\epsilon_{l}`.
-
-    v : N-length 1d float array
+    v: N-length 1d float array
         The fitted hybridization strength :math:`V_{l}`.
     """
 
@@ -105,18 +100,16 @@ def get_hyb(x, e, v):
 
     Parameters
     ----------
-    x : 1d complex array
-        Frequency :math:`\\omega`.
-
-    e :  N-length 1d float array
-        The fitted bath energy levels.
-
-    v :  N-length 1d float array
+    x: 1d complex array
+       Frequency :math:`\\omega`.
+    e:  N-length 1d float array
+       The fitted bath energy levels.
+    v:  N-length 1d float array
         The fitted hybridization strength.
 
     Returns
     -------
-    y : 1d complex array
+    y: 1d complex array
         The calculated hybridization function :math:`\\Delta(\\omega)`.
     """
 

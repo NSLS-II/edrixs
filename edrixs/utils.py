@@ -7,12 +7,12 @@ def beta_to_kelvin(beta):
 
     Parameters
     ----------
-    beta : float
+    beta: float
         Inversion temperature.
 
     Returns
     -------
-    T : float
+    T: float
         Temperature (K).
     """
 
@@ -28,12 +28,12 @@ def kelvin_to_beta(k):
 
     Parameters
     ----------
-    k : float
+    k: float
         Temperature in Kelvin.
 
     Returns
     -------
-    beta : float
+    beta: float
         Inversion temperature.
     """
 
@@ -48,15 +48,14 @@ def boltz_dist(gs, T):
 
     Parameters
     ----------
-    gs : 1d float array
+    gs: 1d float array
         Energy levels.
-
-    T : float
+    T: float
         Temperature in Kelvin.
 
     Returns
     -------
-    res : 1d float array
+    res: 1d float array
         The Boltzmann distributition.
     """
 
@@ -72,18 +71,16 @@ def UJ_to_UdJH(U, J):
 
     Parameters
     ----------
-    U : float
+    U: float
         Coulomb interaction :math:`U`.
-
-    J : float
+    J: float
         Hund's coupling :math:`J`.
 
     Returns
     -------
-    Ud : float
+    Ud: float
         Coulomb interaction :math:`U_d`.
-
-    JH : float
+    JH: float
         Hund's coupling :math:`J_{H}`.
     """
 
@@ -102,18 +99,16 @@ def UdJH_to_UJ(Ud, JH):
 
     Parameters
     ----------
-    Ud : float
+    Ud: float
         Coulomb interaction :math:`U_d`.
-
-    JH : float
+    JH: float
         Hund's coupling :math:`J_H`.
 
     Returns
     -------
-    U : float
+    U: float
         Coulomb interaction :math:`U` in Kanamori form.
-
-    J : float
+    J: float
         Hund's coupling :math:`J` in Kanamori form.
     """
 
@@ -132,21 +127,18 @@ def UdJH_to_F0F2F4(Ud, JH):
 
     Parameters
     ----------
-    Ud : float
+    Ud: float
         Coulomb interaction :math:`U_d`.
-
-    JH : float
+    JH: float
         Hund's coupling :math:`J_H`.
 
     Returns
     -------
-    F0 : float
+    F0: float
         Slater integral :math:`F_0`.
-
-    F2 : float
+    F2: float
         Slater integral :math:`F_2`.
-
-    F4 : float
+    F4: float
         Slater integral :math:`F_4`.
     """
 
@@ -164,24 +156,20 @@ def UdJH_to_F0F2F4F6(Ud, JH):
 
     Parameters
     ----------
-    Ud : float
+    Ud: float
         Coulomb interaction :math:`U_d`.
-
-    JH : float
+    JH: float
         Hund's coupling :math:`J_H`.
 
     Returns
     -------
-    F0 : float
+    F0: float
         Slater integral :math:`F_0`.
-
-    F2 : float
+    F2: float
         Slater integral :math:`F_2`.
-
-    F4 : float
+    F4: float
         Slater integral :math:`F_4`.
-
-    F6 : float
+    F6: float
         Slater integral :math:`F_6`.
 
     """
@@ -201,21 +189,18 @@ def F0F2F4_to_UdJH(F0, F2, F4):
 
     Parameters
     ----------
-    F0 : float
+    F0: float
         Slater integral :math:`F_0`.
-
-    F2 : float
+    F2: float
         Slater integral :math:`F_2`.
-
-    F4 : float
+    F4: float
         Slater integral :math:`F_4`.
 
     Returns
     -------
-    Ud : float
+    Ud: float
         Coulomb interaction :math:`U_d`.
-
-    JH : float
+    JH: float
         Hund's coupling :math:`J_H`.
     """
 
@@ -232,21 +217,18 @@ def F0F2F4_to_UJ(F0, F2, F4):
 
     Parameters
     ----------
-    F0 : float
+    F0: float
         Slater integral :math:`F_0`.
-
-    F2 : float
+    F2: float
         Slater integral :math:`F_2`.
-
-    F4 : float
+    F4: float
         Slater integral :math:`F_4`.
 
     Returns
     -------
-    U : float
+    U: float
         Coulomb interaction :math:`U`.
-
-    J : float
+    J: float
         Hund's coupling :math:`J`.
     """
 
@@ -263,24 +245,20 @@ def F0F2F4F6_to_UdJH(F0, F2, F4, F6):
 
     Parameters
     ----------
-    F0 : float
+    F0: float
         Slater integral :math:`F_0`.
-
-    F2 : float
+    F2: float
         Slater integral :math:`F_2`.
-
-    F4 : float
+    F4: float
         Slater integral :math:`F_4`.
-
-    F6 : float
+    F6: float
         Slater integral :math:`F_6`.
 
     Returns
     -------
-    Ud : float
+    Ud: float
         Coulomb interaction :math:`U_d`.
-
-    JH : float
+    JH: float
         Hund's coupling :math:`J_H`.
     """
 
@@ -290,6 +268,18 @@ def F0F2F4F6_to_UdJH(F0, F2, F4, F6):
 
 
 def info_atomic_shell():
+    """
+    Return a dict to describe the information of atomic shell.
+    The key is a string of the shell's name, the value is a 2-elments tuple,
+    the first value is the orbital angular moment number and
+    the second value is the dimension of the Hilbert space.
+
+    Returns
+    -------
+    info: dict
+        The dict describing info of atomic shell.
+    """
+
     info = {'s':   (0, 2),
             'p':   (1, 6),
             'p12': (1, 2),
@@ -307,6 +297,27 @@ def info_atomic_shell():
 
 
 def case_to_shell_name(case):
+    """
+    Return the shell names for different cases.
+
+    Parameters
+    ----------
+    case: string
+        A string describing the shells included.
+
+    Returns
+    -------
+    shell_name: tuple of one or two strings
+        The name of shells.
+
+    Examples
+    --------
+    >>> import edrixs
+    >>> edrixs.case_to_shell_name('d')
+    ('d',)
+    >>> edrixs.case_to_shell_name('t2gp32')
+    ('t2g', 'p32')
+    """
     shell_name = {
         's': ('s',),
         'p': ('p',),
@@ -369,6 +380,22 @@ def case_to_shell_name(case):
 
 
 def edge_to_shell_name(edge_name):
+    """
+    Given edge name, return shell name.
+    If one needs to include both spin-orbit split edges of one shell,
+    one can use string, for example, 'L23' means both L2 and L3 edges
+    are considered in the calculations, and the shell name will be 'p'.
+
+    Parameters
+    ----------
+    edge_name: string
+        Standard edge name.
+
+    Returns
+    -------
+    shell_name: string
+        Shell name.
+    """
     shell_name = {
         'K': 's',
         'L1': 's',

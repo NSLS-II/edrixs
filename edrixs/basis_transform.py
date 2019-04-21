@@ -18,10 +18,9 @@ def cb_op(oper_A, t_mat):
 
     Parameters
     ----------
-    oper_A : 2d array
+    oper_A: 2d array
         The matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
-
-    t_mat : 2d array
+    t_mat: 2d array
         The unitary transformation matrix from basis :math:`A` to
         basis :math:`B`,  namely,
         :math:`T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
@@ -47,18 +46,16 @@ def cb_op2(oper_A, TL, TR):
 
     Parameters
     ----------
-    oper_A : 2d array
+    oper_A: 2d array
         The matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
-
-    TL : 2d array
+    TL: 2d array
         The unitary transformation matrix applied on the left.
-
-    TR : 2d array
+    TR: 2d array
         The unitary transformation matrix applied on the right.
 
     Returns
     -------
-    oper_B : 2d array
+    oper_B: 2d array
         The matrix form of operator :math:`\\hat{O}` after the transformation.
     """
 
@@ -73,20 +70,19 @@ def tmat_c2r(case, ispin=False):
 
     Parameters
     ----------
-    case : string
+    case: string
         Label for different systems.
 
         - 'p': for :math:`p`-shell
         - 't2g': for :math:`t_{2g}`-shell
         - 'd': for :math:`d`-shell
         - 'f': for :math:`f`-shell
-
-    ispin : logical
+    ispin: logical
         Whether including spin degree of freedom or not (default: False).
 
     Returns
     -------
-    t_c2r : 2d complex array
+    t_c2r: 2d complex array
         The transformation matrix.
     """
 
@@ -192,20 +188,19 @@ def tmat_r2c(case, ispin=False):
 
     Parameters
     ----------
-    case : string
+    case: string
         Label for different systems.
 
         - 'p': for :math:`p`-shell
         - 't2g': for :math:`t_{2g}`-shell
         - 'd': for :math:`d`-shell
         - 'f': for :math:`f`-shell
-
-    ispin : logical
+    ispin: logical
         Whether including spin degree of freedom or not (default: False).
 
     Returns
     -------
-    t_r2c : 2d complex array
+    t_r2c: 2d complex array
         The transformation matrix.
     """
 
@@ -221,12 +216,12 @@ def tmat_r2cub_f(ispin=False):
 
     Parameters
     ----------
-    ispin : logical
+    ispin: logical
         Whether including spin degree of freedom or not (default: False).
 
     Returns
     -------
-    t_r2cub : 2d complex array
+    t_r2cub: 2d complex array
         The transformation matrix.
     """
 
@@ -280,12 +275,12 @@ def tmat_cub2r_f(ispin=False):
 
     Parameters
     ----------
-    ispin : logical
+    ispin: logical
         Whether including spin degree of freedom or not (default: False).
 
     Returns
     -------
-    t_cub2r : 2d complex array
+    t_cub2r: 2d complex array
         The transformation matrix.
     """
 
@@ -305,12 +300,12 @@ def tmat_c2j(orb_l):
 
     Parameters
     ----------
-    orb_l : int
+    orb_l: int
         Quantum number of orbital angular momentum.
 
     Returns
     -------
-    t_c2j : 2d complex array
+    t_c2j: 2d complex array
         The transformation matrix.
     """
 
@@ -394,15 +389,14 @@ def transform_utensor(umat, tmat):
 
     Parameters
     ----------
-    umat : 4d array
+    umat: 4d array
         Coulomb interaction tensor (rank-4).
-
-    tmat : 2d array
+    tmat: 2d array
         The transformation matrix.
 
     Returns
     -------
-    umat_new : 4d complex array
+    umat_new: 4d complex array
         The Coulomb interaction tensor in the new basis.
     """
 
@@ -443,30 +437,24 @@ def fourier_hr2hk(norbs, nkpt, kvec, nrpt, rvec, deg_rpt, hr):
 
     Parameters
     ----------
-    norbs : int
+    norbs: int
         Number of orbitals.
-
-    nkpt : int
+    nkpt: int
         Number of :math:`k`-points.
-
-    kvec : 2d float array
+    kvec: 2d float array
         Fractional coordinate for k-points.
-
-    nrpt : int
+    nrpt: int
         Number of r-points.
-
-    rvec : 2d float array
+    rvec: 2d float array
         Fractional coordinate for r-points.
-
-    deg_rpt : int
+    deg_rpt: int
         The degenerancy for each r-point.
-
-    hr : 3d complex array
+    hr: 3d complex array
         Hamiltonian in r-space.
 
     Returns
     -------
-    hk : 3d complex array
+    hk: 3d complex array
         Hamiltonian in k-space.
     """
 

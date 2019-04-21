@@ -17,27 +17,22 @@ def scattering_mat(eval_i, eval_n, trans_mat_abs,
 
     Parameters
     ----------
-    eval_i : 1d float array
+    eval_i: 1d float array
         Eigenvalues of the initial configuration without core-hole, :math:`E_i`.
-
-    eval_n : 1d float array
+    eval_n: 1d float array
         Eigenvalues of the intermediate configuration with core-hole, :math:`E_n`.
-
-    trans_mat_abs : 3d complex array
+    trans_mat_abs: 3d complex array
         The transition operator for absorption process, :math:`<n|T_{b}|i>`.
-
-    trans_mat_emi : 3d complex array
+    trans_mat_emi: 3d complex array
         The transition operator for emission process, :math:`<f|T_{a}|n>`.
-
-    omega_inc : float
+    omega_inc: float
         The energy of incident photon, :math:`\\omega_{in}`.
-
-    gamma_n : float
+    gamma_n: float
         The broadening of the core-hole (eV), :math:`\\Gamma_{n}`.
 
     Returns
     -------
-    Ffi : 4d complex array
+    Ffi: 4d complex array
         The calculated scattering magnitude, :math:`F^{ab}_{fi}`.
     """
 

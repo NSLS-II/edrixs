@@ -15,15 +15,14 @@ def get_ladd(l, ispin=False):
 
     Parameters
     ----------
-    l : int
+    l: int
         Orbital angular momentum number.
-
-    ispin : logical
+    ispin: logical
         Whether including spin or not (default: False).
 
     Returns
     ----------
-    ladd : 2d complex array
+    ladd: 2d complex array
         The matrix form of :math:`l^+`.
 
         If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
@@ -56,14 +55,14 @@ def get_lminus(l, ispin=False):
 
     Parameters
     ----------
-    l : int
+    l: int
         Orbital angular momentum number.
-    ispin : logical
+    ispin: logical
         Whether including spin or not (default: False).
 
     Returns
     ----------
-    lminus : 2d complex array
+    lminus: 2d complex array
         The matrix form of :math:`l^-`.
 
         If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
@@ -96,15 +95,14 @@ def get_lx(l, ispin=False):
 
     Parameters
     ----------
-    l : int
+    l: int
         Orbital angular momentum number.
-
-    ispin : logical
+    ispin: logical
         Whether including spin or not (default: False).
 
     Returns
     ----------
-    lx : 2d complex array
+    lx: 2d complex array
         The matrix form of :math:`l_x`.
 
         If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
@@ -129,15 +127,14 @@ def get_ly(l, ispin=False):
 
     Parameters
     ----------
-    l : int
+    l: int
         Orbital angular momentum number.
-
-    ispin : logical
+    ispin: logical
         Whether including spin or not (default: False).
 
     Returns
     ----------
-    ly : 2d complex array
+    ly: 2d complex array
         The matrix form of :math:`l_y`.
 
         If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
@@ -158,15 +155,14 @@ def get_lz(l, ispin=False):
 
     Parameters
     ----------
-    l : int
+    l: int
         Orbital angular momentum number.
-
-    ispin : logical
+    ispin: logical
         Whether including spin or not (default: False).
 
     Returns
     -------
-    lz : 2d complex array
+    lz: 2d complex array
         The matrix form of :math:`l_z`.
 
         If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
@@ -192,7 +188,7 @@ def get_pauli():
 
     Returns
     -------
-    sigma : :math:`3\\times 2 \\times 2` complex array.
+    sigma: :math:`3\\times 2 \\times 2` complex array.
 
         sigma[0] is :math:`\\sigma_x`,
 
@@ -219,12 +215,12 @@ def get_sx(l):
 
     Parameters
     ----------
-    l : int
+    l: int
         Quantum number of orbital angular momentum.
 
     Returns
     -------
-    sx : 2d complex array.
+    sx: 2d complex array.
         Matrix form of :math:`s_x`, the dimension
         is :math:`2(2l+1) \\times 2(2l+1)`,
 
@@ -248,12 +244,12 @@ def get_sy(l):
 
     Parameters
     ----------
-    l : int
+    l: int
         Quantum number of orbital angular momentum.
 
     Returns
     -------
-    sy : 2d complex array.
+    sy: 2d complex array.
         Matrix form of :math:`s_y`, the dimension
         is :math:`2(2l+1) \\times 2(2l+1)`, spin order is:
 
@@ -277,12 +273,12 @@ def get_sz(l):
 
     Parameters
     ----------
-    l : int
+    l: int
         Quantum number of orbital angular momentum.
 
     Returns
     -------
-    sz : 2d complex array.
+    sz: 2d complex array.
         Matrix form of :math:`s_z`, the dimension
         is :math:`2(2l+1) \\times 2(2l+1)`.
 
@@ -306,18 +302,16 @@ def euler_to_rmat(alpha, beta, gamma):
 
     Parameters
     ----------
-    alpha : float
+    alpha: float
         Euler angle, in radian, [0, :math:`2\\pi`]
-
-    beta : float
+    beta: float
         Euler angle, in radian, [0, :math:`\\pi`]
-
-    gamma : float
+    gamma: float
         Euler angle, in radian, [0, :math:`2\\pi`]
 
     Returns
     ----------
-    rmat : 2d float array
+    rmat: 2d float array
         The :math:`3\\times 3` rotational matrix.
     """
 
@@ -341,18 +335,16 @@ def rmat_to_euler(rmat):
 
     Parameters
     ----------
-    rmat :  2d float array
+    rmat:  2d float array
         The :math:`3\\times 3` rotational matrix :math:`R`.
 
     Returns
     ---------
-    alpha : float
+    alpha: float
         Euler angle :math:`\\alpha` in radian, [0, :math:`2\\pi`].
-
-    beta : float
+    beta: float
         Euler angle :math:`\\beta` in radian, [0, :math:`\\pi`].
-
-    gamma : float
+    gamma: float
         Euler angle :math:`\\gamma` in radian, [0, :math:`2\\pi`]
 
     """
@@ -384,15 +376,14 @@ def where_is_angle(sina, cosa):
 
     Parameters
     ----------
-    sina :  float
+    sina:  float
         :math:`\\sin(\\alpha)`.
-
-    cosa :  float
+    cosa:  float
         :math:`\\cos(\\alpha)`.
 
     Returns
     ----------
-    alpha : float
+    alpha: float
         The angle :math:`\\alpha` in radian [0, :math:`2\\pi`].
     """
 
@@ -414,18 +405,16 @@ def dmat_spinor(alpha, beta, gamma):
 
     Parameters
     ----------
-    alpha : float
+    alpha: float
         Euler angle :math:`\\alpha` in radian [0, :math:`2\\pi`].
-
-    beta : float
+    beta: float
         Euler angle :math:`\\beta` in radian [0, :math:`\\pi`].
-
-    gamma : float
+    gamma: float
         Euler angle :math:`\\gamma` in radian [0, :math:`2\\pi`].
 
     Returns
     -------
-    dmat :  2d complex array
+    dmat:  2d complex array
         The :math:`2\\times 2` transformation matrix.
     """
 
@@ -446,15 +435,14 @@ def zx_to_rmat(z, x):
 
     Parameters
     ----------
-    z : 1d float array
+    z: 1d float array
         The :math:`z` vector.
-
-    x : 1d float array
+    x: 1d float array
         The :math:`x` vector.
 
     Returns
     ---------
-    rmat : 2d float array
+    rmat: 2d float array
         The :math:`3\\times 3` rotational matrix :math:`R`.
     """
 
@@ -478,22 +466,19 @@ def get_wigner_dmat(quant_2j, alpha, beta, gamma):
 
     Parameters
     ----------
-    quant_2j : int
+    quant_2j: int
         Twice of the quantum number j: 2j, for example, quant_2j=1 means j=1/2,
         quant_2j=2 means j=1
-
-    alpha : float number
+    alpha: float number
         The first Euler angle :math:`\\alpha` in radian [0, :math:`2\\pi`].
-
-    beta : float number
+    beta: float number
         The second Euler angle :math:`\\beta` in radian [0, :math:`\\pi`].
-
-    gamma : float number
+    gamma: float number
         The third Euler angle :math:`\\gamma` in radian [0, :math:`2\\pi`].
 
     Returns
     -------
-    result : 2d complex array, shape(quant_2j+1, quant_2j+1)
+    result: 2d complex array, shape(quant_2j+1, quant_2j+1)
         The Wigner D-matrix.
         For :math:`j=1/2`, the orbital order is: +1/2 (spin up), -1/2 (spin down).
         For :math:`j>1/2`, the orbital order is: :math:`-j, -j+1, ..., +j`
@@ -539,12 +524,12 @@ def cf_cubic_d(ten_dq):
 
     Parameters
     ----------
-    ten_dq : float scalar
+    ten_dq: float scalar
         The splitting between :math:`eg` and :math:`t2g` orbitals.
 
     Returns
     -------
-    cf : :math:`5\\times5` complex array
+    cf: :math:`5\\times5` complex array
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 
@@ -570,18 +555,17 @@ def cf_tetragonal_d(ten_dq, d1, d3):
 
     Parameters
     ----------
-    ten_dq : float scalar
+    ten_dq: float scalar
         Parameter used to label cubic crystal splitting.
-
-    d1 : float scalar
+    d1: float scalar
         Paramter used to label tetragonal splitting.
 
-    d3 : float scalar
+    d3: float scalar
         Paramter used to label tetragonal splitting.
 
     Returns
     -------
-    cf : :math:`5\\times5` complex array
+    cf: :math:`5\\times5` complex array
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 

@@ -14,15 +14,14 @@ def combination(n, m):
 
     Parameters
     ----------
-    n : int
-        Number n.
-
-    m : int
+    n: int
+       Number n.
+    m: int
         Number m.
 
     Returns
     -------
-    res : int
+    res: int
         The calculated result.
 
     Examples
@@ -60,15 +59,14 @@ def fock_bin(n, k):
 
     Parameters
     ----------
-    n : int
+    n: int
         Binary length :math:`n`.
-
-    k : int
+    k: int
         How many digitals are set to be 1.
 
     Returns
     -------
-    res : list of int-lists
+    res: list of int-lists
         A list of list containing the binary digitals.
 
     Examples
@@ -102,7 +100,7 @@ def get_fock_bin_by_N(*args):
 
     Parameters
     ----------
-    args : ints
+    args: ints
         args[0]: number of orbitals for 1st-shell,
 
         args[1]: number of occupancy for 1st-shell,
@@ -119,7 +117,7 @@ def get_fock_bin_by_N(*args):
 
     Returns
     -------
-    result : list of int list
+    result: list of int list
         The binary form of Fock states.
 
     Examples
@@ -181,15 +179,14 @@ def get_fock_full_N(norb, N):
 
     Parameters
     ----------
-    norb : int
+    norb: int
         Number of orbitals.
-
-    N : int
+    N: int
         Number of occupancy.
 
     Returns
     -------
-    res : list of int
+    res: list of int
         The decimal digitals to represent Fock states.
 
     Examples
@@ -226,18 +223,16 @@ def get_fock_basis_by_NLz(norb, N, lz_list):
 
     Parameters
     ----------
-    norb : int
+    norb: int
         Number of orbitals.
-
-    N : int
+    N: int
         Number of total occupancy.
-
-    lz_list : list of int
+    lz_list: list of int
         Quantum number :math:`l_{z}` for each orbital.
 
     Returns
     -------
-    res : dict
+    res: dict
         A dictionary containing the decimal digitals, the key is good
         quantum numbers :math:`L_{z}`, the value is a list of int.
 
@@ -266,18 +261,16 @@ def get_fock_basis_by_NSz(norb, N, sz_list):
 
     Parameters
     ----------
-    norb : int
+    norb: int
         Number of orbitals.
-
-    N : int
+    N: int
         Number of total occupancy.
-
-    sz_list : list of int
+    sz_list: list of int
         Quantum number :math:`s_{z}` for each orbital.
 
     Returns
     -------
-    res : dict
+    res: dict
         A dictionary containing the decimal digitals, the key is good quantum
         numbers :math:`S_{z}`, the value is a list of int.
 
@@ -306,18 +299,16 @@ def get_fock_basis_by_NJz(norb, N, jz_list):
 
     Parameters
     ----------
-    norb : int
+    norb: int
         Number of orbitals.
-
-    N : int
+    N: int
         Number of total occupancy.
-
-    jz_list : list of int
+    jz_list: list of int
         Quantum number :math:`j_{z}` for each orbital.
 
     Returns
     -------
-    res : dict
+    res: dict
         A dictionary containing the decimal digitals, the key is good quantum
         numbers :math:`j_{z}`, the value is a list of int.
 
@@ -352,18 +343,16 @@ def get_fock_basis_by_N_abelian(norb, N, a_list):
 
     Parameters
     ----------
-    norb : int
+    norb: int
         Number of orbitals.
-
-    N : int
+    N: int
         Number of total occupancy.
-
-    a_list : list of int
+    a_list: list of int
         Quantum number of the Abelian symmetry for each orbital.
 
     Returns
     -------
-    basis : dict
+    basis: dict
         A dictionary containing the decimal digitals, the key is good quantum numbers,
         the value is a list of int.
     """
@@ -388,21 +377,18 @@ def get_fock_basis_by_N_LzSz(norb, N, lz_list, sz_list):
 
     Parameters
     ----------
-    norb : int
+    norb: int
         Number of orbitals.
-
-    N : int
+    N: int
         Number of total occupancy.
-
-    lz_list : list of int
+    lz_list: list of int
         Quantum number :math:`l_{z}` for each orbital.
-
-    sz_list : list of int
+    sz_list: list of int
         Quantum number :math:`s_{z}` for each orbital.
 
     Returns
     -------
-    basis : dict
+    basis: dict
         A dictionary containing the decimal digitals, the key is a tuple containing good quantum
         numbers ( :math:`l_{z}`, :math:`s_{z}`), the value is a list of int.
 
@@ -459,18 +445,16 @@ def write_fock_dec_by_N(N, r, fname='fock_i.in'):
 
     Parameters
     ----------
-    N : int
-        Number of orbitals.
-
-    r : int
+    N: int
+       Number of orbitals.
+    r: int
         Number of occuancy.
-
-    fname : string
+    fname: string
         File name.
 
     Returns
     -------
-    ndim : int
+    ndim: int
         The dimension of the Hilbert space
 
     Examples

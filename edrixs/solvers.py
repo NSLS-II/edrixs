@@ -28,70 +28,58 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
 
     Parameters
     ----------
-    v_name : string
+    v_name: string
         Valence shell type, can be 's', 'p', 't2g', 'd', 'f'.
-
-    c_name : string
+    c_name: string
         Core shell type, can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52', 'f', 'f52', 'f72'.
-
-    v_level : float number
+    v_level: float number
         Energy level of valence shell.
-
-    c_level : float number
+    c_level: float number
         Energy level of core shell.
-
-    v_soc : tuple of two float numbers
+    v_soc: tuple of two float numbers
         Spin-orbit coupling strength of valence electrons,
         v_soc[0] for the initial Hamiltonian, and
         v_soc[1] for the intermediate Hamiltonian.
-
-    c_soc : float number
+    c_soc: float number
         Spin-orbit coupling strength of core electrons.
-
-    v_noccu : int number
+    v_noccu: int number
         Number of electrons in valence shell.
-
-    slater : tuple of two lists
+    slater: tuple of two lists
         Slater integrals for initinal (slater[0]) and intermediate (slater[1]) Hamiltonian.
         The order of the elements in the lists like this: [FX_vv, FX_vc, GX_vc, FX_cc], where
         X are integers with increasing order, it can be X=0, 2, 4, 6 or X=1, 3, 5.
-
-    ext_B : list of three float numbers
+    ext_B: list of three float numbers
         Vector of external magnetic field, with respect to global :math:`xyz`-axis.
-
-    zeeman_on_which : string
+    zeeman_on_which: string
         Apply Zeeman exchange field on 'spin', 'orbital' or 'both'.
-
-    cf_mat : 2d complex array
+    cf_mat: 2d complex array
         Crystal field splitting Hamiltonian of valence electrons in the complex harmonics
         basis with spin degree of freedom. The orbital order is:
         :math:`|-l,\\uparrow>, |-l,\\downarrow>, |-l+1,\\uparrow>, |-l+1,\\downarrow>, ...,
         |l,\\uparrow>, |l,\\downarrow>`.
-
-    other_mat : 2d complex array
+    other_mat: 2d complex array
         OtherHamiltonian of valence electrons in the complex harmonics
         basis with spin degree of freedom. The orbital order is:
         :math:`|-l,\\uparrow>, |-l,\\downarrow>, |-l+1,\\uparrow>, |-l+1,\\downarrow>, ...,
         |l,\\uparrow>, |l,\\downarrow>`.
-
-    local_axis : 3*3 float array
+    local_axis: 3*3 float array
         The local axis with respect to which the orbitals are defined.
-        x: local_axis[:,0],
-        y: local_axis[:,1],
-        z: local_axis[:,2].
 
-    verbose : int
+        x: local_axis[:,0],
+
+        y: local_axis[:,1],
+
+        z: local_axis[:,2].
+    verbose: int
         Level of dumping files.
 
     Returns
     -------
-    eval_i :  1d float array
+    eval_i:  1d float array
         The eigenvalues of initial Hamiltonian.
-
-    eval_n : 1d float array
+    eval_n: 1d float array
         The eigenvalues of intermediate Hamiltonian.
-
-    T_abs : 3d complex array
+    T_abs: 3d complex array
         The matrices of transition operators in the eigenvector basis,
         and they are defined with respect to the global :math:`xyz`-axis.
     """
@@ -269,41 +257,31 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
 
     Parameters
     ----------
-    eval_i : 1d float array
+    eval_i: 1d float array
         The eigenvalues of the initial Hamiltonian.
-
-    eval_n : 1d float array
+    eval_n: 1d float array
         The eigenvalues of the intermediate Hamiltonian.
-
-    T_abs : 3d complex array
+    T_abs: 3d complex array
         The transition operators in the eigenstates basis.
-
-    ominc_mesh : 1d float array
+    ominc_mesh: 1d float array
         The mesh of the incident energy of photon.
-
-    gamma_c : a float number or a 1d float array with same length as ominc_mesh.
+    gamma_c: a float number or a 1d float array with same length as ominc_mesh.
         The core-hole life-time broadening factor. It can be a constant value
         or incident energy dependent.
-
-    thin : float number
+    thin: float number
         The incident angle of photon.
-
-    phi : float number
+    phi: float number
         Azimuthal angle in radian, defined with respect to the
         :math:`x`-axis: scattering_plane_axis[:,0].
-
-    poltype : list of tuples
+    poltype: list of tuples
         Type of polarization, options are
         ('linear', alpha), where alpha is the angle between the polarization vector and
         the scattering plane. ('left', 0), ('right', 0), ('isotropic', 0).
-
-    gs_list : 1d int list
+    gs_list: 1d int list
         The indices of initial states which will be used as initial states in XAS calculations.
-
-    temperature : float number
+    temperature: float number
         Temperature (in K) for boltzmann distribution.
-
-    scattering_plane_axis : 3*3 float array
+    scattering_plane_axis: 3*3 float array
         The local axis defining the scattering plane. The scattering plane is defined in
         the local :math:`zx`-plane.
         local :math:`x`-axis: scattering_plane_axis[:,0]
@@ -312,7 +290,7 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
 
     Returns
     -------
-    xas : 2d float array
+    xas: 2d float array
         The calculated XAS spectra.
     """
 
@@ -370,49 +348,36 @@ def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
 
     Parameters
     ----------
-    eval_i : 1d float array
+    eval_i: 1d float array
         The eigenvalues of the initial Hamiltonian.
-
-    eval_n : 1d float array
+    eval_n: 1d float array
         The eigenvalues of the intermediate Hamiltonian.
-
-    T_abs : 3d complex array
+    T_abs: 3d complex array
         The transition operators in the eigenstates basis.
-
-    ominc_mesh : 1d float array
+    ominc_mesh: 1d float array
         The mesh of the incident energy of photon.
-
-    eloss_mesh : 1d float array
+    eloss_mesh: 1d float array
         The mesh of energy loss.
-
-    gamma_c : a float number or a 1d float array with same length as ominc_mesh.
+    gamma_c: a float number or a 1d float array with same length as ominc_mesh.
         The core-hole life-time broadening factor. It can be a constant value
         or incident energy dependent.
-
-    gamma_f : a float number or a 1d float array with same length as eloss_mesh.
+    gamma_f: a float number or a 1d float array with same length as eloss_mesh.
         The final states life-time broadening factor. It can be a constant value
         or energy loss dependent.
-
-    thin : float number
+    thin: float number
         The incident angle of photon.
-
-    thout : float number
+    thout: float number
         The scattered angle of photon.
-
-    phi : float number
+    phi: float number
         Azimuthal angle in radian, defined with respect to the
         :math:`x`-axis: scattering_plane_axis[:,0].
-
-    poltype : list of 4-elements-tuples
+    poltype: list of 4-elements-tuples
         Type of polarizations.
-
-    gs_list : 1d int list
+    gs_list: 1d int list
         The indices of initial states which will be used as initial states in RIXS calculations.
-
-    temperature : float number
+    temperature: float number
         Temperature (in K) for boltzmann distribution.
-
-    scattering_plane_axis : 3*3 float array
+    scattering_plane_axis: 3*3 float array
         The local axis defining the scattering plane. The scattering plane is defined in
         the local :math:`zx`-plane.
         local :math:`x`-axis: scattering_plane_axis[:,0]
@@ -421,7 +386,7 @@ def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
 
     Returns
     -------
-    rixs : 3d float array
+    rixs: 3d float array
         The calculated RIXS spectra.
     """
 

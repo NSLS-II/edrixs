@@ -19,9 +19,9 @@ def get_gaunt(l1, l2):
 
     Parameters
     ----------
-    l1 : int
+    l1: int
         The first quantum number of angular momentum.
-    l2 : int
+    l2: int
         The second quantum number of angular momentum.
 
     Returns
@@ -112,12 +112,6 @@ def umat_slater(l_list, fk):
     umat: 4d array of complex
         contains the Coulomb interaction tensor.
 
-    See also
-    --------
-    coulomb_utensor.get_umat_slater
-    coulomb_utensor.get_umat_kanamori
-    coulomb_utensor.get_umat_kanamori_ge
-
     Examples
     --------
     >>> import edrixs
@@ -159,8 +153,13 @@ def umat_slater(l_list, fk):
     >>> fk[(2,2,2,2,2)] = F2_pp
 
     >>> umat_dp = edrixs.umat_slater(l_list, fk)
-    """
 
+    See also
+    --------
+    coulomb_utensor.get_umat_slater
+    coulomb_utensor.get_umat_kanamori
+    coulomb_utensor.get_umat_kanamori_ge
+    """
     k_list = list(range(0, 2 * max(l_list) + 1))
     ck = {}
     orb_label = []
@@ -360,29 +359,28 @@ def get_umat_slater(case, *args):
     case: string
         indicates which atomic shells we will include, should be one of
 
-        - 's':      single :math:`s`-shell (:math:`l=0`)
-        - 'p':      single :math:`p`-shell (:math:`l=1`)
-        - 't2g':    single :math:`t2g`-shell (:math:`l_{\\text{eff}}=-1`)
-        - 'd':      single :math:`d`-shell (:math:`l=2`)
-        - 'f':      single :math:`f`-shell (:math:`l=3`)
-        - 'ss':     :math:`s`-shell (:math:`l=0`) plus :math:`s`-shell (:math:`l=0`)
-        - 'ps':     :math:`p`-shell (:math:`l=1`) plus :math:`s`-shell (:math:`l=0`)
-        - 't2gs':   :math:`t2g`-shell (:math:`l_{\\text{eff}}=-1`)
-                    plus :math:`s`-shell (:math:`l=0`)
-        - 'ds':     :math:`d`-shell (:math:`l=2`) plus :math:`s`-shell (:math:`l=0`)
-        - 'fs':     :math:`f`-shell (:math:`l=3`) plus :math:`s`-shell (:math:`l=0`)
-        - 'sp':     :math:`s`-shell (:math:`l=0`) plus :math:`p`-shell (:math:`l=1`)
-        - 'sp12':   :math:`s`-shell (:math:`l=0`) plus :math:`p_{1/2}`-shell (:math:`j=1/2`)
-        - 'sp32':   :math:`s`-shell (:math:`l=0`) plus :math:`p_{3/2}`-shell (:math:`j=3/2`)
-        - 'pp':     :math:`p`-shell (:math:`l=1`) plus :math:`p`-shell (:math:`l=1`)
-        - 'pp12':   :math:`p`-shell (:math:`l=1`) plus :math:`p_{1/2}`-shell (:math:`j=1/2`)
-        - 'pp32':   :math:`p`-shell (:math:`l=1`) plus :math:`p_{3/2}`-shell (:math:`j=3/2`)
-        - 't2gp':   :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`p`-shell (:math:`l=1`)
-        - 't2gp12': :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`p_{1/2}`-shell (:math:`j=1/2`)
-        - 't2gp32': :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`p_{3/2}`-shell (:math:`j=3/2`)
+        - 's':    single :math:`s`-shell (:math:`l=0`)
+        - 'p':    single :math:`p`-shell (:math:`l=1`)
+        - 't2g':  single :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
+        - 'd':    single :math:`d`-shell (:math:`l=2`)
+        - 'f':    single :math:`f`-shell (:math:`l=3`)
+        - 'ss':   :math:`s`-shell (:math:`l=0`) plus :math:`s`-shell (:math:`l=0`)
+        - 'ps':   :math:`p`-shell (:math:`l=1`) plus :math:`s`-shell (:math:`l=0`)
+        - 't2gs': :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`) plus :math:`s`-shell (:math:`l=0`)
+        - 'ds':   :math:`d`-shell (:math:`l=2`) plus :math:`s`-shell (:math:`l=0`)
+        - 'fs':   :math:`f`-shell (:math:`l=3`) plus :math:`s`-shell (:math:`l=0`)
+        - 'sp':   :math:`s`-shell (:math:`l=0`) plus :math:`p`-shell (:math:`l=1`)
+        - 'sp12': :math:`s`-shell (:math:`l=0`) plus :math:`p_{1/2}`-shell (:math:`j=1/2`)
+        - 'sp32': :math:`s`-shell (:math:`l=0`) plus :math:`p_{3/2}`-shell (:math:`j=3/2`)
+        - 'pp':   :math:`p`-shell (:math:`l=1`) plus :math:`p`-shell (:math:`l=1`)
+        - 'pp12': :math:`p`-shell (:math:`l=1`) plus :math:`p_{1/2}`-shell (:math:`j=1/2`)
+        - 'pp32': :math:`p`-shell (:math:`l=1`) plus :math:`p_{3/2}`-shell (:math:`j=3/2`)
+        - 't2gp': :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`p`-shell (:math:`l=1`)
+        - 't2gp12': :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`p_{1/2}`-shell (:math:`j=1/2`)
+        - 't2gp32': :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`p_{3/2}`-shell (:math:`j=3/2`)
         - 'dp':     :math:`d`-shell (:math:`l=2`) plus :math:`p`-shell (:math:`l=1`)
         - 'dp12':   :math:`d`-shell (:math:`l=2`) plus :math:`p_{1/2}`-shell (:math:`j=1/2`)
         - 'dp32':   :math:`d`-shell (:math:`l=2`) plus :math:`p_{3/2}`-shell (:math:`j=3/2`)
@@ -395,12 +393,12 @@ def get_umat_slater(case, *args):
         - 'pd':     :math:`p`-shell (:math:`l=1`) plus :math:`d`-shell (:math:`l=2`)
         - 'pd32':   :math:`p`-shell (:math:`l=1`) plus :math:`d_{3/2}`-shell (:math:`j=3/2`)
         - 'pd52':   :math:`p`-shell (:math:`l=1`) plus :math:`d_{5/2}`-shell (:math:`j=5/2`)
-        - 't2gd':   :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`d`-shell (:math:`l=2`)
-        - 't2gd32': :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`d_{3/2}`-shell (:math:`j=3/2`)
-        - 't2gd52': :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`d_{5/2}`-shell (:math:`j=5/2`)
+        - 't2gd':   :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`d`-shell (:math:`l=2`)
+        - 't2gd32': :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`d_{3/2}`-shell (:math:`j=3/2`)
+        - 't2gd52': :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`d_{5/2}`-shell (:math:`j=5/2`)
         - 'dd':     :math:`d`-shell (:math:`l=2`) plus :math:`d`-shell (:math:`l=2`)
         - 'dd32':   :math:`d`-shell (:math:`l=2`) plus :math:`d_{3/2}`-shell (:math:`j=3/2`)
         - 'dd52':   :math:`d`-shell (:math:`l=2`) plus :math:`d_{5/2}`-shell (:math:`j=5/2`)
@@ -413,55 +411,55 @@ def get_umat_slater(case, *args):
         - 'pf':     :math:`p`-shell (:math:`l=1`) plus :math:`f`-shell (:math:`l=3`)
         - 'pf52':   :math:`p`-shell (:math:`l=1`) plus :math:`f_{5/2}`-shell (:math:`j=5/2`)
         - 'pf72':   :math:`p`-shell (:math:`l=1`) plus :math:`f_{7/2}`-shell (:math:`j=7/2`)
-        - 't2gf':   :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`f`-shell (:math:`l=3`)
-        - 't2gf52': :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`f_{5/2}`-shell (:math:`j=5/2`)
-        - 't2gf72': :math:`t2g`-shell (:math:`l_{\\text{eff}}=1`)
-                    plus :math:`f_{7/2}`-shell (:math:`j=7/2`)
+        - 't2gf':   :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`f`-shell (:math:`l=3`)
+        - 't2gf52': :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`f_{5/2}`-shell (:math:`j=5/2`)
+        - 't2gf72': :math:`t_{2g}`-shell (:math:`l_{\\text{eff}}=1`)
+          plus :math:`f_{7/2}`-shell (:math:`j=7/2`)
         - 'df':     :math:`d`-shell (:math:`l=2`) plus :math:`f`-shell (:math:`l=3`)
         - 'df52':   :math:`d`-shell (:math:`l=2`) plus :math:`f_{5/2}`-shell (:math:`j=5/2`)
         - 'df72':   :math:`d`-shell (:math:`l=2`) plus :math:`f_{7/2}`-shell (:math:`j=7/2`)
         - 'ff':     :math:`f`-shell (:math:`l=3`) plus :math:`f`-shell (:math:`l=3`)
         - 'ff52':   :math:`f`-shell (:math:`l=3`) plus :math:`f_{5/2}`-shell (:math:`j=5/2`)
         - 'ff72':   :math:`f`-shell (:math:`l=3`) plus :math:`f_{7/2}`-shell (:math:`j=7/2`)
+    *args: floats
+        Variable length argument list. Slater integrals, should be one of the following cases:
 
-    args: floats
-        Slater integrals, should be one of
-
-        - 's':  F0_ss
-        - 'p':  F0_pp, F2_pp
-        - 'd', 't2g':  F0_dd, F2_dd, F4_dd
-        - 'f':  F0_ff, F2_ff, F4_ff, F6_ff
-        - 'ss': F0_s1s1, F0_s1s2, G0_s1s2, F0_s2s2
-        - 'ps': F0_pp, F2_pp, F0_ps, G1_ps, F0_ss
-        - 'ds', 't2gs': F0_dd, F2_dd, F4_dd, F0_ds, G2_ds, F0_ss
-        - 'fs':  F0_ff, F2_ff, F4_ff, F6_ff, F0_fs, G3_fs, F0_ss
-        - 'sp', 'sp12', 'sp32': F0_ss, F0_sp, G1_sp, F0_pp, F2_pp
+        - 's':  [F0_ss]
+        - 'p':  [F0_pp, F2_pp]
+        - 'd', 't2g':  [F0_dd, F2_dd, F4_dd]
+        - 'f':  [F0_ff, F2_ff, F4_ff, F6_ff]
+        - 'ss': [F0_s1s1, F0_s1s2, G0_s1s2, F0_s2s2]
+        - 'ps': [F0_pp, F2_pp, F0_ps, G1_ps, F0_ss]
+        - 'ds', 't2gs': [F0_dd, F2_dd, F4_dd, F0_ds, G2_ds, F0_ss]
+        - 'fs':  [F0_ff, F2_ff, F4_ff, F6_ff, F0_fs, G3_fs, F0_ss]
+        - 'sp', 'sp12', 'sp32': [F0_ss, F0_sp, G1_sp, F0_pp, F2_pp]
         - 'pp', 'pp12', 'pp32':
-          F0_p1p1, F2_p1p1, F0_p1p2, F2_p1p2, G0_p1p2, G2_p1p2, F0_p2p2, F2_p2p2
+          [F0_p1p1, F2_p1p1, F0_p1p2, F2_p1p2, G0_p1p2, G2_p1p2, F0_p2p2, F2_p2p2]
         - 'dp', 'dp12', 'dp32', 't2gp', 't2gp12', t2gp32':
-          F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp, F0_pp, F2_pp
+          [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp, F0_pp, F2_pp]
         - 'fp', 'fp12', 'fp32':
-          F0_ff, F2_ff, F4_ff, F6_ff, F0_fp, F2_fp, G2_fp, G4_fp, F0_pp, F2_pp
+          [F0_ff, F2_ff, F4_ff, F6_ff, F0_fp, F2_fp, G2_fp, G4_fp, F0_pp, F2_pp]
         - 'sd', 'sd32', 'sd52':
-          F0_ss, F0_sd, G2_sd, F0_ddd, F2_dd, F4_dd
+          [F0_ss, F0_sd, G2_sd, F0_ddd, F2_dd, F4_dd]
         - 'pd', 'pd32', 'pd52':
-          F0_pp, F2_pp, F0_pd, F2_pd, G1_pd, G3_pd, F0_dd, F2_dd, F4_dd
+          [F0_pp, F2_pp, F0_pd, F2_pd, G1_pd, G3_pd, F0_dd, F2_dd, F4_dd]
         - 'dd', 'dd32', 'dd52', 't2gd', 't2gd32', 't2gd52':
-          F0_d1d1, F2_d1d1, F4_d1d1, F0_d1d2, F2_d1d2, F4_d1d2, G0_d1d2,
-          G2_d1d2, G4_d1d2, F0_d2d2, F2_d2d2, F4_d2d2
+          [F0_d1d1, F2_d1d1, F4_d1d1, F0_d1d2, F2_d1d2, F4_d1d2, G0_d1d2,
+          G2_d1d2, G4_d1d2, F0_d2d2, F2_d2d2, F4_d2d2]
         - 'fd', 'fd32', 'fd52':
-          F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd, F0_dd, F2_dd, F4_dd
+          [F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd,
+          F0_dd, F2_dd, F4_dd]
         - 'sf', 'sf52', 'sf72':
-          F0_ss, F0_sf, G3_sf, F0_ff, F2_ff, F4_ff, F6_ff
+          [F0_ss, F0_sf, G3_sf, F0_ff, F2_ff, F4_ff, F6_ff]
         - 'pf', 'pf52', 'pf72':
-          F0_pp, F2_pp, F0_pf, F2_pf, G2_pf, G4_pf, F0_ff, F2_ff, F4_ff, F6_ff
+          [F0_pp, F2_pp, F0_pf, F2_pf, G2_pf, G4_pf, F0_ff, F2_ff, F4_ff, F6_ff]
         - 'df', 'df52', 'df72', 't2gf', 't2gf52', 't2gf72':
-          F0_pp, F2_pp, F0_pf, F2_pf, G2_pf, G4_pf, F0_ff, F2_ff, F4_ff, F6_ff
+          [F0_pp, F2_pp, F0_pf, F2_pf, G2_pf, G4_pf, F0_ff, F2_ff, F4_ff, F6_ff]
         - 'ff', 'ff52', 'ff72':
-          F0_f1f1, F2_f1f1, F4_f1f1, F6_f1f1, F0_f1f2, F2_f1f2, F4_f1f2, F6_f1f2,
-          G0_f1f2, G2_f1f2, G4_f1f2, G6_f1f2, F0_f2f2, F2_f2f2, F4_f2f2, F6_f2f2
+          [F0_f1f1, F2_f1f1, F4_f1f1, F6_f1f1, F0_f1f2, F2_f1f2, F4_f1f2, F6_f1f2,
+          G0_f1f2, G2_f1f2, G4_f1f2, G6_f1f2, F0_f2f2, F2_f2f2, F4_f2f2, F6_f2f2]
 
         The order of these arguments are important.
 
@@ -469,6 +467,18 @@ def get_umat_slater(case, *args):
     -------
     umat: 4d array of complex
         the Coulomb interaction tensor
+
+    Examples
+    --------
+    >>> import edrixs
+    >>> F0_dd, F2_dd, F4_dd = 3.0, 1.0, 0.5
+    >>> F0_dp, F2_dp, G1_dp, G3_dp = 2.0, 1.0, 0.2, 0.1
+    >>> F0_pp, F2_pp = 0.0, 0.0
+    >>> slater = [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp, F0_pp, F2_pp]
+    >>> umat_d = edrixs.get_umat_slater('d', F0_dd, F2_dd, F4_dd)
+    >>> umat_dp = edrixs.get_umat_slater('dp', *slater)
+    >>> umat_t2gp = edrixs.get_umat_slater('t2gp', *slater)
+    >>> umat_dp32 = edrixs.get_umat_slater('dp32', *slater)
 
     See Also
     --------

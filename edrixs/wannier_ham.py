@@ -9,22 +9,17 @@ class HR():
 
     Parameters
     ----------
-    nwann : int
+    nwann: int
         Number of Wannier orbitals.
-
-    nrpt : int
+    nrpt: int
         Number of :math:`r` points.
-
-    irpt0 : int
+    irpt0: int
         Index of the point (0,0,0).
-
-    rpts : float array
+    rpts: float array
         The coordinates of :math:`r` points.
-
-    deg_rpt : int array
+    deg_rpt: int array
         Degenerancy of :math:`r` points.
-
-    hr : complex array
+    hr: complex array
         Hamiltonian :math:`H(r)` from Wannier90.
     """
 
@@ -43,12 +38,12 @@ class HR():
 
         Parameters
         ----------
-        fname : str
+        fname: str
             The file that contains the Wannier90 output file: "case_hr.dat".
 
         Returns
         -------
-        HR : HR object
+        HR: HR object
             A HR object.
         """
 
@@ -86,12 +81,12 @@ class HR():
 
         Parameters
         ----------
-        other : HR object
+        other: HR object
             A HR object to be copied.
 
         Returns
         -------
-        HR : HR object
+        HR: HR object
             Return a new HR object.
         """
 
@@ -108,12 +103,12 @@ class HR():
 
         Parameters
         ----------
-        ispin : logical
+        ispin: logical
             Whether to include spin degree of freedom or not (default: False).
 
         Returns
         -------
-        hr : 2d complex array
+        hr: 2d complex array
             The on-site Hamiltonian.
         """
 
@@ -132,12 +127,12 @@ class HR():
 
         Parameters
         ----------
-        ispin : logical
+        ispin: logical
             Whether to include spin degree of freedom or not (default: False)
 
         Returns
         -------
-        hr : 3d complex array
+        hr: 3d complex array
             The Hamiltonian :math:`H(r)`.
         """
 
@@ -166,16 +161,13 @@ class KVec():
 
     Parameters
     ----------
-    kpt_type : str
+    kpt_type: str
         The type of :math:`k` points, 'uni' or 'sym'.
-
-    kbase : :math:`3 \\times 3` float array
+    kbase: :math:`3 \\times 3` float array
         The basis vectors of the primitive reciprocal space.
-
-    nkpt : int
+    nkpt: int
         Number of :math:`k` points.
-
-    kvec : float array
+    kvec: float array
         The :math:`k` points.
     """
 
@@ -191,7 +183,7 @@ class KVec():
 
         Parameters
         ----------
-        kbase : :math:`3 \\times 3` float array
+        kbase: :math:`3 \\times 3` float array
             The basis with respect to the global axis.
         """
 
@@ -203,7 +195,7 @@ class KVec():
 
         Parameters
         ----------
-        fname : str
+        fname: str
             File name.
         """
 
@@ -223,13 +215,11 @@ class SymKVec(KVec):
 
     Parameters
     ----------
-    kbase : :math:`3 \\times 3` float array
+    kbase: :math:`3 \\times 3` float array
         Basis of the primitive reciprocal lattice.
-
-    hsymkpt : float array
+    hsymkpt: float array
         Starting and end :math:`k` points along high symmetry lines.
-
-    klen : float array
+    klen: float array
         Length of segments of :math:`k` points line.
     """
 
@@ -265,7 +255,7 @@ class SymKVec(KVec):
 
         Parameters
         ----------
-        nkpt_per_path : int
+        nkpt_per_path: int
             Number of :math:`k` points per each segment.
         """
 
@@ -285,7 +275,7 @@ class SymKVec(KVec):
 
         Parameters
         ----------
-        step : float
+        step: float
             Step size.
         """
 
@@ -311,7 +301,7 @@ class UniKVec(KVec):
 
     Parameters
     ----------
-    grid : 3-elements tuple
+    grid: 3-elements tuple
         Three numbers defining a uniform grid, for example: :math:`11 \\times 11 \\times 11`.
     """
 

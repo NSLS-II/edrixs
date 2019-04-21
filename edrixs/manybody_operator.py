@@ -14,18 +14,16 @@ def one_fermion_annihilation(iorb, lb, rb):
 
     Parameters
     ----------
-    iorb : int
+    iorb: int
         Which orbital.
-
-    lb : list or array
+    lb: list or array
         Left fock basis :math:`<F_{l}|`.
-
-    rb : list of array
+    rb: list of array
         Right fock basis :math:`|F_{r}>`.
 
     Returns
     -------
-    hmat : 2d complex array
+    hmat: 2d complex array
         The matrix form of :math:`\\hat{f}_{i}`.
     """
 
@@ -60,21 +58,18 @@ def two_fermion(emat, lb, rb, tol=1E-10):
 
     Parameters
     ----------
-    emat : 2d complex array
+    emat: 2d complex array
         The impurity matrix.
-
-    lb : list or array
+    lb: list or array
         Left fock basis :math:`<F_{l}|`.
-
-    rb : list of array
+    rb: list of array
         Right fock basis :math:`|F_{r}>`.
-
-    tol : float (default: 1E-10)
+    tol: float (default: 1E-10)
         Only consider the elements of emat that are larger than tol.
 
     Returns
     -------
-    hmat : 2d complex array
+    hmat: 2d complex array
         The matrix form of the two-fermionic operator.
     """
 
@@ -118,18 +113,16 @@ def four_fermion(umat, basis, tol=1E-10):
 
     Parameters
     ----------
-    umat : 4d complex array
+    umat: 4d complex array
         The 4 index Coulomb interaction tensor.
-
-    basis : list or array
+    basis: list or array
         Fock basis :math:`|F>`.
-
-    tol : float (default: 1E-10)
+    tol: float (default: 1E-10)
         Only consider the elements of umat that are larger than tol.
 
     Returns
     -------
-    hmat : 2d complex array
+    hmat: 2d complex array
         The matrix form of the four-fermionic operator.
     """
 
@@ -186,21 +179,18 @@ def density_matrix(iorb, jorb, lb, rb):
 
     Parameters
     ----------
-    iorb : int
+    iorb: int
         Orbital index.
-
-    jorb : int
+    jorb: int
         Orbital index.
-
-    lb : list or array
+    lb: list or array
         Left fock basis :math:`<F_{l}|`.
-
-    rb : list or array
+    rb: list or array
         Right fock basis :math:`|F_{r}>`.
 
     Returns
     -------
-    hmat : 2d complex array
+    hmat: 2d complex array
         The calculated matrix form of the density operator.
     """
 
