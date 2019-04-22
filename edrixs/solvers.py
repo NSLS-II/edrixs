@@ -79,7 +79,7 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
         The eigenvalues of initial Hamiltonian.
     eval_n: 1d float array
         The eigenvalues of intermediate Hamiltonian.
-    T_abs: 3d complex array
+    trans_op: 3d complex array
         The matrices of transition operators in the eigenvector basis,
         and they are defined with respect to the global :math:`xyz`-axis.
     """
@@ -232,17 +232,17 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
         raise Exception("Have NOT implemented this case: ", npol)
 
     tmp2 = np.zeros((npol, ntot, ntot), dtype=np.complex)
-    T_abs = np.zeros((npol, ncfg_n, ncfg_i), dtype=np.complex)
+    trans_op = np.zeros((npol, ncfg_n, ncfg_i), dtype=np.complex)
     for i in range(npol):
         tmp2[i, 0:v_norb, v_norb:ntot] = tmp_g[i]
-        T_abs[i] = two_fermion(tmp2[i], basis_n, basis_i)
-        T_abs[i] = cb_op2(T_abs[i], evec_n, evec_i)
+        trans_op[i] = two_fermion(tmp2[i], basis_n, basis_i)
+        trans_op[i] = cb_op2(trans_op[i], evec_n, evec_i)
 
     print("edrixs >>> ED Done !")
-    return eval_i, eval_n, T_abs
+    return eval_i, eval_n, trans_op
 
 
-def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
+def xas_1v1c(eval_i, eval_n, trans_op, ominc_mesh,
              gamma_c=0.1,
              thin=1.0,
              phi=0.0,
@@ -261,7 +261,7 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
         The eigenvalues of the initial Hamiltonian.
     eval_n: 1d float array
         The eigenvalues of the intermediate Hamiltonian.
-    T_abs: 3d complex array
+    trans_op: 3d complex array
         The transition operators in the eigenstates basis.
     ominc_mesh: 1d float array
         The mesh of the incident energy of photon.
@@ -296,7 +296,7 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
 
     print("edrixs >>> Running XAS ...")
     n_om = len(ominc_mesh)
-    npol, ncfg_n = T_abs.shape[0], T_abs.shape[1]
+    npol, ncfg_n = trans_op.shape[0], trans_op.shape[1]
     xas = np.zeros((n_om, len(poltype)), dtype=np.float)
     gamma_core = np.zeros(n_om, dtype=np.float)
     prob = boltz_dist([eval_i[i] for i in gs_list], temperature)
@@ -324,7 +324,7 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
             for j in gs_list:
                 F_mag = np.zeros(ncfg_n, dtype=np.complex)
                 for k in range(npol):
-                    F_mag += T_abs[k, :, j] * polvec[k]
+                    F_mag += trans_op[k, :, j] * polvec[k]
                 xas[i, it] += (prob[j] * np.sum(np.abs(F_mag)**2 * gamma_core[i] / np.pi /
                                ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2)))
 
@@ -332,7 +332,7 @@ def xas_1v1c(eval_i, eval_n, T_abs, ominc_mesh,
     return xas
 
 
-def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
+def rixs_1v1c(eval_i, eval_n, trans_op, ominc_mesh, eloss_mesh,
               gamma_c=0.1,
               gamma_f=0.01,
               thin=1.0,
@@ -352,7 +352,7 @@ def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
         The eigenvalues of the initial Hamiltonian.
     eval_n: 1d float array
         The eigenvalues of the intermediate Hamiltonian.
-    T_abs: 3d complex array
+    trans_op: 3d complex array
         The transition operators in the eigenstates basis.
     ominc_mesh: 1d float array
         The mesh of the incident energy of photon.
@@ -407,16 +407,16 @@ def rixs_1v1c(eval_i, eval_n, T_abs, ominc_mesh, eloss_mesh,
 
     prob = boltz_dist([eval_i[i] for i in gs_list], temperature)
     rixs = np.zeros((len(ominc_mesh), len(eloss_mesh), len(poltype)), dtype=np.float)
-    ntrans, n, m = T_abs.shape
+    ntrans, n, m = trans_op.shape
     T_emi = np.zeros((ntrans, m, n), dtype=np.complex128)
     for i in range(ntrans):
-        T_emi[i] = np.conj(np.transpose(T_abs[i]))
+        T_emi[i] = np.conj(np.transpose(trans_op[i]))
     polvec_i = np.zeros(ntrans, dtype=np.complex)
     polvec_f = np.zeros(ntrans, dtype=np.complex)
 
     # Calculate RIXS
     for i, om in enumerate(ominc_mesh):
-        F_fi = scattering_mat(eval_i, eval_n, T_abs[:, :, gs_list], T_emi, om, gamma_core[i])
+        F_fi = scattering_mat(eval_i, eval_n, trans_op[:, :, gs_list], T_emi, om, gamma_core[i])
         for j, (it, alpha, jt, beta) in enumerate(poltype):
             ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
                                         scattering_plane_axis, (it, jt))
