@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 
+import sys
 import numpy as np
 import edrixs
+from edrixs.fedrixs import ed_fsolver
+from mpi4py import MPI
 
 
 def get_hopping_coulomb():
@@ -52,6 +55,38 @@ def get_config():
     f.close()
 
 
+def get_fock(tot_sz):
+    Sz_list = [1, -1] * 16
+    basis = edrixs.get_fock_basis_by_NSz(32, 16, Sz_list)
+    print("Total Sz: ", tot_sz)
+    for key, val in list(basis.items()):
+        if key == tot_sz:
+            if len(val) > 0:
+                val.sort()
+                fname = "fock_i.in"
+                f = open(fname, 'w')
+                print(len(val), file=f)
+                for i in val:
+                    print(i, file=f)
+                f.close()
+            else:
+                print("ERROR: Wrong total Sz, check the argument and try again !")
+                sys.exit()
+            break
+
+
 if __name__ == "__main__":
-    get_hopping_coulomb()
-    get_config()
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+
+    if rank == 0:
+        get_hopping_coulomb()
+        get_config()
+        tot_sz = int(sys.argv[1])
+        get_fock(tot_sz)
+
+    comm.Barrier()
+    print("edrixs >>> Running ED ...")
+    ed_fsolver(fcomm, rank, size)
