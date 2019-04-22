@@ -40,7 +40,6 @@ program opavg_main
         nprocs = origin_nprocs
         new_comm = origin_comm
     endif
-    print *, "edrixs >>> ", origin_myid, origin_nprocs, myid, nprocs
 
     if (origin_myid < ndim_i) then
         call opavg_driver()

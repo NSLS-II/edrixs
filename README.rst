@@ -37,26 +37,33 @@ Installation
    * Sphinx
    * Numpydoc
 
-* Install Python parts of edrixs
-    .. code-block:: bash
-
-       $ python setup.py install
-
 * Install Fortran parts of edrixs
     .. code-block:: bash
 
-       $ cd edrixs/src
-       $ cp make.sys.ifort make.sys (or cp make.sys.gfortran make.sys)
-       $ editor make.sys
+       $ cd src
+       $ cp make.sys.gfortran make.sys (or cp make.sys.ifort make.sys)
+
+  edit make.sys to set the correct libraries of BLAS/LAPACK, arpack-ng and f2py compiler options.
+    .. code-block:: bash
+
        $ make
        $ make install
 
-  where, edrixs is where the code is uncompressed. There will be problems when using gfortran with MKL, so we recommend ifort+MKL or gfortran+OpenBLAS. Be sure to compile arpack-ng with the same mpif90 compiler and BLAS/LAPACK libraries. 
-  
+  There will be problems when using gfortran with MKL, so we recommend ifort+MKL or gfortran+OpenBLAS. Be sure to compile arpack-ng with the same mpif90 compiler and BLAS/LAPACK libraries. libedrixsfortran.a will be generated, which will be used when building python interface.
   The executable .x files will be installed in bin directory. Add the following line in .bashrc or .bash_profile file,
     .. code-block:: bash
 
       export PATH=edrixs/bin:$PATH
+
+* Install Python parts of edrixs
+    .. code-block:: bash
+
+       $ python setup.py  config_fc --f77exec=mpif90 --f90exec=mpif90 \
+         build_ext --link-objects="-L${path/to/lib} -lopenblas -lparpack -larpack -L./src -ledrixsfortran"
+       $ python setup.py install
+
+  where, ${path/to/lib} is the path of the libraries of openblas and arpack.
+
 
 How to cite
 -----------

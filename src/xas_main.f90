@@ -45,7 +45,6 @@ program xas_main
         nprocs = origin_nprocs
         new_comm = origin_comm
     endif
-    print *, "edrixs >>> ", origin_myid, origin_nprocs, myid, nprocs
 
     if (origin_myid < min_dim) then
         call xas_driver()

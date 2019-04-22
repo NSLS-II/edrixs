@@ -13,42 +13,39 @@ import edrixs
 
 def do_ed(dq10=1.6, d1=0.1, d3=0.75,
           ex_x=0., ex_y=0., ex_z=0.):
-    """Diagonalize Hamiltonian for Ni 3d8 system in tetragonal crytals field and
+    """
+    Diagonalize Hamiltonian for Ni 3d8 system in tetragonal crytals field and
     applied exchange field.
 
     Parameters
     ----------
-    dq10 : float
+    dq10: float
         Cubic crystal field parameter (eV)
         Cubic splitting
-    dq1 : float
+    dq1: float
         Cubic crystal field parameter (eV)
         t2g splitting
-    dq3 : float
+    dq3: float
         Cubic crystal field parameter (eV)
         eg splitting
-    ex_x : float
+    ex_x: float
         Magnitude of the magnetic exchange field in the x direction (eV)
-    ex_y : float
+    ex_y: float
         Magnitude of the magnetic exchange field in the y direction (eV)
-    ex_z : float
+    ex_z: float
         Magnitude of the magnetic exchange field in the z direction (eV)
 
     Returns
     --------
-    eval_i : array
+    eval_i: 1d array
         Eigenvalues of initial state Hamiltonian
-    eval_n : array
+    eval_n: 1d array
         Eigenvalues of intermediate state Hamiltonian
-    dipole_op
+    dipole_op: 3d array
         Dipole operator from 2p to 3d state
     """
     # PARAMETERS:
     # ------------
-
-    ndorb, nporb = 10, 6
-    norbs = ndorb + nporb
-
     F2_dd, F4_dd = 12.234 * 0.65, 7.598 * 0.65
     Ud_av = 0.0
     F0_dd = Ud_av + edrixs.get_F0('d', F2_dd, F4_dd)
@@ -67,52 +64,53 @@ def do_ed(dq10=1.6, d1=0.1, d3=0.75,
     cf = edrixs.cf_tetragonal_d(dq10, d1, d3)
 
     ext_B = np.array([ex_x, ex_y, ex_z])
-    result = edrixs.ed_1v1c(v_name='d', c_name='p', 
-                            v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
+    result = edrixs.ed_1v1c(v_name='d', c_name='p', v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
                             v_noccu=8, slater=slater,
                             ext_B=ext_B, zeeman_on_which='spin',
                             cf_mat=cf)
     return result
 
+
 def get_xas(eval_i, eval_n, dipole_ops,
             om_mesh=np.linspace(-10, 20, 1000), om_offset=857.40,
             thin=115 / 180.0 * np.pi, phi=0.0,
             gamma=0.2, T=30.):
-    '''Calculate XAS spectrum.
+    '''
+    Calculate XAS spectrum.
 
     Parameters
     ----------
-    eval_i : array
+    eval_i: array
         Eigenvalues of initial state Hamiltonian
-    eval_n : array
+    eval_n: array
         Eigenvalues of intermediate state Hamiltonian
-    dipole_op : array
+    dipole_op: array
         Dipole operator from 2p to 3d state
-    om_mesh : array
+    om_mesh: array
         Incident energies to calculate the spectrum.
         In eV without the offset.
-    om_offset : float
+    om_offset: float
         Offset between theoretical and experimental energy axes
-    thin : float
+    thin: float
         Incident x-ray angle in radians w.r.t. plane perpendicular to the
         c-axis
-    phi : float
+    phi: float
         Azimutal x-ray angle in radians
-    gamma : float
+    gamma: float
         core-hole life-time broadening
-    T : float
+    T: float
         Temperature in Kelvin
 
     Returns
     -------
-    om_mesh : array
+    om_mesh: array
         Incident energies to calculate the spectrum.
         In eV without the offset.
 
-    om_offset : float
+    om_offset: float
         Offset between theoretical and experimental energy axes
 
-    xas : array
+    xas: array
         X-ray absorption intensity. Shape (len(om_mesh), 5)
         Where the last axis denotes the polarization
         Linear pi
@@ -121,67 +119,65 @@ def get_xas(eval_i, eval_n, dipole_ops,
         Circular right
         Isotropic
     '''
-
-    poltype= [('linear', 0.0), ('linear', np.pi / 2.0),
-              ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
+    poltype = [('linear', 0.0), ('linear', np.pi / 2.0),
+               ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
     xas = edrixs.xas_1v1c(eval_i, eval_n, dipole_ops, om_mesh, gamma, thin, phi,
-                          poltype=poltype, gs_list=[0,1,2], temperature=T)
+                          poltype=poltype, gs_list=[0, 1, 2], temperature=T)
 
     return om_mesh, om_offset, xas
+
 
 def get_rixs(eval_i, eval_n, dipole_ops,
              om_mesh=np.linspace(-8, 0, 100), om_offset=857.40,
              eloss_mesh=np.linspace(-1, 5.0, 1000),
              thin=115 / 180.0 * np.pi, thout=15 / 180.0 * np.pi, phi=0.0,
              gamma_n=0.5, gamma_f=0.10, emi_res=0.1, T=30.):
-    """Calculate RIXS map.
+    """
+    Calculate RIXS map.
 
     Parameters
     ----------
-    eval_i : array
+    eval_i: array
         Eigenvalues of initial state Hamiltonian
-    eval_n : array
+    eval_n: array
         Eigenvalues of intermediate state Hamiltonian
-    dipole_op : array
+    dipole_op: array
         Dipole operator from 2p to 3d state
-    om_mesh : array
+    om_mesh: array
         Incident energies to calculate the spectrum.
         In eV without the offset.
-    om_offset : float
+    om_offset: float
         Offset between theoretical and experimental energy axes
-    eloss_mesh : array
+    eloss_mesh: array
         axis to evalulate RIXS on.
-    thin : float
+    thin: float
         Incident x-ray angle in radians w.r.t. plane perpendicular to the
         c-axis
-    th_out : float
+    th_out: float
         Emitted x-ray angle in radians w.r.t. plane perpendicular to the
         c-axis
-    phi : float
+    phi: float
         Azimutal x-ray angle in radians
-    gamma : float
+    gamma: float
         core-hole life-time broadening
-    gamma_f : float
+    gamma_f: float
         final state life-time broadening
-    emi_res : float
+    emi_res: float
         resolution for the emitted x-rays
         Gaussian convolution defined as sigma (not FWHM)
-    T : float
+    T: float
         Temperature in Kelvin
 
     Returns
     -------
-    om_mesh : array
+    om_mesh: array
         Incident energies to calculate the spectrum.
         In eV without the offset.
-
-    om_offset : float
+    om_offset: float
         Offset between theoretical and experimental energy axes
-   
-    eloss_mesh : array
+    eloss_mesh: array
         axis to evalulate RIXS on.
-
-    rixs : array
+    rixs: array
         X-ray absorption intensity. Shape (len(om_mesh), len(eloss_mesh), 4)
         Where the last axis denotes the polarization
         pi-pi
@@ -205,21 +201,20 @@ def get_rixs(eval_i, eval_n, dipole_ops,
     return om_mesh, om_offset, eloss_mesh, rixs
 
 
-
 fig, (ax_XAS, ax_RIXS, ax_spin) = plt.subplots(1, 3, figsize=(10, 3))
 # Compute XAS
 eval_i, eval_n, dipole_op = do_ed(dq10=1.6, d1=0.1, d3=0.75)
 om_mesh, om_offset, xas = get_xas(eval_i, eval_n, dipole_op, gamma=.5)
-ax_XAS.plot(om_mesh + om_offset, xas[:,-1])
+ax_XAS.plot(om_mesh + om_offset, xas[:, -1])
 ax_XAS.set_xlabel('Incident energy (eV)')
 ax_XAS.set_ylabel('XAS')
 
 # Resonant energy at the peak of the XAS
-res_e = om_mesh[np.argmax(xas[:,-1])]
+res_e = om_mesh[np.argmax(xas[:, -1])]
 
 # Compute a RIXS MAP
 om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op, gamma_n=0.5, emi_res=.1)
-art = ax_RIXS.pcolorfast(eloss_mesh, om_mesh + om_offset, rixs[:,:,0:2].sum(2))
+art = ax_RIXS.pcolorfast(eloss_mesh, om_mesh + om_offset, rixs[:, :, 0:2].sum(2))
 ax_RIXS.set_ylabel('Incident energy (eV)')
 ax_RIXS.set_xlabel('Energy loss')
 plt.colorbar(art, ax=ax_RIXS)
@@ -239,7 +234,7 @@ for phi, color in zip(phis, colors):
     om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op,
                                                     om_mesh=np.array([res_e]),
                                                     gamma_n=1, emi_res=.07, T=20)
-    intensity = rixs[:,:,0:2].sum((0, 2))
+    intensity = rixs[:, :, 0:2].sum((0, 2))
     ax_spin.plot(eloss_mesh, intensity, color=color,
                  label=r'$\phi = {:.3f}$'.format(phi))
 
