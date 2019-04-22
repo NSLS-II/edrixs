@@ -55,7 +55,10 @@ def do_ed(dq10=1.6, d1=0.1, d3=0.75,
     Udp_av = 0.0
     F0_dp = Udp_av + edrixs.get_F0('dp', G1_dp, G3_dp)
 
-    slater = ([F0_dd, F2_dd, F4_dd], [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])
+    slater = (
+        [F0_dd, F2_dd, F4_dd, 0.000, 0.000, 0.000, 0.000],  # Initial
+        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
+    )
 
     zeta_d_i = 0.083
     zeta_d_n = 0.102

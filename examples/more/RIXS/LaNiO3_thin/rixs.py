@@ -12,7 +12,10 @@ if __name__ == "__main__":
     G1_dp, G3_dp = 5.787 * 0.7, 3.291 * 0.7
     F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
     F2_dp = 7.721 * 0.95
-    slater = ([F0_dd, F2_dd, F4_dd], [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])
+    slater = (
+        [F0_dd, F2_dd, F4_dd, 0.000, 0.000, 0.000, 0.000],  # Initial
+        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
+    )
 
     # Spin-orbit coupling strength
     zeta_d_i, zeta_d_n, zeta_p_n = 0.083, 0.102, 11.24

@@ -27,8 +27,13 @@ if __name__ == "__main__":
     F0_dp = Udp + edrixs.get_F0('dp', G1_dp, G3_dp)
 
     # The tuple containing Slater integrals for (1) initial Hamiltonian (2) intermediate
-    # Hamiltonian
-    slater = ([F0_dd, F2_dd, F4_dd], [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])
+    # Hamiltonian, the order of these parameters is important.
+    # First FX for valence, then FX for valence-core, then GX for valence-core, and
+    # then FX for core, where X=0, 2, 4, ... or X=1, 3, 5, ...
+    slater = (
+        [F0_dd, F2_dd, F4_dd, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000],  # Initial
+        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp, 0.000, 0.000]   # Intermediate
+    )
 
     # Spin-Orbit Coupling (SOC) zeta
     # 5d, without core-hole

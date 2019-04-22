@@ -30,8 +30,10 @@ if __name__ == "__main__":
     G1_fd, G3_fd, G5_fd = 12.555 * 0.6, 7.768 * 0.6, 5.544 * 0.6
     Ufd_av = 0.0
     F0_fd = Ufd_av + edrixs.get_F0('fd', G1_fd, G3_fd, G5_fd)
-    slater = ([F0_ff, F2_ff, F4_ff, F6_ff],
-              [F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd])
+    slater = (
+        [F0_ff, F2_ff, F4_ff, F6_ff, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000],  # Initial
+        [F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd]   # Intermediate
+    )
 
     # Spin-Orbit Coupling (SOC) zeta
     # 5f, without core-hole, from Cowan's code

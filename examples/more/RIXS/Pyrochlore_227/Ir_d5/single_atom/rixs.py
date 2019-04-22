@@ -33,7 +33,10 @@ if __name__ == "__main__":
     G1_dp, G3_dp = 0.957, 0.569
     F0_dp, F2_dp = edrixs.get_F0('dp', G1_dp, G3_dp), 1.107
 
-    slater = ([F0_dd, F2_dd, F4_dd], [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])
+    slater = (
+        [F0_dd, F2_dd, F4_dd, 0.000, 0.000, 0.000, 0.000],  # Initial
+        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
+    )
 
     # SOC of 5d
     zeta_d = 0.45
