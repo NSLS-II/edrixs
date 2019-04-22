@@ -38,6 +38,7 @@ Installation
    * Numpydoc
 
 * Install Fortran parts of edrixs
+
     .. code-block:: bash
 
        $ cd src
@@ -52,11 +53,13 @@ Installation
 
   There will be problems when using gfortran with MKL, so we recommend ifort+MKL or gfortran+OpenBLAS. Be sure to compile arpack-ng with the same mpif90 compiler and BLAS/LAPACK libraries. libedrixsfortran.a will be generated, which will be used when building python interface.
   The executable .x files will be installed in bin directory. Add the following line in .bashrc or .bash_profile file,
+
     .. code-block:: bash
 
        export PATH=edrixs/bin:$PATH
 
 * Install Python parts of edrixs
+
     .. code-block:: bash
 
        $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext \
