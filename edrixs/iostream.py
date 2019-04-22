@@ -1,4 +1,4 @@
-__all__ = ['write_tensor', 'write_emat', 'write_umat']
+__all__ = ['write_tensor', 'write_emat', 'write_umat', 'write_config']
 
 import numpy as np
 
@@ -230,4 +230,43 @@ def write_umat(umat, fname, tol=1E-12, fmt_int='{:10d}', fmt_float='{:.15f}'):
         for i, j, k, l in nonzero:
             f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1,
                                       umat[i, j, k, l].real, umat[i, j, k, l].imag))
+    f.close()
+
+
+def write_config(
+        directory='.', ed_solver=1, num_val_orbs=2, num_core_orbs=2,
+        neval=1, nvector=1, ncv=1, idump=False, num_gs=1, maxiter=500,
+        linsys_max=500, min_ndim=1000, nkryl=500, eigval_tol=1e-8,
+        linsys_tol=1e-8, omega_in=0.0, gamma_in=0.1
+        ):
+
+    if idump:
+        dump_vector = '.true.'
+    else:
+        dump_vector = '.false.'
+
+    config = [
+        "&control",
+        "ed_solver=" + str(ed_solver),
+        "num_val_orbs=" + str(num_val_orbs),
+        "num_core_orbs=" + str(num_core_orbs),
+        "neval=" + str(neval),
+        "nvector=" + str(nvector),
+        "ncv=" + str(ncv),
+        "idump=" + str(dump_vector),
+        "num_gs=" + str(num_gs),
+        "maxiter=" + str(maxiter),
+        "linsys_max=" + str(linsys_max),
+        "min_ndim=" + str(min_ndim),
+        "nkryl=" + str(nkryl),
+        "eigval_tol=" + str(eigval_tol),
+        "linsys_tol=" + str(linsys_tol),
+        "omega_in=" + str(omega_in),
+        "gamma_in=" + str(gamma_in),
+        "&end"
+    ]
+
+    f = open(directory + '/config.in', 'w')
+    for item in config:
+        f.write(item + "\n")
     f.close()

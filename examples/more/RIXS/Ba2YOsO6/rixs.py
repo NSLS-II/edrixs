@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     transition = [('L2', 'd', 12385 + 5), ('L3', 'd', 10871 + 5),  # Keep all the 5d orbitals
                   ('L2', 't2g', 12385 + 5), ('L3', 't2g', 10871 + 5)  # Keep only t2g orbitals
-                 ]
+                  ]
     for case, v_name, om_shift in transition:
         # Run ED
         c_name = edrixs.edge_to_shell_name(case)
