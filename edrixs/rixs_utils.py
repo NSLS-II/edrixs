@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+__all__ = ['scattering_mat']
+
 import numpy as np
 
 

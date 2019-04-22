@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+__all__ = ['fit_func', 'fit_hyb', 'get_hyb']
 
 import numpy as np
 from scipy.optimize import curve_fit

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c']
 
 import numpy as np
 import scipy

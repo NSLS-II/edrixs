@@ -1,4 +1,4 @@
-# /usr/bin/env python
+__all__ = ['atom_hsoc']
 
 import numpy as np
 

@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+__all__ = ['write_tensor', 'write_emat', 'write_umat']
+
 import numpy as np
 
 

@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+__all__ = ['plot_spectrum', 'plot_rixs_map']
+
 import numpy as np
 import matplotlib.pyplot as plt
 from .utils import boltz_dist
