@@ -529,7 +529,7 @@ def cf_cubic_d(ten_dq):
 
     Returns
     -------
-    cf: :math:`5\\times5` complex array
+    cf: :math:`10\\times10` complex array
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 
@@ -565,7 +565,7 @@ def cf_tetragonal_d(ten_dq, d1, d3):
 
     Returns
     -------
-    cf: :math:`5\\times5` complex array
+    cf: :math:`10\\times10` complex array
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 
@@ -585,5 +585,32 @@ def cf_tetragonal_d(ten_dq, d1, d3):
     cf[1:10:2, 1:10:2] = tmp
 
     cf[:, :] = cb_op(cf, tmat_r2c('d', True))
+
+    return cf
+
+
+def cf_trigonal_t2g(delta):
+    """
+    Given delta, return trigonal crystal field matrix for t2g orbitals
+    in the complex harmonics basis.
+
+    Parameters
+    ----------
+    delta: float scalar
+        Parameter used to label trigonal crystal splitting.
+
+    Returns
+    -------
+    cf: :math:`6\\times6` complex array
+        The matrix form of crystal field Hamiltonian in complex harmonics basis.
+    """
+
+    tmp = np.array([[0, delta, delta],
+                    [delta, 0, delta],
+                    [delta, delta, 0]])
+    cf = np.zeros((6, 6), dtype=np.complex)
+    cf[0:6:2, 0:6:2] += tmp
+    cf[1:6:2, 1:6:2] += tmp
+    cf[:, :] = cb_op(cf, tmat_r2c('t2g', True))
 
     return cf
