@@ -573,26 +573,26 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
     size = comm.Get_size()
     fcomm = comm.py2f()
 
+    v1_name = v1_name.strip()
+    v2_name = v2_name.strip()
+    c_name = c_name.strip()
+    info_shell = info_atomic_shell()
+    # Quantum numbers of angular momentum
+    v1_orbl = info_shell[v1_name][0]
+    v2_orbl = info_shell[v2_name][0]
+
+    # number of orbitals with spin
+    v1_norb = info_shell[v1_name][1]
+    v2_norb = info_shell[v2_name][1]
+    c_norb = info_shell[c_name][1]
+    # total number of orbitals
+    ntot = v1_norb + v2_norb + c_norb
+    v1v2_norb = v1_norb + v2_norb
+
     if rank == 0:
-        print("edrixs >>> Running ED ...")
-        v1_name = v1_name.strip()
-        v2_name = v2_name.strip()
-        c_name = c_name.strip()
-        info_shell = info_atomic_shell()
-        # Quantum numbers of angular momentum
-        v1_orbl = info_shell[v1_name][0]
-        v2_orbl = info_shell[v2_name][0]
-
-        # number of orbitals with spin
-        v1_norb = info_shell[v1_name][1]
-        v2_norb = info_shell[v2_name][1]
-        c_norb = info_shell[c_name][1]
-        # total number of orbitals
-        ntot = v1_norb + v2_norb + c_norb
-        v1v2_norb = v1_norb + v2_norb
-
+        print("edrixs >>> Running ED ...", flush=True)
         # Coulomb interaction
-        slater_name = slater_integrals_name((v1_name, v2_name, c_name), ('v1', 'v2', 'c'))
+        slater_name = slater_integrals_name((v1_name, v2_name, c_name), ('v1', 'v2', 'c1'))
         num_slat = len(slater_name)
         slater_i = np.zeros(num_slat, dtype=np.float)
         slater_n = np.zeros(num_slat, dtype=np.float)
@@ -605,11 +605,14 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
         else:
             slater_n[:] = slater[1][0:num_slat]
         # print summary of slater integrals
-        print("    Summary of Slater integrals:")
-        print("    ------------------------------")
-        print("    Terms,  Initial,  Intermediate")
+        print("    Summary of Slater integrals:", flush=True)
+        print("    ------------------------------", flush=True)
+        print("    Terms,  Initial,  Intermediate", flush=True)
         for i in range(num_slat):
-            print("    ", slater_name[i], ":  {:20.10f}{:20.10f}".format(slater_i[i], slater_n[i]))
+            print(
+                "    ", slater_name[i],
+                ":  {:20.10f}{:20.10f}".format(slater_i[i], slater_n[i]), flush=True
+            )
 
         umat_i = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_i)
         umat_n = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_n)

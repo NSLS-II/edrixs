@@ -426,14 +426,14 @@ def slater_integrals_name(shell_name, label=None):
         else:
             x, y, z = '1', '2', '3'
         res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2 * l1 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2 * l2 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + z + z for i in range(0, 2 * l3 + 1, 2)])
         res.extend(['F' + str(i) + '_' + x + y for i in range(0, min(2 * l1, 2 * l2) + 1, 2)])
         res.extend(['G' + str(i) + '_' + x + y for i in range(abs(l1 - l2), l1 + l2 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2 * l2 + 1, 2)])
         res.extend(['F' + str(i) + '_' + x + z for i in range(0, min(2 * l1, 2 * l3) + 1, 2)])
         res.extend(['G' + str(i) + '_' + x + z for i in range(abs(l1 - l3), l1 + l3 + 1, 2)])
         res.extend(['F' + str(i) + '_' + y + z for i in range(0, min(2 * l2, 2 * l3) + 1, 2)])
         res.extend(['G' + str(i) + '_' + y + z for i in range(abs(l2 - l3), l2 + l3 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + z + z for i in range(0, 2 * l3 + 1, 2)])
     else:
         raise Exception("Not implemented for this case: ", shell_name)
 

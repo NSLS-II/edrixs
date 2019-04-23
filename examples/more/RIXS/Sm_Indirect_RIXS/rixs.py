@@ -3,6 +3,7 @@
 
 import numpy as np
 import edrixs
+from mpi4py import MPI
 
 if __name__ == "__main__":
     '''
@@ -27,7 +28,6 @@ if __name__ == "__main__":
     G1_dp, G3_dp = 0.5, 0.5
     F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
 
-
     slater = (
         [F0_ff, F2_ff, F4_ff, F6_ff,  # FX_11
          F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd,  # FX_12, GX_12
@@ -48,9 +48,19 @@ if __name__ == "__main__":
     # Occupancy of U 5f orbitals
     noccu = 6
 
+    # mpi4py env
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
     # Run ED
-    result = edrixs.ed_2v1c(v1_name='f', v2_name='d', c_name='p32',
+    result = edrixs.ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p32',
                             v1_soc=(zeta_f_i, zeta_f_n),
                             v2_level=5, v_tot_noccu=noccu, slater=slater,
                             ed_solver=2, neval=10, nvector=1, ncv=30, idump=True)
     eval_i, denmat = result
+
+    if rank == 0:
+        print(eval_i)
+        print(denmat[0].diagonal())
+        print(np.sum(denmat[0].diagonal()))

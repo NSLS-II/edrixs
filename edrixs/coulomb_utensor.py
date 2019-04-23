@@ -675,13 +675,13 @@ def get_umat_slater_3shells(shell_name, *args):
 
     # v1-v2
     case = v1_name + v2_name
-    arg_list = args[0:indx[0]] + args[indx[0]:indx[1]] + args[indx[1]:indx[2]]
+    arg_list = list(args[0:indx[0]]) + list(args[indx[0]:indx[1]]) + list(args[indx[1]:indx[2]])
     umat_tmp = get_umat_slater(case, *arg_list)
     umat[0:v1v2_norb, 0:v1v2_norb, 0:v1v2_norb, 0:v1v2_norb] = umat_tmp
 
     # v1-v3
     case = v1_name + v3_name
-    arg_list = [0.0] * (indx[0] - 0) + args[indx[2]:indx[3]] + args[indx[4]:indx[5]]
+    arg_list = [0.0] * indx[0] + list(args[indx[2]:indx[3]]) + list(args[indx[4]:indx[5]])
     umat_tmp = get_umat_slater(case, *arg_list)
     aa = list(range(0, v1_norb)) + list(range(v1v2_norb, ntot))
     for i in range(v1_norb + v3_norb):
@@ -692,7 +692,9 @@ def get_umat_slater_3shells(shell_name, *args):
 
     # v2-v3
     case = v2_name + v3_name
-    arg_list = [0.0] * (indx[2] - indx[1]) + args[indx[3]:indx[4]] + [0.0] * (indx[5] - indx[4])
+    arg_list = ([0.0] * (indx[2] - indx[1]) +
+                list(args[indx[3]:indx[4]]) +
+                [0.0] * (indx[5] - indx[4]))
     umat_tmp = get_umat_slater(case, *arg_list)
     aa = list(range(v1_norb, ntot))
     for i in range(v2_norb + v3_norb):
