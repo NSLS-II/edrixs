@@ -568,6 +568,10 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
         The eigenvalues of initial Hamiltonian.
     denmat: 2d complex array
         The density matrix in the eigenstates.
+    num_val_orbs: int
+        Number of valence orbitals.
+    num_core_orbs: int
+        Number of core orbitals. 
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -710,4 +714,4 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
     tmp = (nvector, v1v2_norb, v1v2_norb)
     denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
 
-    return eigval_i, denmat
+    return eigval_i, denmat, v1v2_norb, c_norb
