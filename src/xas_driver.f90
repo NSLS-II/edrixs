@@ -35,7 +35,7 @@ subroutine xas_driver()
 
     if (myid == master) then
         print *, "---------------------------"
-        print *, "edrixs >>> XAS Begin ... "
+        print *, " fedrixs >>> XAS Begin ... "
         print *
     endif
 
@@ -64,7 +64,7 @@ subroutine xas_driver()
 
     do igs=1, num_gs
         if (myid == master) then
-            print *, "edrixs >>> For ground state: ", igs
+            print *, " fedrixs >>> For ground state: ", igs
             print *, "    Building transition operator for absorption process ..."
         endif
         call read_fock_i()
@@ -155,7 +155,7 @@ subroutine xas_driver()
     call dealloc_coulomb_n()
     if (myid == master) then
         print *
-        print *, "edrixs >>> XAS End !"
+        print *, " fedrixs >>> XAS End !"
     endif
 
     return

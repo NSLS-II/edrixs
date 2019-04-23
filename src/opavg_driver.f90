@@ -39,7 +39,7 @@ subroutine opavg_driver()
 
     if (myid == master) then
         print *, "--------------------------------------------"
-        print *, "edrixs >>> OPAVG begin ... "
+        print *, " fedrixs >>> OPAVG begin ... "
         print *
     endif
     call read_hopping_i()
@@ -57,7 +57,7 @@ subroutine opavg_driver()
     endif
 
     if (myid==master) then
-        print *, "edrixs >>> Building operator  ..."
+        print *, " fedrixs >>> Building operator  ..."
     endif
     call partition_task(nprocs, ndim_i, ndim_i, end_indx)
     rtemp = 1.0_dp
@@ -74,9 +74,9 @@ subroutine opavg_driver()
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
-        print *, "edrixs >>> Done !" 
-        print *, "edrixs >>> Time used: ", time_end - time_begin, "  seconds"
+        print *, " fedrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
+        print *, " fedrixs >>> Done !" 
+        print *, " fedrixs >>> Time used: ", time_end - time_begin, "  seconds"
         print *
     endif
 
@@ -87,7 +87,7 @@ subroutine opavg_driver()
     time_begin = time_end
     do igs=1, num_gs
         if (myid == master) then
-            print *, "edrixs >>> For state: ", igs
+            print *, " fedrixs >>> For state: ", igs
         endif
         allocate(v_vector_mpi(ndim_i))
         v_vector = czero
@@ -116,9 +116,9 @@ subroutine opavg_driver()
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
+        print *, " fedrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
         print *
-        print *, "edrixs >>> OPAVG end ! Total time used: ", time_used, "  seconds"
+        print *, " fedrixs >>> OPAVG end ! Total time used: ", time_used, "  seconds"
         print *
     endif
 

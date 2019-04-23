@@ -26,9 +26,9 @@ program xas_main
     min_dim = min(ndim_i, ndim_n)
     if (min_dim < origin_nprocs) then
         if (origin_myid==master) then
-            print *, "edrixs >>> Warning: number of CPU processors ", origin_nprocs, &
+            print *, " fedrixs >>> Warning: number of CPU processors ", origin_nprocs, &
                      "is larger than min(ndim_i, ndim_n): ", ndim_i, ndim_n
-            print *, "edrixs >>> Only ", min_dim, " processors will really work!"
+            print *, " fedrixs >>> Only ", min_dim, " processors will really work!"
         endif
         if (origin_myid < min_dim) then
             color = 1 

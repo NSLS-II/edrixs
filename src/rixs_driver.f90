@@ -47,7 +47,7 @@ subroutine rixs_driver()
     ndim_n = ndim_n_nocore * num_core_orbs
 
     if (myid == master) then
-        print *, "edrixs >>> RIXS Begin ..."
+        print *, " fedrixs >>> RIXS Begin ..."
         print *
         write(mystd,"(a20,i15)")    "num_val_orbs:  ", num_val_orbs
         write(mystd,"(a20,i15)")    "num_core_orbs: ", num_core_orbs
@@ -72,7 +72,7 @@ subroutine rixs_driver()
     call dealloc_fock_f()
     do igs=1, num_gs
         if (myid == master) then
-            print *, "edrixs >>> For initial state:  ", igs
+            print *, " fedrixs >>> For initial state:  ", igs
         endif
         if (myid == master) then
             print *, "    Building transition operator for absorption process ..."
@@ -235,7 +235,7 @@ subroutine rixs_driver()
 
     if (myid==master) then
         print *
-        print *, "edrixs >>> RIXS End !"
+        print *, " fedrixs >>> RIXS End !"
     endif
 
     return

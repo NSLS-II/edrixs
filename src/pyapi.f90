@@ -26,9 +26,9 @@ subroutine ed_fsolver(comm, my_id, num_procs)
     call dealloc_fock_i()
     if (ndim_i < origin_nprocs) then
         if (origin_myid==master) then
-            print *, "edrixs >>> Warning: number of CPU processors ", origin_nprocs, &
+            print *, " fedrixs >>> Warning: number of CPU processors ", origin_nprocs, &
                      "is larger than ndim_i: ", ndim_i
-            print *, "edrixs >>> Only ", ndim_i, " processors will really work!"
+            print *, " fedrixs >>> Only ", ndim_i, " processors will really work!"
         endif
         if (origin_myid < ndim_i) then
             color = 1 
@@ -86,9 +86,9 @@ subroutine xas_fsolver(comm, my_id, num_procs)
     min_dim = min(ndim_i, ndim_n)
     if (min_dim < origin_nprocs) then
         if (origin_myid==master) then
-            print *, "edrixs >>> Warning: number of CPU processors ", origin_nprocs, &
+            print *, " fedrixs >>> Warning: number of CPU processors ", origin_nprocs, &
                      "is larger than min(ndim_i, ndim_n): ", ndim_i, ndim_n
-            print *, "edrixs >>> Only ", min_dim, " processors will really work!"
+            print *, " fedrixs >>> Only ", min_dim, " processors will really work!"
         endif
         if (origin_myid < min_dim) then
             color = 1 
@@ -150,9 +150,9 @@ subroutine rixs_fsolver(comm, my_id, num_procs)
     min_dim = min(ndim_i, ndim_n, ndim_f)
     if (min_dim < origin_nprocs) then
         if (origin_myid==master) then
-            print *, "edrixs >>> Warning: number of CPU processors ", origin_nprocs, &
+            print *, " fedrixs >>> Warning: number of CPU processors ", origin_nprocs, &
                      "is larger than min(ndim_i, ndim_n, ndim_f): ", ndim_i, ndim_n, ndim_f
-            print *, "edrixs >>> Only ", min_dim, " processors will really work!"
+            print *, " fedrixs >>> Only ", min_dim, " processors will really work!"
         endif
         if (origin_myid < min_dim) then
             color = 1 
@@ -205,9 +205,9 @@ subroutine opavg_fsolver(comm, my_id, num_procs)
     call dealloc_fock_i()
     if (ndim_i < origin_nprocs) then
         if (origin_myid==master) then
-            print *, "edrixs >>> Warning: number of CPU processors ", origin_nprocs, &
+            print *, " fedrixs >>> Warning: number of CPU processors ", origin_nprocs, &
                      "is larger than ndim_i: ", ndim_i
-            print *, "edrixs >>> Only ", ndim_i, " processors will really work!"
+            print *, " fedrixs >>> Only ", ndim_i, " processors will really work!"
         endif
         if (origin_myid < ndim_i) then
             color = 1 
@@ -224,7 +224,7 @@ subroutine opavg_fsolver(comm, my_id, num_procs)
         nprocs = origin_nprocs
         new_comm = origin_comm
     endif
-    print *, "edrixs >>> ", origin_myid, origin_nprocs, myid, nprocs
+    print *, " fedrixs >>> ", origin_myid, origin_nprocs, myid, nprocs
 
     if (origin_myid < ndim_i) then
         call opavg_driver()

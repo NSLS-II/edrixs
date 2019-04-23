@@ -55,7 +55,7 @@ subroutine ed_driver()
 
     if (myid == master) then
         print *, "--------------------------------------------"
-        print *, "edrixs >>> ED begin ... "
+        print *, " fedrixs >>> ED begin ... "
         print *
     endif
     call read_hopping_i()
@@ -64,8 +64,8 @@ subroutine ed_driver()
 
     if (ndim_i < min_ndim ) then
         if (myid==master) then
-            print *, "edrixs >>> ndim_i:", ndim_i, " is smaller than min_ndim:", min_ndim
-            print *, "edrixs >>> set ed_solver = 0, use full-diagonalization !"
+            print *, " fedrixs >>> ndim_i:", ndim_i, " is smaller than min_ndim:", min_ndim
+            print *, " fedrixs >>> set ed_solver = 0, use full-diagonalization !"
             print *
         endif
         ed_solver = 0
@@ -97,7 +97,7 @@ subroutine ed_driver()
     endif
 
     if (myid==master) then
-        print *, "edrixs >>> Build Hamiltonian ..."
+        print *, " fedrixs >>> Build Hamiltonian ..."
     endif
     call partition_task(nprocs, ndim_i, ndim_i, end_indx)
     rtemp = 1.0_dp
@@ -114,10 +114,10 @@ subroutine ed_driver()
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
-        print *, "edrixs >>> Done ! Time used: ", time_end - time_begin, "  seconds"
+        print *, " fedrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
+        print *, " fedrixs >>> Done ! Time used: ", time_end - time_begin, "  seconds"
         print *
-        print *, "edrixs >>> Diagonalize Hamiltonian to find a few lowest states ..."
+        print *, " fedrixs >>> Diagonalize Hamiltonian to find a few lowest states ..."
         print *
     endif
     time_begin = time_end
@@ -176,7 +176,7 @@ subroutine ed_driver()
     time_used = time_used + time_end - time_begin
     if (myid==master) then
         print *
-        print *, "edrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
+        print *, " fedrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
         print *
     endif
     time_begin=time_end
@@ -184,7 +184,7 @@ subroutine ed_driver()
     call write_lowest_eigvals(neval, eigvals)
 
     if (myid==master) then
-        print *, "edrixs >>> Calculate the density matrix ... "
+        print *, " fedrixs >>> Calculate the density matrix ... "
     endif
 
     call read_fock_i()
@@ -269,9 +269,9 @@ subroutine ed_driver()
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
+        print *, " fedrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
         print *
-        print *, "edrixs >>> ED end ! Total time used: ", time_used, "  seconds"
+        print *, " fedrixs >>> ED end ! Total time used: ", time_used, "  seconds"
         print *
     endif
 

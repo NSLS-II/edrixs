@@ -60,7 +60,7 @@ subroutine make_newfock(c_type, pos, old, new, sgn)
     elseif (c_type == '-') then
         new = old - (2_dp)**(pos-1)
     else
-        write(mystd, "(58a,a)")  "edrixs >>> error of create and destroy operator type: ", c_type
+        write(mystd, "(58a,a)")  " fedrixs >>> error of create and destroy operator type: ", c_type
         STOP
     endif
 

@@ -22,9 +22,9 @@ program ed_main
     call dealloc_fock_i()
     if (ndim_i < origin_nprocs) then
         if (origin_myid==master) then
-            print *, "edrixs >>> Warning: number of CPU processors ", origin_nprocs, &
+            print *, " fedrixs >>> Warning: number of CPU processors ", origin_nprocs, &
                      "is larger than ndim_i: ", ndim_i
-            print *, "edrixs >>> Only ", ndim_i, " processors will really work!"
+            print *, " fedrixs >>> Only ", ndim_i, " processors will really work!"
         endif
         if (origin_myid < ndim_i) then
             color = 1 

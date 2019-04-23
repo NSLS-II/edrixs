@@ -34,7 +34,7 @@ subroutine config()
     exists = .false.
     inquire(file = 'config.in', exist = exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: config.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: config.in doesn't exist"
         STOP
     endif
 
@@ -84,7 +84,7 @@ subroutine read_hopping_i()
     exists = .false.
     inquire(file = "hopping_i.in", exist=exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: hopping_i.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: hopping_i.in doesn't exist"
         STOP
     endif
 
@@ -134,7 +134,7 @@ subroutine read_coulomb_i()
     exists = .false.
     inquire(file = "coulomb_i.in", exist=exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: coulomb_i.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: coulomb_i.in doesn't exist"
         STOP
     endif
 
@@ -217,7 +217,7 @@ subroutine read_hopping_n()
     exists = .false.
     inquire(file = "hopping_n.in", exist=exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: hopping_n.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: hopping_n.in doesn't exist"
         STOP
     endif
 
@@ -267,7 +267,7 @@ subroutine read_coulomb_n()
     exists = .false.
     inquire(file = "coulomb_n.in", exist=exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: coulomb_n.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: coulomb_n.in doesn't exist"
         STOP
     endif
 
@@ -325,7 +325,7 @@ subroutine read_fock_n()
         enddo
         close(mytmp)
     else
-        write(mystd, "(100a)") "edrixs >>> ERROR: fock_n.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: fock_n.in doesn't exist"
         STOP
     endif
 
@@ -353,7 +353,7 @@ subroutine read_fock_f()
         enddo
         close(mytmp)
     else
-        write(mystd, "(100a)") "edrixs >>> ERROR: fock_f.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: fock_f.in doesn't exist"
         STOP
     endif
 
@@ -378,7 +378,7 @@ subroutine read_transop_xas()
     exists = .false.
     inquire(file = "transop_xas.in", exist=exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: transop_xas.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: transop_xas.in doesn't exist"
         STOP
     endif
 
@@ -429,7 +429,7 @@ subroutine read_transop_rixs_i()
     exists = .false.
     inquire(file = "transop_rixs_i.in", exist=exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: transop_rixs_i.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: transop_rixs_i.in doesn't exist"
         STOP
     endif
 
@@ -479,7 +479,7 @@ subroutine read_transop_rixs_f()
     exists = .false.
     inquire(file = "transop_rixs_f.in", exist=exists)
     if ( .not. exists ) then
-        write(mystd, "(100a)") "edrixs >>> ERROR: transop_rixs_f.in doesn't exist"
+        write(mystd, "(100a)") " fedrixs >>> ERROR: transop_rixs_f.in doesn't exist"
         STOP
     endif
 
