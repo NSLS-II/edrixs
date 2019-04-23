@@ -1,5 +1,5 @@
 __all__ = ['get_gaunt', 'umat_slater', 'get_umat_kanamori_ge', 'get_F0',
-           'get_umat_slater', 'get_umat_kanamori']
+           'get_umat_slater', 'get_umat_kanamori', 'get_umat_slater_3shells']
 
 import numpy as np
 from sympy.physics.wigner import gaunt
@@ -622,7 +622,7 @@ def get_umat_slater_3shells(shell_name, *args):
     *args: floats
         Slater integrals. The order should be
 
-        FX_11, FX_22, FX_33, FX_12, GX_12, FX_13, GX_13, FX_23, GX_23,
+        FX_11, FX_12, GX_12, FX_22, FX_13, GX_13, FX_23, GX_23, FX_33
 
         where, 1, 2, 3 means 1st, 2nd, 3rd shell, and X=0, 2, 4, ... or X=1, 3, 5 ...,
         and X should be in ascending order.
@@ -654,21 +654,18 @@ def get_umat_slater_3shells(shell_name, *args):
     it = 0
     it += len(range(0, 2 * v1_orbl + 1, 2))
     indx.append(it)
-    it += len(range(0, 2 * v2_orbl + 1, 2))
-    indx.append(it)
-    it += len(range(0, 2 * v3_orbl + 1, 2))
-    indx.append(it)
-
     it += len(range(0, min(2*v1_orbl, 2*v2_orbl) + 1, 2))
     it += len(range(abs(v1_orbl - v2_orbl), v1_orbl + v2_orbl + 1, 2))
     indx.append(it)
-
+    it += len(range(0, 2 * v2_orbl + 1, 2))
+    indx.append(it)
     it += len(range(0, min(2*v1_orbl, 2*v3_orbl) + 1, 2))
     it += len(range(abs(v1_orbl - v3_orbl), v1_orbl + v3_orbl + 1, 2))
     indx.append(it)
-
     it += len(range(0, min(2*v2_orbl, 2*v3_orbl) + 1, 2))
     it += len(range(abs(v2_orbl - v3_orbl), v2_orbl + v3_orbl + 1, 2))
+    indx.append(it)
+    it += len(range(0, 2 * v3_orbl + 1, 2))
     indx.append(it)
 
     if it != len(args):
@@ -678,13 +675,13 @@ def get_umat_slater_3shells(shell_name, *args):
 
     # v1-v2
     case = v1_name + v2_name
-    arg_list = args[0:indx[0]] + args[indx[2]:indx[3]] + args[indx[0]:indx[1]]
+    arg_list = args[0:indx[0]] + args[indx[0]:indx[1]] + args[indx[1]:indx[2]]
     umat_tmp = get_umat_slater(case, *arg_list)
     umat[0:v1v2_norb, 0:v1v2_norb, 0:v1v2_norb, 0:v1v2_norb] = umat_tmp
 
     # v1-v3
     case = v1_name + v3_name
-    arg_list = [0.0] * (indx[0] - 0) + args[indx[3]:indx[4]] + args[indx[1]:indx[2]]
+    arg_list = [0.0] * (indx[0] - 0) + args[indx[2]:indx[3]] + args[indx[4]:indx[5]]
     umat_tmp = get_umat_slater(case, *arg_list)
     aa = list(range(0, v1_norb)) + list(range(v1v2_norb, ntot))
     for i in range(v1_norb + v3_norb):
@@ -695,7 +692,7 @@ def get_umat_slater_3shells(shell_name, *args):
 
     # v2-v3
     case = v2_name + v3_name
-    arg_list = [0.0] * (indx[1] - indx[0]) + args[indx[4]:indx[5]] + [0.0] * (indx[2] - indx[1])
+    arg_list = [0.0] * (indx[2] - indx[1]) + args[indx[3]:indx[4]] + [0.0] * (indx[5] - indx[4])
     umat_tmp = get_umat_slater(case, *arg_list)
     aa = list(range(v1_norb, ntot))
     for i in range(v2_norb + v3_norb):

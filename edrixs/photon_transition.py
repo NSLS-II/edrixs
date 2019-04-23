@@ -144,28 +144,29 @@ def get_trans_oper(case):
         op = dipole_trans_oper(v_orbl, c_orbl)
 
     # truncate to a sub-shell if necessary
-    shell_list2 = ['p12', 'p32', 'd32', 'd52', 'f52', 'f72']
+    special_shell = ['t2g', 'p12', 'p32', 'd32', 'd52', 'f52', 'f72']
+    orb_indx = {
+        special_shell[0]: [2, 3, 4, 5, 8, 9],
+        special_shell[1]: [0, 1],
+        special_shell[2]: [2, 3, 4, 5],
+        special_shell[3]: [0, 1, 2, 3],
+        special_shell[4]: [4, 5, 6, 7, 8, 9],
+        special_shell[5]: [0, 1, 2, 3, 4, 5],
+        special_shell[6]: [6, 7, 8, 9, 10, 11, 12, 13]
+    }
     left_tmat = np.eye(v_norb, dtype=np.complex)
     right_tmat = np.eye(c_norb, dtype=np.complex)
     indx1 = list(range(0, v_norb))
     indx2 = list(range(0, c_norb))
-    if v_name == 't2g':
-        left_tmat[0:v_norb, 0:v_norb] = tmat_c2r('d', True)
-        indx1 = [2, 3, 4, 5, 8, 9]
-    if c_name in shell_list2:
+    if v_name in special_shell:
+        if v_name == 't2g':
+            left_tmat[0:v_norb, 0:v_norb] = tmat_c2r('d', True)
+        else:
+            left_tmat[0:v_norb, 0:v_norb] = tmat_c2j(v_orbl)
+        indx1 = orb_indx[v_name]
+    if c_name in special_shell[1:]:
         right_tmat[0:c_norb, 0:c_norb] = tmat_c2j(c_orbl)
-        if c_name == 'p12':
-            indx2 = [0, 1]
-        if c_name == 'p32':
-            indx2 = [2, 3, 4, 5]
-        if c_name == 'd32':
-            indx2 = [0, 1, 2, 3]
-        if c_name == 'd52':
-            indx2 = [4, 5, 6, 7, 8, 9]
-        if c_name == 'f52':
-            indx2 = [0, 1, 2, 3, 4, 5]
-        if c_name == 'f72':
-            indx2 = [6, 7, 8, 9, 10, 11, 12, 13]
+        indx2 = orb_indx[c_name]
 
     if (v_orbl + c_orbl) % 2 == 0:
         npol = 5

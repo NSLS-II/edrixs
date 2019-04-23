@@ -1,4 +1,4 @@
-__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c']
+__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c', 'ed_2v1c']
 
 import numpy as np
 import scipy
@@ -499,7 +499,7 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
     slater: tuple of two lists
         Slater integrals for initinal (slater[0]) and intermediate (slater[1]) Hamiltonian.
         The order of the elements in the lists should be like this:
-        [FX_v1v1, FX_v2v2, FX_v1v2, GX_v1v2, FX_v1c, GX_v1c, FX_v2c, GX_v2c], where
+        [FX_v1v1, FX_v1v2, GX_v1v2, FX_v2v2, FX_v1c, GX_v1c, FX_v2c, GX_v2c], where
         X are integers with increasing order, it can be X=0, 2, 4, 6 or X=1, 3, 5.
     v1_ext_B: list of three float numbers
         Vector of external magnetic field on 1st valence shell,
