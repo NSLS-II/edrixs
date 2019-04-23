@@ -2,7 +2,7 @@ __all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c']
 
 import numpy as np
 import scipy
-from .utils import info_atomic_shell, boltz_dist
+from .utils import info_atomic_shell, slater_integrals_name, boltz_dist
 from .coulomb_utensor import get_umat_slater
 from .iostream import write_tensor, write_emat, write_umat
 from .soc import atom_hsoc
@@ -89,7 +89,6 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     info_shell = info_atomic_shell()
     # Quantum numbers of angular momentum
     v_orbl = info_shell[v_name][0]
-    c_orbl = info_shell[c_name][0]
 
     # number of orbitals with spin
     v_norb = info_shell[v_name][1]
@@ -101,12 +100,7 @@ def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
     emat_n = np.zeros((ntot, ntot), dtype=np.complex)
 
     # Coulomb interaction
-    slater_name = []
-    slater_name.extend(['F' + str(i) + '_vv' for i in range(0, 2 * v_orbl + 1, 2)])
-    slater_name.extend(['F' + str(i) + '_vc' for i in range(0, min(2*v_orbl, 2*c_orbl) + 1, 2)])
-    slater_name.extend(['G' + str(i) + '_vc' for i in
-                        range(abs(v_orbl - c_orbl), v_orbl + c_orbl + 1, 2)])
-    slater_name.extend(['F' + str(i) + '_cc' for i in range(0, 2 * c_orbl + 1, 2)])
+    slater_name = slater_integrals_name((v_name, c_name), ('v', 'c'))
     num_slat = len(slater_name)
     slater_i = np.zeros(num_slat, dtype=np.float)
     slater_n = np.zeros(num_slat, dtype=np.float)
@@ -444,3 +438,179 @@ def rixs_1v1c(eval_i, eval_n, trans_op, ominc_mesh, eloss_mesh,
 
     print("edrixs >>> RIXS Done !")
     return rixs
+
+
+def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
+            v1_level=0.0, v2_level=0.0, c_level=0.0,
+            v1_soc=(0.0, 0.0), v2_soc=(0.0, 0.0), c_soc=0.0,
+            v_tot_noccu=1, slater=([0], [0]),
+            v1_ext_B=np.zeros(3), v2_ext_B=np.zeros(3),
+            v1_zeeman_on_which='spin', v2_zeeman_on_which='spin',
+            v1_cf_mat=None, v2_cf_mat=None,
+            v1_other_mat=None, v2_other_mat=None, hopping_v1v2=None, 
+            ed_solver=2, neval=1, nvector=1, ncv=3, idump=False,  
+            maxiter=500, eigval_tol=1e-8, min_ndim=1000,
+            verbose=0):
+    """
+    Perform ED for the case of two valence shell plus one Core-shell.
+    For example, for U :math:`L_3`-edge RIXS, :math:`2p_{3/2}\\rightarrow 6d` transition,
+    the valence shells involved in RIXS are :math:`5f` and :math:`6d`.
+
+    The hopping and Coulomb terms of both the initial and intermediate Hamiltonians will be
+    constructed and written to files (hopping_i.in, hopping_n.in, coulomb_i.in and coulomb_n.in).
+    Fock basis for the initial Hamiltonian will be written to file (fock_i.in). However,
+    ED will only be performed on the initial Hamiltonian to find a few lowest eigenstates.
+    Due to large Hilbert space, the ed_fsolver written in Fortran will be called.
+    mpi4py and a MPI environment (mpich or openmpi) is required to launch ed_fsolver.
+
+    It will output the eigenvalues in file (eigvals.dat) and eigenvectors in files
+    (eigvec.n), where n means the n-th eigenvectors. The files eigvec.n will be used later
+    as the inputs for XAS and RIXS calculations.
+
+    Parameters
+    ----------
+    comm: MPI_comm
+        The MPI communicator from mpi4py.
+    v1_name: string
+        1st valence shell type, can be 's', 'p', 't2g', 'd', 'f'.
+    v2_name: string
+        2nd valence shell type, can be 's', 'p', 't2g', 'd', 'f'.
+    c_name: string
+        Core shell type, can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52', 'f', 'f52', 'f72'.
+    v1_level: float number
+        Energy level of 1st valence shell.
+    v2_level: float number
+        Energy level of 2nd valence shell.
+    c_level: float number
+        Energy level of core shell.
+    v1_soc: tuple of two float numbers
+        Spin-orbit coupling strength of 1st valence shell,
+        v1_soc[0] for the initial Hamiltonian, and
+        v1_soc[1] for the intermediate Hamiltonian.
+    v2_soc: tuple of two float numbers
+        Spin-orbit coupling strength of 2nd valence shell,
+        v2_soc[0] for the initial Hamiltonian, and
+        v2_soc[1] for the intermediate Hamiltonian.
+    c_soc: float number
+        Spin-orbit coupling strength of core electrons.
+    v_tot_noccu: int number
+        Total number of electrons in both valence shells.
+    slater: tuple of two lists
+        Slater integrals for initinal (slater[0]) and intermediate (slater[1]) Hamiltonian.
+        The order of the elements in the lists should be like this:
+        [FX_v1v1, FX_v2v2, FX_v1v2, GX_v1v2, FX_v1c, GX_v1c, FX_v2c, GX_v2c], where
+        X are integers with increasing order, it can be X=0, 2, 4, 6 or X=1, 3, 5.
+    v1_ext_B: list of three float numbers
+        Vector of external magnetic field on 1st valence shell,
+        with respect to global :math:`xyz`-axis.
+    v2_ext_B: list of three float numbers
+        Vector of external magnetic field on 2nd valence shell,
+        with respect to global :math:`xyz`-axis.
+    v1_zeeman_on_which: string
+        Apply Zeeman exchange field on 'spin', 'orbital' or 'both', for 1st valence shell.
+    v2_zeeman_on_which: string
+        Apply Zeeman exchange field on 'spin', 'orbital' or 'both', for 2nd valence shell.
+    v1_cf_mat: 2d complex array
+        Crystal field splitting Hamiltonian of 1st valence shell in the complex harmonics
+        basis with spin degree of freedom. The orbital order is:
+        :math:`|-l,\\uparrow>, |-l,\\downarrow>, |-l+1,\\uparrow>, |-l+1,\\downarrow>, ...,
+        |l,\\uparrow>, |l,\\downarrow>`.
+    v2_cf_mat: 2d complex array
+        Crystal field splitting Hamiltonian of 2nd valence shell in the complex harmonics
+        basis with spin degree of freedom. The orbital order is:
+        :math:`|-l,\\uparrow>, |-l,\\downarrow>, |-l+1,\\uparrow>, |-l+1,\\downarrow>, ...,
+        |l,\\uparrow>, |l,\\downarrow>`.
+    v1_other_mat: 2d complex array
+        Other Hamiltonian of 1st valence shell in the complex harmonics
+        basis with spin degree of freedom. The orbital order is:
+        :math:`|-l,\\uparrow>, |-l,\\downarrow>, |-l+1,\\uparrow>, |-l+1,\\downarrow>, ...,
+        |l,\\uparrow>, |l,\\downarrow>`.
+    v2_other_mat: 2d complex array
+        Other Hamiltonian of 2nd valence shell in the complex harmonics
+        basis with spin degree of freedom. The orbital order is:
+        :math:`|-l,\\uparrow>, |-l,\\downarrow>, |-l+1,\\uparrow>, |-l+1,\\downarrow>, ...,
+        |l,\\uparrow>, |l,\\downarrow>`.
+    ed_solver: int
+        Type of ED solver, options can be 0, 1, 2
+
+        0: use Lapack to fully diagonalize Hamiltonian to get all the eigenvalues.
+
+        1: use standard Lanczos algorithm to find only a few lowest eigenvalues,
+        no re-orthogonalization has been applied, so it is not very accurate. 
+        
+        2: use parallel version of Arpack library to find a few lowest eigenvalues,
+        it is accurate, so it is the recommeded choice in real calculations of XAS and RIXS.
+    neval: int
+        Number of eigenvalues to be found. For ed_solver=2, the value should not be too small,
+        neval > 10 is usually a safe value.
+    nvector: int
+        Number of eigenvectors to be found.
+    ncv: int
+        Used for ed_solver=2, it should be at least ncv > neval + 2. Usually, set it a little
+        bit larger than neval, for example, ncv=200, when neval=100. 
+    idump: logical
+        Whether to dump the eigenvectors to files "eigvec.n", where n means the n-th vectors.
+    maxiter: int
+        Maximum number of iterations in finding all the eigenvalues, used for ed_solver=1,2.
+    eigval_tol: float
+        The convergence criteria of eigenvalues, used for ed_solver=1,2.
+    min_ndim: int
+        The minimum dimension of the Hamiltonian when the ed_solver=1,2 can be used. 
+    verbose: int
+        Level of dumping files.
+
+    Returns
+    -------
+    eigval_i: 1d float array
+        The eigenvalues of initial Hamiltonian.
+    denmat: 2d complex array
+        The density matrix in the eigenstates.
+    """
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+
+    if rank == 0:
+        print("edrixs >>> Running ED ...")
+        v1_name = v1_name.strip()
+        v2_name = v2_name.strip()
+        c_name = c_name.strip()
+        info_shell = info_atomic_shell()
+        # Quantum numbers of angular momentum
+        v1_orbl = info_shell[v1_name][0]
+        v2_orbl = info_shell[v2_name][0]
+        c_orbl = info_shell[c_name][0]
+
+        # number of orbitals with spin
+        v1_norb = info_shell[v1_name][1]
+        v2_norb = info_shell[v2_name][1]
+        c_norb = info_shell[c_name][1]
+        # total number of orbitals
+        ntot = v1_norb + v2_norb + c_norb
+        v1v2_norb = v1_norb + v2_norb
+
+        emat_i = np.zeros((ntot, ntot), dtype=np.complex)
+        emat_n = np.zeros((ntot, ntot), dtype=np.complex)
+
+        # Coulomb interaction
+        slater_name = slater_integrals_name((v1_name, v2_name, c_name), ('v1', 'v2', 'c'))
+        num_slat = len(slater_name)
+        slater_i = np.zeros(num_slat, dtype=np.float)
+        slater_n = np.zeros(num_slat, dtype=np.float)
+        if num_slat > len(slater[0]):
+            slater_i[0:len(slater[0])] = slater[0]
+        else:
+            slater_i[:] = slater[0][0:num_slat]
+        if num_slat > len(slater[1]):
+            slater_n[0:len(slater[1])] = slater[1]
+        else:
+            slater_n[:] = slater[1][0:num_slat] 
+        # print summary of slater integrals
+        print("    Summary of Slater integrals:")
+        print("    ------------------------------")
+        print("    Terms,  Initial,  Intermediate")
+        for i in range(num_slat):
+            print("    ", slater_name[i], ":  {:20.10f}{:20.10f}".format(slater_i[i], slater_n[i]))
+
+        umat_i = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_i)
+        umat_n = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_n)

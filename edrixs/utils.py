@@ -323,63 +323,16 @@ def case_to_shell_name(case):
     >>> edrixs.case_to_shell_name('t2gp32')
     ('t2g', 'p32')
     """
-    shell_name = {
-        's': ('s',),
-        'p': ('p',),
-        'd': ('d',),
-        't2g': ('t2g',),
-        'f': ('f',),
-        'ss': ('s', 's'),
-        'ps': ('p', 's'),
-        't2gs': ('t2g', 's'),
-        'ds': ('d', 's'),
-        'fs': ('f', 's'),
-        'sp': ('s', 'p'),
-        'sp12': ('s', 'p12'),
-        'sp32': ('s', 'p32'),
-        'pp': ('p', 'p'),
-        'pp12': ('p', 'p12'),
-        'pp32': ('p', 'p32'),
-        't2gp': ('t2g', 'p'),
-        't2gp12': ('t2g', 'p12'),
-        't2gp32': ('t2g', 'p32'),
-        'dp': ('d', 'p'),
-        'dp12': ('d', 'p12'),
-        'dp32': ('d', 'p32'),
-        'fp': ('f', 'p'),
-        'fp12': ('f', 'p12'),
-        'fp32': ('f', 'p32'),
-        'sd': ('s', 'd'),
-        'sd32': ('s', 'd32'),
-        'sd52': ('s', 'd52'),
-        'pd': ('p', 'd'),
-        'pd32': ('p', 'd32'),
-        'pd52': ('p', 'd52'),
-        't2gd': ('t2g', 'd'),
-        't2gd32': ('t2g', 'd32'),
-        't2gd52': ('t2g', 'd52'),
-        'dd': ('d', 'd'),
-        'dd32': ('d', 'd32'),
-        'dd52': ('d', 'd52'),
-        'fd': ('f', 'd'),
-        'fd32': ('f', 'd32'),
-        'fd52': ('f', 'd52'),
-        'sf': ('s', 'f'),
-        'sf52': ('s', 'f52'),
-        'sf72': ('s', 'f72'),
-        'pf': ('p', 'f'),
-        'pf52': ('p', 'f52'),
-        'pf72': ('p', 'f72'),
-        't2gf': ('t2g', 'f'),
-        't2gf52': ('t2g', 'f52'),
-        't2gf72': ('t2g', 'f72'),
-        'df': ('d', 'f'),
-        'df52': ('d', 'f52'),
-        'df72': ('d', 'f72'),
-        'ff': ('f', 'f'),
-        'ff52': ('f', 'f52'),
-        'ff72': ('f', 'f72')
-    }
+
+    shell = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
+
+    shell_name = {}
+    for str1 in shell:
+        shell_name[str1] = (str1,)
+
+    for str1 in shell:
+        for str2 in shell:
+            shell_name[str1+str2] = (str1, str2)
 
     return shell_name[case.strip()]
 
@@ -438,3 +391,50 @@ def edge_to_shell_name(edge_name):
     }
 
     return shell_name[edge_name.strip()]
+
+
+def slater_integrals_name(shell_name, label=None):
+    info = info_atomic_shell()
+    # one shell
+    if len(shell_name) == 1:
+        res = []
+        l1 = info[shell_name[0]][0]
+        if label is not None:
+            x = label[0]
+        else:
+            x = '1'
+        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2 * l1 + 1, 2)])
+    elif len(shell_name) == 2:
+        res = []
+        l1 = info[shell_name[0]][0]
+        l2 = info[shell_name[1]][0]
+        if label is not None:
+            x, y = label[0], label[1]
+        else:
+            x, y = '1', '2'
+        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2 * l1 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + x + y for i in range(0, min(2 * l1, 2 * l2) + 1, 2)])
+        res.extend(['G' + str(i) + '_' + x + y for i in range(abs(l1 - l2), l1 + l2 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2 * l2 + 1, 2)])
+    elif len(shell_name) == 3:
+        res = []
+        l1 = info[shell_name[0]][0]
+        l2 = info[shell_name[1]][0]
+        l3 = info[shell_name[2]][0]
+        if label is not None:
+            x, y, z = label[0], label[1], label[2]
+        else:
+            x, y, z = '1', '2', '3'
+        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2 * l1 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2 * l2 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + z + z for i in range(0, 2 * l3 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + x + y for i in range(0, min(2 * l1, 2 * l2) + 1, 2)])
+        res.extend(['G' + str(i) + '_' + x + y for i in range(abs(l1 - l2), l1 + l2 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + x + z for i in range(0, min(2 * l1, 2 * l3) + 1, 2)])
+        res.extend(['G' + str(i) + '_' + x + z for i in range(abs(l1 - l3), l1 + l3 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + y + z for i in range(0, min(2 * l2, 2 * l3) + 1, 2)])
+        res.extend(['G' + str(i) + '_' + y + z for i in range(abs(l2 - l3), l2 + l3 + 1, 2)])
+    else:
+        raise Exception("Not implemented for this case: ", shell_name)
+
+    return res
