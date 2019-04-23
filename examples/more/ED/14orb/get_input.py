@@ -28,7 +28,7 @@ if __name__ == "__main__":
         "num_val_orbs =   14",
         "neval        =   100",
         "ncv          =   200",
-        "nvector      =   1",
+        "nvector      =   2",
         "maxiter      =   1000",
         "eigval_tol   =   1E-10",
         "idump        =   .false.",

@@ -610,40 +610,6 @@ def get_umat_slater(case, *args):
     return umat
 
 
-def get_umat_kanamori(norbs, U, J):
-    """
-    Calculate the Coulomb interaction tensor for a Kanamori-type interaction.
-    For the :math:`t2g`-shell case, it is parameterized by :math:`U, J`.
-
-    Parameters
-    ----------
-    norbs: int
-        number of orbitals (including spin).
-    U: float
-        Hubbard :math:`U` for electrons residing on the same orbital with opposite spin.
-    J: float
-        Hund's coupling.
-
-    Returns
-    -------
-    umat: 4d complex array
-        The calculated Coulomb interaction tensor
-
-    Notes
-    -----
-    The order of spin index is: up, down, up, down, ..., up, down.
-
-    See Also
-    --------
-    coulomb_utensor.get_umat_kanamori_ge
-    coulomb_utensor.get_umat_slater
-    coulomb_utensor.umat_slater
-
-    """
-
-    return get_umat_kanamori_ge(norbs, U, U - 2 * J, J, J, J)
-
-
 def get_umat_slater_3shells(shell_name, *args):
     """
     Given three shells, build the slater type of Coulomb tensors among
@@ -739,3 +705,37 @@ def get_umat_slater_3shells(shell_name, *args):
                     umat[aa[i], aa[j], aa[k], aa[l]] += umat_tmp[i, j, k, l]
 
     return umat
+
+
+def get_umat_kanamori(norbs, U, J):
+    """
+    Calculate the Coulomb interaction tensor for a Kanamori-type interaction.
+    For the :math:`t2g`-shell case, it is parameterized by :math:`U, J`.
+
+    Parameters
+    ----------
+    norbs: int
+        number of orbitals (including spin).
+    U: float
+        Hubbard :math:`U` for electrons residing on the same orbital with opposite spin.
+    J: float
+        Hund's coupling.
+
+    Returns
+    -------
+    umat: 4d complex array
+        The calculated Coulomb interaction tensor
+
+    Notes
+    -----
+    The order of spin index is: up, down, up, down, ..., up, down.
+
+    See Also
+    --------
+    coulomb_utensor.get_umat_kanamori_ge
+    coulomb_utensor.get_umat_slater
+    coulomb_utensor.umat_slater
+
+    """
+
+    return get_umat_kanamori_ge(norbs, U, U - 2 * J, J, J, J)

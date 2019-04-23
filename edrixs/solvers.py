@@ -3,17 +3,18 @@ __all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c']
 import numpy as np
 import scipy
 from .utils import info_atomic_shell, slater_integrals_name, boltz_dist
-from .coulomb_utensor import get_umat_slater
-from .iostream import write_tensor, write_emat, write_umat
+from .coulomb_utensor import get_umat_slater, get_umat_slater_3shells
+from .iostream import write_tensor, write_emat, write_umat, write_config
 from .soc import atom_hsoc
 from .angular_momentum import get_sx, get_sy, get_sz, get_lx, get_ly, get_lz
 from .angular_momentum import rmat_to_euler, get_wigner_dmat
 from .manybody_operator import two_fermion, four_fermion
-from .fock_basis import get_fock_bin_by_N
+from .fock_basis import get_fock_bin_by_N, write_fock_dec_by_N
 from .basis_transform import cb_op2, tmat_r2c
 from .photon_transition import get_trans_oper, quadrupole_polvec
 from .photon_transition import dipole_polvec_xas, dipole_polvec_rixs, unit_wavevector
 from .rixs_utils import scattering_mat
+from .fedrixs import ed_fsolver
 
 
 def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
@@ -447,8 +448,8 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
             v1_ext_B=np.zeros(3), v2_ext_B=np.zeros(3),
             v1_zeeman_on_which='spin', v2_zeeman_on_which='spin',
             v1_cf_mat=None, v2_cf_mat=None,
-            v1_other_mat=None, v2_other_mat=None, hopping_v1v2=None, 
-            ed_solver=2, neval=1, nvector=1, ncv=3, idump=False,  
+            v1_other_mat=None, v2_other_mat=None, hopping_v1v2=None,
+            ed_solver=2, neval=1, nvector=1, ncv=3, idump=False,
             maxiter=500, eigval_tol=1e-8, min_ndim=1000,
             verbose=0):
     """
@@ -530,14 +531,16 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
         basis with spin degree of freedom. The orbital order is:
         :math:`|-l,\\uparrow>, |-l,\\downarrow>, |-l+1,\\uparrow>, |-l+1,\\downarrow>, ...,
         |l,\\uparrow>, |l,\\downarrow>`.
+    hopping_v1v2: 2d complex array
+        Hopping between the two valence shells. The 1st index is for v1 and 2nd index is for v2.
     ed_solver: int
         Type of ED solver, options can be 0, 1, 2
 
         0: use Lapack to fully diagonalize Hamiltonian to get all the eigenvalues.
 
         1: use standard Lanczos algorithm to find only a few lowest eigenvalues,
-        no re-orthogonalization has been applied, so it is not very accurate. 
-        
+        no re-orthogonalization has been applied, so it is not very accurate.
+
         2: use parallel version of Arpack library to find a few lowest eigenvalues,
         it is accurate, so it is the recommeded choice in real calculations of XAS and RIXS.
     neval: int
@@ -547,7 +550,7 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
         Number of eigenvectors to be found.
     ncv: int
         Used for ed_solver=2, it should be at least ncv > neval + 2. Usually, set it a little
-        bit larger than neval, for example, ncv=200, when neval=100. 
+        bit larger than neval, for example, ncv=200, when neval=100.
     idump: logical
         Whether to dump the eigenvectors to files "eigvec.n", where n means the n-th vectors.
     maxiter: int
@@ -555,7 +558,7 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
     eigval_tol: float
         The convergence criteria of eigenvalues, used for ed_solver=1,2.
     min_ndim: int
-        The minimum dimension of the Hamiltonian when the ed_solver=1,2 can be used. 
+        The minimum dimension of the Hamiltonian when the ed_solver=1,2 can be used.
     verbose: int
         Level of dumping files.
 
@@ -579,7 +582,6 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
         # Quantum numbers of angular momentum
         v1_orbl = info_shell[v1_name][0]
         v2_orbl = info_shell[v2_name][0]
-        c_orbl = info_shell[c_name][0]
 
         # number of orbitals with spin
         v1_norb = info_shell[v1_name][1]
@@ -588,9 +590,6 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
         # total number of orbitals
         ntot = v1_norb + v2_norb + c_norb
         v1v2_norb = v1_norb + v2_norb
-
-        emat_i = np.zeros((ntot, ntot), dtype=np.complex)
-        emat_n = np.zeros((ntot, ntot), dtype=np.complex)
 
         # Coulomb interaction
         slater_name = slater_integrals_name((v1_name, v2_name, c_name), ('v1', 'v2', 'c'))
@@ -604,7 +603,7 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
         if num_slat > len(slater[1]):
             slater_n[0:len(slater[1])] = slater[1]
         else:
-            slater_n[:] = slater[1][0:num_slat] 
+            slater_n[:] = slater[1][0:num_slat]
         # print summary of slater integrals
         print("    Summary of Slater integrals:")
         print("    ------------------------------")
@@ -614,3 +613,98 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
 
         umat_i = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_i)
         umat_n = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_n)
+
+        write_umat(umat_i, 'coulomb_i.in')
+        write_umat(umat_n, 'coulomb_n.in')
+
+        emat_i = np.zeros((ntot, ntot), dtype=np.complex)
+        emat_n = np.zeros((ntot, ntot), dtype=np.complex)
+        # SOC
+        if v1_name in ['p', 'd', 't2g', 'f']:
+            emat_i[0:v1_norb, 0:v1_norb] += atom_hsoc(v1_name, v1_soc[0])
+            emat_n[0:v1_norb, 0:v1_norb] += atom_hsoc(v1_name, v1_soc[1])
+        if v2_name in ['p', 'd', 't2g', 'f']:
+            emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += atom_hsoc(v2_name, v2_soc[0])
+            emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += atom_hsoc(v2_name, v2_soc[1])
+        if c_name in ['p', 'd', 'f']:
+            emat_n[v1v2_norb:ntot, v1v2_norb:ntot] += atom_hsoc(c_name, c_soc)
+
+        # crystal field
+        if v1_cf_mat is not None:
+            emat_i[0:v1_norb, 0:v1_norb] += v1_cf_mat
+            emat_n[0:v1_norb, 0:v1_norb] += v1_cf_mat
+        if v2_cf_mat is not None:
+            emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += v2_cf_mat
+            emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += v2_cf_mat
+        # other mat
+        if v1_other_mat is not None:
+            emat_i[0:v1_norb, 0:v1_norb] += v1_other_mat
+            emat_n[0:v1_norb, 0:v1_norb] += v1_other_mat
+        if v2_other_mat is not None:
+            emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += v2_other_mat
+            emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += v2_other_mat
+
+        # energy of shell
+        emat_i[0:v1_norb, 0:v1_norb] += np.eye(v1_norb) * v1_level
+        emat_n[0:v1_norb, 0:v1_norb] += np.eye(v1_norb) * v1_level
+        emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * v2_level
+        emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * v2_level
+        emat_i[v1v2_norb:ntot, v1v2_norb:ntot] += np.eye(c_norb) * c_level
+        emat_n[v1v2_norb:ntot, v1v2_norb:ntot] += np.eye(c_norb) * c_level
+
+        # external magnetic field
+        for name, l, ext_B, which, i1, i2 in [
+            (v1_name, v1_orbl, v1_ext_B, v1_zeeman_on_which, 0, v1_norb),
+            (v2_name, v2_orbl, v2_ext_B, v2_zeeman_on_which, v1_norb, v1v2_norb)
+        ]:
+            if name == 't2g':
+                lx, ly, lz = get_lx(1, True), get_ly(1, True), get_lz(1, True)
+                sx, sy, sz = get_sx(1), get_sy(1), get_sz(1)
+                lx, ly, lz = -lx, -ly, -lz
+            else:
+                lx, ly, lz = get_lx(l, True), get_ly(l, True), get_lz(l, True)
+                sx, sy, sz = get_sx(l), get_sy(l), get_sz(l)
+            if which.strip() == 'spin':
+                zeeman = ext_B[0] * (2 * sx) + ext_B[1] * (2 * sy) + ext_B[2] * (2 * sz)
+            elif which.strip() == 'orbital':
+                zeeman = ext_B[0] * lx + ext_B[1] * ly + ext_B[2] * lz
+            elif which.strip() == 'both':
+                zeeman = (ext_B[0] * (lx + 2 * sx) +
+                          ext_B[1] * (ly + 2 * sy) +
+                          ext_B[2] * (lz + 2 * sz))
+            else:
+                raise Exception("Unknown value of zeeman_on_which", which)
+            emat_i[i1:i2, i1:i2] += zeeman
+            emat_n[i1:i2, i1:i2] += zeeman
+
+        # hopping between the two valence shells
+        if hopping_v1v2 is not None:
+            emat_i[0:v1_norb, v1_norb:v1v2_norb] += hopping_v1v2
+            emat_i[v1_norb:v1v2_norb, 0:v1_norb] += np.conj(np.transpose(hopping_v1v2))
+            emat_n[0:v1_norb, v1_norb:v1v2_norb] += hopping_v1v2
+            emat_n[v1_norb:v1v2_norb, 0:v1_norb] += np.conj(np.transpose(hopping_v1v2))
+
+        write_emat(emat_i, 'hopping_i.in')
+        write_emat(emat_n, 'hopping_n.in')
+
+        write_config(
+            './', ed_solver, v1v2_norb, c_norb, neval, nvector, ncv, idump,
+            maxiter=maxiter, min_ndim=min_ndim, eigval_tol=eigval_tol
+        )
+
+        write_fock_dec_by_N(v1v2_norb, v_tot_noccu, "fock_i.in")
+
+    # now, call ed solver
+    comm.Barrier()
+    ed_fsolver(fcomm, rank, size)
+    comm.Barrier()
+
+    # read eigvals.dat and denmat.dat
+    data = np.loadtxt('eigvals.dat')
+    eigval_i = np.zeros(neval, dtype=np.float)
+    eigval_i[0:neval] = data[0:neval, 1]
+    data = np.loadtxt('denmat.dat')
+    tmp = (nvector, v1v2_norb, v1v2_norb)
+    denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
+
+    return eigval_i, denmat
