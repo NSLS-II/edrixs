@@ -58,10 +58,10 @@ if __name__ == "__main__":
                             v1_soc=(zeta_f_i, zeta_f_n),
                             v2_level=1, v_tot_noccu=noccu, slater=slater,
                             ed_solver=2, neval=10, nvector=1, ncv=30, idump=True)
-    eval_i, denmat, num_val_orbs, num_core_orbs = result
+    v_norb, c_norb, emat_i, emat_n, umat_i, umat_n, eval_i, denmat = result
 
     if rank == 0:
-        print(num_val_orbs, num_core_orbs)
+        print(v_norb, c_norb)
         print('eigvals:')
         print(eval_i)
         print('occupancy numbers:')
