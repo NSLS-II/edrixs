@@ -1,5 +1,7 @@
-__all__ = ['write_tensor', 'write_emat', 'write_umat', 'write_config']
+__all__ = ['write_tensor', 'write_emat', 'write_umat', 'write_config',
+           'read_poles_from_file', 'rename_pole_file']
 
+import shutil
 import numpy as np
 
 
@@ -270,3 +272,44 @@ def write_config(
     for item in config:
         f.write(item + "\n")
     f.close()
+
+
+def read_poles_from_file(file_list):
+    pole_dict = {
+        'npoles': [],
+        'eigval': [],
+        'norm': [],
+        'alpha': [],
+        'beta': []
+    }
+    for fname in file_list:
+        f = open(fname, 'r')
+        line = f.readline()
+        neff = int(line.strip().split()[1])
+        pole_dict['npoles'].append(neff)
+
+        line = f.readline()
+        eigval = float(line.strip().split()[1])
+        pole_dict['eigval'].append(eigval)
+
+        line = f.readline()
+        norm = float(line.strip().split()[1])
+        pole_dict['norm'].append(norm)
+
+        alpha = []
+        beta = []
+        for i in range(neff):
+            line = f.readline()
+            line = line.strip().split()
+            alpha.append(float(line[1]))
+            beta.append(float(line[2]))
+        pole_dict['alpha'].append(alpha)
+        pole_dict['beta'].append(beta)
+        f.close()
+
+    return pole_dict
+
+
+def rename_pole_file(file_list, postfix):
+    for fname in file_list:
+        shutil.copyfile(fname, fname + postfix)

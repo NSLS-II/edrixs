@@ -1,8 +1,30 @@
-__all__ = ['plot_spectrum', 'plot_rixs_map']
+__all__ = ['get_spectra_from_poles', 'plot_spectrum', 'plot_rixs_map']
 
 import numpy as np
 import matplotlib.pyplot as plt
 from .utils import boltz_dist
+
+
+def get_spectra_from_poles(poles_dict, omega_mesh, gamma_mesh, temperature):
+    nom = len(omega_mesh)
+    spectra = np.zeros(nom, dtype=np.float64)
+    gs_dist = boltz_dist(poles_dict['eigval'], temperature)
+    ngs = len(poles_dict['eigval'])
+    for i in range(ngs):
+        tmp_vec = np.zeros(nom, dtype=np.complex)
+        neff = poles_dict['npoles'][i]
+        alpha = poles_dict['alpha'][i]
+        beta = poles_dict['beta'][i]
+        eigval = poles_dict['eigval'][i]
+        norm = poles_dict['norm'][i]
+        for j in range(neff - 1, 0, -1):
+            tmp_vec = beta[j - 1]**2 / (omega_mesh + 1j * gamma_mesh + eigval
+                                        - alpha[j] - tmp_vec)
+        tmp_vec = 1.0 / (omega_mesh + 1j * gamma_mesh +
+                         eigval - alpha[0] - tmp_vec)
+        spectra[:] += -1.0 / np.pi * np.imag(tmp_vec) * norm * gs_dist[i]
+
+    return spectra
 
 
 def plot_spectrum(file_list, omega_mesh, gamma_mesh, T=1.0, fname='spectrum.dat',

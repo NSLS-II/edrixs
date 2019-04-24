@@ -48,17 +48,40 @@ if __name__ == "__main__":
     # Occupancy of U 5f orbitals
     noccu = 6
 
+    # RIXS settings
+    thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0.0
+    gamma_c = 0.1
+    gamma_f = 0.075
+    ominc = np.linspace(-10, 10, 100)
+    gs_list = list(range(0, 4))
+    poltype_xas = [('isotropic', 0.0)]
+
+    poltype_rixs = [('linear', 0.0, 'linear', 0.0),
+                    ('linear', 0.0, 'linear', np.pi / 2.0),
+                    ('linear', np.pi / 2.0, 'linear', 0.0),
+                    ('linear', np.pi / 2.0, 'linear', np.pi / 2.0)]
+
     # mpi4py env
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
 
     # Run ED
-    result = edrixs.ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p32',
-                            v1_soc=(zeta_f_i, zeta_f_n),
-                            v2_level=1, v_tot_noccu=noccu, slater=slater,
-                            ed_solver=2, neval=10, nvector=1, ncv=30, idump=True)
+    result = edrixs.ed_2v1c(
+        comm, v1_name='f', v2_name='d', c_name='p32', v1_soc=(zeta_f_i, zeta_f_n),
+        v2_level=1, v_tot_noccu=noccu, slater=slater,
+        ed_solver=2, neval=10, nvector=2, ncv=30, idump=True
+    )
+
     v_norb, c_norb, emat_i, emat_n, umat_i, umat_n, eval_i, denmat = result
+
+    # Run XAS
+    xas, poles_dict = edrixs.xas_2v1c(
+        comm, emat_n, umat_n, ominc, gamma_c, v1_name='f', v2_name='d', c_name='p32',
+        v_tot_noccu=noccu, trans_to_which=2, thin=thin, phi=phi, poltype=poltype_xas,
+        num_gs=1, nkryl=200, temperature=300, prefix_pole_files='old'
+    )
+    np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
 
     if rank == 0:
         print(v_norb, c_norb)

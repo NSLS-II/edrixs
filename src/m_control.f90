@@ -93,7 +93,7 @@ module m_control
     integer, public, save :: master = 0 
 
     ! MPI communicator
-    integer, public, save :: new_comm = 1
+    integer, public, save :: new_comm = 0
     integer, public, save :: origin_comm = 0
 
 end module m_control

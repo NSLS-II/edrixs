@@ -38,7 +38,7 @@ subroutine config()
         STOP
     endif
 
-    if (myid == master) then
+    if (origin_myid == master) then
         open(mytmp, file='config.in')            
         read(mytmp, NML=control) 
         close(mytmp)

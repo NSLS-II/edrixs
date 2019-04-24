@@ -210,7 +210,7 @@ subroutine ed_driver()
                if (myid+1 /= i) then
                    call MPI_RECV(eigvecs_mpi(end_indx(1,2,i):end_indx(2,2,i)), &
                         end_indx(2,2,i)-end_indx(1,2,i)+1, MPI_DOUBLE_COMPLEX, &
-                       -1, (myid+1)*(10*nprocs)+i, new_comm, stat, ierror)
+                       i-1, (myid+1)*(10*nprocs)+i, new_comm, stat, ierror)
                endif
             enddo
         endif
@@ -262,6 +262,8 @@ subroutine ed_driver()
     call write_denmat(nvector, num_val_orbs, denmat)
 
     call dealloc_fock_i()
+    call dealloc_hopping_i()
+    call dealloc_coulomb_i()
     deallocate(eigvecs)
     deallocate(eigvecs_mpi)
     deallocate(eigvals)

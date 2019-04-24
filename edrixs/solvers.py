@@ -1,10 +1,12 @@
-__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c', 'ed_2v1c']
+__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c', 'ed_2v1c', 'xas_2v1c']
 
 import numpy as np
 import scipy
 from .utils import info_atomic_shell, slater_integrals_name, boltz_dist
 from .coulomb_utensor import get_umat_slater, get_umat_slater_3shells
 from .iostream import write_tensor, write_emat, write_umat, write_config
+from .iostream import read_poles_from_file, rename_pole_file
+from .plot_spectrum import get_spectra_from_poles
 from .soc import atom_hsoc
 from .angular_momentum import get_sx, get_sy, get_sz, get_lx, get_ly, get_lz
 from .angular_momentum import rmat_to_euler, get_wigner_dmat
@@ -14,7 +16,7 @@ from .basis_transform import cb_op2, tmat_r2c
 from .photon_transition import get_trans_oper, quadrupole_polvec
 from .photon_transition import dipole_polvec_xas, dipole_polvec_rixs, unit_wavevector
 from .rixs_utils import scattering_mat
-from .fedrixs import ed_fsolver
+from .fedrixs import ed_fsolver, xas_fsolver
 
 
 def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
@@ -727,13 +729,12 @@ def ed_2v1c(comm, v1_name='f', v2_name='d', c_name='p',
     return v1v2_norb, c_norb, emat_i, emat_n, umat_i, umat_n, eval_i, denmat 
 
 
-def xas_2v1c(comm, v1_name, v2_name, c_name, v_tot_noccu,
-             emat_i, emat_n, umat_i, umat_n, ominc_mesh,
-             gamma_c=0.1, trans_to_which=1, thin=1.0, phi=0,
+def xas_2v1c(comm, ominc_mesh, gamma_c=0.1,
+             v1_name='f', v2_name='d', c_name='p',
+             v_tot_noccu=1, trans_to_which=1, thin=1.0, phi=0,
              poltype=[('isotropic', 0.0)],
-             num_gs=1, temperature=1.0,
-             scattering_plane_axis=np.eye(3)
-             nkryl=200, prefix_pole_files='back'):
+             num_gs=1, temperature=1.0, local_axis=np.eye(3),
+             scattering_plane_axis=np.eye(3), nkryl=200):
     """
     Calculate XAS for the case with 2 valence shells plus 1 core shell.
 
@@ -749,14 +750,6 @@ def xas_2v1c(comm, v1_name, v2_name, c_name, v_tot_noccu,
         Core shell type, can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52', 'f', 'f52', 'f72'.
     v_tot_noccu: int
         Total occupancy of valence shells.
-    emat_i: 2d complex array
-        Hopping terms of initial Hamiltonian.
-    emat_n: 2d complex array
-        Hopping terms of intermediate Hamiltonian.
-    umat_i: 4d complex array
-        Coulomb terms of initial Hamiltonian.
-    umat_n: 4d complex array
-        Coulomb terms of intermediate Hamiltonian.
     ominc_mesh: 1d float array
         The mesh of the incident energy of photon.
     gamma_c: a float number or a 1d float array with same length as ominc_mesh.
@@ -782,6 +775,8 @@ def xas_2v1c(comm, v1_name, v2_name, c_name, v_tot_noccu,
         Number of initial states used in XAS calculations.
     temperature: float number
         Temperature (in K) for boltzmann distribution.
+    local_axis: 3*3 float array
+        The local axis defining the orbitals.
     scattering_plane_axis: 3*3 float array
         The local axis defining the scattering plane. The scattering plane is defined in
         the local :math:`zx`-plane.
@@ -790,11 +785,111 @@ def xas_2v1c(comm, v1_name, v2_name, c_name, v_tot_noccu,
         local :math:`z`-axis: scattering_plane_axis[:,2]
     nkryl: int
         Maximum of poles obtained.
-    postfix_pole_files: string
-        Postfix when backing up xas_poles.n files. 
 
     Returns
     -------
     xas: 2d array
         The calculated XAS spectra.
+    poles: list of dict
+        The calculated XAS poles.
     """
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+
+    v1_name = v1_name.strip()
+    v2_name = v2_name.strip()
+    c_name = c_name.strip()
+    info_shell = info_atomic_shell()
+    v1_norb = info_shell[v1_name][1]
+    v2_norb = info_shell[v2_name][1]
+    c_norb = info_shell[c_name][1]
+    ntot = v1_norb + v2_norb + c_norb
+    v1v2_norb = v1_norb + v2_norb
+    if rank == 0:
+        print("edrixs >>> Running XAS ...", flush=True)
+        write_config(num_val_orbs=v1v2_norb, num_core_orbs=c_norb,
+                     num_gs=num_gs, nkryl=nkryl)
+        write_fock_dec_by_N(v1v2_norb, v_tot_noccu, "fock_i.in")
+        write_fock_dec_by_N(v1v2_norb, v_tot_noccu + 1, "fock_n.in")
+
+        # Build transition operators in local-xyz axis
+        if trans_to_which == 1:
+            case = v1_name + c_name
+        elif trans_to_which == 2:
+            case = v2_name + c_name
+        else:
+            raise Exception('Unkonwn trans_to_which: ', trans_to_which)
+        tmp = get_trans_oper(case)
+        npol, n, m = tmp.shape
+        tmp_g = np.zeros((npol, n, m), dtype=np.complex)
+        trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+        # Transform the transition operators to global-xyz axis
+        # dipolar transition
+        if npol == 3:
+            for i in range(3):
+                for j in range(3):
+                    tmp_g[i] += local_axis[i, j] * tmp[j]
+        # quadrupolar transition
+        elif npol == 5:
+            alpha, beta, gamma = rmat_to_euler(local_axis)
+            wignerD = get_wigner_dmat(4, alpha, beta, gamma)
+            rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
+            for i in range(5):
+                for j in range(5):
+                    tmp_g[i] += rotmat[i, j] * tmp[j]
+        else:
+            raise Exception("Have NOT implemented this case: ", npol)
+        if trans_to_which == 1:
+            trans_mat[:, 0:v1_norb, v1v2_norb:ntot] = tmp_g    
+        else:
+            trans_mat[:, v1_norb:v1v2_norb, v1v2_norb:ntot] = tmp_g    
+
+
+    n_om = len(ominc_mesh)
+    gamma_core = np.zeros(n_om, dtype=np.float)
+    if np.isscalar(gamma_c):
+        gamma_core[:] = np.ones(n_om) * gamma_c
+    else:
+        gamma_core[:] = gamma_c
+
+    # loop over different polarization
+    xas = np.zeros((n_om, len(poltype)), dtype=np.float)
+    poles = []
+    comm.Barrier()
+    for it, (pt, alpha) in enumerate(poltype):
+        if rank == 0:
+            kvec = unit_wavevector(thin, phi, scattering_plane_axis, 'in')
+            polvec = np.zeros(npol, dtype=np.complex)
+            if pt.strip() == 'isotropic':
+                pol = np.ones(3)/np.sqrt(3.0)
+            elif pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
+                pol = dipole_polvec_xas(thin, phi, alpha, scattering_plane_axis, pt)
+            else:
+                raise Exception("Unknown polarization type: ", pt)
+            if npol == 3:  # Dipolar transition
+                polvec[:] = pol
+            if npol == 5:  # Quadrupolar transition
+                polvec[:] = quadrupole_polvec(pol, kvec)
+
+            trans = np.zeros((ntot, ntot), dtype=np.complex)
+            for i in range(npol):
+                trans[:, :] += trans_mat[i] * polvec[i]
+            write_emat(trans, 'transop_xas.in')
+
+        # call XAS solver in fedrixs
+        comm.Barrier()
+        xas_fsolver(fcomm, rank, size)
+        comm.Barrier()
+
+        file_list = ['xas_poles.' + str(i+1) for i in range(num_gs)]
+        pole_dict = read_poles_from_file(file_list)
+        poles.append(pole_dict)
+        xas[:, it] = get_spectra_from_poles(pole_dict, ominc_mesh, gamma_core, temperature)
+
+        # rename pole files 
+        if rank == 0:
+            postfix = '_' + 'pol' + str(it+1)
+            rename_pole_file(file_list, postfix)
+
+    return xas, poles

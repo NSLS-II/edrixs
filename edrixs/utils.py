@@ -63,9 +63,10 @@ def boltz_dist(gs, T):
     res: 1d float array
         The Boltzmann distributition.
     """
-
+    
+    tmp_gs = np.array(gs)
     beta = kelvin_to_beta(T)
-    res = np.exp(-beta * (gs - min(gs))) / np.sum(np.exp(-beta * (gs - min(gs))))
+    res = np.exp(-beta * (tmp_gs - min(tmp_gs))) / np.sum(np.exp(-beta * (tmp_gs - min(tmp_gs))))
     return res
 
 

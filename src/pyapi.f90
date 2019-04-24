@@ -107,7 +107,7 @@ subroutine xas_fsolver(comm, my_id, num_procs)
     endif
 
     if (origin_myid < min_dim) then
-        call xas_driver()
+       call xas_driver()
     endif
 
     call MPI_BARRIER(origin_comm, ierror)

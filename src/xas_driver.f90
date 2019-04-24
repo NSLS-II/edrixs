@@ -77,6 +77,7 @@ subroutine xas_driver()
         call build_transop_i(ndim_n_nocore, ndim_i, fock_n, fock_i, num_val_orbs, &
                  num_core_orbs, nblock, end_indx, ntran_xas, transop_xas, tran_csr)
         call MPI_BARRIER(new_comm, ierror)
+
         call get_needed_indx(nblock, tran_csr, needed)
         call dealloc_fock_i()
         if (myid == master) then
@@ -99,10 +100,13 @@ subroutine xas_driver()
         deallocate(eigvecs_mpi)
         allocate(phi_vec(mloc))
         phi_vec = czero
+
+        call MPI_BARRIER(new_comm, ierror)
         call pspmv_csr(new_comm, nblock, end_indx, needed, mloc, nloc, tran_csr, eigvecs, phi_vec)
         call MPI_BARRIER(new_comm, ierror)
         deallocate(eigvecs)
         call dealloc_tran_csr(nblock)
+
         if (myid==master) then
             print *, "    Done !"
             print *
