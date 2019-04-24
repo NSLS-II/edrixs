@@ -56,7 +56,6 @@ subroutine pspmv_csr(comm, nblock, end_indx, needed, mloc, nloc, ham, vec_in, ve
                ! receive data from other processor
                other_size = end_indx(2,2,i) - end_indx(1,2,i) + 1
                tmp_vec = czero
-               call MPI_PROBE(i-1, (myid+1)*(10*nprocs)+i, comm, stat, ierror)
                call MPI_RECV(tmp_vec(1:other_size), other_size, MPI_DOUBLE_COMPLEX, i-1, (myid+1)*(10*nprocs)+i,&
                 comm, stat, ierror)
                ! do matrix vector multiplication

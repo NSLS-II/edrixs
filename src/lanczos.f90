@@ -80,7 +80,6 @@ module m_lanczos
             call MPI_BARRIER(new_comm, ierror)
             work_vec(:,prev) = -beta(i-1) * work_vec(:,prev)
             call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
-            print *, i, myid
             call MPI_BARRIER(new_comm, ierror)
             ! compute alpha_i
             temp1 = czero 
@@ -149,7 +148,6 @@ module m_lanczos
                 call MPI_BARRIER(new_comm, ierror)
                 work_vec(:,prev) = -alpha(i) * work_vec(:,curr) - beta(i-1) * work_vec(:,prev)
                 call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, work_vec(:,curr), work_vec(:,prev))
-                print *, i, myid
                 call MPI_BARRIER(new_comm, ierror)
                 work_vec(:,prev) = work_vec(:,prev) / beta(i)
                 temp_indx = curr
