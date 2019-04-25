@@ -1,6 +1,7 @@
 __all__ = ['write_tensor', 'write_emat', 'write_umat', 'write_config',
            'read_poles_from_file', 'rename_pole_file']
 
+import os
 import shutil
 import numpy as np
 

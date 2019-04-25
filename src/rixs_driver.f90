@@ -232,6 +232,10 @@ subroutine rixs_driver()
 
     call dealloc_transop_rixs_i()
     call dealloc_transop_rixs_f()
+    call dealloc_hopping_i()
+    call dealloc_hopping_n()
+    call dealloc_coulomb_i()
+    call dealloc_coulomb_n()
 
     if (myid==master) then
         print *

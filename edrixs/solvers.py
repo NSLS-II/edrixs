@@ -1,4 +1,4 @@
-__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c', 'ed_2v1c', 'xas_2v1c']
+__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c', 'ed_2v1c', 'xas_2v1c', 'rixs_2v1c']
 
 import numpy as np
 import scipy
@@ -16,7 +16,7 @@ from .basis_transform import cb_op2, tmat_r2c
 from .photon_transition import get_trans_oper, quadrupole_polvec
 from .photon_transition import dipole_polvec_xas, dipole_polvec_rixs, unit_wavevector
 from .rixs_utils import scattering_mat
-from .fedrixs import ed_fsolver, xas_fsolver
+from .fedrixs import ed_fsolver, xas_fsolver, rixs_fsolver
 
 
 def ed_1v1c(v_name='d', c_name='p', v_level=0.0, c_level=0.0,
@@ -845,7 +845,6 @@ def xas_2v1c(comm, ominc_mesh, gamma_c=0.1,
         else:
             trans_mat[:, v1_norb:v1v2_norb, v1v2_norb:ntot] = tmp_g    
 
-
     n_om = len(ominc_mesh)
     gamma_core = np.zeros(n_om, dtype=np.float)
     if np.isscalar(gamma_c):
@@ -887,9 +886,199 @@ def xas_2v1c(comm, ominc_mesh, gamma_c=0.1,
         poles.append(pole_dict)
         xas[:, it] = get_spectra_from_poles(pole_dict, ominc_mesh, gamma_core, temperature)
 
-        # rename pole files 
-        if rank == 0:
-            postfix = '_' + 'p' + str(it+1)
-            rename_pole_file(file_list, postfix)
-
     return xas, poles
+
+
+def rixs_2v1c(comm, ominc_mesh, eloss_mesh, gamma_c=0.1, gamma_f=0.1,
+              v1_name='f', v2_name='d', c_name='p',
+              v_tot_noccu=1, trans_to_which=1, thin=1.0, thout=1.0, phi=0,
+              poltype=[('linear', 0.0, 'linear', 0.0)],
+              num_gs=1, nkryl=200, linsys_max=500, linsys_tol=1e-8,
+              temperature=1.0, local_axis=np.eye(3),
+              scattering_plane_axis=np.eye(3)):
+    """
+    Calculate XAS for the case with 2 valence shells plus 1 core shell.
+
+    Parameters
+    ----------
+    comm: MPI_comm
+        MPI communicator.
+    ominc_mesh: 1d float array
+        The mesh of the incident energy of photon.
+    eloss_mesh: 1d float array
+        Energy loss.
+    gamma_c: a float number or a 1d float array with same length as ominc_mesh.
+        The core-hole life-time broadening factor. It can be a constant value
+        or incident energy dependent.
+    gamma_f: a float number or a 1d float array with same length as eloss_mesh.
+        Life-time of final states.
+    v1_name: string
+        1st valence shell type, can be 's', 'p', 't2g', 'd', 'f'.
+    v2_name: string
+        2nd valence shell type, can be 's', 'p', 't2g', 'd', 'f'.
+    c_name: string
+        Core shell type, can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52', 'f', 'f52', 'f72'.
+    v_tot_noccu: int
+        Total occupancy of valence shells.
+    trans_to_which: int
+        Photon transition to which valence shell.
+
+        1: to 1st valence shell,
+
+        2: to 2nd valence shell.
+    thin: float number
+        The incident angle of photon.
+    thout: float number
+        Scattered angle.
+    phi: float number
+        Azimuthal angle in radian, defined with respect to the
+        :math:`x`-axis: scattering_plane_axis[:,0].
+    poltype: list of tuples
+        Type of polarization.
+    num_gs: int
+        Number of initial states used in XAS calculations.
+    nkryl: int
+        Maximum of poles obtained.
+    linsys_max: int
+        Maximum of iterations of solving linear equations.
+    linsys_tol: float
+        Convergence for solving linear equations.
+    temperature: float number
+        Temperature (in K) for boltzmann distribution.
+    local_axis: 3*3 float array
+        The local axis defining the orbitals.
+    scattering_plane_axis: 3*3 float array
+        The local axis defining the scattering plane. The scattering plane is defined in
+        the local :math:`zx`-plane.
+        local :math:`x`-axis: scattering_plane_axis[:,0]
+        local :math:`y`-axis: scattering_plane_axis[:,1]
+        local :math:`z`-axis: scattering_plane_axis[:,2]
+    Returns
+    -------
+    rixs: 3d array
+        The calculated XAS spectra.
+    poles: 2d list of dict
+        The calculated XAS poles.
+    """
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+
+    v1_name = v1_name.strip()
+    v2_name = v2_name.strip()
+    c_name = c_name.strip()
+    info_shell = info_atomic_shell()
+    v1_norb = info_shell[v1_name][1]
+    v2_norb = info_shell[v2_name][1]
+    c_norb = info_shell[c_name][1]
+    ntot = v1_norb + v2_norb + c_norb
+    v1v2_norb = v1_norb + v2_norb
+    if rank == 0:
+        print("edrixs >>> Running RIXS ...", flush=True)
+        write_fock_dec_by_N(v1v2_norb, v_tot_noccu, "fock_i.in")
+        write_fock_dec_by_N(v1v2_norb, v_tot_noccu + 1, "fock_n.in")
+        write_fock_dec_by_N(v1v2_norb, v_tot_noccu, "fock_f.in")
+
+        # Build transition operators in local-xyz axis
+        if trans_to_which == 1:
+            case = v1_name + c_name
+        elif trans_to_which == 2:
+            case = v2_name + c_name
+        else:
+            raise Exception('Unkonwn trans_to_which: ', trans_to_which)
+        tmp = get_trans_oper(case)
+        npol, n, m = tmp.shape
+        tmp_g = np.zeros((npol, n, m), dtype=np.complex)
+        trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+        # Transform the transition operators to global-xyz axis
+        # dipolar transition
+        if npol == 3:
+            for i in range(3):
+                for j in range(3):
+                    tmp_g[i] += local_axis[i, j] * tmp[j]
+        # quadrupolar transition
+        elif npol == 5:
+            alpha, beta, gamma = rmat_to_euler(local_axis)
+            wignerD = get_wigner_dmat(4, alpha, beta, gamma)
+            rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
+            for i in range(5):
+                for j in range(5):
+                    tmp_g[i] += rotmat[i, j] * tmp[j]
+        else:
+            raise Exception("Have NOT implemented this case: ", npol)
+        if trans_to_which == 1:
+            trans_mat[:, 0:v1_norb, v1v2_norb:ntot] = tmp_g    
+        else:
+            trans_mat[:, v1_norb:v1v2_norb, v1v2_norb:ntot] = tmp_g    
+
+    n_om = len(ominc_mesh)
+    neloss = len(eloss_mesh)
+    gamma_core = np.zeros(n_om, dtype=np.float)
+    if np.isscalar(gamma_c):
+        gamma_core[:] = np.ones(n_om) * gamma_c
+    else:
+        gamma_core[:] = gamma_c
+    gamma_final = np.zeros(neloss, dtype=np.float)
+    if np.isscalar(gamma_f):
+        gamma_final[:] = np.ones(neloss) * gamma_f
+    else:
+        gamma_final[:] = gamma_f
+
+    # loop over different polarization
+    rixs = np.zeros((n_om, neloss, len(poltype)), dtype=np.float)
+    poles = []
+    comm.Barrier()
+    # loop over different polarization
+    for iom, omega in enumerate(ominc_mesh):
+        if rank == 0:
+            write_config(
+                num_val_orbs=v1v2_norb, num_core_orbs=c_norb,
+                omega_in=omega, gamma_in=gamma_core[iom], 
+                num_gs=num_gs, nkryl=nkryl, linsys_max=linsys_max,
+                linsys_tol=linsys_tol
+            )
+        poles_per_om = []
+        # loop over polarization
+        for ip, (it, alpha, jt, beta) in enumerate(poltype):
+            if rank == 0:
+                print("  calculate RIXS for incident energy: ", omega, flush=True)
+                print("  and  Polarization: ", ip, flush=True)
+                polvec_i = np.zeros(npol, dtype=np.complex)
+                polvec_f = np.zeros(npol, dtype=np.complex)
+                ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
+                                            scattering_plane_axis, (it, jt))
+                # dipolar transition
+                if npol == 3:
+                    polvec_i[:] = ei
+                    polvec_f[:] = ef
+                # quadrupolar transition
+                elif npol == 5:
+                    ki = unit_wavevector(thin, phi, scattering_plane_axis, direction='in')
+                    kf = unit_wavevector(thout, phi, scattering_plane_axis, direction='out')
+                    polvec_i[:] = quadrupole_polvec(ei, ki)
+                    polvec_f[:] = quadrupole_polvec(ef, kf)
+                else:
+                    raise Exception("Have NOT implemented this type of transition operators")
+                trans_i = np.zeros((ntot, ntot), dtype=np.complex)
+                trans_f = np.zeros((ntot, ntot), dtype=np.complex)
+                for i in range(npol):
+                    trans_i[:, :] += trans_mat[i] * polvec_i[i]
+                write_emat(trans_i, 'transop_rixs_i.in')
+                for i in range(npol):
+                    trans_f[:, :] += trans_mat[i] * polvec_f[i]
+                write_emat(np.conj(np.transpose(trans_f)), 'transop_rixs_f.in')
+
+            # call RIXS solver in fedrixs
+            comm.Barrier()
+            rixs_fsolver(fcomm, rank, size)
+            comm.Barrier()
+
+            file_list = ['rixs_poles.' + str(i+1) for i in range(num_gs)]
+            pole_dict = read_poles_from_file(file_list)
+            poles_per_om.append(pole_dict)
+            rixs[iom, :, ip] = get_spectra_from_poles(pole_dict, eloss_mesh,
+                                                      gamma_final, temperature)
+
+        poles.append(poles_per_om)
+
+    return rixs, poles

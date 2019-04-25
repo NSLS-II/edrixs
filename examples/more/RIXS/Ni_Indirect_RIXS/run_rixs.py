@@ -46,19 +46,19 @@ if __name__ == "__main__":
     zeta_p_n = 0.3
 
     # Occupancy of U 5f orbitals
-    noccu = 8
+    noccu = 12
 
     # RIXS settings
     thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0.0
-    gamma_c = 0.01
+    gamma_c = 0.2
     gamma_f = 0.1
-    ominc = np.linspace(0, 10, 1000)
+    ominc_xas = np.linspace(3, 10, 1000)
+    ominc_rixs = np.linspace(3, 10, 10)
+    eloss = np.linspace(-0.2,5, 1000)
     poltype_xas = [('isotropic', 0.0)]
 
     poltype_rixs = [('linear', 0.0, 'linear', 0.0),
-                    ('linear', 0.0, 'linear', np.pi / 2.0),
-                    ('linear', np.pi / 2.0, 'linear', 0.0),
-                    ('linear', np.pi / 2.0, 'linear', np.pi / 2.0)]
+                    ('linear', 0.0, 'linear', np.pi / 2.0)]
 
     # mpi4py env
     comm = MPI.COMM_WORLD
@@ -75,9 +75,20 @@ if __name__ == "__main__":
 
     # Run XAS
     xas, poles_dict = edrixs.xas_2v1c(
-        comm, ominc, gamma_c, v1_name='d', v2_name='p', c_name='s',
-        v_tot_noccu=noccu, trans_to_which=1, thin=thin, phi=phi, poltype=poltype_xas,
-        num_gs=9, nkryl=300, temperature=300
+        comm, ominc_xas, gamma_c, v1_name='d', v2_name='p', c_name='s',
+        v_tot_noccu=noccu, trans_to_which=2, thin=thin, phi=phi, poltype=poltype_xas,
+        num_gs=4, nkryl=300, temperature=300
     )
     if rank == 0:
-        np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
+        np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+
+    # Run RIXS
+    rixs, poles_dict = edrixs.rixs_2v1c(
+        comm, ominc_rixs, eloss, gamma_c, gamma_f, v1_name='d', v2_name='p', c_name='s',
+        v_tot_noccu=noccu, trans_to_which=2, thin=thin, thout=thout, phi=phi, poltype=poltype_rixs,
+        num_gs=4, nkryl=300, temperature=300
+    )
+    if rank == 0:
+        rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
+        np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
+        edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
