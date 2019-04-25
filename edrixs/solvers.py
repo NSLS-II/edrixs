@@ -889,7 +889,7 @@ def xas_2v1c(comm, ominc_mesh, gamma_c=0.1,
 
         # rename pole files 
         if rank == 0:
-            postfix = '_' + 'pol' + str(it+1)
+            postfix = '_' + 'p' + str(it+1)
             rename_pole_file(file_list, postfix)
 
     return xas, poles

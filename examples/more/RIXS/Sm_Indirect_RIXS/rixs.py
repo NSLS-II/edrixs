@@ -77,9 +77,9 @@ if __name__ == "__main__":
 
     # Run XAS
     xas, poles_dict = edrixs.xas_2v1c(
-        comm, emat_n, umat_n, ominc, gamma_c, v1_name='f', v2_name='d', c_name='p32',
+        comm, ominc, gamma_c, v1_name='f', v2_name='d', c_name='p32',
         v_tot_noccu=noccu, trans_to_which=2, thin=thin, phi=phi, poltype=poltype_xas,
-        num_gs=1, nkryl=200, temperature=300, prefix_pole_files='old'
+        num_gs=1, nkryl=200, temperature=300
     )
     np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
 

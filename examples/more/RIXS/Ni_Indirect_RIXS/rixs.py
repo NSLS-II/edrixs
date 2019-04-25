@@ -46,15 +46,14 @@ if __name__ == "__main__":
     zeta_p_n = 0.3
 
     # Occupancy of U 5f orbitals
-    noccu = 13
+    noccu = 8
 
     # RIXS settings
     thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0.0
-    gamma_c = 0.2
+    gamma_c = 0.01
     gamma_f = 0.1
-    ominc = np.linspace(0, 20, 100)
-    #poltype_xas = [('isotropic', 0.0), ('left', 0), ('right', 0)]
-    poltype_xas = [('isotropic', 0)]
+    ominc = np.linspace(0, 10, 1000)
+    poltype_xas = [('isotropic', 0.0)]
 
     poltype_rixs = [('linear', 0.0, 'linear', 0.0),
                     ('linear', 0.0, 'linear', np.pi / 2.0),
@@ -69,16 +68,16 @@ if __name__ == "__main__":
     # Run ED
     result = edrixs.ed_2v1c(
         comm, v1_name='d', v2_name='p', c_name='s', v1_soc=(zeta_d_i, zeta_d_n), v2_soc=(zeta_p_i, zeta_p_n),
-        v2_level=1.0, v_tot_noccu=noccu, slater=slater,
-        ed_solver=0, neval=20, nvector=2, ncv=40, idump=True
+        v2_level=3.0, v_tot_noccu=noccu, slater=slater,
+        ed_solver=2, neval=30, nvector=10, ncv=50, idump=True
     )
     v_norb, c_norb, emat_i, emat_n, umat_i, umat_n, eval_i, denmat = result
 
     # Run XAS
     xas, poles_dict = edrixs.xas_2v1c(
         comm, ominc, gamma_c, v1_name='d', v2_name='p', c_name='s',
-        v_tot_noccu=noccu, trans_to_which=2, thin=thin, phi=phi, poltype=poltype_xas,
-        num_gs=1, nkryl=300, temperature=300
+        v_tot_noccu=noccu, trans_to_which=1, thin=thin, phi=phi, poltype=poltype_xas,
+        num_gs=9, nkryl=300, temperature=300
     )
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
