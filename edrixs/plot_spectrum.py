@@ -6,6 +6,29 @@ from .utils import boltz_dist
 
 
 def get_spectra_from_poles(poles_dict, omega_mesh, gamma_mesh, temperature):
+    """
+    Given dict of poles, calculate XAS or RIXS spectra.
+
+    poles_dict: dict
+        Dict containing information of poles, which are calculated from
+        xas_fsolver and rixs_fsolver.
+        This dict is constructed by :func:`iostream.read_poles_from_file`.
+    omega_mesh: 1d float array
+        Energy grid.
+    gamma_mesh: 1d float array
+        Life-time broadening.
+    temperature: float number
+        Temperature (K) for boltzmann distribution.
+
+    Returns
+    -------
+    spectra: 1d float array
+        The calculated XAS or RIXS spectra.
+
+    See also
+    --------
+    read_poles_from_file
+    """
     nom = len(omega_mesh)
     spectra = np.zeros(nom, dtype=np.float64)
     gs_dist = boltz_dist(poles_dict['eigval'], temperature)

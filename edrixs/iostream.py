@@ -1,8 +1,6 @@
 __all__ = ['write_tensor', 'write_emat', 'write_umat', 'write_config',
-           'read_poles_from_file', 'rename_pole_file']
+           'read_poles_from_file']
 
-import os
-import shutil
 import numpy as np
 
 
@@ -242,7 +240,9 @@ def write_config(
         linsys_max=500, min_ndim=1000, nkryl=500, eigval_tol=1e-8,
         linsys_tol=1e-8, omega_in=0.0, gamma_in=0.1
         ):
-
+    """
+    Write control parameters in config.in file for ed_fsolver.
+    """
     if idump:
         dump_vector = '.true.'
     else:
@@ -276,6 +276,17 @@ def write_config(
 
 
 def read_poles_from_file(file_list):
+    """
+    Read informations in files xas_poles.n or rixs_poles.n to a dict.
+
+    Parameters
+    ----------
+    file_list: list of strings
+        Names of pole files.
+
+    pole_dict: dict
+        A dict containing information of poles.
+    """
     pole_dict = {
         'npoles': [],
         'eigval': [],
@@ -309,8 +320,3 @@ def read_poles_from_file(file_list):
         f.close()
 
     return pole_dict
-
-
-def rename_pole_file(file_list, postfix):
-    for fname in file_list:
-        shutil.copyfile(fname, fname + postfix)

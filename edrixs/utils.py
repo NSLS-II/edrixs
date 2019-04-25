@@ -63,7 +63,6 @@ def boltz_dist(gs, T):
     res: 1d float array
         The Boltzmann distributition.
     """
-    
     tmp_gs = np.array(gs)
     beta = kelvin_to_beta(T)
     res = np.exp(-beta * (tmp_gs - min(tmp_gs))) / np.sum(np.exp(-beta * (tmp_gs - min(tmp_gs))))
@@ -395,6 +394,29 @@ def edge_to_shell_name(edge_name):
 
 
 def slater_integrals_name(shell_name, label=None):
+    """
+    Given shell names, return the required names of Slater integrals.
+
+    Parameters
+    ----------
+    shell_name: tuple of strings
+        Name of shells. Its length should be less and equal than 3.
+    label: tuple of strings
+        Label of shells, same shape as shell_name.
+
+        If not provided, label will be set to
+
+        - label=(1,) or
+
+        - label=(1,2) or
+
+        - label=(1,2,3)
+
+    Returns
+    -------
+    res: list of strings
+        Names of Slater integrals.
+    """
     info = info_atomic_shell()
     # one shell
     if len(shell_name) == 1:

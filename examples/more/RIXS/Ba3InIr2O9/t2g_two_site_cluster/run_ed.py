@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 
+import scipy
 import numpy as np
 import edrixs
 
@@ -132,7 +133,7 @@ if __name__ == "__main__":
     print("edrixs >>> building Hamiltonian without core-hole ...")
     hmat_i[:, :] += edrixs.two_fermion(emat_i, basis_i, basis_i)
     hmat_i[:, :] += edrixs.four_fermion(umat_i, basis_i)
-    eval_i, evec_i = np.linalg.eigh(hmat_i)
+    eval_i, evec_i = scipy.linalg.eigh(hmat_i)
     print("edrixs >>> Done!")
 
     print("edrixs >>> Building Hamiltonian with a core-hole ...")
@@ -141,7 +142,7 @@ if __name__ == "__main__":
     for i in range(2):
         hmat_n[i] += edrixs.two_fermion(emat_n[i], basis_n[i], basis_n[i])
         hmat_n[i] += edrixs.four_fermion(umat_n[i], basis_n[i])
-        eval_n[i], evec_n[i] = np.linalg.eigh(hmat_n[i])
+        eval_n[i], evec_n[i] = scipy.linalg.eigh(hmat_n[i])
     print("edrixs >>> Done!")
 
     edrixs.write_tensor(eval_i, 'eval_i.dat')

@@ -75,7 +75,7 @@ subroutine pminres_csr(nblock, end_indx, needed, nloc, ham, b_vec, x_vec, info)
     iter = 0
     do while (abs(res) > linsys_tol .and. iter < linsys_max )
         iter = iter + 1
-        if (myid==master .and. mod(iter,10) == 0 ) then
+        if (myid==master .and. mod(iter,50) == 0 ) then
             write(mystd,"(a25, i5, E10.2, a5, E10.2)")  "PMINRES iteration:  ", iter, abs(res), "-->", linsys_tol
         endif
         v_vec(:,curr) = v_vec(:,curr) / beta0 

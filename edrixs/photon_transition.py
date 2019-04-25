@@ -183,7 +183,38 @@ def get_trans_oper(case):
     return res
 
 
-def unit_wavevector(theta, phi, local_axis=np.eye(3), direction='in'):
+def unit_wavevector(theta, phi, local_axis=None, direction='in'):
+    """
+    Given incident or scattered angle, and azimuthal angle, return
+    unit wavevector with respect to global :math:`xyz`-axis.
+
+    Parameters
+    ----------
+    theta: float number
+        Incident or scattered angle (in radian), with respect to local_aixs.
+    phi: float number
+        Azimuthal angle (in radian), with respect to the :math:`x` of local_axis.
+    local_axis: 3*3 float array
+        The local axis defining the scattering geometry.
+
+        It will be an identity matrix if not provided.
+    direction: string
+        The direction of photon wave, options can be
+
+        - 'in': incident photon
+
+        - 'out': scattered photon
+
+    Returns
+    -------
+    unit_k: list of 3 float numbers
+        The unit wavevector.
+    """
+    if local_axis is None:
+        local_axis = np.eye(3)
+    else:
+        local_axis = np.array(local_axis)
+
     if direction.strip() == 'in':
         unit_k = np.array([-np.cos(theta) * np.cos(phi),
                            -np.cos(theta) * np.sin(phi),
@@ -200,13 +231,49 @@ def unit_wavevector(theta, phi, local_axis=np.eye(3), direction='in'):
     return unit_k
 
 
-def wavevector_with_length(theta, phi, energy, local_axis=np.eye(3), direction='in'):
+def wavevector_with_length(theta, phi, energy, local_axis=None, direction='in'):
+    """
+    Given incident or scattered angle, azimuthal angle, energy of photon, return
+    wavevector with respect to global :math:`xyz`-axis.
+
+    Parameters
+    ----------
+    theta: float number
+        Incident or scattered angle (in radian), with respect to local_aixs.
+    phi: float number
+        Azimuthal angle (in radian), with respect to the :math:`x` of local_axis.
+    energy: float number
+        Energy of photon.
+    local_axis: 3*3 float array
+        The local axis defining the scattering geometry.
+
+        It will be an identity matrix if not provided.
+    direction: string
+        The direction of photon wave, options can be
+
+        - 'in': incident photon
+
+        - 'out': scattered photon
+
+    Returns
+    -------
+    k_with_length: list of 3 float numbers
+        The wavevector with length.
+    """
+
     hbarc = 1.973270533 * 1000  # eV*A
     k_len = energy / hbarc
-    return k_len * unit_wavevector(theta, phi, local_axis, direction)
+    if local_axis is None:
+        local_axis = np.eye(3)
+    else:
+        local_axis = np.array(local_axis)
+
+    k_with_length = k_len * unit_wavevector(theta, phi, local_axis, direction)
+
+    return k_with_length
 
 
-def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
+def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=None):
     """
     Return the wave vector of incident and scattered photons, for RIXS calculation.
 
@@ -225,6 +292,8 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
     local_axis: :math:`3 \\times 3` float array
         The local :math:`z` -axis, the angle thin and thout are defined with respect to this axis.
 
+        It will be an identity matrix if not provided.
+
     Returns
     -------
     K_in_global: 3-length float array
@@ -232,6 +301,10 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
     K_out_global: 3-length float array
         The wave vector of the scattered photon, with respect to the global :math:`xyz` -axis.
     """
+    if local_axis is None:
+        local_axis = np.eye(3)
+    else:
+        local_axis = np.array(local_axis)
 
     K_in_global = wavevector_with_length(thin, phi, ein, local_axis, direction='in')
     K_out_global = wavevector_with_length(thout, phi, eout, local_axis, direction='out')
@@ -239,27 +312,59 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=np.eye(3)):
     return K_in_global, K_out_global
 
 
-def linear_polvec(theta, phi, alpha, local_axis=np.eye(3), case='in'):
-    if case.strip() == 'in':
+def linear_polvec(theta, phi, alpha, local_axis=None, direction='in'):
+    """
+    Return linear polarization vector.
+
+    Parameters
+    ----------
+    theta: float number
+        Incident or scattered angle (in radian) with respect to local_axis.
+    phi: float number
+        Azimuthal angle (in radian) with respect to the :math:`x` of local_axis.
+    alpha: float number
+        The angle (in radian) between the polarization vector and the scattering plane.
+
+    local_axis: 3*3 float array
+        The local axis defining the scattering geometry.
+
+        It will be an identity matrix if not provided.
+    direction: string
+        The direction of photon wave, options can be
+
+        - 'in': incident photon
+
+        - 'out': scattered photon
+
+    Returns
+    -------
+    polvec: list of 3 float number
+        The polarization vector.
+    """
+    if local_axis is None:
+        local_axis = np.eye(3)
+    else:
+        local_axis = np.array(local_axis)
+
+    if direction.strip() == 'in':
         polvec = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - theta),
                             -np.sin(phi) * np.cos(np.pi / 2.0 - theta),
                             np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha)
                   + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
         polvec = np.dot(local_axis, polvec)
-    elif case.strip() == 'out':
+    elif direction.strip() == 'out':
         polvec = (np.array([np.cos(phi) * np.cos(np.pi / 2.0 - theta),
                             np.sin(phi) * np.cos(np.pi / 2.0 - theta),
                             np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha)
                   + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
         polvec = np.dot(local_axis, polvec)
     else:
-        raise Exception("Unknown case in linear_polvec: ", case)
+        raise Exception("Unknown direction in linear_polvec: ", direction)
 
     return polvec
 
 
-def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3),
-                       case=('linear', 'linear')):
+def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=None, pol_type=None):
     """
     Return polarization vector of incident and scattered photons, for RIXS calculation.
 
@@ -277,15 +382,19 @@ def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3)
     beta: float
         The angle between the polarization vector of the scattered photon and
         the scattering plane (radian)
-    local_axis: :math:`3 \\times 3` float array
-        The local :math:`z` -axis, the angle thin and thout are defined with
-        respect to this axis.
-    case: tuple of two strings
+    local_axis: 3*3 float array
+        The local axis defining the scattering geometry.
+
+        It will be an identity matrix if not provided.
+    pol_type: tuple of two strings
         Specify types of polarization for incident and scattered photons.
-        case[0] for incident photon, case[1] for scattered photon.
-        'linear': Linear polarization
-        'left'  : Left-circular polarization.
-        'right' : Right-circular polarization.
+        case[0] for incident photon, case[1] for scattered photon. Options can be
+
+        - 'linear': Linear polarization
+        - 'left'  : Left-circular polarization.
+        - 'right' : Right-circular polarization.
+
+        It will set pol_type=('linear', 'linear') if not provided.
 
     Returns
     -------
@@ -296,33 +405,40 @@ def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=np.eye(3)
         The linear polarization vector of the scattered photon
         with respect to the global :math:`xyz` -axis.
     """
+    if local_axis is None:
+        local_axis = np.eye(3)
+    else:
+        local_axis = np.array(local_axis)
 
-    ex = linear_polvec(thin, phi, 0, local_axis, case='in')
-    ey = linear_polvec(thin, phi, np.pi/2.0, local_axis, case='in')
-    if case[0].strip() == 'linear':
-        ei_global = linear_polvec(thin, phi, alpha, local_axis, case='in')
-    elif case[0].strip() == 'left':
+    if pol_type is None:
+        pol_type = ('linear', 'linear')
+
+    ex = linear_polvec(thin, phi, 0, local_axis, direction='in')
+    ey = linear_polvec(thin, phi, np.pi/2.0, local_axis, direction='in')
+    if pol_type[0].strip() == 'linear':
+        ei_global = linear_polvec(thin, phi, alpha, local_axis, direction='in')
+    elif pol_type[0].strip() == 'left':
         ei_global = (ex + 1j * ey) / np.sqrt(2.0)
-    elif case[0].strip() == 'right':
+    elif pol_type[0].strip() == 'right':
         ei_global = (ex - 1j * ey) / np.sqrt(2.0)
     else:
-        raise Exception("Unknown polarization case for incident photon: ", case[0])
+        raise Exception("Unknown polarization type for incident photon: ", pol_type[0])
 
-    ex = linear_polvec(thout, phi, 0, local_axis, case='out')
-    ey = linear_polvec(thout, phi, np.pi/2.0, local_axis, case='out')
-    if case[1].strip() == 'linear':
-        ef_global = linear_polvec(thout, phi, beta, local_axis, case='out')
-    elif case[1].strip() == 'left':
+    ex = linear_polvec(thout, phi, 0, local_axis, direction='out')
+    ey = linear_polvec(thout, phi, np.pi/2.0, local_axis, direction='out')
+    if pol_type[1].strip() == 'linear':
+        ef_global = linear_polvec(thout, phi, beta, local_axis, direction='out')
+    elif pol_type[1].strip() == 'left':
         ef_global = (ex + 1j * ey) / np.sqrt(2.0)
-    elif case[1].strip() == 'right':
+    elif pol_type[1].strip() == 'right':
         ef_global = (ex - 1j * ey) / np.sqrt(2.0)
     else:
-        raise Exception("Unknown polarization case for scattered photon: ", case[1])
+        raise Exception("Unknown polarization type for scattered photon: ", pol_type[1])
 
     return ei_global, ef_global
 
 
-def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=np.eye(3), case='linear'):
+def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=None, pol_type='linear'):
     """
     Return the linear polarization vector of incident photons, for XAS calculation.
 
@@ -335,13 +451,15 @@ def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=np.eye(3), case='linear')
     alpha: float
         The angle between the polarization vector of the incident photon and
         the scattering plane (radian)
-    local_axis: :math:`3 \\times 3` float array
-        The local :math:`z` -axis, the angle thin and thout are defined with
-        respect to this axis.
-    case: string
-        'linear': Linear polarization.
-        'left'  : Left-circular polarization.
-        'right' : Right-circular polarization.
+    local_axis: 3*3 float array
+        The local axis defining the scattering geometry.
+
+        It will be an identity matrix if not provided.
+    pol_type: string
+
+        - 'linear': Linear polarization.
+        - 'left'  : Left-circular polarization.
+        - 'right' : Right-circular polarization.
 
     Returns
     -------
@@ -349,17 +467,21 @@ def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=np.eye(3), case='linear')
         The linear polarization vector of the incident photon, with resepct to the
         global :math:`xyz` -axis.
     """
+    if local_axis is None:
+        local_axis = np.eye(3)
+    else:
+        local_axis = np.array(local_axis)
 
-    ex = linear_polvec(thin, phi, 0, local_axis, case='in')
-    ey = linear_polvec(thin, phi, np.pi/2.0, local_axis, case='in')
-    if case.strip() == 'linear':
-        ei_global = linear_polvec(thin, phi, alpha, local_axis, case='in')
-    elif case.strip() == 'left':
+    ex = linear_polvec(thin, phi, 0, local_axis, direction='in')
+    ey = linear_polvec(thin, phi, np.pi/2.0, local_axis, direction='in')
+    if pol_type.strip() == 'linear':
+        ei_global = linear_polvec(thin, phi, alpha, local_axis, direction='in')
+    elif pol_type.strip() == 'left':
         ei_global = (ex + 1j * ey) / np.sqrt(2.0)
-    elif case.strip() == 'right':
+    elif pol_type.strip() == 'right':
         ei_global = (ex - 1j * ey) / np.sqrt(2.0)
     else:
-        raise Exception("Unknown polarization case for incident photon: ", case)
+        raise Exception("Unknown polarization type for incident photon: ", pol_type)
 
     return ei_global
 

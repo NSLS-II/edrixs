@@ -17,7 +17,7 @@ F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
 F2_dp = 7.721 * 0.95
 
 slater = (
-    [F0_dd, F2_dd, F4_dd, 0.000, 0.000, 0.000, 0.000],  # Initial
+    [F0_dd, F2_dd, F4_dd],  # Initial
     [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
 )
 
@@ -53,23 +53,30 @@ ominc_rixs_L2 = np.linspace(10.4 + off, 14.9 + off, 100)  # incident energy at L
 eloss = np.linspace(-0.5, 5.0, 1000)  # energy loss for RIXS
 
 # Run ED
-result = edrixs.ed_1v1c(v_name='d', c_name='p', v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
-                        c_level=-off, v_noccu=noccu, slater=slater, cf_mat=cf)
-eval_i, eval_n, trans_op = result
+eval_i, eval_n, trans_op = edrixs.ed_1v1c(
+    ('d', 'p'), shell_level=(0.0, -off), v_soc=(zeta_d_i, zeta_d_n),
+    c_soc=zeta_p_n, v_noccu=noccu, slater=slater, v_cfmat=cf
+)
 
 # Run XAS
-xas = edrixs.xas_1v1c(eval_i, eval_n, trans_op, ominc_xas, gamma_c, thin, phi,
-                      poltype=poltype_xas, gs_list=[0, 1, 2], temperature=300)
+xas = edrixs.xas_1v1c(
+    eval_i, eval_n, trans_op, ominc_xas, gamma_c=gamma_c, thin=thin, phi=phi,
+    pol_type=poltype_xas, gs_list=[0, 1, 2], temperature=300
+)
 
 # Run RIXS at L3 edge
-rixs_L3 = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc_rixs_L3, eloss, gamma_c, gamma_f,
-                           thin, thout, phi, poltype=poltype_rixs,
-                           gs_list=[0, 1, 2], temperature=300)
+rixs_L3 = edrixs.rixs_1v1c(
+    eval_i, eval_n, trans_op, ominc_rixs_L3, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+    thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=[0, 1, 2],
+    temperature=300
+)
 
 # Run RIXS at L2 edge
-rixs_L2 = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc_rixs_L2, eloss, gamma_c, gamma_f,
-                           thin, thout, phi, poltype=poltype_rixs,
-                           gs_list=[0, 1, 2], temperature=300)
+rixs_L2 = edrixs.rixs_1v1c(
+    eval_i, eval_n, trans_op, ominc_rixs_L2, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+    thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=[0, 1, 2],
+    temperature=300
+)
 
 # Plot
 fig = plt.figure(figsize=(16, 14))

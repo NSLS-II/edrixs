@@ -31,7 +31,7 @@ if __name__ == "__main__":
     Ufd_av = 0.0
     F0_fd = Ufd_av + edrixs.get_F0('fd', G1_fd, G3_fd, G5_fd)
     slater = (
-        [F0_ff, F2_ff, F4_ff, F6_ff, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000],  # Initial
+        [F0_ff, F2_ff, F4_ff, F6_ff],  # Initial
         [F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd]   # Intermediate
     )
 
@@ -94,18 +94,26 @@ if __name__ == "__main__":
     # ------------------
 
     # Run ED
-    result = edrixs.ed_1v1c(v_name='f', c_name='d', v_soc=(zeta_f_i, zeta_f_n),
-                            c_level=-om_shift, c_soc=zeta_d_n, v_noccu=noccu, slater=slater)
-    eval_i, eval_n, trans_op = result
+    eval_i, eval_n, trans_op = edrixs.ed_1v1c(
+        ('f', 'd'), shell_level=(0, -om_shift), v_soc=(zeta_f_i, zeta_f_n),
+        c_soc=zeta_d_n, v_noccu=noccu, slater=slater
+    )
+
     # Run XAS
-    xas = edrixs.xas_1v1c(eval_i, eval_n, trans_op, ominc, gamma_c, thin, phi,
-                          poltype=poltype_xas, gs_list=gs_list, temperature=300)
+    xas = edrixs.xas_1v1c(
+        eval_i, eval_n, trans_op, ominc, gamma_c=gamma_c, thin=thin, phi=phi,
+        pol_type=poltype_xas, gs_list=gs_list, temperature=300
+    )
+
     np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
 
     # Run RIXS
-    rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss, gamma_c, gamma_f,
-                            thin, thout, phi, poltype=poltype_rixs,
-                            gs_list=gs_list, temperature=300)
+    rixs = edrixs.rixs_1v1c(
+        eval_i, eval_n, trans_op, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+        thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=gs_list,
+        temperature=300
+    )
+
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
     rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
     np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))

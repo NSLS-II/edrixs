@@ -52,14 +52,16 @@ if __name__ == "__main__":
     thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0.0
     gamma_c = 0.1
     gamma_f = 0.075
-    ominc = np.linspace(-10, 10, 100)
-    gs_list = list(range(0, 4))
+    ominc_xas = np.linspace(-10, 20, 1000)
+    ominc_rixs = np.linspace(0, 1, 2)
+    eloss = np.linspace(-0.2, 5, 1000)
+
     poltype_xas = [('isotropic', 0.0)]
 
     poltype_rixs = [('linear', 0.0, 'linear', 0.0),
-                    ('linear', 0.0, 'linear', np.pi / 2.0),
-                    ('linear', np.pi / 2.0, 'linear', 0.0),
-                    ('linear', np.pi / 2.0, 'linear', np.pi / 2.0)]
+                    ('linear', 0.0, 'linear', np.pi / 2.0)]
+
+    shell_name = ('f', 'd', 'p32')
 
     # mpi4py env
     comm = MPI.COMM_WORLD
@@ -67,27 +69,31 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     # Run ED
-    result = edrixs.ed_2v1c(
-        comm, v1_name='f', v2_name='d', c_name='p32', v1_soc=(zeta_f_i, zeta_f_n),
-        v2_level=1, v_tot_noccu=noccu, slater=slater,
-        ed_solver=2, neval=10, nvector=2, ncv=30, idump=True
+    v_norb, c_norb, eval_i, denmat = edrixs.ed_2v1c(
+        comm, shell_name, shell_level=(0, 1.0, 0), v1_soc=(zeta_f_i, zeta_f_n),
+        v_tot_noccu=noccu, slater=slater, ed_solver=2, neval=20, nvector=2, ncv=50, idump=True
     )
-
-    v_norb, c_norb, emat_i, emat_n, umat_i, umat_n, eval_i, denmat = result
+    if rank == 0:
+        print(v_norb, c_norb)
+        print('eigvals:', eval_i)
+        print('occupancy numbers:', denmat[0].diagonal())
 
     # Run XAS
     xas, poles_dict = edrixs.xas_2v1c(
-        comm, ominc, gamma_c, v1_name='f', v2_name='d', c_name='p32',
-        v_tot_noccu=noccu, trans_to_which=2, thin=thin, phi=phi, poltype=poltype_xas,
-        num_gs=1, nkryl=200, temperature=300
+        comm, shell_name, ominc_xas, gamma_c=gamma_c, v_tot_noccu=noccu, trans_to_which=2,
+        thin=thin, phi=phi, pol_type=poltype_xas, num_gs=1, nkryl=200, temperature=300
     )
-    np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
+
+    np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+
+    # Run RIXS
+    rixs, poles_dict = edrixs.rixs_2v1c(
+        comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+        v_tot_noccu=noccu, trans_to_which=2, thin=thin, thout=thout, phi=phi,
+        pol_type=poltype_rixs, num_gs=1, nkryl=300, temperature=300
+    )
 
     if rank == 0:
-        print(v_norb, c_norb)
-        print('eigvals:')
-        print(eval_i)
-        print('occupancy numbers:')
-        print(denmat[0].diagonal())
-        print('total occupancy:')
-        print(np.sum(denmat[0].diagonal()).real)
+        rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
+        np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
+        edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")

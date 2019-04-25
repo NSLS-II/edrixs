@@ -7,7 +7,7 @@ import edrixs
 
 if __name__ == "__main__":
     """
-    Os :math:`L_{2,3}`-edge,  :math:`2p_{1/2,3/2}\\rightarrow 5d` transition, cubic crystal field.
+    Os :math:`L_{2,3}`-edge, :math:`2p_{1/2,3/2}\\rightarrow 5d` transition, cubic crystal field.
     """
 
     # PARAMETERS
@@ -31,8 +31,8 @@ if __name__ == "__main__":
     # First FX for valence, then FX for valence-core, then GX for valence-core, and
     # then FX for core, where X=0, 2, 4, ... or X=1, 3, 5, ...
     slater = (
-        [F0_dd, F2_dd, F4_dd, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000],  # Initial
-        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp, 0.000, 0.000]   # Intermediate
+        [F0_dd, F2_dd, F4_dd],  # Initial
+        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
     )
 
     # Spin-Orbit Coupling (SOC) zeta
@@ -62,24 +62,26 @@ if __name__ == "__main__":
     transition = [('L2', 'd', 12385 + 5), ('L3', 'd', 10871 + 5),  # Keep all the 5d orbitals
                   ('L2', 't2g', 12385 + 5), ('L3', 't2g', 10871 + 5)  # Keep only t2g orbitals
                   ]
+
     for case, v_name, om_shift in transition:
         # Run ED
         c_name = edrixs.edge_to_shell_name(case)
         print("edrixs >>> ", c_name, " to ", v_name)
         if v_name == 'd':
             eloss = np.linspace(-0.5, 5.5, 1000)
-            result = edrixs.ed_1v1c(v_name=v_name, c_name=c_name, v_soc=(zeta_d_i, zeta_d_n),
-                                    v_noccu=noccu, slater=slater, cf_mat=cf)  # add CF
+            result = edrixs.ed_1v1c(shell_name=(v_name, c_name), v_soc=(zeta_d_i, zeta_d_n),
+                                    v_noccu=noccu, slater=slater, v_cfmat=cf)  # add CF
         else:
             eloss = np.linspace(-0.5, 2, 1000)
-            result = edrixs.ed_1v1c(v_name=v_name, c_name=c_name, v_soc=(zeta_d_i, zeta_d_n),
+            result = edrixs.ed_1v1c(shell_name=(v_name, c_name), v_soc=(zeta_d_i, zeta_d_n),
                                     v_noccu=noccu, slater=slater)  # NO CF
 
         eval_i, eval_n, trans_op = result
 
         # Run RIXS
-        rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss, gamma_c, gamma_f,
-                                thin, thout, phi, poltype=poltype_rixs,
+        rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss,
+                                gamma_c=gamma_c, gamma_f=gamma_f,
+                                thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs,
                                 gs_list=gs_list, temperature=300)
         # In rixs: axis-0 is for ominc, axis-1 is for eloss, axis-2 is for polarization
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)   # pi-pi + pi-sigma

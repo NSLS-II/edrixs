@@ -13,7 +13,7 @@ if __name__ == "__main__":
     F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
     F2_dp = 7.721 * 0.95
     slater = (
-        [F0_dd, F2_dd, F4_dd, 0.000, 0.000, 0.000, 0.000],  # Initial
+        [F0_dd, F2_dd, F4_dd],  # Initial
         [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
     )
 
@@ -44,17 +44,23 @@ if __name__ == "__main__":
                     ('linear', np.pi/2.0, 'linear', 0.0),
                     ('linear', np.pi/2.0, 'linear', np.pi/2.0)]
     # Run ED
-    result = edrixs.ed_1v1c(v_name='d', c_name='p', v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
-                            c_level=-off, v_noccu=8, slater=slater, cf_mat=cf)
+    result = edrixs.ed_1v1c(shell_name=('d', 'p'), shell_level=(0, -off),
+                            v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
+                            v_noccu=8, slater=slater, v_cfmat=cf)
     eval_i, eval_n, trans_op = result
+
     # Run XAS
-    xas = edrixs.xas_1v1c(eval_i, eval_n, trans_op, ominc_xas, gamma_c, thin, phi,
-                          poltype=poltype_xas, gs_list=[0, 1, 2], temperature=300)
+    xas = edrixs.xas_1v1c(eval_i, eval_n, trans_op, ominc_xas, gamma_c=gamma_c,
+                          thin=thin, phi=phi, pol_type=poltype_xas, gs_list=[0, 1, 2],
+                          temperature=300)
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+
     # Run RIXS
-    rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc_rixs, eloss, gamma_c, gamma_f,
-                            thin, thout, phi, poltype=poltype_rixs,
+    rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc_rixs, eloss,
+                            gamma_c=gamma_c, gamma_f=gamma_f, thin=thin,
+                            thout=thout, phi=phi, pol_type=poltype_rixs,
                             gs_list=[0, 1, 2], temperature=300)
+
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
     rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
     np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))

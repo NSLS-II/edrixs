@@ -6,7 +6,7 @@ import edrixs
 
 if __name__ == "__main__":
     """
-    Ir-:math:`d^5`, :math:`L_{3}`-edge, :math:`2p_{3/2}\\rightarrow 5d (t_{2g})` transition.
+    Os-:math:`d^3`, :math:`L_{3}`-edge, :math:`2p_{3/2}\\rightarrow 5d (t_{2g})` transition.
     """
     natom = 4
     # local axis
@@ -25,7 +25,7 @@ if __name__ == "__main__":
                             [+1.0 / 3.0, +2.0 / 3.0, +2.0 / 3.0]]).T
 
     # Kanamori U, J
-    U, J = 2.0, 0.3
+    U, J = 1.5, 0.25
     Ud, JH = edrixs.UJ_to_UdJH(U, J)
     F0_dd, F2_dd, F4_dd = edrixs.UdJH_to_F0F2F4(Ud, JH)
     F0_dd = edrixs.get_F0('d', F2_dd, F4_dd)
@@ -42,21 +42,21 @@ if __name__ == "__main__":
     zeta_d = 0.45
 
     # Trigonal crystal field
-    cf = edrixs.cf_trigonal_t2g(-0.15)
+    cf = edrixs.cf_trigonal_t2g(-0.1)
 
     # Occupancy of 5d
-    noccu = 5
+    noccu = 3
 
     # Core-hole and final states life-time broadening
     gamma_c, gamma_f = 2.5, 0.075
+
     # RIXS settings
-    thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0
-    scattering_plane = np.array([[1 / np.sqrt(6.0), 1 / np.sqrt(6.0), -2 / np.sqrt(6.0)],
-                                 [-1 / np.sqrt(2.0), 1 / np.sqrt(2.0), 0],
-                                 [1 / np.sqrt(3.0), 1 / np.sqrt(3.0), 1 / np.sqrt(3.0)]]).T
-    om_shift = 11215
+    thin, thout, phi = 56 / 180.0 * np.pi, 34 / 180.0 * np.pi, 0
+    scattering_plane = edrixs.zx_to_rmat([0, 1 / np.sqrt(2.0), 1 / np.sqrt(2.0)], [-1, 0, 0])
+
+    om_shift = 10871
     ominc = np.linspace(-5, 5, 100)
-    eloss = np.linspace(-0.1, 1.2, 1000)
+    eloss = np.linspace(-0.1, 2, 1000)
     gs_list = range(0, 2)
     poltype_rixs = [('linear', 0.0, 'linear', 0.0),
                     ('linear', 0.0, 'linear', np.pi / 2.0),
@@ -69,15 +69,17 @@ if __name__ == "__main__":
         print()
         print("edrixs >>> atom: ", iatom)
         c_name = edrixs.edge_to_shell_name('L3')
-        result = edrixs.ed_1v1c(v_name='t2g', c_name=c_name, v_soc=(zeta_d, zeta_d),
-                                v_noccu=noccu, cf_mat=cf, slater=slater,
-                                local_axis=loc_axis[iatom])
-        eval_i, eval_n, trans_op = result
-        rixs[:, :, :, iatom] = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss,
-                                                gamma_c, gamma_f, thin, thout, phi,
-                                                poltype=poltype_rixs, gs_list=gs_list,
-                                                scattering_plane_axis=scattering_plane,
-                                                temperature=300)
+        eval_i, eval_n, trans_op = edrixs.ed_1v1c(
+            ('t2g', c_name), v_soc=(zeta_d, zeta_d), v_noccu=noccu, v_cfmat=cf,
+            slater=slater, loc_axis=loc_axis[iatom]
+        )
+
+        rixs[:, :, :, iatom] = edrixs.rixs_1v1c(
+            eval_i, eval_n, trans_op, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+            thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=gs_list,
+            scatter_axis=scattering_plane, temperature=300
+        )
+
     # Summation of all the atoms
     rixs_tot = np.sum(rixs, axis=3)
     # Summation of polarization
