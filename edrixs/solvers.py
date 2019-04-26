@@ -1,4 +1,6 @@
-__all__ = ['ed_1v1c', 'xas_1v1c', 'rixs_1v1c', 'ed_2v1c', 'xas_2v1c', 'rixs_2v1c']
+__all__ = ['ed_1v1c_py', 'xas_1v1c_py', 'rixs_1v1c_py',
+           'ed_1v1c_fort', 'xas_1v1c_fort', 'rixs_1v1c_fort',
+           'ed_2v1c_fort', 'xas_2v1c_fort', 'rixs_2v1c_fort']
 
 import numpy as np
 import scipy
@@ -19,16 +21,20 @@ from .rixs_utils import scattering_mat
 from .fedrixs import ed_fsolver, xas_fsolver, rixs_fsolver
 
 
-def ed_1v1c(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
-            v_noccu=1, slater=None, ext_B=None, on_which='spin',
-            v_cfmat=None, v_othermat=None, loc_axis=None, verbose=0):
+def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
+               v_noccu=1, slater=None, ext_B=None, on_which='spin',
+               v_cfmat=None, v_othermat=None, loc_axis=None, verbose=0):
     """
-    Perform ED for the case of two atomic shells, 1 Valence plus one 1 Core shell.
+    Perform ED for the case of two atomic shells, one valence plus one Core
+    shell with pure Python solver.
     For example, for Ni-:math:`L_3` edge RIXS, they are 3d valence and 2p core shells.
 
     It will use scipy.linalag.eigh to exactly diagonalize both the initial and intermediate
     Hamiltonians to get all the eigenvalues and eigenvectors, and the transition operators
     will be built in the many-body eigenvector basis.
+
+    This solver is only suitable for small size of Hamiltonian, typically the dimension
+    of both initial and intermediate Hamiltonian are smaller than 10,000.
 
     Parameters
     ----------
@@ -284,11 +290,14 @@ def ed_1v1c(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
     return eval_i, eval_n, trans_op
 
 
-def xas_1v1c(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0,
-             pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None):
+def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0,
+                pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None):
 
     """
-    Calculate XAS for the case of one valence shell plus one core shell.
+    Calculate XAS for the case of one valence shell plus one core shell with Python solver.
+
+    This solver is only suitable for small size of Hamiltonian, typically the dimension
+    of both initial and intermediate Hamiltonian are smaller than 10,000.
 
     Parameters
     ----------
@@ -393,11 +402,14 @@ def xas_1v1c(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0,
     return xas
 
 
-def rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss, *,
-              gamma_c=0.1, gamma_f=0.01, thin=1.0, thout=1.0, phi=0.0,
-              pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None):
+def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
+                 gamma_c=0.1, gamma_f=0.01, thin=1.0, thout=1.0, phi=0.0,
+                 pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None):
     """
-    Calculate RIXS for the case of one valence shell plus one core shell.
+    Calculate RIXS for the case of one valence shell plus one core shell with Python solver.
+
+    This solver is only suitable for small size of Hamiltonian, typically the dimension
+    of both initial and intermediate Hamiltonian are smaller than 10,000.
 
     Parameters
     ----------
@@ -523,14 +535,165 @@ def rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss, *,
     return rixs
 
 
-def ed_2v1c(comm, shell_name, *, shell_level=None,
-            v1_soc=None, v2_soc=None, c_soc=0, v_tot_noccu=1, slater=None,
-            v1_ext_B=None, v2_ext_B=None, v1_on_which='spin', v2_on_which='spin',
-            v1_cfmat=None, v2_cfmat=None, v1_othermat=None, v2_othermat=None,
-            hopping_v1v2=None, do_ed=True, ed_solver=2, neval=1, nvector=1, ncv=3,
-            idump=False, maxiter=500, eigval_tol=1e-8, min_ndim=1000):
+def ed_1v1c_fort(comm, shell_name, *, shell_level=None,
+                 v_soc=None, c_soc=0, v_noccu=1, slater=None,
+                 ext_B=None, on_which='spin',
+                 v_cfmat=None, v_othermat=None,
+                 do_ed=True, ed_solver=2, neval=1, nvector=1, ncv=3,
+                 idump=False, maxiter=500, eigval_tol=1e-8, min_ndim=1000):
     """
-    Perform ED for the case of two valence shell plus one Core-shell.
+    Perform ED for the case of one valence shell plus one Core-shell with Fortran ED solver.
+
+    The hopping and Coulomb terms of both the initial and intermediate Hamiltonians will be
+    constructed and written to files (hopping_i.in, hopping_n.in, coulomb_i.in and coulomb_n.in).
+    Fock basis for the initial Hamiltonian will be written to file (fock_i.in).
+
+    ED will be only performed on the initial Hamiltonian to find a few lowest eigenstates
+    do_ed=True. Only input files will be written if do_ed=False.
+    Due to large Hilbert space, the ed_fsolver written in Fortran will be called.
+    mpi4py and a MPI environment (mpich or openmpi) are required to launch ed_fsolver.
+
+    If do_ed=True, it will output the eigenvalues in file (eigvals.dat) and eigenvectors in files
+    (eigvec.n), where n means the n-th eigenvectors. The eigvec.n files will be used later
+    as the inputs for XAS and RIXS calculations.
+
+    Parameters
+    ----------
+    comm: MPI_comm
+        The MPI communicator from mpi4py.
+    shell_name: tuple of two strings
+        Names of valence and core shells. The 1st (2nd) string in the tuple is for the
+        valence (core) shell.
+
+        - The 1st strings can only be 's', 'p', 't2g', 'd', 'f'
+
+        - The 2nd string can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52',
+          'f', 'f52', 'f72'.
+
+        For example: shell_name=('d', 'p32') may indicate a :math:`L_3` edge transition from
+        core :math:`2p_{3/2}` shell to valence :math:`3d` shell for Ni.
+    shell_level: tuple of two float numbers
+        Energy level of valence (1st element) and core (2nd element) shells.
+
+        They will be set to zero if not provided.
+    v_soc: tuple of two float numbers
+        Spin-orbit coupling strength of the valence shell,
+        v1_soc[0] for the initial Hamiltonian, and
+        v1_soc[1] for the intermediate Hamiltonian.
+
+        They will be set to zero if not provided.
+    c_soc: float number
+        Spin-orbit coupling strength of core electrons.
+    v_noccu: int number
+        Total number of electrons in valence shells.
+    slater: tuple of two lists
+        Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
+        The order of the elements in each list should be like this:
+
+        [FX_vv, FX_vc, GX_vc, FX_cc],
+
+        where X are integers with ascending order, it can be X=0, 2, 4, 6 or X=1, 3, 5.
+        One can ignore all the continuous zeros at the end of the list.
+
+        For example, if the full list is: [F0_dd, F2_dd, F4_dd, 0, F2_dp, 0, 0, 0, 0], one can
+        just provide [F0_dd, F2_dd, F4_dd, 0, F2_dp]
+
+        All the Slater integrals will be set to zero if slater==None.
+    ext_B: tuple of three float numbers
+        Vector of external magnetic field with respect to global :math:`xyz`-axis applied
+        on the valence shell.
+
+        It will be set to zeros if not provided.
+    on_which: string
+        Apply Zeeman exchange field on which sector. Options are 'spin', 'orbital' or 'both'.
+    v_cfmat: 2d complex array
+        Crystal field splitting Hamiltonian of the valence shell. The dimension and the orbital
+        order should be consistent with the type of the valence shell.
+
+        They will be zeros if not provided.
+    v_othermat: 2d complex array
+        Other possible Hamiltonian of the valence shell. The dimension and the orbital order
+        should be consistent with the type of the valence shell.
+
+        They will be zeros if not provided.
+    do_ed: logical
+        If do_end=True, diagonalize the Hamitlonian to find a few lowest eigenstates, return the
+        eigenvalues and density matirx, and write the eigenvectors in files eigvec.n, otherwise,
+        just write out the input files, do not perform the ED.
+    ed_solver: int
+        Type of ED solver, options can be 0, 1, 2
+
+        - 0: use Lapack to fully diagonalize Hamiltonian to get all the eigenvalues.
+
+        - 1: use standard Lanczos algorithm to find only a few lowest eigenvalues,
+          no re-orthogonalization has been applied, so it is not very accurate.
+
+        - 2: use parallel version of Arpack library to find a few lowest eigenvalues,
+          it is accurate and is the recommeded choice in real calculations of XAS and RIXS.
+    neval: int
+        Number of eigenvalues to be found. For ed_solver=2, the value should not be too small,
+        neval > 10 is usually a safe value.
+    nvector: int
+        Number of eigenvectors to be found and written into files.
+    ncv: int
+        Used for ed_solver=2, it should be at least ncv > neval + 2. Usually, set it a little
+        bit larger than neval, for example, set ncv=200 when neval=100.
+    idump: logical
+        Whether to dump the eigenvectors to files "eigvec.n", where n means the n-th vectors.
+    maxiter: int
+        Maximum number of iterations in finding all the eigenvalues, used for ed_solver=1, 2.
+    eigval_tol: float
+        The convergence criteria of eigenvalues, used for ed_solver=1, 2.
+    min_ndim: int
+        The minimum dimension of the Hamiltonian when the ed_solver=1, 2 can be used, otherwise,
+        ed_solver=1 will be used.
+
+    Returns
+    -------
+    v_norb: int
+        Number of total valence orbitals.
+    c_norb: int
+        Number of core orbitals.
+    eval_i: 1d float array, shape=(neval, )
+        The eigenvalues of initial Hamiltonian.
+    denmat: 2d complex array, shape=(nvector, v_norb, v_norb))
+        The density matrix in the eigenstates.
+    """
+    v_name_options = ['s', 'p', 't2g', 'd', 'f']
+    c_name_options = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
+    v_name = shell_name[0].strip()
+    c_name = shell_name[1].strip()
+    if v_name not in v_name_options:
+        raise Exception("NOT supported type of valence shell: ", v_name)
+    if c_name not in c_name_options:
+        raise Exception("NOT supported type of core shell: ", c_name)
+
+    names = (v_name, 'empty', c_name)
+    if shell_level is not None:
+        levels = (shell_level[0], 0, shell_level[1])
+    else:
+        levels = None
+
+    v_norb, c_norb, eval_i, denmat = _ed_1or2_valence_1core(
+        comm, names, shell_level=levels, v1_soc=v_soc, c_soc=c_soc,
+        v_tot_noccu=v_noccu, slater=slater, v1_ext_B=ext_B,
+        v1_on_which=on_which, v1_cfmat=v_cfmat, v1_othermat=v_othermat,
+        do_ed=do_ed, ed_solver=ed_solver, neval=neval, nvector=nvector,
+        ncv=ncv, idump=idump, maxiter=maxiter, eigval_tol=eigval_tol,
+        min_ndim=min_ndim
+    )
+
+    return v_norb, c_norb, eval_i, denmat
+
+
+def ed_2v1c_fort(comm, shell_name, *, shell_level=None,
+                 v1_soc=None, v2_soc=None, c_soc=0, v_tot_noccu=1, slater=None,
+                 v1_ext_B=None, v2_ext_B=None, v1_on_which='spin', v2_on_which='spin',
+                 v1_cfmat=None, v2_cfmat=None, v1_othermat=None, v2_othermat=None,
+                 hopping_v1v2=None, do_ed=True, ed_solver=2, neval=1, nvector=1, ncv=3,
+                 idump=False, maxiter=500, eigval_tol=1e-8, min_ndim=1000):
+    """
+    Perform ED for the case of two valence shell plus one core-shell with Fortran solver.
     For example, for Ni :math:`K`-edge RIXS, :math:`1s\\rightarrow 4p` transition,
     the valence shells involved in RIXS are :math:`3d` and :math:`4p`.
 
@@ -679,12 +842,6 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
     denmat: 2d complex array, shape=(nvector, v1v2_norb, v1v2_norb))
         The density matrix in the eigenstates.
     """
-    rank = comm.Get_rank()
-    size = comm.Get_size()
-    fcomm = comm.py2f()
-    if rank == 0:
-        print("edrixs >>> Running ED ...", flush=True)
-
     v_name_options = ['s', 'p', 't2g', 'd', 'f']
     c_name_options = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
     v1_name = shell_name[0].strip()
@@ -697,15 +854,50 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
     if c_name not in c_name_options:
         raise Exception("NOT supported type of core shell: ", c_name)
 
+    v1v2_norb, c_norb, eval_i, denmat = _ed_1or2_valence_1core(
+        comm, shell_name, shell_level=shell_level, v1_soc=v1_soc, v2_soc=v2_soc, c_soc=c_soc,
+        v_tot_noccu=v_tot_noccu, slater=slater, v1_ext_B=v1_ext_B, v2_ext_B=v2_ext_B,
+        v1_on_which=v1_on_which, v2_on_which=v2_on_which, v1_cfmat=v1_cfmat,
+        v2_cfmat=v2_cfmat, v1_othermat=v1_othermat, v2_othermat=v2_othermat,
+        hopping_v1v2=hopping_v1v2, do_ed=do_ed, ed_solver=ed_solver, neval=neval,
+        nvector=nvector, ncv=ncv, idump=idump, maxiter=maxiter, eigval_tol=eigval_tol,
+        min_ndim=min_ndim
+    )
+    return v1v2_norb, c_norb, eval_i, denmat
+
+
+def _ed_1or2_valence_1core(
+        comm, shell_name, *, shell_level=None,
+        v1_soc=None, v2_soc=None, c_soc=0, v_tot_noccu=1, slater=None,
+        v1_ext_B=None, v2_ext_B=None, v1_on_which='spin', v2_on_which='spin',
+        v1_cfmat=None, v2_cfmat=None, v1_othermat=None, v2_othermat=None,
+        hopping_v1v2=None, do_ed=True, ed_solver=2, neval=1, nvector=1, ncv=3,
+        idump=False, maxiter=500, eigval_tol=1e-8, min_ndim=1000
+        ):
+
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+    if rank == 0:
+        print("edrixs >>> Running ED ...", flush=True)
+    v1_name = shell_name[0].strip()
+    v2_name = shell_name[1].strip()
+    c_name = shell_name[2].strip()
     info_shell = info_atomic_shell()
 
     # Quantum numbers of angular momentum
     v1_orbl = info_shell[v1_name][0]
-    v2_orbl = info_shell[v2_name][0]
+    if v2_name != 'empty':
+        v2_orbl = info_shell[v2_name][0]
+    else:
+        v2_orbl = -1
 
     # number of orbitals with spin
     v1_norb = info_shell[v1_name][1]
-    v2_norb = info_shell[v2_name][1]
+    if v2_name != 'empty':
+        v2_norb = info_shell[v2_name][1]
+    else:
+        v2_norb = 0
     c_norb = info_shell[c_name][1]
 
     # total number of orbitals
@@ -713,7 +905,10 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
     v1v2_norb = v1_norb + v2_norb
 
     # Coulomb interaction
-    slater_name = slater_integrals_name((v1_name, v2_name, c_name), ('v1', 'v2', 'c1'))
+    if v2_name == 'empty':
+        slater_name = slater_integrals_name((v1_name, c_name), ('v', 'c'))
+    else:
+        slater_name = slater_integrals_name((v1_name, v2_name, c_name), ('v1', 'v2', 'c1'))
     nslat = len(slater_name)
     slater_i = np.zeros(nslat, dtype=np.float)
     slater_n = np.zeros(nslat, dtype=np.float)
@@ -741,8 +936,12 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
             )
         print(flush=True)
 
-    umat_i = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_i)
-    umat_n = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_n)
+    if v2_name == 'empty':
+        umat_i = get_umat_slater(v1_name + c_name, *slater_i)
+        umat_n = get_umat_slater(v1_name + c_name, *slater_n)
+    else:
+        umat_i = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_i)
+        umat_n = get_umat_slater_3shells((v1_name, v2_name, c_name), *slater_n)
 
     if rank == 0:
         write_umat(umat_i, 'coulomb_i.in')
@@ -767,7 +966,7 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
         emat_i[0:v1_norb, 0:v1_norb] += np.array(v1_cfmat)
         emat_n[0:v1_norb, 0:v1_norb] += np.array(v1_cfmat)
 
-    if v2_cfmat is not None:
+    if v2_cfmat is not None and v2_name != 'empty':
         emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.array(v2_cfmat)
         emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.array(v2_cfmat)
 
@@ -776,7 +975,7 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
         emat_i[0:v1_norb, 0:v1_norb] += np.array(v1_othermat)
         emat_n[0:v1_norb, 0:v1_norb] += np.array(v1_othermat)
 
-    if v2_othermat is not None:
+    if v2_othermat is not None and v2_name != 'empty':
         emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.array(v2_othermat)
         emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.array(v2_othermat)
 
@@ -784,16 +983,19 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
     if shell_level is not None:
         emat_i[0:v1_norb, 0:v1_norb] += np.eye(v1_norb) * shell_level[0]
         emat_n[0:v1_norb, 0:v1_norb] += np.eye(v1_norb) * shell_level[0]
-        emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * shell_level[1]
-        emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * shell_level[1]
         emat_i[v1v2_norb:ntot, v1v2_norb:ntot] += np.eye(c_norb) * shell_level[2]
         emat_n[v1v2_norb:ntot, v1v2_norb:ntot] += np.eye(c_norb) * shell_level[2]
+        if v2_name != 'empty':
+            emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * shell_level[1]
+            emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * shell_level[1]
 
     # external magnetic field
     for name, l, ext_B, which, i1, i2 in [
         (v1_name, v1_orbl, v1_ext_B, v1_on_which, 0, v1_norb),
         (v2_name, v2_orbl, v2_ext_B, v2_on_which, v1_norb, v1v2_norb)
     ]:
+        if name == 'empty':
+            continue
         if name == 't2g':
             lx, ly, lz = get_lx(1, True), get_ly(1, True), get_lz(1, True)
             sx, sy, sz = get_sx(1), get_sy(1), get_sz(1)
@@ -816,7 +1018,7 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
             emat_n[i1:i2, i1:i2] += zeeman
 
     # hopping between the two valence shells
-    if hopping_v1v2 is not None:
+    if hopping_v1v2 is not None and v2_name != 'empty':
         emat_i[0:v1_norb, v1_norb:v1v2_norb] += np.array(hopping_v1v2)
         emat_i[v1_norb:v1v2_norb, 0:v1_norb] += np.conj(np.transpose(hopping_v1v2))
         emat_n[0:v1_norb, v1_norb:v1v2_norb] += np.array(hopping_v1v2)
@@ -850,12 +1052,117 @@ def ed_2v1c(comm, shell_name, *, shell_level=None,
         return v1v2_norb, c_norb, None, None
 
 
-def xas_2v1c(comm, shell_name, ominc, *, gamma_c=0.1,
-             v_tot_noccu=1, trans_to_which=1, thin=1.0, phi=0,
-             pol_type=None, num_gs=1, nkryl=200, temperature=1.0,
-             loc_axis=None, scatter_axis=None):
+def xas_1v1c_fort(comm, shell_name, ominc, *, gamma_c=0.1,
+                  v_noccu=1, thin=1.0, phi=0, pol_type=None,
+                  num_gs=1, nkryl=200, temperature=1.0,
+                  loc_axis=None, scatter_axis=None):
     """
-    Calculate XAS for the case with 2 valence shells plus 1 core shell.
+    Calculate XAS for the case with one valence shells plus one core shell with Fortran solver.
+
+    Parameters
+    ----------
+    comm: MPI_comm
+        MPI communicator.
+    shell_name: tuple of two strings
+        Names of valence and core shells. The 1st (2nd) string in the tuple is for the
+        valence (core) shell.
+
+        - The 1st string can only be 's', 'p', 't2g', 'd', 'f',
+
+        - The 2nd string can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52',
+          'f', 'f52', 'f72'.
+
+        For example: shell_name=('d', 'p32') may indicate a :math:`L_3` edge transition from
+        core :math:`2p_{3/2}` shell to valence :math:`3d` shell for Ni.
+    ominc: 1d float array
+        Incident energy of photon.
+    gamma_c: a float number or a 1d float array with the same shape as ominc.
+        The core-hole life-time broadening factor. It can be a constant value
+        or incident energy dependent.
+    v_noccu: int
+        Total occupancy of valence shells.
+    thin: float number
+        The incident angle of photon (in radian).
+    phi: float number
+        Azimuthal angle (in radian), defined with respect to the
+        :math:`x`-axis of the local scattering axis: scatter_axis[:,0].
+    pol_type: list of tuples
+        Type of polarization, options can be:
+
+        - ('linear', alpha), linear polarization, where alpha is the angle between the
+          polarization vector and the scattering plane.
+
+        - ('left', 0), left circular polarization.
+
+        - ('right', 0), right circular polarization.
+
+        - ('isotropic', 0). isotropic polarization.
+
+        It will set pol_type=[('isotropic', 0)] if not provided.
+    num_gs: int
+        Number of initial states used in XAS calculations.
+    nkryl: int
+        Maximum number of poles obtained.
+    temperature: float number
+        Temperature (in K) for boltzmann distribution.
+    loc_axis: 3*3 float array
+        The local axis with respect to which local orbitals are defined.
+
+        - x: local_axis[:,0],
+
+        - y: local_axis[:,1],
+
+        - z: local_axis[:,2].
+
+        It will be an identity matrix if not provided.
+    scatter_axis: 3*3 float array
+        The local axis defining the scattering geometry. The scattering plane is defined in
+        the local :math:`zx`-plane.
+
+        - local :math:`x`-axis: scatter_axis[:,0]
+
+        - local :math:`y`-axis: scatter_axis[:,1]
+
+        - local :math:`z`-axis: scatter_axis[:,2]
+
+        It will be set to an identity matrix if not provided.
+
+    Returns
+    -------
+    xas: 2d array, shape=(len(ominc), len(pol_type))
+        The calculated XAS spectra. The first dimension is for ominc, and the second dimension
+        if for different polarizations.
+    poles: list of dict, shape=(len(pol_type), )
+        The calculated XAS poles for different polarizations.
+    """
+    v_name_options = ['s', 'p', 't2g', 'd', 'f']
+    c_name_options = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
+
+    v_name = shell_name[0].strip()
+    c_name = shell_name[1].strip()
+    if v_name not in v_name_options:
+        raise Exception("NOT supported type of valence shell: ", v_name)
+    if c_name not in c_name_options:
+        raise Exception("NOT supported type of core shell: ", c_name)
+
+    names = (v_name, 'empty', c_name)
+
+    xas, poles = _xas_1or2_valence_1core(
+        comm, names, ominc, gamma_c=gamma_c, v_tot_noccu=v_noccu,
+        trans_to_which=1, thin=thin, phi=phi, pol_type=pol_type,
+        num_gs=num_gs, nkryl=nkryl, temperature=temperature,
+        loc_axis=loc_axis, scatter_axis=scatter_axis
+    )
+
+    return xas, poles
+
+
+def xas_2v1c_fort(comm, shell_name, ominc, *, gamma_c=0.1,
+                  v_tot_noccu=1, trans_to_which=1, thin=1.0, phi=0,
+                  pol_type=None, num_gs=1, nkryl=200, temperature=1.0,
+                  loc_axis=None, scatter_axis=None):
+    """
+    Calculate XAS for the case with two valence shells plus one core shell with Fortran solver.
 
     Parameters
     ----------
@@ -939,12 +1246,9 @@ def xas_2v1c(comm, shell_name, ominc, *, gamma_c=0.1,
     poles: list of dict, shape=(len(pol_type), )
         The calculated XAS poles for different polarizations.
     """
-    rank = comm.Get_rank()
-    size = comm.Get_size()
-    fcomm = comm.py2f()
-
     v_name_options = ['s', 'p', 't2g', 'd', 'f']
     c_name_options = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
+
     v1_name = shell_name[0].strip()
     v2_name = shell_name[1].strip()
     c_name = shell_name[2].strip()
@@ -955,9 +1259,38 @@ def xas_2v1c(comm, shell_name, ominc, *, gamma_c=0.1,
     if c_name not in c_name_options:
         raise Exception("NOT supported type of core shell: ", c_name)
 
+    xas, poles = _xas_1or2_valence_1core(
+        comm, shell_name, ominc, gamma_c=gamma_c, v_tot_noccu=v_tot_noccu,
+        trans_to_which=trans_to_which, thin=thin, phi=phi, pol_type=pol_type,
+        num_gs=num_gs, nkryl=nkryl, temperature=temperature,
+        loc_axis=loc_axis, scatter_axis=scatter_axis
+    )
+
+    return xas, poles
+
+
+def _xas_1or2_valence_1core(
+        comm, shell_name, ominc, *, gamma_c=0.1,
+        v_tot_noccu=1, trans_to_which=1, thin=1.0, phi=0,
+        pol_type=None, num_gs=1, nkryl=200, temperature=1.0,
+        loc_axis=None, scatter_axis=None
+        ):
+
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+
+    v1_name = shell_name[0].strip()
+    v2_name = shell_name[1].strip()
+    c_name = shell_name[2].strip()
+
     info_shell = info_atomic_shell()
     v1_norb = info_shell[v1_name][1]
-    v2_norb = info_shell[v2_name][1]
+    if v2_name != 'empty':
+        v2_norb = info_shell[v2_name][1]
+    else:
+        v2_norb = 0
+
     c_norb = info_shell[c_name][1]
     ntot = v1_norb + v2_norb + c_norb
     v1v2_norb = v1_norb + v2_norb
@@ -982,7 +1315,7 @@ def xas_2v1c(comm, shell_name, ominc, *, gamma_c=0.1,
         # Build transition operators in local-xyz axis
         if trans_to_which == 1:
             case = v1_name + c_name
-        elif trans_to_which == 2:
+        elif trans_to_which == 2 and v2_name != 'empty':
             case = v2_name + c_name
         else:
             raise Exception('Unkonwn trans_to_which: ', trans_to_which)
@@ -1056,10 +1389,123 @@ def xas_2v1c(comm, shell_name, ominc, *, gamma_c=0.1,
     return xas, poles
 
 
-def rixs_2v1c(comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
-              v_tot_noccu=1, trans_to_which=1, thin=1.0, thout=1.0, phi=0,
-              pol_type=None, num_gs=1, nkryl=200, linsys_max=500, linsys_tol=1e-8,
-              temperature=1.0, loc_axis=None, scatter_axis=None):
+def rixs_1v1c_fort(comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
+                   v_noccu=1, thin=1.0, thout=1.0, phi=0, pol_type=None,
+                   num_gs=1, nkryl=200, linsys_max=500, linsys_tol=1e-8,
+                   temperature=1.0, loc_axis=None, scatter_axis=None):
+    """
+    Calculate RIXS for the case with one valence shell plus one core shell with Fortran solver.
+
+    Parameters
+    ----------
+    comm: MPI_comm
+        MPI communicator.
+    shell_name: tuple of two strings
+        Names of valence and core shells. The 1st (2nd) string in the tuple is for the
+        valence (core) shell.
+
+        - The 1st string can only be 's', 'p', 't2g', 'd', 'f',
+
+        - The 2nd string can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52',
+          'f', 'f52', 'f72'.
+
+        For example: shell_name=('d', 'p32') may indicate a :math:`L_3` edge transition from
+        core :math:`2p_{3/2}` shell to valence :math:`3d` shell for Ni.
+    ominc: 1d float array
+        Incident energy of photon.
+    eloss: 1d float array
+        Energy loss.
+    gamma_c: a float number or a 1d float array with same shape as ominc.
+        The core-hole life-time broadening factor. It can be a constant value
+        or incident energy dependent.
+    gamma_f: a float number or a 1d float array with same shape as eloss.
+        The final states life-time broadening factor. It can be a constant value
+        or energy loss dependent.
+    v_noccu: int
+        Total occupancy of valence shells.
+    thin: float number
+        The incident angle of photon (in radian).
+    thout: float number
+        The scattered angle of photon (in radian).
+    phi: float number
+        Azimuthal angle (in radian), defined with respect to the
+        :math:`x`-axis of scattering axis: scatter_axis[:,0].
+    pol_type: list of 4-elements-tuples
+        Type of polarizations. It has the following form:
+
+        (str1, alpha, str2, beta)
+
+        where, str1 (str2) can be 'linear', 'left', 'right', and alpha (beta) is
+        the angle (in radian) between the linear polarization vector and the scattering plane.
+
+        It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
+    num_gs: int
+        Number of initial states used in RIXS calculations.
+    nkryl: int
+        Maximum number of poles obtained.
+    linsys_max: int
+        Maximum iterations of solving linear equations.
+    linsys_tol: float
+        Convergence for solving linear equations.
+    temperature: float number
+        Temperature (in K) for boltzmann distribution.
+    loc_axis: 3*3 float array
+        The local axis with respect to which local orbitals are defined.
+
+        - x: local_axis[:,0],
+
+        - y: local_axis[:,1],
+
+        - z: local_axis[:,2].
+
+        It will be an identity matrix if not provided.
+    scatter_axis: 3*3 float array
+        The local axis defining the scattering geometry. The scattering plane is defined in
+        the local :math:`zx`-plane.
+
+        - local :math:`x`-axis: scatter_axis[:,0]
+
+        - local :math:`y`-axis: scatter_axis[:,1]
+
+        - local :math:`z`-axis: scatter_axis[:,2]
+
+        It will be set to an identity matrix if not provided.
+
+    Returns
+    -------
+    rixs: 3d float array, shape=(len(ominc), len(eloss), len(pol_type))
+        The calculated RIXS spectra. The 1st dimension is for the incident energy,
+        the 2nd dimension is for the energy loss and the 3rd dimension is for
+        different polarizations.
+    poles: 2d list of dict, shape=(len(ominc), len(pol_type))
+        The calculated RIXS poles. The 1st dimension is for incident energy, and the
+        2nd dimension is for different polarizations.
+    """
+    v_name_options = ['s', 'p', 't2g', 'd', 'f']
+    c_name_options = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
+    v_name = shell_name[0].strip()
+    c_name = shell_name[1].strip()
+    if v_name not in v_name_options:
+        raise Exception("NOT supported type of valence shell: ", v_name)
+    if c_name not in c_name_options:
+        raise Exception("NOT supported type of core shell: ", c_name)
+
+    names = (v_name, 'empty', c_name)
+    rixs, poles = _rixs_1or2_valence_1core(
+        comm, names, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+        v_tot_noccu=v_noccu, trans_to_which=1, thin=thin,
+        thout=thout, phi=phi, pol_type=pol_type, num_gs=num_gs, nkryl=nkryl,
+        linsys_max=linsys_max, linsys_tol=linsys_tol, temperature=temperature,
+        loc_axis=loc_axis, scatter_axis=loc_axis
+    )
+
+    return rixs, poles
+
+
+def rixs_2v1c_fort(comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
+                   v_tot_noccu=1, trans_to_which=1, thin=1.0, thout=1.0, phi=0,
+                   pol_type=None, num_gs=1, nkryl=200, linsys_max=500, linsys_tol=1e-8,
+                   temperature=1.0, loc_axis=None, scatter_axis=None):
     """
     Calculate RIXS for the case with 2 valence shells plus 1 core shell.
 
@@ -1154,10 +1600,6 @@ def rixs_2v1c(comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
         The calculated RIXS poles. The 1st dimension is for incident energy, and the
         2nd dimension is for different polarizations.
     """
-    rank = comm.Get_rank()
-    size = comm.Get_size()
-    fcomm = comm.py2f()
-
     v_name_options = ['s', 'p', 't2g', 'd', 'f']
     c_name_options = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
     v1_name = shell_name[0].strip()
@@ -1170,9 +1612,39 @@ def rixs_2v1c(comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
     if c_name not in c_name_options:
         raise Exception("NOT supported type of core shell: ", c_name)
 
+    rixs, poles = _rixs_1or2_valence_1core(
+        comm, shell_name, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+        v_tot_noccu=v_tot_noccu, trans_to_which=trans_to_which, thin=thin,
+        thout=thout, phi=phi, pol_type=pol_type, num_gs=num_gs, nkryl=nkryl,
+        linsys_max=linsys_max, linsys_tol=linsys_tol, temperature=temperature,
+        loc_axis=loc_axis, scatter_axis=loc_axis
+    )
+
+    return rixs, poles
+
+
+def _rixs_1or2_valence_1core(
+        comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
+        v_tot_noccu=1, trans_to_which=1, thin=1.0, thout=1.0, phi=0,
+        pol_type=None, num_gs=1, nkryl=200, linsys_max=500, linsys_tol=1e-8,
+        temperature=1.0, loc_axis=None, scatter_axis=None
+        ):
+
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+
+    v1_name = shell_name[0].strip()
+    v2_name = shell_name[1].strip()
+    c_name = shell_name[2].strip()
+
     info_shell = info_atomic_shell()
+
     v1_norb = info_shell[v1_name][1]
-    v2_norb = info_shell[v2_name][1]
+    if v2_name != 'empty':
+        v2_norb = info_shell[v2_name][1]
+    else:
+        v2_norb = 0
     c_norb = info_shell[c_name][1]
     ntot = v1_norb + v2_norb + c_norb
     v1v2_norb = v1_norb + v2_norb

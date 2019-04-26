@@ -69,20 +69,23 @@ if __name__ == "__main__":
         print("edrixs >>> ", c_name, " to ", v_name)
         if v_name == 'd':
             eloss = np.linspace(-0.5, 5.5, 1000)
-            result = edrixs.ed_1v1c(shell_name=(v_name, c_name), v_soc=(zeta_d_i, zeta_d_n),
-                                    v_noccu=noccu, slater=slater, v_cfmat=cf)  # add CF
+            result = edrixs.ed_1v1c_py(
+                shell_name=(v_name, c_name), v_soc=(zeta_d_i, zeta_d_n),
+                v_noccu=noccu, slater=slater, v_cfmat=cf  # add CF
+            )
         else:
             eloss = np.linspace(-0.5, 2, 1000)
-            result = edrixs.ed_1v1c(shell_name=(v_name, c_name), v_soc=(zeta_d_i, zeta_d_n),
-                                    v_noccu=noccu, slater=slater)  # NO CF
-
+            result = edrixs.ed_1v1c_py(
+                shell_name=(v_name, c_name), v_soc=(zeta_d_i, zeta_d_n),
+                v_noccu=noccu, slater=slater  # NO CF
+            )
         eval_i, eval_n, trans_op = result
 
         # Run RIXS
-        rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc, eloss,
-                                gamma_c=gamma_c, gamma_f=gamma_f,
-                                thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs,
-                                gs_list=gs_list, temperature=300)
+        rixs = edrixs.rixs_1v1c_py(
+            eval_i, eval_n, trans_op, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f, thin=thin,
+            thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=gs_list, temperature=300
+        )
         # In rixs: axis-0 is for ominc, axis-1 is for eloss, axis-2 is for polarization
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)   # pi-pi + pi-sigma
         rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)   # sigma-pi + sigma-sigma

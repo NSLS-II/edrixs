@@ -44,22 +44,23 @@ if __name__ == "__main__":
                     ('linear', np.pi/2.0, 'linear', 0.0),
                     ('linear', np.pi/2.0, 'linear', np.pi/2.0)]
     # Run ED
-    result = edrixs.ed_1v1c(shell_name=('d', 'p'), shell_level=(0, -off),
-                            v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
-                            v_noccu=8, slater=slater, v_cfmat=cf)
-    eval_i, eval_n, trans_op = result
+    eval_i, eval_n, trans_op = edrixs.ed_1v1c_py(
+        shell_name=('d', 'p'), shell_level=(0, -off), v_soc=(zeta_d_i, zeta_d_n),
+        c_soc=zeta_p_n, v_noccu=8, slater=slater, v_cfmat=cf
+    )
 
     # Run XAS
-    xas = edrixs.xas_1v1c(eval_i, eval_n, trans_op, ominc_xas, gamma_c=gamma_c,
-                          thin=thin, phi=phi, pol_type=poltype_xas, gs_list=[0, 1, 2],
-                          temperature=300)
+    xas = edrixs.xas_1v1c_py(
+        eval_i, eval_n, trans_op, ominc_xas, gamma_c=gamma_c, thin=thin, phi=phi,
+        pol_type=poltype_xas, gs_list=[0, 1, 2], temperature=300
+    )
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
 
     # Run RIXS
-    rixs = edrixs.rixs_1v1c(eval_i, eval_n, trans_op, ominc_rixs, eloss,
-                            gamma_c=gamma_c, gamma_f=gamma_f, thin=thin,
-                            thout=thout, phi=phi, pol_type=poltype_rixs,
-                            gs_list=[0, 1, 2], temperature=300)
+    rixs = edrixs.rixs_1v1c_py(
+        eval_i, eval_n, trans_op, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f, thin=thin,
+        thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=[0, 1, 2], temperature=300
+    )
 
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
     rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)

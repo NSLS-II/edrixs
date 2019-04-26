@@ -69,12 +69,12 @@ if __name__ == "__main__":
         print()
         print("edrixs >>> atom: ", iatom)
         c_name = edrixs.edge_to_shell_name('L3')
-        eval_i, eval_n, trans_op = edrixs.ed_1v1c(
+        eval_i, eval_n, trans_op = edrixs.ed_1v1c_py(
             ('t2g', c_name), v_soc=(zeta_d, zeta_d), v_noccu=noccu, v_cfmat=cf,
             slater=slater, loc_axis=loc_axis[iatom]
         )
 
-        rixs[:, :, :, iatom] = edrixs.rixs_1v1c(
+        rixs[:, :, :, iatom] = edrixs.rixs_1v1c_py(
             eval_i, eval_n, trans_op, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
             thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=gs_list,
             scatter_axis=scattering_plane, temperature=300

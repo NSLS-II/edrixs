@@ -68,7 +68,7 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     # Run ED
-    v_norb, c_norb, eval_i, denmat = edrixs.ed_2v1c(
+    v_norb, c_norb, eval_i, denmat = edrixs.ed_2v1c_fort(
         comm, shell_name, shell_level=(0, 3.0, 0),
         v1_soc=(zeta_d_i, zeta_d_n), v2_soc=(zeta_p_i, zeta_p_n),
         v_tot_noccu=noccu, slater=slater,
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         print("Occupancy of orbitals: ", denmat[0].diagonal())
 
     # Run XAS
-    xas, poles_dict = edrixs.xas_2v1c(
+    xas, poles_dict = edrixs.xas_2v1c_fort(
         comm, shell_name, ominc_xas, gamma_c=gamma_c, v_tot_noccu=noccu, trans_to_which=2,
         thin=thin, phi=phi, pol_type=poltype_xas, num_gs=1, nkryl=300, temperature=300
     )
@@ -89,7 +89,7 @@ if __name__ == "__main__":
         np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
 
     # Run RIXS
-    rixs, poles_dict = edrixs.rixs_2v1c(
+    rixs, poles_dict = edrixs.rixs_2v1c_fort(
         comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         v_tot_noccu=noccu, trans_to_which=2, thin=thin, thout=thout, phi=phi,
         pol_type=poltype_rixs, num_gs=1, nkryl=300, temperature=300

@@ -67,8 +67,10 @@ def do_ed(dq10=1.6, d1=0.1, d3=0.75,
     cf = edrixs.cf_tetragonal_d(dq10, d1, d3)
 
     ext_B = np.array([ex_x, ex_y, ex_z])
-    result = edrixs.ed_1v1c(shell_name=('d', 'p'), v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
-                            v_noccu=8, slater=slater, ext_B=ext_B, on_which='spin', v_cfmat=cf)
+    result = edrixs.ed_1v1c_py(
+        shell_name=('d', 'p'), v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
+        v_noccu=8, slater=slater, ext_B=ext_B, on_which='spin', v_cfmat=cf
+    )
     return result
 
 
@@ -122,9 +124,10 @@ def get_xas(eval_i, eval_n, dipole_ops,
     '''
     poltype = [('linear', 0.0), ('linear', np.pi / 2.0),
                ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
-    xas = edrixs.xas_1v1c(eval_i, eval_n, dipole_ops, om_mesh,
-                          gamma_c=gamma, thin=thin, phi=phi,
-                          pol_type=poltype, gs_list=[0, 1, 2], temperature=T)
+    xas = edrixs.xas_1v1c_py(
+        eval_i, eval_n, dipole_ops, om_mesh,gamma_c=gamma, thin=thin,
+        phi=phi, pol_type=poltype, gs_list=[0, 1, 2], temperature=T
+    )
 
     return om_mesh, om_offset, xas
 
@@ -191,10 +194,10 @@ def get_rixs(eval_i, eval_n, dipole_ops,
                     ('linear', 0, 'linear', np.pi/2.0),
                     ('linear', np.pi/2.0, 'linear', 0.0),
                     ('linear', np.pi/2.0, 'linear', np.pi/2.0)]
-    rixs = edrixs.rixs_1v1c(eval_i, eval_n, dipole_ops, om_mesh, eloss_mesh,
-                            gamma_c=gamma_n, gamma_f=gamma_f, thin=thin, thout=thout,
-                            phi=phi, pol_type=poltype_rixs, gs_list=[0, 1, 2],
-                            temperature=T)
+    rixs = edrixs.rixs_1v1c_py(
+        eval_i, eval_n, dipole_ops, om_mesh, eloss_mesh, gamma_c=gamma_n, gamma_f=gamma_f,
+        thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=[0, 1, 2], temperature=T
+    )
     # Apply gaussian broadening
     dx = np.mean(np.abs(eloss_mesh[1:] - eloss_mesh[:-1]))
     rixs = np.apply_along_axis(gaussian_filter1d, 2, rixs, emi_res / dx)

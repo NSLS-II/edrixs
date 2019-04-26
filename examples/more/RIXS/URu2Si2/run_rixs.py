@@ -94,13 +94,13 @@ if __name__ == "__main__":
     # ------------------
 
     # Run ED
-    eval_i, eval_n, trans_op = edrixs.ed_1v1c(
+    eval_i, eval_n, trans_op = edrixs.ed_1v1c_py(
         ('f', 'd'), shell_level=(0, -om_shift), v_soc=(zeta_f_i, zeta_f_n),
         c_soc=zeta_d_n, v_noccu=noccu, slater=slater
     )
 
     # Run XAS
-    xas = edrixs.xas_1v1c(
+    xas = edrixs.xas_1v1c_py(
         eval_i, eval_n, trans_op, ominc, gamma_c=gamma_c, thin=thin, phi=phi,
         pol_type=poltype_xas, gs_list=gs_list, temperature=300
     )
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
 
     # Run RIXS
-    rixs = edrixs.rixs_1v1c(
+    rixs = edrixs.rixs_1v1c_py(
         eval_i, eval_n, trans_op, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=gs_list,
         temperature=300
