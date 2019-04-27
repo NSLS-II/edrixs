@@ -7,7 +7,7 @@ import edrixs
 
 if __name__ == "__main__":
     '''
-    Pu :math:`O_{4,5}`-edge, :math:`5d_{3/2,5/2}\\rightarrow 5f` transition.
+    Pu-5f6 :math:`O_{4,5}`-edge, :math:`5d_{3/2,5/2}\\rightarrow 5f` transition.
     '''
 
     # PARAMETERS
@@ -58,9 +58,7 @@ if __name__ == "__main__":
     gamma_f = 0.1
     poltype_xas = [('isotropic', 0.0)]
     poltype_rixs = [('linear', 0.0, 'linear', 0.0),
-                    ('linear', 0.0, 'linear', np.pi / 2.0),
-                    ('linear', np.pi / 2.0, 'linear', 0.0),
-                    ('linear', np.pi / 2.0, 'linear', np.pi / 2.0)]
+                    ('linear', 0.0, 'linear', np.pi / 2.0)]
     shell_name = ('f', 'd')
     T = 300
 

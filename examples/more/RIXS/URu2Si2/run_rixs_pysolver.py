@@ -6,7 +6,7 @@ import edrixs
 
 if __name__ == "__main__":
     '''
-    U :math:`O_{4,5}`-edge, :math:`d_{3/2,5/2}\\rightarrow 5f` transition.
+    U-5f2 :math:`O_{4,5}`-edge, :math:`5d_{3/2,5/2}\\rightarrow 5f` transition.
     '''
 
     # PARAMETERS

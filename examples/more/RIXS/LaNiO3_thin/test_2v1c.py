@@ -7,9 +7,10 @@ from mpi4py import MPI
 
 if __name__ == "__main__":
     '''
-    Valence shells: 3d4p
-    Core shell: 2p
-    Ni :math:`L`-edge, :math:`2p\\rightarrow 3d` transition.
+    Valence shells: 3d4p, Core shell: 2p
+    Ni :math:`L_{2,3}`-edge, :math:`2p_{1/2,3/2}\\rightarrow 3d` transition.
+
+    Used to test the ed_2v1c_fort, xas_2v1c_fort, rixs_2v1c_fort solvers.
     '''
 
     F2_dd, F4_dd = 12.234 * 0.65, 7.598 * 0.65

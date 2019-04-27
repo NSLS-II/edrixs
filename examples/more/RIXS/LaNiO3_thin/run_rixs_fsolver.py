@@ -5,6 +5,11 @@ import edrixs
 from mpi4py import MPI
 
 if __name__ == "__main__":
+    """
+    Ni-3d8: :math:`L_{2,3}`-edge, transition from :math:`2p_{1/2,3/2}\\rightarrow 3d`.
+
+    Use Fortran ED, XAS, RIXS solvers.
+    """
     # Atomic shell settings
     # ---------------------
     # Slater integrals
