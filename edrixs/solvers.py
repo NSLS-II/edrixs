@@ -981,12 +981,14 @@ def _ed_1or2_valence_1core(
 
     # energy of shell
     if shell_level is not None:
+        eval_shift = shell_level[2] * c_norb / v_tot_noccu
         emat_i[0:v1_norb, 0:v1_norb] += np.eye(v1_norb) * shell_level[0]
+        emat_i[0:v1_norb, 0:v1_norb] += np.eye(v1_norb) * eval_shift
         emat_n[0:v1_norb, 0:v1_norb] += np.eye(v1_norb) * shell_level[0]
-        emat_i[v1v2_norb:ntot, v1v2_norb:ntot] += np.eye(c_norb) * shell_level[2]
         emat_n[v1v2_norb:ntot, v1v2_norb:ntot] += np.eye(c_norb) * shell_level[2]
         if v2_name != 'empty':
             emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * shell_level[1]
+            emat_i[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * eval_shift
             emat_n[v1_norb:v1v2_norb, v1_norb:v1v2_norb] += np.eye(v2_norb) * shell_level[1]
 
     # external magnetic field

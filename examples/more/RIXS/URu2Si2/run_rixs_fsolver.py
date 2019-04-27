@@ -2,6 +2,7 @@
 
 
 import numpy as np
+from mpi4py import MPI
 import edrixs
 
 if __name__ == "__main__":
@@ -56,8 +57,8 @@ if __name__ == "__main__":
     # The incident, scattered and azimuthal angles
     thin, thout, phi = 30 / 180.0 * np.pi, 60 / 180.0 * np.pi, 0.0
 
-    # Which initial states are used
-    gs_list = list(range(0, 9))
+    # Number of initial states are used
+    num_gs = 9
 
     # energy mesh of the incident X-ray (eV)
     nom = 100
@@ -90,28 +91,39 @@ if __name__ == "__main__":
                     ('linear', 0.0, 'linear', np.pi / 2.0),
                     ('linear', np.pi / 2.0, 'linear', 0.0),
                     ('linear', np.pi / 2.0, 'linear', np.pi / 2.0)]
+
+    shell_name = ('f', 'd')
+
+    T = 300
+
     # END of Parameters
     # ------------------
 
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
     # Run ED
-    eval_i, eval_n, trans_op = edrixs.ed_1v1c_py(
-        ('f', 'd'), shell_level=(0, -om_shift), v_soc=(zeta_f_i, zeta_f_n),
-        c_soc=zeta_d_n, v_noccu=noccu, slater=slater
+    v_norb, c_norb, eval_i, denmat = edrixs.ed_1v1c_fort(
+        comm, shell_name, shell_level=(0, -om_shift), v_soc=(zeta_f_i, zeta_f_n),
+        c_soc=zeta_d_n, v_noccu=noccu, slater=slater, ed_solver=2,
+        neval=30, ncv=60, nvector=9, idump=True
+
     )
 
     # Run XAS
-    xas = edrixs.xas_1v1c_py(
-        eval_i, eval_n, trans_op, ominc, gamma_c=gamma_c, thin=thin, phi=phi,
-        pol_type=poltype_xas, gs_list=gs_list, temperature=300
+    xas, xas_poles = edrixs.xas_1v1c_fort(
+        comm, shell_name, ominc, gamma_c=gamma_c, v_noccu=noccu, thin=thin, phi=phi,
+        num_gs=num_gs, nkryl=400, pol_type=poltype_xas, temperature=T
     )
 
     np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
 
     # Run RIXS
-    rixs = edrixs.rixs_1v1c_py(
-        eval_i, eval_n, trans_op, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
-        thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=gs_list,
-        temperature=300
+    rixs, rixs_poles = edrixs.rixs_1v1c_fort(
+        comm, shell_name, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+        thin=thin, thout=thout, phi=phi, v_noccu=noccu, pol_type=poltype_rixs,
+        num_gs=num_gs, nkryl=400, temperature=T
     )
 
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)

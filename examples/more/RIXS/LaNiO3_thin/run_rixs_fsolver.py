@@ -2,6 +2,7 @@
 
 import numpy as np
 import edrixs
+from mpi4py import MPI
 
 if __name__ == "__main__":
     # Atomic shell settings
@@ -43,23 +44,29 @@ if __name__ == "__main__":
                     ('linear', 0, 'linear', np.pi/2.0),
                     ('linear', np.pi/2.0, 'linear', 0.0),
                     ('linear', np.pi/2.0, 'linear', np.pi/2.0)]
+
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    shell_name = ('d', 'p')
     # Run ED
-    eval_i, eval_n, trans_op = edrixs.ed_1v1c_py(
-        shell_name=('d', 'p'), shell_level=(0, -off), v_soc=(zeta_d_i, zeta_d_n),
-        c_soc=zeta_p_n, v_noccu=8, slater=slater, v_cfmat=cf
+    v_norb, c_norb, eval_i, denmat = edrixs.ed_1v1c_fort(
+        comm, shell_name, shell_level=(0, -off), v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
+        v_noccu=8, slater=slater, v_cfmat=cf, ed_solver=0, neval=10, nvector=3, idump=True
     )
 
     # Run XAS
-    xas = edrixs.xas_1v1c_py(
-        eval_i, eval_n, trans_op, ominc_xas, gamma_c=gamma_c, thin=thin, phi=phi,
-        pol_type=poltype_xas, gs_list=[0, 1, 2], temperature=300
+    xas, xas_poles = edrixs.xas_1v1c_fort(
+        comm, shell_name, ominc_xas, gamma_c=gamma_c, v_noccu=8, thin=thin, phi=phi,
+        num_gs=3, nkryl=400, pol_type=poltype_xas, temperature=300
     )
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
 
     # Run RIXS
-    rixs = edrixs.rixs_1v1c_py(
-        eval_i, eval_n, trans_op, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f, thin=thin,
-        thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=[0, 1, 2], temperature=300
+    rixs, rixs_poles = edrixs.rixs_1v1c_fort(
+        comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f, thin=thin, thout=thout,
+        phi=phi, v_noccu=8, pol_type=poltype_rixs, num_gs=3, nkryl=200, temperature=300
     )
 
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
