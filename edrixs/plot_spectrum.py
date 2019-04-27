@@ -27,7 +27,7 @@ def get_spectra_from_poles(poles_dict, omega_mesh, gamma_mesh, temperature):
 
     See also
     --------
-    read_poles_from_file
+    iostream.read_poles_from_file: read XAS or RIXS poles files.
     """
     nom = len(omega_mesh)
     spectra = np.zeros(nom, dtype=np.float64)
@@ -80,57 +80,13 @@ def plot_spectrum(file_list, omega_mesh, gamma_mesh, T=1.0, fname='spectrum.dat'
         Format for printing float numbers.
     """
 
-    ngs = len(file_list)
-    eigvals = np.zeros(ngs, dtype=np.float64)
-    norm = np.zeros(ngs, dtype=np.float64)
-    neff = np.zeros(ngs, dtype=np.int)
-
-    alpha = []
-    beta = []
-    for i, igs in enumerate(file_list):
-        f = open(igs, 'r')
-
-        line = f.readline()
-        neff[i] = int(line.strip().split()[1])
-
-        line = f.readline()
-        eigvals[i] = float(line.strip().split()[1])
-
-        line = f.readline()
-        norm[i] = float(line.strip().split()[1])
-
-        tmp_a = []
-        tmp_b = []
-        for j in range(neff[i]):
-            line = f.readline()
-            line = line.strip().split()
-            tmp_a.append(float(line[1]))
-            tmp_b.append(float(line[2]))
-
-        alpha.append(tmp_a)
-        beta.append(tmp_b)
-
-        f.close()
-
-    nom_inc = len(omega_mesh)
-    spectrum = np.zeros(nom_inc, dtype=np.float64)
-    gs_dist = boltz_dist(eigvals, T)
-    print("Probabilities of initial states: ", gs_dist)
-
-    for i in range(ngs):
-        tmp_vec = np.zeros(nom_inc, dtype=np.complex128)
-        for j in range(neff[i] - 1, 0, -1):
-            tmp_vec = beta[i][j - 1]**2 / (omega_mesh + 1j * gamma_mesh + eigvals[i]
-                                           - alpha[i][j] - tmp_vec)
-
-        tmp_vec = 1.0 / (omega_mesh + 1j * gamma_mesh +
-                         eigvals[i] - alpha[i][0] - tmp_vec)
-        spectrum[:] += -1.0 / np.pi * np.imag(tmp_vec) * norm[i] * gs_dist[i]
+    pole_dict = read_poles_from_file(file_list)
+    spectrum = get_spectra_from_poles(pole_dict, omega_mesh, gamma_mesh, T)
 
     space = "  "
     fmt_string = (fmt_float + space) * 2 + '\n'
     f = open(fname, 'w')
-    for i in range(nom_inc):
+    for i in range(len(omega_mesh)):
         f.write(fmt_string.format(omega_mesh[i] + om_shift, spectrum[i]))
     f.close()
 

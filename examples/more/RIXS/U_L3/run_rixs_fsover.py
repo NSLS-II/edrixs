@@ -16,7 +16,7 @@ if __name__ == "__main__":
     F2_dd, F4_dd = 0.0, 0.0
     F0_dd = edrixs.get_F0('d', F2_dd, F4_dd)
 
-    F2_fd, F4_fd = 3.750, 2.050 
+    F2_fd, F4_fd = 3.750, 2.050
     G1_fd, G3_fd, G5_fd = 1.938, 1.562, 1.213
     F0_fd = edrixs.get_F0('fd', G1_fd, G3_fd, G5_fd)
 

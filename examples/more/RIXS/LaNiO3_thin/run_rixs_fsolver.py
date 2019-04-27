@@ -70,8 +70,9 @@ if __name__ == "__main__":
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
-        comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f, thin=thin, thout=thout,
-        phi=phi, v_noccu=8, pol_type=poltype_rixs, num_gs=3, nkryl=200, temperature=300
+        comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+        thin=thin, thout=thout, phi=phi, v_noccu=8, pol_type=poltype_rixs,
+        num_gs=3, nkryl=200, temperature=300
     )
 
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
