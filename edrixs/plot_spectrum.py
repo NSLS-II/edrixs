@@ -3,6 +3,7 @@ __all__ = ['get_spectra_from_poles', 'plot_spectrum', 'plot_rixs_map']
 import numpy as np
 import matplotlib.pyplot as plt
 from .utils import boltz_dist
+from .iostream import read_poles_from_file
 
 
 def get_spectra_from_poles(poles_dict, omega_mesh, gamma_mesh, temperature):
