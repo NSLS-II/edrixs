@@ -4,7 +4,7 @@ __all__ = ['get_gaunt', 'umat_slater', 'get_umat_kanamori_ge', 'get_F0',
 import numpy as np
 from sympy.physics.wigner import gaunt
 from .basis_transform import tmat_c2r, tmat_r2c, tmat_c2j, transform_utensor
-from .utils import info_atomic_shell, case_to_shell_name
+from .utils import info_atomic_shell, case_to_shell_name, slater_integrals_name
 
 
 def get_gaunt(l1, l2):
@@ -516,6 +516,10 @@ def get_umat_slater(case, *args):
     """
     info = info_atomic_shell()
     shells = case_to_shell_name(case)
+    nslat = len(slater_integrals_name(shells))
+    if nslat != len(args):
+        raise Exception("Number of Slater integrals", len(args), " is not equal to ", nslat)
+
     special_shell = ['t2g', 'p12', 'p32', 'd32', 'd52', 'f52', 'f72']
     orb_indx = {
         special_shell[0]: [2, 3, 4, 5, 8, 9],
@@ -652,20 +656,20 @@ def get_umat_slater_3shells(shell_name, *args):
 
     indx = []
     it = 0
-    it += len(range(0, 2 * v1_orbl + 1, 2))
+    it += len(range(0, 2*v1_orbl+1, 2))
     indx.append(it)
-    it += len(range(0, min(2*v1_orbl, 2*v2_orbl) + 1, 2))
-    it += len(range(abs(v1_orbl - v2_orbl), v1_orbl + v2_orbl + 1, 2))
+    it += len(range(0, min(2*v1_orbl, 2*v2_orbl)+1, 2))
+    it += len(range(abs(v1_orbl-v2_orbl), v1_orbl+v2_orbl+1, 2))
     indx.append(it)
-    it += len(range(0, 2 * v2_orbl + 1, 2))
+    it += len(range(0, 2*v2_orbl+1, 2))
     indx.append(it)
-    it += len(range(0, min(2*v1_orbl, 2*v3_orbl) + 1, 2))
-    it += len(range(abs(v1_orbl - v3_orbl), v1_orbl + v3_orbl + 1, 2))
+    it += len(range(0, min(2*v1_orbl, 2*v3_orbl)+1, 2))
+    it += len(range(abs(v1_orbl-v3_orbl), v1_orbl+v3_orbl+1, 2))
     indx.append(it)
-    it += len(range(0, min(2*v2_orbl, 2*v3_orbl) + 1, 2))
-    it += len(range(abs(v2_orbl - v3_orbl), v2_orbl + v3_orbl + 1, 2))
+    it += len(range(0, min(2*v2_orbl, 2*v3_orbl)+1, 2))
+    it += len(range(abs(v2_orbl-v3_orbl), v2_orbl+v3_orbl+1, 2))
     indx.append(it)
-    it += len(range(0, 2 * v3_orbl + 1, 2))
+    it += len(range(0, 2*v3_orbl+1, 2))
     indx.append(it)
 
     if it != len(args):

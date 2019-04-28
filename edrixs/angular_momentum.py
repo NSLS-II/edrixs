@@ -562,7 +562,6 @@ def cf_tetragonal_d(ten_dq, d1, d3):
         Parameter used to label cubic crystal splitting.
     d1: float scalar
         Paramter used to label tetragonal splitting.
-
     d3: float scalar
         Paramter used to label tetragonal splitting.
 

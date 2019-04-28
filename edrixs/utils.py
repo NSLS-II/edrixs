@@ -395,7 +395,16 @@ def edge_to_shell_name(edge_name):
 
 def slater_integrals_name(shell_name, label=None):
     """
-    Given shell names, return the required names of Slater integrals.
+    Given shell names, return the names of required Slater integrals.
+    The order of these names in the return list is according to the convention:
+
+    - For 1 shell: [FX_11]
+
+    - For 2 shells: [FX_11, FX_12, GX_12, FX_22]
+
+    - For 3 shells: [FX_11, FX_12, GX_12, FX_22, FX_13, GX_13, FX_23, GX_23, FX_33]
+
+    where, X=0, 2, 4, 6, or X=1, 3, 5, X shoule be in ascending order.
 
     Parameters
     ----------
@@ -406,11 +415,11 @@ def slater_integrals_name(shell_name, label=None):
 
         If not provided, label will be set to
 
-        - label=(1,) or
+        - label=(1,) for one shell, or
 
-        - label=(1,2) or
+        - label=(1,2) for two shells, or
 
-        - label=(1,2,3)
+        - label=(1,2,3) for three shells
 
     Returns
     -------
@@ -426,7 +435,7 @@ def slater_integrals_name(shell_name, label=None):
             x = label[0]
         else:
             x = '1'
-        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2 * l1 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2*l1+1, 2)])
     elif len(shell_name) == 2:
         res = []
         l1 = info[shell_name[0]][0]
@@ -435,10 +444,10 @@ def slater_integrals_name(shell_name, label=None):
             x, y = label[0], label[1]
         else:
             x, y = '1', '2'
-        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2 * l1 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + x + y for i in range(0, min(2 * l1, 2 * l2) + 1, 2)])
-        res.extend(['G' + str(i) + '_' + x + y for i in range(abs(l1 - l2), l1 + l2 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2 * l2 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2*l1+1, 2)])
+        res.extend(['F' + str(i) + '_' + x + y for i in range(0, min(2*l1, 2*l2)+1, 2)])
+        res.extend(['G' + str(i) + '_' + x + y for i in range(abs(l1-l2), l1+l2+1, 2)])
+        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2*l2+1, 2)])
     elif len(shell_name) == 3:
         res = []
         l1 = info[shell_name[0]][0]
@@ -448,15 +457,15 @@ def slater_integrals_name(shell_name, label=None):
             x, y, z = label[0], label[1], label[2]
         else:
             x, y, z = '1', '2', '3'
-        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2 * l1 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + x + y for i in range(0, min(2 * l1, 2 * l2) + 1, 2)])
-        res.extend(['G' + str(i) + '_' + x + y for i in range(abs(l1 - l2), l1 + l2 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2 * l2 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + x + z for i in range(0, min(2 * l1, 2 * l3) + 1, 2)])
-        res.extend(['G' + str(i) + '_' + x + z for i in range(abs(l1 - l3), l1 + l3 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + y + z for i in range(0, min(2 * l2, 2 * l3) + 1, 2)])
-        res.extend(['G' + str(i) + '_' + y + z for i in range(abs(l2 - l3), l2 + l3 + 1, 2)])
-        res.extend(['F' + str(i) + '_' + z + z for i in range(0, 2 * l3 + 1, 2)])
+        res.extend(['F' + str(i) + '_' + x + x for i in range(0, 2*l1+1, 2)])
+        res.extend(['F' + str(i) + '_' + x + y for i in range(0, min(2*l1, 2*l2)+1, 2)])
+        res.extend(['G' + str(i) + '_' + x + y for i in range(abs(l1-l2), l1+l2+1, 2)])
+        res.extend(['F' + str(i) + '_' + y + y for i in range(0, 2*l2+1, 2)])
+        res.extend(['F' + str(i) + '_' + x + z for i in range(0, min(2*l1, 2*l3)+1, 2)])
+        res.extend(['G' + str(i) + '_' + x + z for i in range(abs(l1-l3), l1+l3+1, 2)])
+        res.extend(['F' + str(i) + '_' + y + z for i in range(0, min(2*l2, 2*l3)+1, 2)])
+        res.extend(['G' + str(i) + '_' + y + z for i in range(abs(l2-l3), l2+l3+1, 2)])
+        res.extend(['F' + str(i) + '_' + z + z for i in range(0, 2*l3+1, 2)])
     else:
         raise Exception("Not implemented for this case: ", shell_name)
 

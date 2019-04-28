@@ -197,6 +197,12 @@ def unit_wavevector(theta, phi, local_axis=None, direction='in'):
     local_axis: 3*3 float array
         The local axis defining the scattering geometry.
 
+        - :math:`x`-axis: local_axis[:,0]
+
+        - :math:`y`-axis: local_axis[:,1]
+
+        - :math:`z`-axis: local_axis[:,2]
+
         It will be an identity matrix if not provided.
     direction: string
         The direction of photon wave, options can be
@@ -243,9 +249,15 @@ def wavevector_with_length(theta, phi, energy, local_axis=None, direction='in'):
     phi: float number
         Azimuthal angle (in radian), with respect to the :math:`x` of local_axis.
     energy: float number
-        Energy of photon.
+        Energy of photon (in eV).
     local_axis: 3*3 float array
         The local axis defining the scattering geometry.
+
+        - :math:`x`-axis: local_axis[:,0]
+
+        - :math:`y`-axis: local_axis[:,1]
+
+        - :math:`z`-axis: local_axis[:,2]
 
         It will be an identity matrix if not provided.
     direction: string
@@ -292,13 +304,19 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=None):
     local_axis: :math:`3 \\times 3` float array
         The local :math:`z` -axis, the angle thin and thout are defined with respect to this axis.
 
+        - :math:`x`-axis: local_axis[:,0]
+
+        - :math:`y`-axis: local_axis[:,1]
+
+        - :math:`z`-axis: local_axis[:,2]
+
         It will be an identity matrix if not provided.
 
     Returns
     -------
-    K_in_global: 3-length float array
+    k_in_global: 3-length float array
         The wave vector of the incident photon, with respect to the global :math:`xyz` -axis.
-    K_out_global: 3-length float array
+    k_out_global: 3-length float array
         The wave vector of the scattered photon, with respect to the global :math:`xyz` -axis.
     """
     if local_axis is None:
@@ -306,10 +324,10 @@ def get_wavevector_rixs(thin, thout, phi, ein, eout, local_axis=None):
     else:
         local_axis = np.array(local_axis)
 
-    K_in_global = wavevector_with_length(thin, phi, ein, local_axis, direction='in')
-    K_out_global = wavevector_with_length(thout, phi, eout, local_axis, direction='out')
+    k_in_global = wavevector_with_length(thin, phi, ein, local_axis, direction='in')
+    k_out_global = wavevector_with_length(thout, phi, eout, local_axis, direction='out')
 
-    return K_in_global, K_out_global
+    return k_in_global, k_out_global
 
 
 def linear_polvec(theta, phi, alpha, local_axis=None, direction='in'):
@@ -327,6 +345,12 @@ def linear_polvec(theta, phi, alpha, local_axis=None, direction='in'):
 
     local_axis: 3*3 float array
         The local axis defining the scattering geometry.
+
+        - :math:`x`-axis: local_axis[:,0]
+
+        - :math:`y`-axis: local_axis[:,1]
+
+        - :math:`z`-axis: local_axis[:,2]
 
         It will be an identity matrix if not provided.
     direction: string
@@ -347,16 +371,20 @@ def linear_polvec(theta, phi, alpha, local_axis=None, direction='in'):
         local_axis = np.array(local_axis)
 
     if direction.strip() == 'in':
-        polvec = (np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - theta),
-                            -np.sin(phi) * np.cos(np.pi / 2.0 - theta),
-                            np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha)
-                  + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
+        polvec = (
+            np.array([-np.cos(phi) * np.cos(np.pi / 2.0 - theta),
+                      -np.sin(phi) * np.cos(np.pi / 2.0 - theta),
+                      +np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha) +
+            np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha)
+        )
         polvec = np.dot(local_axis, polvec)
     elif direction.strip() == 'out':
-        polvec = (np.array([np.cos(phi) * np.cos(np.pi / 2.0 - theta),
-                            np.sin(phi) * np.cos(np.pi / 2.0 - theta),
-                            np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha)
-                  + np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha))
+        polvec = (
+            np.array([+np.cos(phi) * np.cos(np.pi / 2.0 - theta),
+                      +np.sin(phi) * np.cos(np.pi / 2.0 - theta),
+                      +np.sin(np.pi / 2.0 - theta)]) * np.cos(alpha) +
+            np.array([-np.sin(phi), np.cos(phi), 0]) * np.sin(alpha)
+        )
         polvec = np.dot(local_axis, polvec)
     else:
         raise Exception("Unknown direction in linear_polvec: ", direction)
@@ -384,6 +412,12 @@ def dipole_polvec_rixs(thin, thout, phi=0, alpha=0, beta=0, local_axis=None, pol
         the scattering plane (radian)
     local_axis: 3*3 float array
         The local axis defining the scattering geometry.
+
+        - :math:`x`-axis: local_axis[:,0]
+
+        - :math:`y`-axis: local_axis[:,1]
+
+        - :math:`z`-axis: local_axis[:,2]
 
         It will be an identity matrix if not provided.
     pol_type: tuple of two strings
@@ -454,6 +488,12 @@ def dipole_polvec_xas(thin, phi=0, alpha=0, local_axis=None, pol_type='linear'):
     local_axis: 3*3 float array
         The local axis defining the scattering geometry.
 
+         - :math:`x`-axis: local_axis[:,0]
+
+        - :math:`y`-axis: local_axis[:,1]
+
+        - :math:`z`-axis: local_axis[:,2]
+
         It will be an identity matrix if not provided.
     pol_type: string
 
@@ -508,9 +548,9 @@ def quadrupole_polvec(polvec, wavevec):
     kvec = wavevec / np.sqrt(np.dot(wavevec, wavevec))
 
     quad_vec[0] = 0.5 * (2 * polvec[2] * kvec[2] - polvec[0] * kvec[0] - polvec[1] * kvec[1])
-    quad_vec[1] = np.sqrt(3.0)/2.0 * (polvec[2] * kvec[0] + kvec[0] * kvec[2])
-    quad_vec[2] = np.sqrt(3.0)/2.0 * (polvec[1] * kvec[2] + kvec[2] * kvec[1])
+    quad_vec[1] = np.sqrt(3.0)/2.0 * (polvec[2] * kvec[0] + polvec[0] * kvec[2])
+    quad_vec[2] = np.sqrt(3.0)/2.0 * (polvec[1] * kvec[2] + polvec[2] * kvec[1])
     quad_vec[3] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[0] - polvec[1] * kvec[1])
-    quad_vec[4] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[1] + kvec[1] * kvec[0])
+    quad_vec[4] = np.sqrt(3.0)/2.0 * (polvec[0] * kvec[1] + polvec[1] * kvec[0])
 
     return quad_vec

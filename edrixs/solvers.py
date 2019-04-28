@@ -287,6 +287,7 @@ def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
         trans_op[i] = cb_op2(trans_op[i], evec_n, evec_i)
 
     print("edrixs >>> ED Done !")
+
     return eval_i, eval_n, trans_op
 
 
@@ -394,8 +395,10 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
                 F_mag = np.zeros(ncfg_n, dtype=np.complex)
                 for k in range(npol):
                     F_mag += trans_op[k, :, j] * polvec[k]
-                xas[i, it] += (prob[j] * np.sum(np.abs(F_mag)**2 * gamma_core[i] / np.pi /
-                               ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2)))
+                xas[i, it] += (
+                    prob[j] * np.sum(np.abs(F_mag)**2 * gamma_core[i] / np.pi /
+                                     ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2))
+                )
 
     print("edrixs >>> XAS Done !")
 
@@ -485,6 +488,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         gamma_final[:] = np.ones(n_eloss) * gamma_f
     else:
         gamma_final[:] = gamma_f
+
     if pol_type is None:
         pol_type = [('linear', 0, 'linear', 0)]
     if gs_list is None:
@@ -505,7 +509,8 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
 
     # Calculate RIXS
     for i, om in enumerate(ominc):
-        F_fi = scattering_mat(eval_i, eval_n, trans_op[:, :, gs_list], trans_emi, om, gamma_core[i])
+        F_fi = scattering_mat(eval_i, eval_n, trans_op[:, :, gs_list],
+                              trans_emi, om, gamma_core[i])
         for j, (it, alpha, jt, beta) in enumerate(pol_type):
             ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
                                         scatter_axis, (it, jt))
@@ -528,8 +533,10 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                     F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
             for m in gs_list:
                 for n in range(len(eval_i)):
-                    rixs[i, :, j] += (prob[m] * np.abs(F_mag[n, m])**2 * gamma_final / np.pi /
-                                      ((eloss - (eval_i[n] - eval_i[m]))**2 + gamma_final**2))
+                    rixs[i, :, j] += (
+                        prob[m] * np.abs(F_mag[n, m])**2 * gamma_final / np.pi /
+                        ((eloss - (eval_i[n] - eval_i[m]))**2 + gamma_final**2)
+                    )
 
     print("edrixs >>> RIXS Done !")
     return rixs
