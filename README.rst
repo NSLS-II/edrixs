@@ -25,10 +25,11 @@ Features
 Installation
 ------------
 * Required tools and libraries
-   * Intel Fortran (ifort) or GNU gfortran compiler
+
+   * gfortran (recommended) or ifort 
    * MPI environment (openmpi or mpich)
    * Python3
-   * BLAS and LAPACK (ifort+MKL or gfortran+OpenBLAS)
+   * BLAS and LAPACK (gfortran+OpenBLAS or ifort+MKL)
    * arpack-ng
    * Numpy
    * Scipy
@@ -42,7 +43,6 @@ Installation
     .. code-block:: bash
 
        $ cd src
-       $ cp make.sys.gfortran make.sys (or cp make.sys.ifort make.sys)
 
   edit make.sys to set the correct libraries of BLAS/LAPACK, arpack-ng and f2py compiler options.
 
@@ -51,7 +51,7 @@ Installation
        $ make
        $ make install
 
-  There will be problems when using gfortran with MKL, so we recommend ifort+MKL or gfortran+OpenBLAS. Be sure to compile arpack-ng with the same mpif90 compiler and BLAS/LAPACK libraries. libedrixsfortran.a will be generated, which will be used when building python interface.
+  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS. Be sure to compile arpack-ng with the same mpif90 compiler and BLAS/LAPACK libraries. libedrixsfortran.a will be generated, which will be used when building python interface.
   The executable .x files will be installed in bin directory. Add the following line in .bashrc or .bash_profile file,
 
     .. code-block:: bash
@@ -60,13 +60,16 @@ Installation
 
 * Install Python parts of edrixs
 
+  Be sure to first make libedrixsfortran.a in src.
+
     .. code-block:: bash
 
        $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext \
-         --link-objects="-L${path/to/lib} -lopenblas -lparpack -larpack -L./src -ledrixsfortran"
+         --link-objects="-L./src -ledrixsfortran -L${path/to/openblas} -lopenblas \
+         -L${path/to/arpack} -lparpack -larpack"
        $ python setup.py install
 
-  where, ${path/to/lib} is the path of the libraries of openblas and arpack.
+  where, ${path/to/openblas} is the path of openblas and ${path/to/arpack} is the path of arpack.
 
 
 How to cite
