@@ -28,7 +28,7 @@ def get_ladd(l, ispin=False):
     ladd: 2d complex array
         The matrix form of :math:`l^+`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
 
         otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
     """
@@ -68,7 +68,7 @@ def get_lminus(l, ispin=False):
     lminus: 2d complex array
         The matrix form of :math:`l^-`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
 
         otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
     """
@@ -108,7 +108,7 @@ def get_lx(l, ispin=False):
     lx: 2d complex array
         The matrix form of :math:`l_x`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
 
         otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
     """
@@ -140,7 +140,7 @@ def get_ly(l, ispin=False):
     ly: 2d complex array
         The matrix form of :math:`l_y`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1)\\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
 
         otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
     """
@@ -191,7 +191,7 @@ def get_pauli():
 
     Returns
     -------
-    sigma: :math:`3\\times 2 \\times 2` complex array.
+    sigma: 3d complex array, shape=(3, 2, 2)
 
         sigma[0] is :math:`\\sigma_x`,
 
@@ -301,7 +301,7 @@ def get_sz(l):
 def euler_to_rmat(alpha, beta, gamma):
     """
     Given Euler angle: :math:`\\alpha, \\beta, \\gamma`,
-    generate the :math:`3\\times 3` rotational matrix :math:`R`.
+    generate the :math:`3 \\times 3` rotational matrix :math:`R`.
 
     Parameters
     ----------
@@ -315,7 +315,7 @@ def euler_to_rmat(alpha, beta, gamma):
     Returns
     ----------
     rmat: 2d float array
-        The :math:`3\\times 3` rotational matrix.
+        The :math:`3 \\times 3` rotational matrix.
     """
 
     rmat = np.zeros((3, 3), dtype=np.float64)
@@ -333,13 +333,13 @@ def euler_to_rmat(alpha, beta, gamma):
 
 def rmat_to_euler(rmat):
     """
-    Given the :math:`3\\times 3` rotational matrix :math:`R`, return the Euler
+    Given the :math:`3 \\times 3` rotational matrix :math:`R`, return the Euler
     angles: :math:`\\alpha, \\beta, \\gamma`.
 
     Parameters
     ----------
     rmat:  2d float array
-        The :math:`3\\times 3` rotational matrix :math:`R`.
+        The :math:`3 \\times 3` rotational matrix :math:`R`.
 
     Returns
     ---------
@@ -418,7 +418,7 @@ def dmat_spinor(alpha, beta, gamma):
     Returns
     -------
     dmat:  2d complex array
-        The :math:`2\\times 2` transformation matrix.
+        The :math:`2 \\times 2` transformation matrix.
     """
 
     dmat = np.zeros((2, 2), dtype=np.complex128)
@@ -433,7 +433,7 @@ def zx_to_rmat(z, x):
     """
     Given :math:`z` vector and :math:`x` vector, calculate :math:`y` vector
     which satisfies the right-hand Cartesian coordinate and normalize them to
-    unit if needed, and then return the :math:`3\\times 3`
+    unit if needed, and then return the :math:`3 \\times 3`
     rotational matrix :math:`R`.
 
     Parameters
@@ -446,7 +446,7 @@ def zx_to_rmat(z, x):
     Returns
     ---------
     rmat: 2d float array
-        The :math:`3\\times 3` rotational matrix :math:`R`.
+        The :math:`3 \\times 3` rotational matrix :math:`R`.
     """
 
     z = np.array(z, dtype=np.float64)
@@ -532,7 +532,7 @@ def cf_cubic_d(ten_dq):
 
     Returns
     -------
-    cf: :math:`10\\times10` complex array
+    cf: 2d complex array, shape=(10, 10)
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 
@@ -567,7 +567,7 @@ def cf_tetragonal_d(ten_dq, d1, d3):
 
     Returns
     -------
-    cf: :math:`10\\times10` complex array
+    cf: 2d complex array, shape=(10, 10)
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 
@@ -603,7 +603,7 @@ def cf_trigonal_t2g(delta):
 
     Returns
     -------
-    cf: :math:`6\\times6` complex array
+    cf: 2d complex array, shape=(6, 6)
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 
