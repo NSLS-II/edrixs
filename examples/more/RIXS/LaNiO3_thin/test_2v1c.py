@@ -95,7 +95,7 @@ if __name__ == "__main__":
     # Run XAS
     xas, poles_dict = edrixs.xas_2v1c_fort(
         comm, shell_name, ominc_xas, gamma_c=gamma_c, v_tot_noccu=noccu, trans_to_which=1,
-        thin=thin, phi=phi, pol_type=poltype_xas, num_gs=3, nkryl=300, temperature=300
+        thin=thin, phi=phi, pol_type=poltype_xas, num_gs=3, nkryl=100, temperature=300
     )
 
     if rank == 0:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     rixs, poles_dict = edrixs.rixs_2v1c_fort(
         comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         v_tot_noccu=noccu, trans_to_which=1, thin=thin, thout=thout, phi=phi,
-        pol_type=poltype_rixs, num_gs=3, nkryl=300, temperature=300
+        pol_type=poltype_rixs, num_gs=3, nkryl=100, temperature=300
     )
 
     if rank == 0:

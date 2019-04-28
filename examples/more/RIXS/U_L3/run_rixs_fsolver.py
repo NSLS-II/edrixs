@@ -87,7 +87,7 @@ if __name__ == "__main__":
     xas, poles_dict = edrixs.xas_2v1c_fort(
         comm, shell_name, ominc_xas, gamma_c=gamma_c,
         v_tot_noccu=noccu, trans_to_which=2, thin=thin, phi=phi,
-        pol_type=poltype_xas, num_gs=1, nkryl=400, temperature=300
+        pol_type=poltype_xas, num_gs=1, nkryl=200, temperature=300
     )
 
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     rixs, poles_dict = edrixs.rixs_2v1c_fort(
         comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         v_tot_noccu=noccu, trans_to_which=2, thin=thin, thout=thout, phi=phi,
-        pol_type=poltype_rixs, num_gs=1, nkryl=400, linsys_max=1000, temperature=300
+        pol_type=poltype_rixs, num_gs=1, nkryl=200, linsys_max=1000, temperature=300
     )
 
     if rank == 0:

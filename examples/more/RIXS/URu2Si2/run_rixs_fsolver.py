@@ -61,7 +61,7 @@ if __name__ == "__main__":
     num_gs = 9
 
     # energy mesh of the incident X-ray (eV)
-    nom = 100
+    nom = 10
     ominc = np.linspace(-5 + om_shift, 20 + om_shift, nom)
     neloss = 1000
     eloss = np.linspace(-0.2, 2.5, neloss)
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # Run XAS
     xas, xas_poles = edrixs.xas_1v1c_fort(
         comm, shell_name, ominc, gamma_c=gamma_c, v_noccu=noccu, thin=thin, phi=phi,
-        num_gs=num_gs, nkryl=400, pol_type=poltype_xas, temperature=T
+        num_gs=num_gs, nkryl=100, pol_type=poltype_xas, temperature=T
     )
 
     np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
         comm, shell_name, ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         thin=thin, thout=thout, phi=phi, v_noccu=noccu, pol_type=poltype_rixs,
-        num_gs=num_gs, nkryl=400, temperature=T
+        num_gs=num_gs, nkryl=100, temperature=T
     )
 
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)

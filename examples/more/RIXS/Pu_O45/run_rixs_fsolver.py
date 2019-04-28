@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # Run XAS
     xas, xas_poles = edrixs.xas_1v1c_fort(
         comm, shell_name, ominc_xas, gamma_c=gamma_c, v_noccu=noccu, thin=thin, phi=phi,
-        num_gs=num_gs, nkryl=400, pol_type=poltype_xas, temperature=T
+        num_gs=num_gs, nkryl=200, pol_type=poltype_xas, temperature=T
     )
 
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
         comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         thin=thin, thout=thout, phi=phi, v_noccu=noccu, pol_type=poltype_rixs,
-        num_gs=num_gs, nkryl=400, temperature=T
+        num_gs=num_gs, nkryl=200, temperature=T
     )
 
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)

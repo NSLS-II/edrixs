@@ -41,7 +41,7 @@ if __name__ == "__main__":
                    ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
     gamma_c, gamma_f = 0.2, 0.1
     # L3-edge
-    ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 100)
+    ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 10)
     # L2-edge
     # ominc_rixs = np.linspace(10.9 + off, 14.9 + off, 100)
     eloss = np.linspace(-0.5, 5.0, 1000)
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     # Run XAS
     xas, xas_poles = edrixs.xas_1v1c_fort(
         comm, shell_name, ominc_xas, gamma_c=gamma_c, v_noccu=8, thin=thin, phi=phi,
-        num_gs=3, nkryl=400, pol_type=poltype_xas, temperature=300
+        num_gs=3, nkryl=100, pol_type=poltype_xas, temperature=300
     )
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
         comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         thin=thin, thout=thout, phi=phi, v_noccu=8, pol_type=poltype_rixs,
-        num_gs=3, nkryl=200, temperature=300
+        num_gs=3, nkryl=100, temperature=300
     )
 
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)

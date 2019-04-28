@@ -28,15 +28,19 @@ Installation
 
    * gfortran (recommended) or ifort 
    * MPI environment (openmpi or mpich)
+   * mpif90 (binding with gfortran or ifort)
    * Python3
    * BLAS and LAPACK (gfortran+OpenBLAS or ifort+MKL)
-   * arpack-ng
+   * arpack-ng (enable mpi)
    * Numpy
    * Scipy
    * Sympy
    * Matplotlib
+   * mpi4py
    * Sphinx
    * Numpydoc
+
+  Be sure to compile OpenBLAS, arpack-ng, mpi4py and edrixs with the same Fortran (MPI) compiler.
 
 * Install Fortran parts of edrixs
 
@@ -51,8 +55,7 @@ Installation
        $ make
        $ make install
 
-  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS. Be sure to compile arpack-ng with the same mpif90 compiler and BLAS/LAPACK libraries. libedrixsfortran.a will be generated, which will be used when building python interface.
-  The executable .x files will be installed in bin directory. Add the following line in .bashrc or .bash_profile file,
+  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
 
     .. code-block:: bash
 
