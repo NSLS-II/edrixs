@@ -1,6 +1,7 @@
 __all__ = ['ed_1v1c_py', 'xas_1v1c_py', 'rixs_1v1c_py',
            'ed_1v1c_fort', 'xas_1v1c_fort', 'rixs_1v1c_fort',
-           'ed_2v1c_fort', 'xas_2v1c_fort', 'rixs_2v1c_fort']
+           'ed_2v1c_fort', 'xas_2v1c_fort', 'rixs_2v1c_fort',
+           'ed_siam_fort']
 
 import numpy as np
 import scipy
@@ -657,10 +658,6 @@ def ed_1v1c_fort(comm, shell_name, *, shell_level=None,
 
     Returns
     -------
-    v_norb: int
-        Number of total valence orbitals.
-    c_norb: int
-        Number of core orbitals.
     eval_i: 1d float array, shape=(neval, )
         The eigenvalues of initial Hamiltonian.
     denmat: 2d complex array, shape=(nvector, v_norb, v_norb))
@@ -681,7 +678,7 @@ def ed_1v1c_fort(comm, shell_name, *, shell_level=None,
     else:
         levels = None
 
-    v_norb, c_norb, eval_i, denmat = _ed_1or2_valence_1core(
+    eval_i, denmat = _ed_1or2_valence_1core(
         comm, names, shell_level=levels, v1_soc=v_soc, c_soc=c_soc,
         v_tot_noccu=v_noccu, slater=slater, v1_ext_B=ext_B,
         v1_on_which=on_which, v1_cfmat=v_cfmat, v1_othermat=v_othermat,
@@ -690,7 +687,7 @@ def ed_1v1c_fort(comm, shell_name, *, shell_level=None,
         min_ndim=min_ndim
     )
 
-    return v_norb, c_norb, eval_i, denmat
+    return eval_i, denmat
 
 
 def ed_2v1c_fort(comm, shell_name, *, shell_level=None,
@@ -840,10 +837,6 @@ def ed_2v1c_fort(comm, shell_name, *, shell_level=None,
 
     Returns
     -------
-    v1v2_norb: int
-        Number of total valence orbitals.
-    c_norb: int
-        Number of core orbitals.
     eval_i: 1d float array, shape=(neval, )
         The eigenvalues of initial Hamiltonian.
     denmat: 2d complex array, shape=(nvector, v1v2_norb, v1v2_norb))
@@ -861,7 +854,7 @@ def ed_2v1c_fort(comm, shell_name, *, shell_level=None,
     if c_name not in c_name_options:
         raise Exception("NOT supported type of core shell: ", c_name)
 
-    v1v2_norb, c_norb, eval_i, denmat = _ed_1or2_valence_1core(
+    eval_i, denmat = _ed_1or2_valence_1core(
         comm, shell_name, shell_level=shell_level, v1_soc=v1_soc, v2_soc=v2_soc, c_soc=c_soc,
         v_tot_noccu=v_tot_noccu, slater=slater, v1_ext_B=v1_ext_B, v2_ext_B=v2_ext_B,
         v1_on_which=v1_on_which, v2_on_which=v2_on_which, v1_cfmat=v1_cfmat,
@@ -870,7 +863,7 @@ def ed_2v1c_fort(comm, shell_name, *, shell_level=None,
         nvector=nvector, ncv=ncv, idump=idump, maxiter=maxiter, eigval_tol=eigval_tol,
         min_ndim=min_ndim
     )
-    return v1v2_norb, c_norb, eval_i, denmat
+    return eval_i, denmat
 
 
 def _ed_1or2_valence_1core(
@@ -1049,16 +1042,16 @@ def _ed_1or2_valence_1core(
         comm.Barrier()
 
         # read eigvals.dat and denmat.dat
-        data = np.loadtxt('eigvals.dat')
+        data = np.loadtxt('eigvals.dat', ndmin=2)
         eval_i = np.zeros(neval, dtype=np.float)
         eval_i[0:neval] = data[0:neval, 1]
-        data = np.loadtxt('denmat.dat')
+        data = np.loadtxt('denmat.dat', ndmin=2)
         tmp = (nvector, v1v2_norb, v1v2_norb)
         denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
 
-        return v1v2_norb, c_norb, eval_i, denmat
+        return eval_i, denmat
     else:
-        return v1v2_norb, c_norb, None, None
+        return None, None
 
 
 def xas_1v1c_fort(comm, shell_name, ominc, *, gamma_c=0.1,
@@ -1780,7 +1773,7 @@ def _rixs_1or2_valence_1core(
     return rixs, poles
 
 
-def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
+def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core_pot=0, c_level=0,
                  c_soc=0, trans_c2n=None, imp_mat=None, bath_level=None, hyb=None, hopping=None,
                  slater=None, ext_B=None, on_which='spin', do_ed=0, ed_solver=2, neval=1,
                  nvector=1, ncv=3, idump=False, maxiter=1000, eigval_tol=1e-8, min_ndim=1000):
@@ -1789,6 +1782,100 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
 
     Parameters
     ----------
+    comm: MPI_Comm
+        MPI Communicator
+    shell_name: tuple of two strings
+        Names of valence and core shells. The 1st (2nd) string in the tuple is for the
+        valence (core) shell.
+
+        - The 1st string can only be 's', 'p', 't2g', 'd', 'f',
+
+        - The 2nd string can be 's', 'p', 'p12', 'p32', 'd', 'd32', 'd52',
+          'f', 'f52', 'f72'.
+
+        For example: shell_name=('d', 'p32') indicates a :math:`L_3` edge transition from
+        core :math:`p_{3/2}` shell to valence :math:`d` shell.
+    nbath: int
+        Number of bath sites.
+    siam_type: int
+        Type of SIAM Hamiltonian,
+
+        - 0: diagonal hybridization function, parameterized by imp_mat, bath_level and hyb
+
+        - 1: general hybridization function, parameterized by matrix hopping
+
+        if siam_type=0, imp_mat, bath_level and hyb are required, if siam_type=1,
+        only hopping is required.
+    v_noccu: int
+        Number of total occupancy of impurity and baths orbitals, required when do_ed=1, 2
+    static_core_pot: float
+        Static core hole potential.
+    c_level: float
+        Energy level of core shell.
+    c_soc: float
+        Spin-orbit coupling strength of core electrons.
+    trans_c2n: 2d complex array
+        The transformation matrix from the spherical harmonics basis to the basis on which
+        the imp_mat and hybridization function (bath_level, hyb, hopping) are defined.
+    imp_mat: 2d complex array
+        Impurity matrix for the impurity site, including CF or SOC
+    bath_level: 2d complex array
+        Energy level of bath sites, 1st (2nd) dimension is for different bath sites (orbitals).
+    hyb: 2d complex array
+        Hybridization strength of bath sites, 1st (2nd) dimension is for different bath
+        sites (orbitals)
+    hopping: 2d complex array
+        General hopping matrix when siam_type=1, including imp_mat and hybridization functions.
+    slater: tuple of two lists
+        Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
+        The order of the elements in each list should be like this:
+
+        [FX_vv, FX_vc, GX_vc, FX_cc],
+
+        where X are integers with ascending order, it can be X=0, 2, 4, 6 or X=1, 3, 5.
+        One can ignore all the continuous zeros at the end of the list.
+
+        For example, if the full list is: [F0_dd, F2_dd, F4_dd, 0, F2_dp, 0, 0, 0, 0], one can
+        just provide [F0_dd, F2_dd, F4_dd, 0, F2_dp]
+
+        All the Slater integrals will be set to zero if slater=None.
+    ext_B: tuple of three float numbers
+        Vector of external magnetic field with respect to global :math:`xyz`-axis.
+
+        They will be set to zero if not provided.
+    on_which: string
+        Apply Zeeman exchange field on which sector. Options are 'spin', 'orbital' or 'both'.
+    do_ed: logical
+        If do_end=True, diagonalize the Hamitlonian to find a few lowest eigenstates, return the
+        eigenvalues and density matirx, and write the eigenvectors in files eigvec.n, otherwise,
+        just write out the input files, do not perform the ED.
+    ed_solver: int
+        Type of ED solver, options can be 0, 1, 2
+
+        - 0: use Lapack to fully diagonalize Hamiltonian to get all the eigenvalues.
+
+        - 1: use standard Lanczos algorithm to find only a few lowest eigenvalues,
+          no re-orthogonalization has been applied, so it is not very accurate.
+
+        - 2: use parallel version of Arpack library to find a few lowest eigenvalues,
+          it is accurate and is the recommeded choice in real calculations of XAS and RIXS.
+    neval: int
+        Number of eigenvalues to be found. For ed_solver=2, the value should not be too small,
+        neval > 10 is usually a safe value.
+    nvector: int
+        Number of eigenvectors to be found and written into files.
+    ncv: int
+        Used for ed_solver=2, it should be at least ncv > neval + 2. Usually, set it a little
+        bit larger than neval, for example, set ncv=200 when neval=100.
+    idump: logical
+        Whether to dump the eigenvectors to files "eigvec.n", where n means the n-th vectors.
+    maxiter: int
+        Maximum number of iterations in finding all the eigenvalues, used for ed_solver=1, 2.
+    eigval_tol: float
+        The convergence criteria of eigenvalues, used for ed_solver=1, 2.
+    min_ndim: int
+        The minimum dimension of the Hamiltonian when the ed_solver=1, 2 can be used, otherwise,
+        ed_solver=1 will be used.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -1857,8 +1944,8 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
         write_umat(umat_i, 'coulomb_i.in')
         write_umat(umat_n, 'coulomb_n.in')
 
-    emat_i = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
-    emat_n = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+    emat_i = np.zeros((ntot, ntot), dtype=np.complex)
+    emat_n = np.zeros((ntot, ntot), dtype=np.complex)
     # General hybridization function, including off-diagonal terms
     if siam_type == 1 and hopping is not None:
         emat_i[0:ntot_v, 0:ntot_v] += hopping
@@ -1910,6 +1997,9 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
         emat_i[0:v_norb, 0:v_norb] += zeeman
         emat_n[0:v_norb, 0:v_norb] += zeeman
 
+    # static core potential
+    emat_n[0:v_norb, 0:v_norb] -= np.eye(v_norb) * static_core_pot
+
     if trans_c2n is None:
         trans_c2n = np.eye(v_norb, dtype=np.complex)
     else:
@@ -1941,26 +2031,26 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
             comm.Barrier()
             ed_fsolver(fcomm, rank, size)
             comm.Barrier()
-            data = np.loadtxt('eigvals.dat')
+            data = np.loadtxt('eigvals.dat', ndmin=2)
             eval_i = np.zeros(neval, dtype=np.float)
             eval_i[0:neval] = data[0:neval, 1]
-            data = np.loadtxt('denmat.dat')
+            data = np.loadtxt('denmat.dat', ndmin=2)
             tmp = (nvector, ntot_v, ntot_v)
             denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
-            return ntot_v, c_norb, eval_i, denmat
+            return eval_i, denmat, v_noccu
         else:
             if rank == 0:
                 print("edrixs >>> do_ed=2, Do not perform ED, only write files", flush=True)
-            return ntot_v, c_norb, None, None
+            return None, None, None
 
     # Find the ground states by total occupancy N
     elif do_ed == 0:
         if rank == 0:
-            print("edrixs >>> do_ed=0, serach gournd state by total occupancy N", flush=True)
+            print("edrixs >>> do_ed=0, serach ground state by total occupancy N", flush=True)
             flog = open('search_gs.log', 'w')
         write_emat(emat_i, 'hopping_i.in')
         res = []
-        num_electron = ntot_v / 2
+        num_electron = ntot_v // 2
         noccu_gs = num_electron
         if rank == 0:
             write_config(
@@ -1971,17 +2061,21 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
         comm.Barrier()
         ed_fsolver(fcomm, rank, size)
         comm.Barrier()
-        data = np.loadtxt('eigvals.dat')
+        data = np.loadtxt('eigvals.dat', ndmin=2)
         eval_gs = data[0, 1]
-        res.append((num_electron, eval_gs))
+        data = np.loadtxt('denmat.dat', ndmin=2)
+        tmp = (1, ntot_v, ntot_v)
+        denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
+        imp_occu = np.sum(denmat[0].diagonal()[0:v_norb]).real
+        res.append((num_electron, eval_gs, imp_occu))
         if rank == 0:
-            print(num_electron, eval_gs, file=flog, flush=True)
+            print(num_electron, eval_gs, imp_occu, file=flog, flush=True)
 
-        nplus_list = [num_electron + i + 1 for i in range(ntot_v/2)]
-        nminus_list = [num_electron - i - 1 for i in range(ntot_v/2)]
+        nplus_list = [num_electron + i + 1 for i in range(ntot_v // 2)]
+        nminus_list = [num_electron - i - 1 for i in range(ntot_v // 2)]
         nplus_direction = True
         nminus_direction = True
-        for i in range(ntot_v/2):
+        for i in range(ntot_v // 2):
             if nplus_direction:
                 num_electron = nplus_list[i]
                 if rank == 0:
@@ -1989,16 +2083,21 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
                 comm.Barrier()
                 ed_fsolver(fcomm, rank, size)
                 comm.Barrier()
-                data = np.loadtxt('eigvals.dat')
-                if data[0, 1] > eval_gs:
+                data = np.loadtxt('eigvals.dat', ndmin=2)
+                eigval = data[0, 1]
+                if eigval > eval_gs:
                     nplus_direction = False
                 else:
                     nminus_direction = False
-                    eval_gs = data[0, 1]
+                    eval_gs = eigval
                     noccu_gs = num_electron
-                res.append((num_electron, data[0, 1]))
+                data = np.loadtxt('denmat.dat', ndmin=2)
+                tmp = (1, ntot_v, ntot_v)
+                denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
+                imp_occu = np.sum(denmat[0].diagonal()[0:v_norb]).real
+                res.append((num_electron, eigval, imp_occu))
                 if rank == 0:
-                    print(num_electron, data[0, 1], file=flog, flush=True)
+                    print(num_electron, eigval, imp_occu, file=flog, flush=True)
 
             if nminus_direction:
                 num_electron = nminus_list[i]
@@ -2007,24 +2106,30 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
                 comm.Barrier()
                 ed_fsolver(fcomm, rank, size)
                 comm.Barrier()
-                data = np.loadtxt('eigvals.dat')
-                if data[0, 1] > eval_gs:
+                data = np.loadtxt('eigvals.dat', ndmin=2)
+                eigval = data[0, 1]
+                if eigval > eval_gs:
                     nminus_direction = False
                 else:
                     nplus_direction = False
-                    eval_gs = data[0, 1]
+                    eval_gs = eigval
                     noccu_gs = num_electron
-                res.append((num_electron, data[0, 1]))
+                data = np.loadtxt('denmat.dat', ndmin=2)
+                tmp = (1, ntot_v, ntot_v)
+                denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
+                imp_occu = np.sum(denmat[0].diagonal()[0:v_norb]).real
+                res.append((num_electron, eigval, imp_occu))
                 if rank == 0:
-                    print(num_electron, data[0, 1], file=flog, flush=True)
+                    print(num_electron, eigval, imp_occu, file=flog, flush=True)
         if rank == 0:
             flog.close()
             res.sort(key=lambda x: x[1])
             f = open('search_result.dat', 'w')
             for item in res:
-                f.write("{:10d}{:20.10f}\n".format(item[0], item[1]))
+                f.write("{:10d}{:20.10f}{:20.10f}\n".format(item[0], item[1], item[2]))
             f.close()
-            print("edrixs >>> do_ed=0, Perform ED at occupancy: ", noccu_gs)
+            print("edrixs >>> do_ed=0, Perform ED at occupancy: ", noccu_gs,
+                  "with more accuracy", flush=True)
         # Do ED for the occupancy of ground state with more accuracy
         eval_shift = c_level * c_norb / noccu_gs
         emat_i[0:ntot_v, 0:ntot_v] += np.eye(ntot_v) * eval_shift
@@ -2040,12 +2145,12 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
         comm.Barrier()
         ed_fsolver(fcomm, rank, size)
         comm.Barrier()
-        data = np.loadtxt('eigvals.dat')
+        data = np.loadtxt('eigvals.dat', ndmin=2)
         eval_i = np.zeros(neval, dtype=np.float)
         eval_i[0:neval] = data[0:neval, 1]
-        data = np.loadtxt('denmat.dat')
+        data = np.loadtxt('denmat.dat', ndmin=2)
         tmp = (nvector, ntot_v, ntot_v)
         denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
-        return ntot_v, c_norb, eval_i, denmat
+        return eval_i, denmat, noccu_gs
     else:
         raise Exception("Unknown case of do_ed ", do_ed)
