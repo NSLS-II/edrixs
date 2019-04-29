@@ -81,7 +81,7 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     # Run ED
-    v_norb, c_norb, eval_i, denmat = edrixs.ed_2v1c_fort(
+    eval_i, denmat = edrixs.ed_2v1c_fort(
         comm, shell_name, shell_level=(0, 3, -off),
         v1_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n, v1_cfmat=cf,
         v_tot_noccu=noccu, slater=slater,

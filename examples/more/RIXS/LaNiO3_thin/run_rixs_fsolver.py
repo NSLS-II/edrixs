@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     shell_name = ('d', 'p')
     # Run ED
-    v_norb, c_norb, eval_i, denmat = edrixs.ed_1v1c_fort(
+    eval_i, denmat = edrixs.ed_1v1c_fort(
         comm, shell_name, shell_level=(0, -off), v_soc=(zeta_d_i, zeta_d_n), c_soc=zeta_p_n,
         v_noccu=8, slater=slater, v_cfmat=cf, ed_solver=0, neval=10, nvector=3, idump=True
     )

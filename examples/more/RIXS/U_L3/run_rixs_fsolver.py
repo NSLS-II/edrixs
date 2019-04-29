@@ -72,14 +72,13 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     # Run ED
-    v_norb, c_norb, eval_i, denmat = edrixs.ed_2v1c_fort(
+    eval_i, denmat = edrixs.ed_2v1c_fort(
         comm, shell_name, shell_level=(0, 5.0, 0),
         v1_soc=(zeta_f_i, zeta_f_n), v2_soc=(zeta_d_i, zeta_d_n),
         v_tot_noccu=noccu, slater=slater, ed_solver=2, neval=20,
         nvector=2, ncv=50, idump=True
     )
     if rank == 0:
-        print(v_norb, c_norb)
         print('eigvals:', eval_i)
         print('occupancy numbers:', denmat[0].diagonal())
 
