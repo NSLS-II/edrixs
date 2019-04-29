@@ -14,7 +14,7 @@ from .angular_momentum import get_sx, get_sy, get_sz, get_lx, get_ly, get_lz
 from .angular_momentum import rmat_to_euler, get_wigner_dmat
 from .manybody_operator import two_fermion, four_fermion
 from .fock_basis import get_fock_bin_by_N, write_fock_dec_by_N
-from .basis_transform import cb_op2, tmat_r2c
+from .basis_transform import cb_op2, tmat_r2c, cb_op
 from .photon_transition import get_trans_oper, quadrupole_polvec
 from .photon_transition import dipole_polvec_xas, dipole_polvec_rixs, unit_wavevector
 from .rixs_utils import scattering_mat
@@ -1778,3 +1778,274 @@ def _rixs_1or2_valence_1core(
         poles.append(poles_per_om)
 
     return rixs, poles
+
+
+def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, c_level=0,
+                 c_soc=0, trans_c2n=None, imp_mat=None, bath_level=None, hyb=None, hopping=None,
+                 slater=None, ext_B=None, on_which='spin', do_ed=0, ed_solver=2, neval=1,
+                 nvector=1, ncv=3, idump=False, maxiter=1000, eigval_tol=1e-8, min_ndim=1000):
+    """
+    Find the ground state of a Single Impuirty Anderson Model (SIAM).
+
+    Parameters
+    ----------
+    """
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    fcomm = comm.py2f()
+    if rank == 0:
+        print("edrixs >>> Running ED ...", flush=True)
+
+    v_name_options = ['s', 'p', 't2g', 'd', 'f']
+    c_name_options = ['s', 'p', 'p12', 'p32', 't2g', 'd', 'd32', 'd52', 'f', 'f52', 'f72']
+    v_name = shell_name[0].strip()
+    c_name = shell_name[1].strip()
+    if v_name not in v_name_options:
+        raise Exception("NOT supported type of valence shell: ", v_name)
+    if c_name not in c_name_options:
+        raise Exception("NOT supported type of core shell: ", c_name)
+
+    info_shell = info_atomic_shell()
+    v_orbl = info_shell[v_name][0]
+    v_norb = info_shell[v_name][1]
+    c_norb = info_shell[c_name][1]
+    ntot_v = v_norb * (nbath + 1)
+    ntot = ntot_v + c_norb
+
+    slater_name = slater_integrals_name((v_name, c_name), ('v', 'c'))
+    nslat = len(slater_name)
+    slater_i = np.zeros(nslat, dtype=np.float)
+    slater_n = np.zeros(nslat, dtype=np.float)
+
+    if slater is not None:
+        if nslat > len(slater[0]):
+            slater_i[0:len(slater[0])] = slater[0]
+        else:
+            slater_i[:] = slater[0][0:nslat]
+        if nslat > len(slater[1]):
+            slater_n[0:len(slater[1])] = slater[1]
+        else:
+            slater_n[:] = slater[1][0:nslat]
+
+    # print summary of slater integrals
+    if rank == 0:
+        print(flush=True)
+        print("    Summary of Slater integrals:", flush=True)
+        print("    ------------------------------", flush=True)
+        print("    Terms,  Initial Hamiltonian,  Intermediate Hamiltonian", flush=True)
+        for i in range(nslat):
+            print(
+                "    ", slater_name[i],
+                ":  {:20.10f}{:20.10f}".format(slater_i[i], slater_n[i]), flush=True
+            )
+        print(flush=True)
+
+    umat_tmp_i = get_umat_slater(v_name + c_name, *slater_i)
+    umat_tmp_n = get_umat_slater(v_name + c_name, *slater_n)
+
+    umat_i = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+    umat_n = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+
+    indx = list(range(0, v_norb)) + [ntot_v + i for i in range(0, c_norb)]
+    for i in range(v_norb+c_norb):
+        for j in range(v_norb+c_norb):
+            for k in range(v_norb+c_norb):
+                for l in range(v_norb+c_norb):
+                    umat_i[indx[i], indx[j], indx[k], indx[l]] = umat_tmp_i[i, j, k, l]
+                    umat_n[indx[i], indx[j], indx[k], indx[l]] = umat_tmp_n[i, j, k, l]
+    if rank == 0:
+        write_umat(umat_i, 'coulomb_i.in')
+        write_umat(umat_n, 'coulomb_n.in')
+
+    emat_i = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+    emat_n = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+    # General hybridization function, including off-diagonal terms
+    if siam_type == 1 and hopping is not None:
+        emat_i[0:ntot_v, 0:ntot_v] += hopping
+        emat_n[0:ntot_v, 0:ntot_v] += hopping
+    # Diagonal hybridization function
+    elif siam_type == 0:
+        # matrix (CF or SOC) for impuirty site
+        if imp_mat is not None:
+            emat_i[0:v_norb, 0:v_norb] += imp_mat
+            emat_n[0:v_norb, 0:v_norb] += imp_mat
+        # bath levels
+        if bath_level is not None:
+            for i in range(nbath):
+                for j in range(v_norb):
+                    indx = (i + 1) * v_norb + j
+                    emat_i[indx, indx] += bath_level[i, j]
+                    emat_n[indx, indx] += bath_level[i, j]
+        if hyb is not None:
+            for i in range(nbath):
+                for j in range(v_norb):
+                    indx1, indx2 = j, (i + 1) * v_norb + j
+                    emat_i[indx1, indx2] += hyb[i, j]
+                    emat_n[indx1, indx2] += hyb[i, j]
+                    emat_i[indx2, indx1] += np.conj(hyb[i, j])
+                    emat_n[indx2, indx1] += np.conj(hyb[i, j])
+    else:
+        raise Exception("Unknown siam_type: ", siam_type)
+
+    if c_name in ['p', 'd', 'f']:
+        emat_n[ntot_v:ntot, ntot_v:ntot] += atom_hsoc(c_name, c_soc)
+
+    if v_name == 't2g':
+        lx, ly, lz = get_lx(1, True), get_ly(1, True), get_lz(1, True)
+        sx, sy, sz = get_sx(1), get_sy(1), get_sz(1)
+        lx, ly, lz = -lx, -ly, -lz
+    else:
+        lx, ly, lz = get_lx(v_orbl, True), get_ly(v_orbl, True), get_lz(v_orbl, True)
+        sx, sy, sz = get_sx(v_orbl), get_sy(v_orbl), get_sz(v_orbl)
+
+    if ext_B is not None:
+        if on_which.strip() == 'spin':
+            zeeman = ext_B[0] * (2 * sx) + ext_B[1] * (2 * sy) + ext_B[2] * (2 * sz)
+        elif on_which.strip() == 'orbital':
+            zeeman = ext_B[0] * lx + ext_B[1] * ly + ext_B[2] * lz
+        elif on_which.strip() == 'both':
+            zeeman = ext_B[0] * (lx + 2 * sx) + ext_B[1] * (ly + 2 * sy) + ext_B[2] * (lz + 2 * sz)
+        else:
+            raise Exception("Unknown value of on_which", on_which)
+        emat_i[0:v_norb, 0:v_norb] += zeeman
+        emat_n[0:v_norb, 0:v_norb] += zeeman
+
+    if trans_c2n is None:
+        trans_c2n = np.eye(v_norb, dtype=np.complex)
+    else:
+        trans_c2n = np.array(trans_c2n)
+
+    tmat = np.eye(ntot, dtype=np.complex)
+    for i in range(nbath+1):
+        off = i * v_norb
+        tmat[off:off+v_norb, off:off+v_norb] = np.transpose(trans_c2n)
+    emat_i[:, :] = cb_op(emat_i, tmat)
+    emat_n[:, :] = cb_op(emat_n, tmat)
+
+    # Perform ED if necessary
+    if do_ed == 1 or do_ed == 2:
+        eval_shift = c_level * c_norb / v_noccu
+        emat_i[0:ntot_v, 0:ntot_v] += np.eye(ntot_v) * eval_shift
+        emat_n[ntot_v:ntot, ntot_v:ntot] += np.eye(c_norb) * c_level
+        if rank == 0:
+            write_emat(emat_i, 'hopping_i.in')
+            write_emat(emat_n, 'hopping_n.in')
+            write_config(
+                ed_solver=ed_solver, num_val_orbs=ntot_v, neval=neval, nvector=nvector, ncv=ncv,
+                idump=idump, maxiter=maxiter, min_ndim=min_ndim, eigval_tol=eigval_tol
+            )
+            write_fock_dec_by_N(ntot_v, v_noccu, "fock_i.in")
+        if do_ed == 1:
+            if rank == 0:
+                print("edrixs >>> do_ed=1, perform ED at noccu: ", v_noccu, flush=True)
+            comm.Barrier()
+            ed_fsolver(fcomm, rank, size)
+            comm.Barrier()
+            data = np.loadtxt('eigvals.dat')
+            eval_i = np.zeros(neval, dtype=np.float)
+            eval_i[0:neval] = data[0:neval, 1]
+            data = np.loadtxt('denmat.dat')
+            tmp = (nvector, ntot_v, ntot_v)
+            denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
+            return ntot_v, c_norb, eval_i, denmat
+        else:
+            if rank == 0:
+                print("edrixs >>> do_ed=2, Do not perform ED, only write files", flush=True)
+            return ntot_v, c_norb, None, None
+
+    # Find the ground states by total occupancy N
+    elif do_ed == 0:
+        if rank == 0:
+            print("edrixs >>> do_ed=0, serach gournd state by total occupancy N", flush=True)
+            flog = open('search_gs.log', 'w')
+        write_emat(emat_i, 'hopping_i.in')
+        res = []
+        num_electron = ntot_v / 2
+        noccu_gs = num_electron
+        if rank == 0:
+            write_config(
+                ed_solver=1, num_val_orbs=ntot_v, neval=1, nvector=1, idump=False,
+                maxiter=maxiter, min_ndim=min_ndim, eigval_tol=eigval_tol
+            )
+            write_fock_dec_by_N(ntot_v, num_electron, "fock_i.in")
+        comm.Barrier()
+        ed_fsolver(fcomm, rank, size)
+        comm.Barrier()
+        data = np.loadtxt('eigvals.dat')
+        eval_gs = data[0, 1]
+        res.append((num_electron, eval_gs))
+        if rank == 0:
+            print(num_electron, eval_gs, file=flog, flush=True)
+
+        nplus_list = [num_electron + i + 1 for i in range(ntot_v/2)]
+        nminus_list = [num_electron - i - 1 for i in range(ntot_v/2)]
+        nplus_direction = True
+        nminus_direction = True
+        for i in range(ntot_v/2):
+            if nplus_direction:
+                num_electron = nplus_list[i]
+                if rank == 0:
+                    write_fock_dec_by_N(ntot_v, num_electron, "fock_i.in")
+                comm.Barrier()
+                ed_fsolver(fcomm, rank, size)
+                comm.Barrier()
+                data = np.loadtxt('eigvals.dat')
+                if data[0, 1] > eval_gs:
+                    nplus_direction = False
+                else:
+                    nminus_direction = False
+                    eval_gs = data[0, 1]
+                    noccu_gs = num_electron
+                res.append((num_electron, data[0, 1]))
+                if rank == 0:
+                    print(num_electron, data[0, 1], file=flog, flush=True)
+
+            if nminus_direction:
+                num_electron = nminus_list[i]
+                if rank == 0:
+                    write_fock_dec_by_N(ntot_v, num_electron, "fock_i.in")
+                comm.Barrier()
+                ed_fsolver(fcomm, rank, size)
+                comm.Barrier()
+                data = np.loadtxt('eigvals.dat')
+                if data[0, 1] > eval_gs:
+                    nminus_direction = False
+                else:
+                    nplus_direction = False
+                    eval_gs = data[0, 1]
+                    noccu_gs = num_electron
+                res.append((num_electron, data[0, 1]))
+                if rank == 0:
+                    print(num_electron, data[0, 1], file=flog, flush=True)
+        if rank == 0:
+            flog.close()
+            res.sort(key=lambda x: x[1])
+            f = open('search_result.dat', 'w')
+            for item in res:
+                f.write("{:10d}{:20.10f}\n".format(item[0], item[1]))
+            f.close()
+            print("edrixs >>> do_ed=0, Perform ED at occupancy: ", noccu_gs)
+        # Do ED for the occupancy of ground state with more accuracy
+        eval_shift = c_level * c_norb / noccu_gs
+        emat_i[0:ntot_v, 0:ntot_v] += np.eye(ntot_v) * eval_shift
+        emat_n[ntot_v:ntot, ntot_v:ntot] += np.eye(c_norb) * c_level
+        if rank == 0:
+            write_emat(emat_i, 'hopping_i.in')
+            write_emat(emat_n, 'hopping_n.in')
+            write_config(
+                ed_solver=ed_solver, num_val_orbs=ntot_v, neval=neval, nvector=nvector, ncv=ncv,
+                idump=idump, maxiter=maxiter, min_ndim=min_ndim, eigval_tol=eigval_tol
+            )
+            write_fock_dec_by_N(ntot_v, noccu_gs, "fock_i.in")
+        comm.Barrier()
+        ed_fsolver(fcomm, rank, size)
+        comm.Barrier()
+        data = np.loadtxt('eigvals.dat')
+        eval_i = np.zeros(neval, dtype=np.float)
+        eval_i[0:neval] = data[0:neval, 1]
+        data = np.loadtxt('denmat.dat')
+        tmp = (nvector, ntot_v, ntot_v)
+        denmat = data[:, 3].reshape(tmp) + 1j * data[:, 4].reshape(tmp)
+        return ntot_v, c_norb, eval_i, denmat
+    else:
+        raise Exception("Unknown case of do_ed ", do_ed)
