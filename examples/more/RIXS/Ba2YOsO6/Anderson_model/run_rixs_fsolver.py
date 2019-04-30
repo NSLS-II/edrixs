@@ -58,21 +58,23 @@ if __name__ == "__main__":
     thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0.0
     gamma_c = 2.5
     gamma_f = 0.075
-    ominc_xas = np.linspace(-20, 10, 1000)
-    ominc_rixs = np.linspace(-6.2, -6.2, 1)
+    om_shift = 10877.2
+    ominc_xas = np.linspace(-20+om_shift, 10+om_shift, 1000)
+    ominc_rixs = np.linspace(-6.2+om_shift, -6.2+om_shift, 1)
     eloss = np.linspace(-0.2, 7, 1000)
     poltype_xas = [('isotropic', 0)]
     poltype_rixs = [('linear', 0.0, 'linear', 0.0),
                     ('linear', 0.0, 'linear', np.pi / 2.0)]
 
+    # mpi4py
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
 
     do_ed = 0
     eval_i, denmat, noccu_gs = edrixs.ed_siam_fort(
-        comm, shell_name, nbath,
-        siam_type=0, imp_mat=imp_mat, bath_level=bath_level, hyb=hyb,
+        comm, shell_name, nbath, siam_type=0, imp_mat=imp_mat,
+        bath_level=bath_level, hyb=hyb, c_level=-om_shift,
         static_core_pot=2.0, slater=slater, trans_c2n=trans_c2n, v_noccu=15,
         do_ed=do_ed, ed_solver=2, neval=10, nvector=4, ncv=50, idump=True
     )
