@@ -9,7 +9,7 @@ EDRIXS Documentation
 .. toctree::
    :maxdepth: 2
 
-   installation
-   usage
-   release-history
+   user/index
    reference/index
+   release-history
+

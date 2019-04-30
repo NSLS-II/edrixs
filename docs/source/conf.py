@@ -47,8 +47,9 @@ extensions = [
 
 # Configuration options for plot_directive. See:
 # https://github.com/matplotlib/matplotlib/blob/f3ed922d935751e08494e5fb5311d3050a3b637b/lib/matplotlib/sphinxext/plot_directive.py#L81
-plot_html_show_source_link = False
+plot_html_show_source_link = True
 plot_html_show_formats = False
+plot_include_source = True
 
 # Generate the API documentation when building
 autosummary_generate = True

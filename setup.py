@@ -1,8 +1,9 @@
 from os import path
-from setuptools import setup, find_packages
+from setuptools import find_packages
 import sys
 import versioneer
-
+from numpy.distutils.core import Extension
+from numpy.distutils.core import setup
 
 # NOTE: This file must remain Python 2 compatible for the foreseeable future,
 # to ensure that we error out properly for people with outdated setuptools
@@ -32,6 +33,9 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
     requirements = [line for line in requirements_file.read().splitlines()
                     if not line.startswith('#')]
 
+# Python interface to call fortran subroutines
+ext_fortran = Extension(name='edrixs.fedrixs',
+                        sources=['src/pyapi.f90'])
 
 setup(
     name='edrixs',
@@ -54,7 +58,7 @@ setup(
             # When adding files here, remember to update MANIFEST.in as well,
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',
-            "edrixs/*"
+            "edrixs/*",
             ]
         },
     install_requires=requirements,
@@ -64,4 +68,5 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
     ],
+    ext_modules=[ext_fortran]
 )

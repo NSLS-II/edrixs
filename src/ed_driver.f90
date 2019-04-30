@@ -55,25 +55,17 @@ subroutine ed_driver()
 
     if (myid == master) then
         print *, "--------------------------------------------"
-        print *, "edrixs >>> ED begin ... "
+        print *, " fedrixs >>> ED begin ... "
         print *
     endif
     call read_hopping_i()
     call read_coulomb_i()
     call read_fock_i()
 
-    if (ndim_i < nprocs) then
-        if (myid==master) then
-            print *, "edrixs >>> ERROR: number of CPU processors ", nprocs, "is larger than ndim_i: ", ndim_i
-        endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        STOP
-    endif
-
     if (ndim_i < min_ndim ) then
         if (myid==master) then
-            print *, "edrixs >>> ndim_i:", ndim_i, " is smaller than min_ndim:", min_ndim
-            print *, "edrixs >>> set ed_solver = 0, use full-diagonalization !"
+            print *, " fedrixs >>> ndim_i:", ndim_i, " is smaller than min_ndim:", min_ndim
+            print *, " fedrixs >>> set ed_solver = 0, use full-diagonalization !"
             print *
         endif
         ed_solver = 0
@@ -105,7 +97,7 @@ subroutine ed_driver()
     endif
 
     if (myid==master) then
-        print *, "edrixs >>> Build Hamiltonian ..."
+        print *, " fedrixs >>> Build Hamiltonian ..."
     endif
     call partition_task(nprocs, ndim_i, ndim_i, end_indx)
     rtemp = 1.0_dp
@@ -115,17 +107,17 @@ subroutine ed_driver()
     nloc = end_indx(2,2,myid+1)-end_indx(1,2,myid+1) + 1
     call alloc_ham_csr(nblock)
     call build_ham_i(ndim_i, fock_i, nblock, end_indx, nhopp_i, hopping_i, ncoul_i, coulomb_i, omega, rtemp, ham_csr)
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     call get_needed_indx(nblock, ham_csr, needed)
     call get_number_nonzeros(nblock, ham_csr, num_of_nonzeros)
     call dealloc_fock_i()
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
-        print *, "edrixs >>> Done ! Time used: ", time_end - time_begin, "  seconds"
+        print *, " fedrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
+        print *, " fedrixs >>> Done ! Time used: ", time_end - time_begin, "  seconds"
         print *
-        print *, "edrixs >>> Diagonalize Hamiltonian to find a few lowest states ..."
+        print *, " fedrixs >>> Diagonalize Hamiltonian to find a few lowest states ..."
         print *
     endif
     time_begin = time_end
@@ -145,13 +137,13 @@ subroutine ed_driver()
         do i=1,nblock
             call csr_to_full(ndim_i, ndim_i, ham_csr(i), ham_full_mpi)
         enddo
-        call MPI_ALLREDUCE(ham_full_mpi, ham_full, size(ham_full_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(ham_full_mpi, ham_full, size(ham_full_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
         if (myid==master) then
             call full_diag_ham(ndim_i, ham_full, eigval_full, eigvecs_full) 
         endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(eigval_full,   size(eigval_full),  MPI_DOUBLE_PRECISION, master, MPI_COMM_WORLD, ierror)
-        call MPI_BCAST(eigvecs_full,  size(eigvecs_full), MPI_DOUBLE_COMPLEX, master, MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
+        call MPI_BCAST(eigval_full,   size(eigval_full),  MPI_DOUBLE_PRECISION, master, new_comm, ierror)
+        call MPI_BCAST(eigvecs_full,  size(eigvecs_full), MPI_DOUBLE_COMPLEX, master, new_comm, ierror)
         eigvals = eigval_full(1:neval)
         eigvecs = eigvecs_full(:,1:nvector)
         deallocate(ham_full)
@@ -178,13 +170,13 @@ subroutine ed_driver()
             print *
         endif
     endif
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     call dealloc_ham_csr(nblock)
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
         print *
-        print *, "edrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
+        print *, " fedrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
         print *
     endif
     time_begin=time_end
@@ -192,7 +184,7 @@ subroutine ed_driver()
     call write_lowest_eigvals(neval, eigvals)
 
     if (myid==master) then
-        print *, "edrixs >>> Calculate the density matrix ... "
+        print *, " fedrixs >>> Calculate the density matrix ... "
     endif
 
     call read_fock_i()
@@ -208,7 +200,7 @@ subroutine ed_driver()
             do i=1,nprocs
                if (myid+1 /= i) then
                    call MPI_ISEND(eigvecs(:,k), nloc, MPI_DOUBLE_COMPLEX, i-1, &
-                          i*(10*nprocs)+myid+1, MPI_COMM_WORLD, request, ierror)
+                          i*(10*nprocs)+myid+1, new_comm, request, ierror)
                endif
             enddo
             eigvecs_mpi(end_indx(1,2,myid+1):end_indx(2,2,myid+1)) = eigvecs(:,k)
@@ -218,11 +210,11 @@ subroutine ed_driver()
                if (myid+1 /= i) then
                    call MPI_RECV(eigvecs_mpi(end_indx(1,2,i):end_indx(2,2,i)), &
                         end_indx(2,2,i)-end_indx(1,2,i)+1, MPI_DOUBLE_COMPLEX, &
-                       -1, (myid+1)*(10*nprocs)+i, MPI_COMM_WORLD, stat, ierror)
+                       i-1, (myid+1)*(10*nprocs)+i, new_comm, stat, ierror)
                endif
             enddo
         endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
 
         do icfg=end_indx(1,1,myid+1), end_indx(2,1,myid+1)
             do j=1,num_val_orbs
@@ -265,11 +257,13 @@ subroutine ed_driver()
         endif
     enddo  ! over k=1, nvector
 
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-    call MPI_ALLREDUCE(denmat_mpi, denmat, size(denmat_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
+    call MPI_ALLREDUCE(denmat_mpi, denmat, size(denmat_mpi), MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
     call write_denmat(nvector, num_val_orbs, denmat)
 
     call dealloc_fock_i()
+    call dealloc_hopping_i()
+    call dealloc_coulomb_i()
     deallocate(eigvecs)
     deallocate(eigvecs_mpi)
     deallocate(eigvals)
@@ -277,9 +271,9 @@ subroutine ed_driver()
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
+        print *, " fedrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
         print *
-        print *, "edrixs >>> ED end ! Total time used: ", time_used, "  seconds"
+        print *, " fedrixs >>> ED end ! Total time used: ", time_used, "  seconds"
         print *
     endif
 

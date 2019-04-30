@@ -82,12 +82,18 @@ module m_control
     real(dp), public, save :: gamma_in 
 
     ! number of process
+    integer, public, save :: origin_nprocs = 1
     integer, public, save :: nprocs = 1
 
     ! the index of process
+    integer, public, save :: origin_myid = 0
     integer, public, save :: myid = 0
 
     ! the index of master process
     integer, public, save :: master = 0 
+
+    ! MPI communicator
+    integer, public, save :: new_comm = 0
+    integer, public, save :: origin_comm = 0
 
 end module m_control

@@ -18,3 +18,7 @@ FFLAGS = -c $(CPP) $(CHECK) $(CDUMP) $(LEVEL)
 
 #-------------------------------------------------------------------------
 LIBS = -L${MKLROOT}/lib/intel64 -lmkl_core -lmkl_sequential -lmkl_rt  -L/home/yilinwang/soft/arpack-ng-3.6.2/lib -lparpack -larpack
+F2PY   = f2py
+F2PYC  = $(F90)
+F2PYL  = $(LIBS)
+F2PYFLAGS = --fcompiler=intelem --f90exec=$(F90) --opt='-O3'

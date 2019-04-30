@@ -5,6 +5,11 @@ __pycache__/
 
 # C extensions
 *.so
+*.o
+*.mod
+*.a
+*.x
+*.dSYM
 
 # Distribution / packaging
 .Python
@@ -78,6 +83,3 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
-
-# Fortran compiling files
-src/make.sys

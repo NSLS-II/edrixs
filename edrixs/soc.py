@@ -1,4 +1,4 @@
-# /usr/bin/env python
+__all__ = ['atom_hsoc']
 
 import numpy as np
 
@@ -10,20 +10,19 @@ def atom_hsoc(case, soc):
 
     Parameters
     ----------
-    case : str
+    case: str
         String label indicating atomic shell,
 
         - 'p': for :math:`p` -shell.
         - 't2g': for :math:`t_{2g}` -shell.
         - 'd': for :math:`d` -shell.
         - 'f': for :math:`f` -shell.
-
-    soc : float
+    soc: float
         The strength of spin-orbit coupling.
 
     Returns
     -------
-    hsoc : 2d complex array
+    hsoc: 2d complex array
         The spin-orbit coupling matrix.
     """
 

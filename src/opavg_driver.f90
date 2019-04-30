@@ -39,20 +39,12 @@ subroutine opavg_driver()
 
     if (myid == master) then
         print *, "--------------------------------------------"
-        print *, "edrixs >>> OPAVG begin ... "
+        print *, " fedrixs >>> OPAVG begin ... "
         print *
     endif
     call read_hopping_i()
     call read_coulomb_i()
     call read_fock_i()
-
-    if (ndim_i < nprocs) then
-        if (myid==master) then
-            print *, "edrixs >>> ERROR: number of CPU processors ", nprocs, "is larger than ndim_i: ", ndim_i
-        endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        STOP
-    endif
 
     if (myid == master) then
         write(mystd,"(a20, i15)")   "num_val_orbs:  ", num_val_orbs
@@ -65,7 +57,7 @@ subroutine opavg_driver()
     endif
 
     if (myid==master) then
-        print *, "edrixs >>> Building operator  ..."
+        print *, " fedrixs >>> Building operator  ..."
     endif
     call partition_task(nprocs, ndim_i, ndim_i, end_indx)
     rtemp = 1.0_dp
@@ -75,16 +67,16 @@ subroutine opavg_driver()
     nloc = end_indx(2,2,myid+1)-end_indx(1,2,myid+1) + 1
     call alloc_ham_csr(nblock)
     call build_ham_i(ndim_i, fock_i, nblock, end_indx, nhopp_i, hopping_i, ncoul_i, coulomb_i, omega, rtemp, ham_csr)
-    call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+    call MPI_BARRIER(new_comm, ierror)
     call dealloc_fock_i()
     call get_needed_indx(nblock, ham_csr, needed)
     call get_number_nonzeros(nblock, ham_csr, num_of_nonzeros)
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
-        print *, "edrixs >>> Done !" 
-        print *, "edrixs >>> Time used: ", time_end - time_begin, "  seconds"
+        print *, " fedrixs >>> Number of nonzero elements of the Hamiltonian", num_of_nonzeros
+        print *, " fedrixs >>> Done !" 
+        print *, " fedrixs >>> Time used: ", time_end - time_begin, "  seconds"
         print *
     endif
 
@@ -95,7 +87,7 @@ subroutine opavg_driver()
     time_begin = time_end
     do igs=1, num_gs
         if (myid == master) then
-            print *, "edrixs >>> For state: ", igs
+            print *, " fedrixs >>> For state: ", igs
         endif
         allocate(v_vector_mpi(ndim_i))
         v_vector = czero
@@ -106,13 +98,13 @@ subroutine opavg_driver()
         call read_eigvecs(fname, ndim_i, v_vector_mpi, eigvals(igs))
         v_vector = v_vector_mpi(end_indx(1,2,myid+1): end_indx(1,2,myid+1)) 
         deallocate(v_vector_mpi)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham_csr, v_vector, w_vector)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
+        call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham_csr, v_vector, w_vector)
+        call MPI_BARRIER(new_comm, ierror)
         temp1 = czero 
         temp1_mpi = czero 
         temp1 = dot_product(v_vector, w_vector)
-        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(temp1, temp1_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
         opavg(igs) = temp1_mpi
     enddo
 
@@ -124,9 +116,9 @@ subroutine opavg_driver()
     call cpu_time(time_end)
     time_used = time_used + time_end - time_begin
     if (myid==master) then
-        print *, "edrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
+        print *, " fedrixs >>> Done ! Time used: ", time_end-time_begin, "  seconds"
         print *
-        print *, "edrixs >>> OPAVG end ! Total time used: ", time_used, "  seconds"
+        print *, " fedrixs >>> OPAVG end ! Total time used: ", time_used, "  seconds"
         print *
     endif
 

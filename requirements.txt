@@ -4,3 +4,4 @@ scipy
 sympy
 matplotlib
 sphinx
+mpi4py

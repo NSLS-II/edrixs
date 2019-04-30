@@ -35,7 +35,7 @@ subroutine xas_driver()
 
     if (myid == master) then
         print *, "---------------------------"
-        print *, "edrixs >>> XAS Begin ... "
+        print *, " fedrixs >>> XAS Begin ... "
         print *
     endif
 
@@ -46,16 +46,6 @@ subroutine xas_driver()
     call read_fock_n()
 
     ndim_n = ndim_n_nocore * num_core_orbs
-
-    if (ndim_i < nprocs .or. ndim_n < nprocs) then
-        if (myid==master) then
-            print *, "edrixs >>> ERROR: number of CPU processors:", nprocs, "is larger than ndim_i:",ndim_i, "or ndim_n:", ndim_n
-            print *, "           Please reduce the number of CPU processors and RESTART !"
-            print *
-        endif
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        STOP
-    endif
 
     if (myid == master) then
        print *
@@ -74,7 +64,7 @@ subroutine xas_driver()
 
     do igs=1, num_gs
         if (myid == master) then
-            print *, "edrixs >>> For ground state: ", igs
+            print *, " fedrixs >>> For ground state: ", igs
             print *, "    Building transition operator for absorption process ..."
         endif
         call read_fock_i()
@@ -86,7 +76,8 @@ subroutine xas_driver()
         call alloc_tran_csr(nblock)
         call build_transop_i(ndim_n_nocore, ndim_i, fock_n, fock_i, num_val_orbs, &
                  num_core_orbs, nblock, end_indx, ntran_xas, transop_xas, tran_csr)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
+
         call get_needed_indx(nblock, tran_csr, needed)
         call dealloc_fock_i()
         if (myid == master) then
@@ -109,10 +100,13 @@ subroutine xas_driver()
         deallocate(eigvecs_mpi)
         allocate(phi_vec(mloc))
         phi_vec = czero
-        call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, mloc, nloc, tran_csr, eigvecs, phi_vec)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+
+        call MPI_BARRIER(new_comm, ierror)
+        call pspmv_csr(new_comm, nblock, end_indx, needed, mloc, nloc, tran_csr, eigvecs, phi_vec)
+        call MPI_BARRIER(new_comm, ierror)
         deallocate(eigvecs)
         call dealloc_tran_csr(nblock)
+
         if (myid==master) then
             print *, "    Done !"
             print *
@@ -127,7 +121,7 @@ subroutine xas_driver()
         omega = dcmplx(0.0_dp,0.0_dp)
         call build_ham_n(ndim_n_nocore, fock_n, num_val_orbs, num_core_orbs, nblock, end_indx2, &
                          nhopp_n, hopping_n, ncoul_n, coulomb_n, omega, rtemp, ham_csr)
-        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        call MPI_BARRIER(new_comm, ierror)
         call get_needed_indx(nblock, ham_csr, needed2)
         call get_number_nonzeros(nblock, ham_csr, num_of_nonzeros)
         call dealloc_fock_n()
@@ -165,7 +159,7 @@ subroutine xas_driver()
     call dealloc_coulomb_n()
     if (myid == master) then
         print *
-        print *, "edrixs >>> XAS End !"
+        print *, " fedrixs >>> XAS End !"
     endif
 
     return

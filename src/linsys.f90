@@ -2,7 +2,7 @@
 !! Ax = b or (A-sI)x = b, where s can be any number
 subroutine pminres_csr(nblock, end_indx, needed, nloc, ham, b_vec, x_vec, info)
     use m_constants, only: dp, zero, czero, cone, mystd
-    use m_control,   only: linsys_tol, linsys_max, nprocs, myid, master
+    use m_control,   only: linsys_tol, linsys_max, nprocs, myid, master, new_comm
     use m_types
     use mpi
 
@@ -67,7 +67,7 @@ subroutine pminres_csr(nblock, end_indx, needed, nloc, ham, b_vec, x_vec, info)
 
     v_vec(:,curr) = b_vec
     beta0 = real(dot_product(v_vec(:,curr), v_vec(:,curr)))
-    call MPI_ALLREDUCE(beta0, beta0_mpi, 1, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierror)
+    call MPI_ALLREDUCE(beta0, beta0_mpi, 1, MPI_DOUBLE_PRECISION, MPI_SUM, new_comm, ierror)
     beta0 = sqrt(beta0_mpi)
     eta = beta0
     res = beta0 
@@ -75,18 +75,18 @@ subroutine pminres_csr(nblock, end_indx, needed, nloc, ham, b_vec, x_vec, info)
     iter = 0
     do while (abs(res) > linsys_tol .and. iter < linsys_max )
         iter = iter + 1
-        if (myid==master .and. mod(iter,10) == 0 ) then
+        if (myid==master .and. mod(iter,50) == 0 ) then
             write(mystd,"(a25, i5, E10.2, a5, E10.2)")  "PMINRES iteration:  ", iter, abs(res), "-->", linsys_tol
         endif
         v_vec(:,curr) = v_vec(:,curr) / beta0 
         tmp_vec = czero
-        call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham, v_vec(:,curr), tmp_vec)
+        call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, v_vec(:,curr), tmp_vec)
         alpha = dot_product(v_vec(:,curr), tmp_vec)            
-        call MPI_ALLREDUCE(alpha, alpha_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(alpha, alpha_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
         alpha = alpha_mpi 
         v_vec(:,prev) = tmp_vec - alpha * v_vec(:,curr) - beta0 * v_vec(:,prev)
         beta1 = real(dot_product(v_vec(:,prev), v_vec(:,prev)))
-        call MPI_ALLREDUCE(beta1, beta1_mpi, 1, MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_WORLD, ierror)
+        call MPI_ALLREDUCE(beta1, beta1_mpi, 1, MPI_DOUBLE_PRECISION, MPI_SUM, new_comm, ierror)
         beta1 = sqrt(beta1_mpi)
 
         delta = gamma0 * alpha - gamma1 * sigma0 * beta0
@@ -115,10 +115,10 @@ subroutine pminres_csr(nblock, end_indx, needed, nloc, ham, b_vec, x_vec, info)
     endif
     ! test the precision
     tmp_vec = czero
-    call pspmv_csr(MPI_COMM_WORLD, nblock, end_indx, needed, nloc, nloc, ham, x_vec, tmp_vec)
+    call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham, x_vec, tmp_vec)
     tmp_vec = tmp_vec - b_vec
     alpha = dot_product(tmp_vec, tmp_vec) 
-    call MPI_ALLREDUCE(alpha, alpha_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, MPI_COMM_WORLD, ierror)
+    call MPI_ALLREDUCE(alpha, alpha_mpi, 1, MPI_DOUBLE_COMPLEX, MPI_SUM, new_comm, ierror)
     alpha = alpha_mpi 
     if (myid==master) then
         write(mystd,"(a34, E10.2)")  "Final precision of |H*x-b|:  ", sqrt(abs(alpha))

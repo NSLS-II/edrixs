@@ -19,18 +19,22 @@ subroutine pspmv_csr(comm, nblock, end_indx, needed, mloc, nloc, ham, vec_in, ve
 
     ! local variables
     integer :: i
+    integer :: ireq
     integer :: ierror
-    integer :: request
+    integer :: request(nprocs)
+    integer :: send_stat(MPI_STATUS_SIZE, nprocs)
     integer :: stat(MPI_STATUS_SIZE)
     integer :: other_size
     integer :: max_size
     complex(dp), allocatable :: tmp_vec(:)
 
-  
     ! send the data
+    ireq = 0
     do i=1,nprocs
        if (needed(i,myid+1) == 1) then
-           call MPI_ISEND(vec_in, nloc, MPI_DOUBLE_COMPLEX, i-1, i*(10*nprocs)+myid+1, comm, request, ierror)
+           ireq = ireq + 1
+           call MPI_ISEND(vec_in, nloc, MPI_DOUBLE_COMPLEX, i-1, i*(10*nprocs)+myid+1, &
+           comm, request(ireq), ierror)
        endif
     enddo
 
@@ -52,13 +56,16 @@ subroutine pspmv_csr(comm, nblock, end_indx, needed, mloc, nloc, ham, vec_in, ve
                ! receive data from other processor
                other_size = end_indx(2,2,i) - end_indx(1,2,i) + 1
                tmp_vec = czero
-               call MPI_RECV(tmp_vec(1:other_size), other_size, MPI_DOUBLE_COMPLEX, i-1, (myid+1)*(10*nprocs)+i, comm, stat, ierror)
+               call MPI_RECV(tmp_vec(1:other_size), other_size, MPI_DOUBLE_COMPLEX, i-1, (myid+1)*(10*nprocs)+i,&
+                comm, stat, ierror)
                ! do matrix vector multiplication
                call matvec_csr(mloc, other_size, ham(i), tmp_vec(1:other_size), vec_out)
            endif
         enddo
         if (allocated(tmp_vec)) deallocate(tmp_vec)
     endif
+
+    call MPI_WAITALL(ireq, request, send_stat, ierror)
      
     return
 end subroutine pspmv_csr
