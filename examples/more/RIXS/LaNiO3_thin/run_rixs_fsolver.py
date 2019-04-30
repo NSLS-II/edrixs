@@ -69,9 +69,9 @@ if __name__ == "__main__":
     )
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
-        f=open('xas_poles.pkl', 'wb')
-        pickle.dump(xas_poles, f)
-        f.close() 
+        # Save XAS pole files for later plots
+        with open('xas_poles.pkl', 'wb') as f:
+            pickle.dump(xas_poles, f)
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -80,10 +80,10 @@ if __name__ == "__main__":
         num_gs=3, nkryl=100, temperature=300
     )
     if rank == 0:
-        f=open('rixs_poles.pkl', 'wb')
-        pickle.dump(rixs_poles, f)
-        f.close() 
-
+        # Save RIXS pole files for later plots 
+        with open('rixs_poles.pkl', 'wb') as f:
+            pickle.dump(rixs_poles, f)
+        # Save RIXS spectra
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
         rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
         np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))

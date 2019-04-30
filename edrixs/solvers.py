@@ -5,20 +5,24 @@ __all__ = ['ed_1v1c_py', 'xas_1v1c_py', 'rixs_1v1c_py',
 
 import numpy as np
 import scipy
-from .utils import info_atomic_shell, slater_integrals_name, boltz_dist
+
+from .iostream import (
+    write_tensor, write_emat, write_umat, write_config, read_poles_from_file
+)
+from .angular_momentum import (
+    get_sx, get_sy, get_sz, get_lx, get_ly, get_lz, rmat_to_euler, get_wigner_dmat
+)
+from .photon_transition import (
+    get_trans_oper, quadrupole_polvec, dipole_polvec_xas, dipole_polvec_rixs, unit_wavevector
+)
 from .coulomb_utensor import get_umat_slater, get_umat_slater_3shells
-from .iostream import write_tensor, write_emat, write_umat, write_config
-from .iostream import read_poles_from_file
-from .plot_spectrum import get_spectra_from_poles
-from .soc import atom_hsoc
-from .angular_momentum import get_sx, get_sy, get_sz, get_lx, get_ly, get_lz
-from .angular_momentum import rmat_to_euler, get_wigner_dmat
 from .manybody_operator import two_fermion, four_fermion
 from .fock_basis import get_fock_bin_by_N, write_fock_dec_by_N
 from .basis_transform import cb_op2, tmat_r2c, cb_op
-from .photon_transition import get_trans_oper, quadrupole_polvec
-from .photon_transition import dipole_polvec_xas, dipole_polvec_rixs, unit_wavevector
+from .utils import info_atomic_shell, slater_integrals_name, boltz_dist
 from .rixs_utils import scattering_mat
+from .plot_spectrum import get_spectra_from_poles
+from .soc import atom_hsoc
 from .fedrixs import ed_fsolver, xas_fsolver, rixs_fsolver
 
 
@@ -1778,7 +1782,9 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
                  slater=None, ext_B=None, on_which='spin', do_ed=0, ed_solver=2, neval=1,
                  nvector=1, ncv=3, idump=False, maxiter=1000, eigval_tol=1e-8, min_ndim=1000):
     """
-    Find the ground state of a Single Impuirty Anderson Model (SIAM).
+    Find the ground state of the initial Hamiltonian of a Single Impuirty Anderson Model (SIAM),
+    and also prepare input files, *hopping_i.in*, *hopping_n.in*, *coulomb_i.in*, *coulomb_n.in*
+    for following XAS and RIXS calculations.
 
     Parameters
     ----------
@@ -1800,12 +1806,12 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     siam_type: int
         Type of SIAM Hamiltonian,
 
-        - 0: diagonal hybridization function, parameterized by imp_mat, bath_level and hyb
+        - 0: diagonal hybridization function, parameterized by *imp_mat*, *bath_level* and *hyb*
 
-        - 1: general hybridization function, parameterized by matrix hopping
+        - 1: general hybridization function, parameterized by matrix *hopping*
 
-        if siam_type=0, imp_mat, bath_level and hyb are required, if siam_type=1,
-        only hopping is required.
+        if *siam_type=0*, only *imp_mat*, *bath_level* and *hyb* are required,
+        if *siam_type=1*, only *hopping* is required.
     v_noccu: int
         Number of total occupancy of impurity and baths orbitals, required when do_ed=1, 2
     static_core_pot: float
@@ -1816,7 +1822,7 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
         Spin-orbit coupling strength of core electrons.
     trans_c2n: 2d complex array
         The transformation matrix from the spherical harmonics basis to the basis on which
-        the imp_mat and hybridization function (bath_level, hyb, hopping) are defined.
+        the `imp_mat` and hybridization function (`bath_level`, `hyb`, `hopping`) are defined.
     imp_mat: 2d complex array
         Impurity matrix for the impurity site, including CF or SOC
     bath_level: 2d complex array
@@ -1876,6 +1882,15 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     min_ndim: int
         The minimum dimension of the Hamiltonian when the ed_solver=1, 2 can be used, otherwise,
         ed_solver=1 will be used.
+
+    Returns
+    -------
+    eval_i: 1d float array
+        Eigenvalues of initial Hamiltonian.
+    denmat: 2d complex array
+        Density matrix.
+    noccu_gs: int
+        Occupancy of the ground state.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -2161,7 +2176,7 @@ def xas_siam_fort(comm, shell_name, nbath, ominc, *, gamma_c=0.1,
                   num_gs=1, nkryl=200, temperature=1.0,
                   loc_axis=None, scatter_axis=None):
     """
-    Calculate XAS for the case with one valence shells plus one core shell with Fortran solver.
+    Calculate XAS for single impurity Anderson model (SIAM) with Fortran solver.
 
     Parameters
     ----------
