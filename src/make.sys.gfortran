@@ -7,7 +7,7 @@
 # On Linux, one can compile OpenBLAS from scratch with gfortran compiler,
 # then compile arpack-ng from scratch with gfortran and OpenBLAS.
 
-# On MacOSX, one can use the package tool MacPorts to install enverything,
+# On MacOSX, one can use the package tool MacPorts to install everything,
 # use "sudo port install arpack+openblas+mpich" to install
 # the mpif90 compiler with gfortran, openblas, libarpack and libparapck.
 
