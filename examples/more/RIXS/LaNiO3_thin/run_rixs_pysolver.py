@@ -8,6 +8,10 @@ if __name__ == "__main__":
     Ni-3d8: :math:`L_{2,3}`-edge, transition from :math:`2p_{1/2,3/2}\\rightarrow 3d`.
 
     Use Python ED, XAS, RIXS solvers.
+
+    How to run
+    ----------
+    python run_rixs_pysolver.py
     """
     # Atomic shell settings
     # ---------------------

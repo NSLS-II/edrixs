@@ -10,6 +10,10 @@ if __name__ == "__main__":
     Ni-3d8: :math:`L_{2,3}`-edge, transition from :math:`2p_{1/2,3/2}\\rightarrow 3d`.
 
     Use Fortran ED, XAS, RIXS solvers.
+
+    How to run
+    ----------
+    mpiexec -n 2 python run_rixs_fsolver.py
     """
     # Atomic shell settings
     # ---------------------
@@ -80,7 +84,7 @@ if __name__ == "__main__":
         num_gs=3, nkryl=100, temperature=300
     )
     if rank == 0:
-        # Save RIXS pole files for later plots 
+        # Save RIXS pole files for later plots
         with open('rixs_poles.pkl', 'wb') as f:
             pickle.dump(rixs_poles, f)
         # Save RIXS spectra

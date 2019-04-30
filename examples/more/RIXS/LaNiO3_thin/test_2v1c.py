@@ -11,6 +11,10 @@ if __name__ == "__main__":
     Ni :math:`L_{2,3}`-edge, :math:`2p_{1/2,3/2}\\rightarrow 3d` transition.
 
     Used to test the ed_2v1c_fort, xas_2v1c_fort, rixs_2v1c_fort solvers.
+
+    How to run
+    ----------
+    mpiexec -n 2 python test_2v1c.py
     '''
 
     F2_dd, F4_dd = 12.234 * 0.65, 7.598 * 0.65

@@ -8,6 +8,10 @@ from mpi4py import MPI
 if __name__ == "__main__":
     '''
     U-5f2 :math:`L_{3}`-edge, :math:`2p_{3/2}\\rightarrow 6d` transition.
+
+    How to run
+    ----------
+    mpiexec -n 4 python run_rixs_fsolver.py
     '''
 
     F2_ff, F4_ff, F6_ff = 8.278, 5.447, 4.011

@@ -1,0 +1,7 @@
+How to run this example
+-----------------------
+python run_ed.py
+
+python run_rixs.py
+
+python plot_rixsmap.py

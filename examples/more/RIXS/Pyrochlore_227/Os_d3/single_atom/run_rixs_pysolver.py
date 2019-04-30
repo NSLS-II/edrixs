@@ -7,6 +7,10 @@ import edrixs
 if __name__ == "__main__":
     """
     Os-:math:`d^3`, :math:`L_{3}`-edge, :math:`2p_{3/2}\\rightarrow 5d (t_{2g})` transition.
+
+    How to run
+    ----------
+    python run_rixs_pysolver.py
     """
     natom = 4
     # local axis
