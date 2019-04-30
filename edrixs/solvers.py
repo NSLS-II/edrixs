@@ -1852,13 +1852,13 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     on_which: string
         Apply Zeeman exchange field on which sector. Options are 'spin', 'orbital' or 'both'.
     do_ed: int
-        - 0: First, search the ground state in different subspaces of total occupancy :math:`N` with
-          ed_solver=1, and then do a more accurate ED in the subspace :math:`N` where the ground state
-          lies to find a few lowest eigenstates, return the eigenvalues and density matirx, and write the
-          eigenvectors in files eigvec.n
+        - 0: First, search the ground state in different subspaces of total occupancy
+          :math:`N` with ed_solver=1, and then do a more accurate ED in the subspace
+          :math:`N` where the ground state lies to find a few lowest eigenstates, return
+          the eigenvalues and density matirx, and write the eigenvectors in files eigvec.n
 
-        - 1: Only do ED for given occupancy number *v_noccu*, return eigenvalues and density matrix,
-          write eigenvectors to files eigvec.n
+        - 1: Only do ED for given occupancy number *v_noccu*, return eigenvalues and
+          density matrix, write eigenvectors to files eigvec.n
 
         - 2: Do not do ED, only write parameters into files: *hopping_i.in*, *hopping_n.in*,
           *coulomb_i.in*, *coulomb_n.in* for later XAS or RIXS calculations.

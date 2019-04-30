@@ -82,7 +82,7 @@ if __name__ == "__main__":
         print(noccu_gs)
         print(eval_i)
         print(np.sum(denmat[0].diagonal()[0:norb]).real)
-    
+
     v_noccu = noccu_gs
     # Run XAS
     xas, xas_poles = edrixs.xas_siam_fort(
