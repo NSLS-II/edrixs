@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 
+import pickle
 import numpy as np
 from mpi4py import MPI
 import edrixs
@@ -50,20 +51,55 @@ if __name__ == "__main__":
   
     shell_name = ('t2g', 'p32')
 
+    # RIXS settings
+    thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0.0
+    gamma_c = 2.5
+    gamma_f = 0.075
+    ominc_xas = np.linspace(-20, 10, 1000)
+    ominc_rixs = np.linspace(-6.2, -6.2, 1)
+    eloss = np.linspace(-0.2, 7, 1000)
+    poltype_xas = [('isotropic', 0)]
+    poltype_rixs = [('linear', 0.0, 'linear', 0.0),
+                    ('linear', 0.0, 'linear', np.pi / 2.0)]
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    do_ed = 1
-    eval_i, denmat, noccu_gs = edrixs.ed_siam_fort(
-        comm, shell_name, nbath,
-        siam_type=0, imp_mat=imp_mat, bath_level=bath_level, hyb=hyb,
-        static_core_pot=2.0, slater=slater, trans_c2n=trans_c2n, v_noccu=5,
-        do_ed=do_ed, ed_solver=2, neval=20, nvector=5, ncv=50, idump=True
+    #do_ed = 1
+    #eval_i, denmat, noccu_gs = edrixs.ed_siam_fort(
+    #    comm, shell_name, nbath,
+    #    siam_type=0, imp_mat=imp_mat, bath_level=bath_level, hyb=hyb,
+    #    static_core_pot=2.0, slater=slater, trans_c2n=trans_c2n, v_noccu=15,
+    #    do_ed=do_ed, ed_solver=2, neval=20, nvector=5, ncv=50, idump=True
+    #)
+
+    #if rank == 0:
+    #    if do_ed != 2:
+    #        print(noccu_gs)
+    #        print(eval_i)
+    #        print(np.sum(denmat[0].diagonal()[0:norb]).real) 
+
+    #xas, xas_poles = edrixs.xas_siam_fort(
+    #    comm, shell_name, nbath, ominc_xas, gamma_c=gamma_c, v_noccu=noccu_gs, thin=thin, phi=phi,
+    #    num_gs=4, nkryl=200, pol_type=poltype_xas, temperature=300
+    #)
+    #np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+    #f=open('xas_poles_pickle.dat', 'wb')
+    #pickle.dump(xas_poles, f) 
+    #f.close()
+
+    # Run RIXS
+    rixs, rixs_poles = edrixs.rixs_siam_fort(
+        comm, shell_name, nbath, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
+        thin=thin, thout=thout, phi=phi, v_noccu=15, pol_type=poltype_rixs,
+        num_gs=4, nkryl=500, temperature=300, linsys_tol=1E-10
     )
 
-    if rank == 0:
-        if do_ed != 2:
-            print(noccu_gs)
-            print(eval_i)
-            print(np.sum(denmat[0].diagonal()[0:norb]).real) 
+    rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
+    np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
+    f=open('rixs_poles.pkl', 'wb')
+    pickle.dump(rixs_poles, f) 
+    f.close()
+
+

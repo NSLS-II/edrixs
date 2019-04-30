@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+import pickle
 import numpy as np
 from mpi4py import MPI
 import edrixs
@@ -116,8 +116,11 @@ if __name__ == "__main__":
         comm, shell_name, ominc, gamma_c=gamma_c, v_noccu=noccu, thin=thin, phi=phi,
         num_gs=num_gs, nkryl=100, pol_type=poltype_xas, temperature=T
     )
-
-    np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
+    if rank == 0:
+        np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
+        f=open('xas_poles.pkl', 'wb')
+        pickle.dump(xas_poles, f)
+        f.close() 
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -125,11 +128,14 @@ if __name__ == "__main__":
         thin=thin, thout=thout, phi=phi, v_noccu=noccu, pol_type=poltype_rixs,
         num_gs=num_gs, nkryl=100, temperature=T
     )
-
-    rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
-    rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
-    np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
-    np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
-    # Plot RIXS map
-    edrixs.plot_rixs_map(rixs_pi, ominc, eloss, "rixsmap_pi.pdf")
-    edrixs.plot_rixs_map(rixs_sigma, ominc, eloss, "rixsmap_sigma.pdf")
+    if rank == 0:
+        f=open('rixs_poles.pkl', 'wb')
+        pickle.dump(rixs_poles, f)
+        f.close() 
+        rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
+        rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
+        np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
+        np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
+        # Plot RIXS map
+        edrixs.plot_rixs_map(rixs_pi, ominc, eloss, "rixsmap_pi.pdf")
+        edrixs.plot_rixs_map(rixs_sigma, ominc, eloss, "rixsmap_sigma.pdf")

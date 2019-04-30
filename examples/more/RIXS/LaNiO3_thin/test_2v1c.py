@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+import pickle
 import numpy as np
 import edrixs
 from mpi4py import MPI
@@ -93,22 +93,29 @@ if __name__ == "__main__":
         print("Occupancy of orbitals: ", denmat[0].diagonal())
 
     # Run XAS
-    xas, poles_dict = edrixs.xas_2v1c_fort(
+    xas, xas_poles = edrixs.xas_2v1c_fort(
         comm, shell_name, ominc_xas, gamma_c=gamma_c, v_tot_noccu=noccu, trans_to_which=1,
         thin=thin, phi=phi, pol_type=poltype_xas, num_gs=3, nkryl=100, temperature=300
     )
-
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+        f=open('xas_poles.pkl', 'wb')
+        pickle.dump(xas_poles, f)
+        f.close() 
+
 
     # Run RIXS
-    rixs, poles_dict = edrixs.rixs_2v1c_fort(
+    rixs, rixs_poles = edrixs.rixs_2v1c_fort(
         comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         v_tot_noccu=noccu, trans_to_which=1, thin=thin, thout=thout, phi=phi,
         pol_type=poltype_rixs, num_gs=3, nkryl=100, temperature=300
     )
 
     if rank == 0:
+        f=open('rixs_poles.pkl', 'wb')
+        pickle.dump(rixs_poles, f)
+        f.close() 
+
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
         np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
         edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
