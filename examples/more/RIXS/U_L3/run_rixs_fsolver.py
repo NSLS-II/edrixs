@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+import pickle
 import numpy as np
 import edrixs
 from mpi4py import MPI
@@ -8,6 +8,10 @@ from mpi4py import MPI
 if __name__ == "__main__":
     '''
     U-5f2 :math:`L_{3}`-edge, :math:`2p_{3/2}\\rightarrow 6d` transition.
+
+    How to run
+    ----------
+    mpiexec -n 4 python run_rixs_fsolver.py
     '''
 
     F2_ff, F4_ff, F6_ff = 8.278, 5.447, 4.011
@@ -72,34 +76,37 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     # Run ED
-    v_norb, c_norb, eval_i, denmat = edrixs.ed_2v1c_fort(
+    eval_i, denmat = edrixs.ed_2v1c_fort(
         comm, shell_name, shell_level=(0, 5.0, 0),
         v1_soc=(zeta_f_i, zeta_f_n), v2_soc=(zeta_d_i, zeta_d_n),
         v_tot_noccu=noccu, slater=slater, ed_solver=2, neval=20,
         nvector=2, ncv=50, idump=True
     )
     if rank == 0:
-        print(v_norb, c_norb)
         print('eigvals:', eval_i)
         print('occupancy numbers:', denmat[0].diagonal())
 
     # Run XAS
-    xas, poles_dict = edrixs.xas_2v1c_fort(
+    xas, xas_poles = edrixs.xas_2v1c_fort(
         comm, shell_name, ominc_xas, gamma_c=gamma_c,
         v_tot_noccu=noccu, trans_to_which=2, thin=thin, phi=phi,
         pol_type=poltype_xas, num_gs=1, nkryl=200, temperature=300
     )
-
-    np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+    if rank == 0:
+        np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+        with open('xas_poles.pkl', 'wb') as f:
+            pickle.dump(xas_poles, f)
 
     # Run RIXS
-    rixs, poles_dict = edrixs.rixs_2v1c_fort(
+    rixs, rixs_poles = edrixs.rixs_2v1c_fort(
         comm, shell_name, ominc_rixs, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         v_tot_noccu=noccu, trans_to_which=2, thin=thin, thout=thout, phi=phi,
         pol_type=poltype_rixs, num_gs=1, nkryl=200, linsys_max=1000, temperature=300
     )
 
     if rank == 0:
+        with open('rixs_poles.pkl', 'wb') as f:
+            pickle.dump(rixs_poles, f)
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
         np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
         edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")

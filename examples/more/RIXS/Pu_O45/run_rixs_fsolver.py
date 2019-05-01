@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+import pickle
 import numpy as np
 from mpi4py import MPI
 import edrixs
@@ -8,6 +8,10 @@ import edrixs
 if __name__ == "__main__":
     '''
     Pu-5f6 :math:`O_{4,5}`-edge, :math:`5d_{3/2,5/2}\\rightarrow 5f` transition.
+
+    How to run
+    ----------
+    mpiexec -n 4 python run_rixs_fsolver.py
     '''
 
     # PARAMETERS
@@ -70,7 +74,7 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     # Run ED
-    v_norb, c_norb, eval_i, denmat = edrixs.ed_1v1c_fort(
+    eval_i, denmat = edrixs.ed_1v1c_fort(
         comm, shell_name, shell_level=(0, -om_shift), v_soc=(zeta_f_i, zeta_f_n),
         c_soc=zeta_d_n, v_noccu=noccu, slater=slater, ed_solver=2,
         neval=30, ncv=60, nvector=9, idump=True
@@ -82,8 +86,10 @@ if __name__ == "__main__":
         comm, shell_name, ominc_xas, gamma_c=gamma_c, v_noccu=noccu, thin=thin, phi=phi,
         num_gs=num_gs, nkryl=200, pol_type=poltype_xas, temperature=T
     )
-
-    np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+    if rank == 0:
+        np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+        with open('xas_poles.pkl', 'wb') as f:
+            pickle.dump(xas_poles, f)
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -91,11 +97,13 @@ if __name__ == "__main__":
         thin=thin, thout=thout, phi=phi, v_noccu=noccu, pol_type=poltype_rixs,
         num_gs=num_gs, nkryl=200, temperature=T
     )
-
-    rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
-    rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
-    np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
-    np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
-    # Plot RIXS map
-    edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
-    edrixs.plot_rixs_map(rixs_sigma, ominc_rixs, eloss, "rixsmap_sigma.pdf")
+    if rank == 0:
+        with open('rixs_poles.pkl', 'wb') as f:
+            pickle.dump(rixs_poles, f)
+        rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
+        rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
+        np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
+        np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
+        # Plot RIXS map
+        edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
+        edrixs.plot_rixs_map(rixs_sigma, ominc_rixs, eloss, "rixsmap_sigma.pdf")

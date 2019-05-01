@@ -8,6 +8,10 @@ import edrixs
 if __name__ == "__main__":
     """
     Os :math:`L_{2,3}`-edge, :math:`2p_{1/2,3/2}\\rightarrow 5d` transition, cubic crystal field.
+
+    How to run
+    ----------
+    python run_rixs_pysolver.py
     """
 
     # PARAMETERS
