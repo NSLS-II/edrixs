@@ -337,7 +337,7 @@ def case_to_shell_name(case):
     return shell_name[case.strip()]
 
 
-def edge_to_shell_name(edge_name):
+def edge_to_shell_name(edge_name, with_main_qn=False):
     """
     Given edge name, return shell name.
     If one needs to include both spin-orbit split edges of one shell,
@@ -348,49 +348,59 @@ def edge_to_shell_name(edge_name):
     ----------
     edge_name: string
         Standard edge name.
-
+    with_main_qn: logical
+        If true, the shell name will include the main quantum number.
     Returns
     -------
     shell_name: string
         Shell name.
+
+        - with_main_qn=True, shell_name will include the main quantum number,
+          for example, *2p*
+
+        - with_main_qn=False, shell_name will not include the main quantum number,
+          for example, *p*
     """
     shell_name = {
-        'K': 's',
-        'L1': 's',
-        'L2': 'p12',
-        'L3': 'p32',
-        'L23': 'p',
-        'M1': 's',
-        'M2': 'p12',
-        'M3': 'p32',
-        'M23': 'p',
-        'M4': 'd32',
-        'M5': 'd52',
-        'M45': 'd',
-        'N1': 's',
-        'N2': 'p12',
-        'N3': 'p32',
-        'N23': 'p',
-        'N4': 'd32',
-        'N5': 'd52',
-        'N45': 'd',
-        'N6': 'f52',
-        'N7': 'f72',
-        'N67': 'f',
-        'O1': 's',
-        'O2': 'p12',
-        'O3': 'p32',
-        'O23': 'p',
-        'O4': 'd32',
-        'O5': 'd52',
-        'O45': 'd',
-        'P1': 's',
-        'P2': 'p12',
-        'P3': 'p32',
-        'P23': 'p'
+        'K': ('s', '1s'),
+        'L1': ('s', '2s'),
+        'L2': ('p12', '2p12'),
+        'L3': ('p32', '2p32'),
+        'L23': ('p', '2p'),
+        'M1': ('s', '3s'),
+        'M2': ('p12', '3p12'),
+        'M3': ('p32', '3p32'),
+        'M23': ('p', '3p'),
+        'M4': ('d32', '3d32'),
+        'M5': ('d52', '3d52'),
+        'M45': ('d', '3d'),
+        'N1': ('s', '4s'),
+        'N2': ('p12', '4p12'),
+        'N3': ('p32', '4p32'),
+        'N23': ('p', '4p'),
+        'N4': ('d32', '4d32'),
+        'N5': ('d52', '4d52'),
+        'N45': ('d', '4d'),
+        'N6': ('f52', '4f52'),
+        'N7': ('f72', '4f72'),
+        'N67': ('f', '4f'),
+        'O1': ('s', '5s'),
+        'O2': ('p12', '5p12'),
+        'O3': ('p32', '5p32'),
+        'O23': ('p', '5p'),
+        'O4': ('d32', '5d32'),
+        'O5': ('d52', '5d52'),
+        'O45': ('d', '5d'),
+        'P1': ('s', '6s'),
+        'P2': ('p12', '6p12'),
+        'P3': ('p32', '6p32'),
+        'P23': ('p', '6p')
     }
 
-    return shell_name[edge_name.strip()]
+    if with_main_qn:
+        return shell_name[edge_name.strip()][1]
+    else:
+        return shell_name[edge_name.strip()][0]
 
 
 def slater_integrals_name(shell_name, label=None):
