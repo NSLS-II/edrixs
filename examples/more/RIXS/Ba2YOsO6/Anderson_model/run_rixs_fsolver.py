@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-import pickle
+import json
 import numpy as np
 from mpi4py import MPI
 import edrixs
@@ -90,8 +90,8 @@ if __name__ == "__main__":
         phi=phi, num_gs=4, nkryl=200, pol_type=poltype_xas, temperature=300
     )
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
-    with open('xas_poles.pkl', 'wb') as f:
-        pickle.dump(xas_poles, f)
+    with open('xas_poles.json', 'w') as f:
+        json.dump(xas_poles, f, indent=4)
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_siam_fort(
@@ -101,5 +101,5 @@ if __name__ == "__main__":
     )
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
     np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
-    with open('rixs_poles.pkl', 'wb') as f:
-        pickle.dump(rixs_poles, f)
+    with open('rixs_poles.json', 'w') as f:
+        json.dump(rixs_poles, f, indent=4)

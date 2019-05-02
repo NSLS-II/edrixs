@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import pickle
+import json
 import numpy as np
 import edrixs
 from mpi4py import MPI
@@ -74,8 +74,8 @@ if __name__ == "__main__":
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
         # Save XAS pole files for later plots
-        with open('xas_poles.pkl', 'wb') as f:
-            pickle.dump(xas_poles, f)
+        with open('xas_poles.json', 'w') as f:
+            json.dump(xas_poles, f, indent=4)
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     )
     if rank == 0:
         # Save RIXS pole files for later plots
-        with open('rixs_poles.pkl', 'wb') as f:
-            pickle.dump(rixs_poles, f)
+        with open('rixs_poles.json', 'w') as f:
+            json.dump(rixs_poles, f, indent=4)
         # Save RIXS spectra
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
         rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
