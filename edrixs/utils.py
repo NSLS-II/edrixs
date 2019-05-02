@@ -576,7 +576,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     """
     c_norb = {'s': 2, 'p': 6, 'd': 10, 'f': 14}
     atom = atom.strip()
-    avail_atoms = ['Ni']
+    avail_atoms = ['Ni', 'Cu']
     avail_shells = ['1s', '2s', '2p', '3s', '3p', '3d', '4s', '4p', '4d', '4f',
                     '5s', '5p', '5d', '5f', '6s', '6p', '6d']
 
