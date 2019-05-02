@@ -6,6 +6,7 @@ __all__ = ['beta_to_kelvin', 'kelvin_to_beta', 'boltz_dist', 'UJ_to_UdJH',
 
 import numpy as np
 import json
+import pkg_resources
 
 
 def beta_to_kelvin(beta):
@@ -594,7 +595,8 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
         if ishell not in avail_shells:
             raise Exception("Not avaiable for this shell: ", ishell)
 
-    with open('./atom_data/'+atom+'.json', 'r') as f:
+    fname = pkg_resources.resource_filename('edrixs', 'atom_data/'+atom+'.json')
+    with open(fname, 'r') as f:
         atom_dict = json.load(f)
 
     res = {}
@@ -633,11 +635,11 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
         else:
             if trans_to_which == 1:
                 case = (v_name[0] + str(v_noccu[0]+1) + '_' +
-                        v_name[1] + str(v_noccu[1]) + '-' +
+                        v_name[1] + str(v_noccu[1]) + '_' +
                         edge_name[0:2] + str(c_norb[edge_name[1]]-1))
             else:
                 case = (v_name[0] + str(v_noccu[0]) + '_' +
-                        v_name[1] + str(v_noccu[1]+1) + '-' +
+                        v_name[1] + str(v_noccu[1]+1) + '_' +
                         edge_name[0:2] + str(c_norb[edge_name[1]]-1))
         if case not in atom_dict:
             raise Exception("This configuration is currently not avaiable in atom_data", case)

@@ -59,6 +59,7 @@ setup(
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',
             "edrixs/*",
+            "edrixs/atom_data/*",
             ]
         },
     install_requires=requirements,

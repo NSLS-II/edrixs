@@ -13,3 +13,4 @@ include edrixs/_version.py
 
 # If including data files in the package, add them like:
 # include path/to/data_file
+include edrixs/atom_data/*
