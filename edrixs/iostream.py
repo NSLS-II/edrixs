@@ -1,7 +1,8 @@
 __all__ = ['write_tensor', 'write_emat', 'write_umat', 'write_config',
-           'read_poles_from_file']
+           'read_poles_from_file', 'dump_poles', 'load_poles']
 
 import numpy as np
+import json
 
 
 def write_tensor_1(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d}',
@@ -320,3 +321,37 @@ def read_poles_from_file(file_list):
         f.close()
 
     return pole_dict
+
+
+def dump_poles(obj, file_name="poles"):
+    """
+    Dump the objects of poles returned from XAS or RIXS calculations to file for later plotting.
+
+    Parameters
+    ----------
+    obj: Python object
+        Object of poles, a dict or a list of dicts.
+    file_name: string
+        File name.
+    """
+    with open(file_name+'.json', 'w') as f:
+        json.dump(obj, f, indent=2)
+
+
+def load_poles(file_name='poles'):
+    """
+    Load the objects of poles from file.
+
+    Parameters
+    ----------
+    file_name: string
+
+    Returns
+    -------
+    obj: Python objects
+        Poles object.
+    """
+    with open(file_name+'.json', 'r') as f:
+        obj = json.load(f)
+
+    return obj

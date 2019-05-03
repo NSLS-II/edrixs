@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import json
 import numpy as np
 from mpi4py import MPI
 import edrixs
@@ -95,8 +94,7 @@ if __name__ == "__main__":
     )
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
-        with open('xas_poles.json', 'w') as f:
-            json.dump(xas_poles, f, indent=4)
+        edrixs.dump_poles(xas_poles, 'xas_poles')
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -105,8 +103,7 @@ if __name__ == "__main__":
         num_gs=num_gs, nkryl=200, temperature=T
     )
     if rank == 0:
-        with open('rixs_poles.json', 'w') as f:
-            json.dump(rixs_poles, f, indent=4)
+        edrixs.dump_poles(rixs_poles, 'rixs_poles')
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
         np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
         edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
