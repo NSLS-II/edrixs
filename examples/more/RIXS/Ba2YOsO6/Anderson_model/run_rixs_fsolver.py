@@ -91,7 +91,7 @@ if __name__ == "__main__":
     )
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
     with open('xas_poles.json', 'w') as f:
-        json.dump(xas_poles, f, indent=4)
+        json.dump(xas_poles, f, indent=2)
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_siam_fort(
