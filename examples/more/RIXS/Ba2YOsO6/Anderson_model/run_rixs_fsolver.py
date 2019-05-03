@@ -102,4 +102,4 @@ if __name__ == "__main__":
     rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
     np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
     with open('rixs_poles.json', 'w') as f:
-        json.dump(rixs_poles, f, indent=4)
+        json.dump(rixs_poles, f, indent=2)
