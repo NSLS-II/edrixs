@@ -503,19 +503,16 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     ----------
     atom: string
         Name of atom, for example, 'Ni', 'Cu', 'Ir', 'U'.
-
     v_name: a string or a tuple of one or two strings
         Names of one or two valence shells. Set it to a single string if there is only
         one valence shell, or set it to a tuple of two strings if there are two valence
         shells. For example, *v_name='3d'*, *v_name=('3d', '4p')*
-
     v_noccu: a int or a tuple of one or two ints
         Occupancy of valence shells before x-ray absorption (without a core hole).
         Set it to a single int if there is only one valence shell, or set it to a
         tuple of two ints if there are two valence shells. The order should be
         consistent with that in v_name.
         For example, *v_name='3d', v_noccu=8*, *v_name=('3d', '4p'), v_noccu=(8, 0)*.
-
     edge: a string
         X-ray resonant edge. If edge is not None, both the information of
         the initial (without a core hole) and intermediate (with a core hole) Hamiltonians
@@ -528,7 +525,6 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
         - L23 (both L2 and L3), M23 (both M2 and M3), M45 (both M4 and M5)
           N23 (both N2 and N3), N45 (both N4 and N5), N67 (both N6 and N7)
           O23 (both O2 and O3), O45 (both O4 and O5), P23 (both P2 and P3)
-
     trans_to_which: int
         If there are two valence shells, this variable is used to indicate which
         valence shell the photon transition happens.
@@ -542,37 +538,103 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     res:  dict
         Atomic data. A dict likes this if edge is None:
 
-        res={
+        .. code-block:: python
 
-            'slater_name_i': [list of slater names for initial Hamiltonian],
+           res={
+               'slater_i': [(name of slater integrals, vaule of slater integrals), (), ...],
+               'v_soc': [list of SOC for each atomic shell in v_name],
+           }
 
-            'slater_i': [list of slater integrals for initial Hamiltonian],
+        otherwise,
 
-            'v_soc': [list of SOC for each atomic shell in v_name],
-        }
+        .. code-block:: python
 
-       otherwise,
+           res={
+               'slater_i': [(name of slater integrals, value of slater integrals), (), ...],
+               'slater_n': [(name of slater integrals, value of slater integrals), (), ...],
+               'v_soc': [list of SOC for each atomic shell in v_name],
+               'c_soc': SOC of core shell,
+               'edge_ene': [list of edge energy, 2 elements if edge is any of
+               "L23, M23, M45, N23, N45, N67, O23, O45, P23", othewise only 1 element],
+               'gamma_c': [list of core hole life-time broadening, 2 elements if edge is any of
+               "L23, M23, M45, N23, N45, N67, O23, O45, P23", othewise only 1 element],
+           }
 
-        res={
 
-            'slater_name_i': [list of names for initial Hamiltonian],
+    Examples
+    --------
+    >>> import edrixs
+    >>> res = edrixs.get_atom_data('Ni', v_name='3d', v_noccu=8)
+    >>> res
+    {'slater_i': [('F0_11', 0.0), ('F2_11', 13.886), ('F4_11', 8.67)],
+     'v_soc_i': [0.112]}
+    >>> name, slater = [list(i) for i in zip(*res['slater_i'])]
+    >>> name
+    ['F0_11', 'F2_11', 'F4_11']
+    >>> slater
+    [0.0, 13.886, 8.67]
+    >>> slater = [i * 0.8 for i in slater]
+    >>> slater[0] = edrixs.get_F0('d', slater[1], slater[2])
+    >>> slater
+    [0.5728507936507936, 11.1088, 6.936]
 
-            'slater_name_n': [list of names for intermediate Hamiltonian],
+    >>> import edrixs
+    >>> res=edrixs.get_atom_data('Ni', v_name='3d', v_noccu=8, edge='L3')
+    >>> res
+    {'slater_i': [('F0_11', 0.0), ('F2_11', 12.234), ('F4_11', 7.598)],
+     'v_soc_i': [0.083],
+     'slater_n': [('F0_11', 0.0), ('F2_11', 12.234), ('F4_11', 7.598),
+      ('F0_12', 0.0), ('F2_12', 7.721), ('G1_12', 5.787), ('G3_12', 3.291),
+      ('F0_22', 0.0), ('F2_22', 0.0)],
+     'v_soc_n': [0.102],
+     'c_soc': 11.507,
+     'edge_ene': [852.7],
+     'gamma_c': [0.275]}
+    >>> name_i, slater_i = [list(i) for i in zip(*res['slater_i'])]
+    >>> name_n, slater_n = [list(i) for i in zip(*res['slater_n'])]
+    >>> name_i
+    ['F0_11', 'F2_11', 'F4_11']
+    >>> slater_i
+    [0.0, 12.234, 7.598]
+    >>> name_n
+    ['F0_11', 'F2_11', 'F4_11', 'F0_12', 'F2_12', 'G1_12', 'G3_12', 'F0_22', 'F2_22']
+    >>> slater_n
+    [0.0, 12.234, 7.598, 0.0, 7.721, 5.787, 3.291, 0.0, 0.0]
+    >>> slater_n[0] = edrixs.get_F0('d', slater_n[1], slater_n[2])
+    >>> slater_n[3] = edrixs.get_F0('dp', slater_n[5], slater_n[6])
+    >>> slater_n
+    [0.6295873015873016, 12.234, 7.598, 0.5268428571428572, 7.721, 5.787, 3.291, 0.0, 0.0]
 
-            'slater_i': [list of slater integrals for initial Hamiltonian],
-
-            'slater_n': [list of slater integrals for intermedidate Hamiltonian],
-
-            'v_soc': [list of SOC for each atomic shell in v_name],
-
-            'c_soc': SOC of core shell,
-
-            'edge_ene': [list of edge energy, 2 elements if edge is any of
-            "L23, M23, M45, N23, N45, N67, O23, O45, P23", othewise only 1 element],
-
-            'gamma_c': [list of core hole life-time broadening, 2 elements if edge is any of
-            "L23, M23, M45, N23, N45, N67, O23, O45, P23", othewise only 1 element],
-        }
+    >>> import edrixs
+    >>> res=edrixs.get_atom_data('Ni', v_name=('3d', '4p'), v_noccu=(8, 0),
+    ...     edge='K', trans_to_which=2)
+    >>> res
+    {'slater_i': [('F0_11', 0.0), ('F2_11', 12.234), ('F4_11', 7.598),
+      ('F0_12', 0.0), ('F2_12', 0.0), ('G1_12', 0.0), ('G3_12', 0.0),
+      ('F0_22', 0.0), ('F2_22', 0.0)],
+     'v_soc_i': [0.083, 0.0],
+     'slater_n': [('F0_11', 0.0), ('F2_11', 13.851), ('F4_11', 8.643),
+      ('F0_12', 0.0), ('F2_12', 2.299), ('G1_12', 0.828), ('G3_12', 0.713),
+      ('F0_22', 0.0), ('F2_22', 0.0),
+      ('F0_13', 0.0), ('G2_13', 0.079),
+      ('F0_23', 0.0), ('G1_23', 0.194),
+      ('F0_33', 0.0)],  # 1: '3d', 2: '4p', 3: '1s'
+     'v_soc_n': [0.113, 0.093],
+     'c_soc': 0.0,
+     'edge_ene': [8333.0],
+     'gamma_c': [0.81]}
+    >>> name_i, slater_i = [list(i) for i in zip(*res['slater_i'])]
+    >>> name_n, slater_n = [list(i) for i in zip(*res['slater_n'])]
+    >>> name_i
+    ['F0_11', 'F2_11', 'F4_11', 'F0_12', 'F2_12', 'G1_12', 'G3_12', 'F0_22', 'F2_22']
+    >>> slater_i
+    [0.0, 12.234, 7.598, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    >>> name_n
+    ['F0_11', 'F2_11', 'F4_11', 'F0_12', 'F2_12', 'G1_12', 'G3_12', 'F0_22', 'F2_22',
+     'F0_13', 'G2_13', 'F0_23', 'G1_23', 'F0_33']
+    >>> slater_n
+    [0.0, 13.851, 8.643, 0.0, 2.299, 0.828, 0.713, 0.0, 0.0,
+     0.0, 0.079, 0.0, 0.194, 0.0]
     """
     c_norb = {'s': 2, 'p': 6, 'd': 10, 'f': 14}
     atom = atom.strip()
@@ -616,8 +678,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     slater_i = [0.0] * nslat
     tmp = atom_dict[case]['slater']
     slater_i[0:len(tmp)] = tmp
-    res['slater_name_i'] = slater_name
-    res['slater_i'] = slater_i
+    res['slater_i'] = list(zip(slater_name, slater_i))
     res['v_soc_i'] = atom_dict[case]['soc']
 
     if edge is not None:
@@ -648,13 +709,12 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
         slater_n = [0.0] * nslat
         tmp = atom_dict[case]['slater']
         slater_n[0:len(tmp)] = tmp
-        res['slater_name_n'] = slater_name
-        res['slater_n'] = slater_n
+        res['slater_n'] = list(zip(slater_name, slater_n))
 
         res['v_soc_n'] = atom_dict[case]['soc'][0:-1]
         res['c_soc'] = atom_dict[case]['soc'][-1]
 
         res['edge_ene'] = atom_dict[edge]['ene']
-        res['gamma_c'] = atom_dict[edge]['gamma']
+        res['gamma_c'] = [i / 2 for i in atom_dict[edge]['gamma']]
 
     return res
