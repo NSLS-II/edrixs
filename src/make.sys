@@ -28,7 +28,7 @@ FFLAGS = -c $(CPP) $(CHECK) $(CDUMP) $(LEVEL)
 
 #-------------------------------------------------------------------------
 #LIBS = -L/opt/local/lib -lparpack -larpack -lopenblas  # on MacOSX using MacPorts 
-LIBS = -lparpack -larpack -lopenblas
+LIBS = -lopenblas -lparpack -larpack 
 F2PY   = f2py
 F2PYC  = $(F90)
 F2PYL  = $(LIBS)
