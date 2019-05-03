@@ -27,7 +27,7 @@ if __name__ == "__main__":
     )
 
     # Spin-orbit coupling strength
-    zeta_d_i, zeta_d_n, zeta_p_n = 0.083, 0.102, 11.24
+    zeta_d_i, zeta_d_n, zeta_p_n = 0.083, 0.102, 11.533333
 
     # Tetragonal crystal field splitting
     dq10, d1, d3 = 1.3, 0.05, 0.2
@@ -42,10 +42,11 @@ if __name__ == "__main__":
     thin, thout, phi = 15 / 180.0 * np.pi, 75 / 180.0 * np.pi, 0.0
     poltype_xas = [('linear', 0.0), ('linear', np.pi / 2.0),
                    ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
-    gamma_c, gamma_f = 0.2, 0.1
     # L3-edge
+    gamma_c, gamma_f = 0.275, 0.1
     ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 100)
     # L2-edge
+    # gamma_c, gamma_f = 0.7, 0.1
     # ominc_rixs = np.linspace(10.9 + off, 14.9 + off, 100)
     eloss = np.linspace(-0.5, 5.0, 1000)
     poltype_rixs = [('linear', 0, 'linear', 0),

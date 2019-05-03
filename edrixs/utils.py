@@ -493,7 +493,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
 
     The Slater integrals and spin-orbit coupling are calculated by Cowan's code
     (https://www.tcd.ie/Physics/people/Cormac.McGuinness/Cowan/) based on Hartree-Fock
-    approximation. These numbers are just initial guess serve as a start point,
+    approximation. These numbers are just initial guess and serve as a start point,
     you need to rescale them to reproduce your XAS or RIXS spectra.
 
     NOTE: F0 is not calculated by Cowan's code, they are all set to be zero, you need to
@@ -638,7 +638,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     """
     c_norb = {'s': 2, 'p': 6, 'd': 10, 'f': 14}
     atom = atom.strip()
-    avail_atoms = ['Ni', 'Cu']
+    avail_atoms = ['Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Os', 'Ir', 'U']
     avail_shells = ['1s', '2s', '2p', '3s', '3p', '3d', '4s', '4p', '4d', '4f',
                     '5s', '5p', '5d', '5f', '6s', '6p', '6d']
 

@@ -11,25 +11,36 @@ if __name__ == "__main__":
 
     Use Fortran ED, XAS, RIXS solvers.
 
+    In this example, we call function edrixs.get_atom_data to return the default atomic
+    parameters of Ni, inlucding slater integrals, SOC, resonant energy of :math:`L_{2,3}`-edge
+    and core-hole life-time broadening.
+
     How to run
     ----------
     mpiexec -n 2 python run_rixs_fsolver.py
     """
     # Atomic shell settings
     # ---------------------
+    res = edrixs.get_atom_data('Ni', v_name='3d', v_noccu=8, edge='L23')
+    name_i, slater_i = [list(i) for i in zip(*res['slater_i'])]  # Initial
+    name_n, slater_n = [list(i) for i in zip(*res['slater_n'])]  # Intermediate
+
     # Slater integrals
-    F2_dd, F4_dd = 12.234 * 0.65, 7.598 * 0.65
-    F0_dd = edrixs.get_F0('d', F2_dd, F4_dd)
-    G1_dp, G3_dp = 5.787 * 0.7, 3.291 * 0.7
-    F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
-    F2_dp = 7.721 * 0.95
-    slater = (
-        [F0_dd, F2_dd, F4_dd],  # Initial
-        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
-    )
+    slater_i[1], slater_i[2] = slater_i[1] * 0.65, slater_i[2] * 0.65  # F2_dd, F4_dd
+    slater_i[0] = edrixs.get_F0('d', slater_i[1], slater_i[2])  # F0_dd
+
+    slater_n[1], slater_n[2] = slater_n[1] * 0.65, slater_n[2] * 0.65  # F2_dd, F4_dd
+    slater_n[0] = edrixs.get_F0('d', slater_n[1], slater_n[2])  # F0_dd
+
+    slater_n[5], slater_n[6] = slater_n[5] * 0.7, slater_n[6] * 0.7  # G1_dp, G3_dp
+    slater_n[3] = edrixs.get_F0('dp', slater_n[5], slater_n[6])  # F0_dp
+    slater_n[4] = slater_n[4] * 0.95  # F2_dp
+
+    slater = (slater_i, slater_n)
 
     # Spin-orbit coupling strength
-    zeta_d_i, zeta_d_n, zeta_p_n = 0.083, 0.102, 11.24
+    zeta_d_i, zeta_d_n = res['v_soc_i'][0], res['v_soc_n'][0]
+    zeta_p_n = (res['edge_ene'][0] - res['edge_ene'][1]) / 1.5
 
     # Tetragonal crystal field splitting
     dq10, d1, d3 = 1.3, 0.05, 0.2
@@ -44,11 +55,15 @@ if __name__ == "__main__":
     thin, thout, phi = 15 / 180.0 * np.pi, 75 / 180.0 * np.pi, 0.0
     poltype_xas = [('linear', 0.0), ('linear', np.pi / 2.0),
                    ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
-    gamma_c, gamma_f = 0.2, 0.1
-    # L3-edge
-    ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 10)
+
     # L2-edge
+    # gamma_c, gamma_f = res['gamma_c'][0], 0.1
     # ominc_rixs = np.linspace(10.9 + off, 14.9 + off, 100)
+
+    # L3-edge
+    gamma_c, gamma_f = res['gamma_c'][1], 0.1
+    ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 10)
+
     eloss = np.linspace(-0.5, 5.0, 1000)
     poltype_rixs = [('linear', 0, 'linear', 0),
                     ('linear', 0, 'linear', np.pi/2.0),
