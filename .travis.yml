@@ -25,7 +25,7 @@ install:
   - make
   - cd ..
   # Build Python interface
-  - python setup.py  config_fc --f77exec=mpif90 --f90exec=mpif90  build_ext --link-objects="-L./src -ledrixsfortran -lopenblas -lparpack -larpack"
+  - python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --inplace --link-objects="-L./src -ledrixsfortran -lopenblas -lparpack -larpack" 
   # Install this package and the packages listed in requirements.txt.
   - pip install .
   # Install extra requirements for running tests and building docs.
