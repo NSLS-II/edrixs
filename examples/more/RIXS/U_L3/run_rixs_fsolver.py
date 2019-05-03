@@ -2,6 +2,7 @@
 
 import json
 import numpy as np
+import collections
 import edrixs
 from mpi4py import MPI
 
@@ -13,51 +14,42 @@ if __name__ == "__main__":
     ----------
     mpiexec -n 4 python run_rixs_fsolver.py
     '''
-
-    F2_ff, F4_ff, F6_ff = 8.278, 5.447, 4.011
-    F0_ff = edrixs.get_F0('f', F2_ff, F4_ff, F6_ff)
-
-    F2_dd, F4_dd = 0.0, 0.0
-    F0_dd = edrixs.get_F0('d', F2_dd, F4_dd)
-
-    F2_fd, F4_fd = 3.750, 2.050
-    G1_fd, G3_fd, G5_fd = 1.938, 1.562, 1.213
-    F0_fd = edrixs.get_F0('fd', G1_fd, G3_fd, G5_fd)
-
-    F2_fp = 0.528
-    G2_fp, G4_fp = 0.087, 0.056
-    F0_fp = edrixs.get_F0('fp', G2_fp, G4_fp)
-
-    F2_dp = 0.272
-    G1_dp, G3_dp = 0.238, 0.142
-    F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
-
-    slater = (
-        [F0_ff, F2_ff, F4_ff, F6_ff,  # FX_11
-         F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd,  # FX_12, GX_12
-         F0_dd, F2_dd, F4_dd  # FX_22
-         ],  # Initial
-        [F0_ff, F2_ff, F4_ff, F6_ff,  # FX_11
-         F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd,  # FX_12, GX_12
-         F0_dd, F2_dd, F4_dd,  # FX_22
-         F0_fp, F2_fp, G2_fp, G4_fp,  # FX_13, GX_13
-         F0_dp, F2_dp, G1_dp, G3_dp   # FX_23, GX_23
-         ]   # Intermediate
-    )
-
-    # Spin-Orbit Coupling (SOC) zeta
-    zeta_f_i = 0.261
-    zeta_f_n = 0.321
-
-    zeta_d_i = 0.435
-    zeta_d_n = 0.435
-
     # Occupancy of U 5f orbitals
     noccu = 2
+    res = edrixs.get_atom_data('U', v_name=('5f', '6d'), v_noccu=(noccu, 0),
+                               edge='L3', trans_to_which=2, label=('f', 'd', 'p'))
+
+    slat_i = collections.OrderedDict(res['slater_i'])
+    slat_n = collections.OrderedDict(res['slater_n'])
+
+    # Initial Hamiltonian
+    slat_i['F2_ff'] = slat_i['F2_ff'] * 0.77
+    slat_i['F4_ff'] = slat_i['F4_ff'] * 0.77
+    slat_i['F6_ff'] = slat_i['F6_ff'] * 0.77
+    slat_i['F0_ff'] = edrixs.get_F0('f', slat_i['F2_ff'], slat_i['F4_ff'], slat_i['F6_ff'])
+
+    # Intermediate Hamiltonian
+    slat_n['F2_ff'] = slat_n['F2_ff'] * 0.77
+    slat_n['F4_ff'] = slat_n['F4_ff'] * 0.77
+    slat_n['F6_ff'] = slat_n['F6_ff'] * 0.77
+
+    slat_n['F0_ff'] = edrixs.get_F0('f', slat_n['F2_ff'], slat_n['F4_ff'], slat_n['F6_ff'])
+    slat_n['F0_fd'] = edrixs.get_F0('fd', slat_n['G1_fd'], slat_n['G3_fd'], slat_n['G5_fd'])
+    slat_n['F0_fp'] = edrixs.get_F0('fp', slat_n['G2_fp'], slat_n['G4_fp'])
+    slat_n['F0_dp'] = edrixs.get_F0('dp', slat_n['G1_dp'], slat_n['G3_dp'])
+
+    slater = (list(slat_i.values()), list(slat_n.values()))
+
+    # Spin-Orbit Coupling (SOC) zeta
+    zeta_f_i = res['v_soc_i'][0]
+    zeta_f_n = res['v_soc_n'][0]
+
+    zeta_d_i = res['v_soc_i'][1]
+    zeta_d_n = res['v_soc_n'][1]
 
     # RIXS settings
     thin, thout, phi = 45 / 180.0 * np.pi, 45 / 180.0 * np.pi, 0.0
-    gamma_c = 1.0
+    gamma_c = res['gamma_c'][0]
     gamma_f = 0.1
     ominc_xas = np.linspace(-10, 20, 1000)
     ominc_rixs = np.linspace(0, 10, 10)

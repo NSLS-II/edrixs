@@ -485,7 +485,7 @@ def slater_integrals_name(shell_name, label=None):
     return res
 
 
-def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
+def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None):
     """
     Return Slater integrals, spin-orbit coupling strength, edge energy and core hole
     life-time broadening for an atom with given type of valence shells, occupancy of
@@ -532,6 +532,17 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
         - 1: to the first valence shell
 
         - 2: to the second valence shell
+    label: a string or tuple of strings
+        User-defined symbols to label the names of Slater integrals.
+
+        - one element, for the valence shell
+
+        - two elements, 1st (2nd)-element for the 1st (2nd) valence shells or
+          1st-element for the 1st valence shell and the 2nd one for the core shell.
+
+        - three elements, the 1st (2nd)-element is for the 1st (2nd) valence shell,
+          the 3rd one is for the core shell
+
 
     Returns
     -------
@@ -579,13 +590,13 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     [0.5728507936507936, 11.1088, 6.936]
 
     >>> import edrixs
-    >>> res=edrixs.get_atom_data('Ni', v_name='3d', v_noccu=8, edge='L3')
+    >>> res=edrixs.get_atom_data('Ni', v_name='3d', v_noccu=8, edge='L3', label=('d', 'p'))
     >>> res
-    {'slater_i': [('F0_11', 0.0), ('F2_11', 12.234), ('F4_11', 7.598)],
+    {'slater_i': [('F0_dd', 0.0), ('F2_dd', 12.234), ('F4_dd', 7.598)],
      'v_soc_i': [0.083],
-     'slater_n': [('F0_11', 0.0), ('F2_11', 12.234), ('F4_11', 7.598),
-      ('F0_12', 0.0), ('F2_12', 7.721), ('G1_12', 5.787), ('G3_12', 3.291),
-      ('F0_22', 0.0), ('F2_22', 0.0)],
+     'slater_n': [('F0_dd', 0.0), ('F2_dd', 12.234), ('F4_dd', 7.598),
+      ('F0_dp', 0.0), ('F2_dp', 7.721), ('G1_dp', 5.787), ('G3_dp', 3.291),
+      ('F0_pp', 0.0), ('F2_pp', 0.0)],
      'v_soc_n': [0.102],
      'c_soc': 11.507,
      'edge_ene': [852.7],
@@ -593,11 +604,11 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     >>> name_i, slater_i = [list(i) for i in zip(*res['slater_i'])]
     >>> name_n, slater_n = [list(i) for i in zip(*res['slater_n'])]
     >>> name_i
-    ['F0_11', 'F2_11', 'F4_11']
+    ['F0_dd', 'F2_dd', 'F4_dd']
     >>> slater_i
     [0.0, 12.234, 7.598]
     >>> name_n
-    ['F0_11', 'F2_11', 'F4_11', 'F0_12', 'F2_12', 'G1_12', 'G3_12', 'F0_22', 'F2_22']
+    ['F0_dd', 'F2_dd', 'F4_dd', 'F0_dp', 'F2_dp', 'G1_dp', 'G3_dp', 'F0_pp', 'F2_pp']
     >>> slater_n
     [0.0, 12.234, 7.598, 0.0, 7.721, 5.787, 3.291, 0.0, 0.0]
     >>> slater_n[0] = edrixs.get_F0('d', slater_n[1], slater_n[2])
@@ -606,39 +617,42 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     [0.6295873015873016, 12.234, 7.598, 0.5268428571428572, 7.721, 5.787, 3.291, 0.0, 0.0]
 
     >>> import edrixs
+    >>> import collections
     >>> res=edrixs.get_atom_data('Ni', v_name=('3d', '4p'), v_noccu=(8, 0),
-    ...     edge='K', trans_to_which=2)
+    ...     edge='K', trans_to_which=2, label=('d', 'p', 's'))
     >>> res
-    {'slater_i': [('F0_11', 0.0), ('F2_11', 12.234), ('F4_11', 7.598),
-      ('F0_12', 0.0), ('F2_12', 0.0), ('G1_12', 0.0), ('G3_12', 0.0),
-      ('F0_22', 0.0), ('F2_22', 0.0)],
+    {'slater_i': [('F0_dd', 0.0), ('F2_dd', 12.234), ('F4_dd', 7.598),
+      ('F0_dp', 0.0), ('F2_dp', 0.0), ('G1_dp', 0.0), ('G3_dp', 0.0),
+      ('F0_pp', 0.0), ('F2_pp', 0.0)],
      'v_soc_i': [0.083, 0.0],
-     'slater_n': [('F0_11', 0.0), ('F2_11', 13.851), ('F4_11', 8.643),
-      ('F0_12', 0.0), ('F2_12', 2.299), ('G1_12', 0.828), ('G3_12', 0.713),
-      ('F0_22', 0.0), ('F2_22', 0.0),
-      ('F0_13', 0.0), ('G2_13', 0.079),
-      ('F0_23', 0.0), ('G1_23', 0.194),
-      ('F0_33', 0.0)],  # 1: '3d', 2: '4p', 3: '1s'
+     'slater_n': [('F0_dd', 0.0), ('F2_dd', 13.851), ('F4_dd', 8.643),
+      ('F0_dp', 0.0), ('F2_dp', 2.299), ('G1_dp', 0.828), ('G3_dp', 0.713),
+      ('F0_pp', 0.0), ('F2_pp', 0.0),
+      ('F0_ds', 0.0), ('G2_ds', 0.079),
+      ('F0_ps', 0.0), ('G1_ps', 0.194),
+      ('F0_ss', 0.0)],
      'v_soc_n': [0.113, 0.093],
      'c_soc': 0.0,
      'edge_ene': [8333.0],
      'gamma_c': [0.81]}
-    >>> name_i, slater_i = [list(i) for i in zip(*res['slater_i'])]
-    >>> name_n, slater_n = [list(i) for i in zip(*res['slater_n'])]
-    >>> name_i
-    ['F0_11', 'F2_11', 'F4_11', 'F0_12', 'F2_12', 'G1_12', 'G3_12', 'F0_22', 'F2_22']
-    >>> slater_i
+    >>> slat_i = collections.OrderedDict(res['slater_i'])
+    >>> slat_n = collections.OrderedDict(res['slater_n'])
+    >>> list(slat_i.keys())
+    ['F0_dd', 'F2_dd', 'F4_dd', 'F0_dp', 'F2_dp', 'G1_dp', 'G3_dp', 'F0_pp', 'F2_pp']
+    >>> list(slat_i.values())
     [0.0, 12.234, 7.598, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    >>> name_n
-    ['F0_11', 'F2_11', 'F4_11', 'F0_12', 'F2_12', 'G1_12', 'G3_12', 'F0_22', 'F2_22',
-     'F0_13', 'G2_13', 'F0_23', 'G1_23', 'F0_33']
-    >>> slater_n
+    >>> list(slat_n.keys())
+    ['F0_dd', 'F2_dd', 'F4_dd', 'F0_dp', 'F2_dp', 'G1_dp', 'G3_dp', 'F0_pp', 'F2_pp',
+     'F0_ds', 'G2_ds', 'F0_ps', 'G1_ps', 'F0_ss']
+    >>> list(slat_n.values())
     [0.0, 13.851, 8.643, 0.0, 2.299, 0.828, 0.713, 0.0, 0.0,
      0.0, 0.079, 0.0, 0.194, 0.0]
     """
     c_norb = {'s': 2, 'p': 6, 'd': 10, 'f': 14}
     atom = atom.strip()
-    avail_atoms = ['Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Os', 'Ir', 'U']
+    avail_atoms = ['Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu',
+                   'Re', 'Os', 'Ir',
+                   'U', 'Pu']
     avail_shells = ['1s', '2s', '2p', '3s', '3p', '3d', '4s', '4p', '4d', '4f',
                     '5s', '5p', '5d', '5f', '6s', '6p', '6d']
 
@@ -649,6 +663,10 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
         v_name = (v_name,)
     if not isinstance(v_noccu, (list, tuple)):
         v_noccu = (v_noccu,)
+
+    if label is not None:
+        if not isinstance(label, (list, tuple)):
+            label = (label,)
 
     if len(v_name) != len(v_noccu):
         raise Exception("The shape of v_name is not same as noccu")
@@ -665,7 +683,11 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
     shell_name = []
     for name in v_name:
         shell_name.append(name[-1])
-    slater_name = slater_integrals_name(shell_name)
+    if label is not None:
+        my_label = label[0:len(shell_name)]
+    else:
+        my_label = None
+    slater_name = slater_integrals_name(shell_name, label=my_label)
 
     if len(v_name) == 1:
         case = v_name[0] + str(v_noccu[0])
@@ -688,7 +710,11 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1):
         for name in v_name:
             shell_name.append(name[-1])
         shell_name.append(edge_name[1:2])
-        slater_name = slater_integrals_name(shell_name)
+        if label is not None:
+            my_label = label[0:len(shell_name)]
+        else:
+            my_label = None
+        slater_name = slater_integrals_name(shell_name, label=my_label)
 
         if len(v_name) == 1:
             case = (v_name[0] + str(v_noccu[0]+1) + '_' +

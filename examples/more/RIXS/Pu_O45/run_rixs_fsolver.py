@@ -16,31 +16,38 @@ if __name__ == "__main__":
 
     # PARAMETERS
     # -----------
-    F2_ff, F4_ff, F6_ff = 9.711 * 0.77, 6.364 * 0.77, 4.677 * 0.77
-    Uf_av = 0.0
-    F0_ff = Uf_av + edrixs.get_F0('f', F2_ff, F4_ff, F6_ff)
+    # Occupancy of U 5f orbitals
+    noccu = 6
+    res = edrixs.get_atom_data('Pu', v_name='5f', v_noccu=noccu, edge='O45')
+    name_i, slat_i = [list(i) for i in zip(*res['slater_i'])]
+    name_n, slat_n = [list(i) for i in zip(*res['slater_n'])]
 
-    F2_fd, F4_fd = 10.652 * 0.6, 6.850 * 0.6
-    G1_fd, G3_fd, G5_fd = 12.555 * 0.6, 7.768 * 0.6, 5.544 * 0.6
-    Ufd_av = 0.0
-    F0_fd = Ufd_av + edrixs.get_F0('fd', G1_fd, G3_fd, G5_fd)
-    slater = (
-        [F0_ff, F2_ff, F4_ff, F6_ff],  # Initial
-        [F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd]   # Intermediate
-    )
+    # Initial Hamiltonian
+    slat_i[1], slat_i[2], slat_i[3] = slat_i[1] * 0.77, slat_i[2] * 0.77, slat_i[3] * 0.77
+    Uf_ave = 0
+    slat_i[0] = Uf_ave + edrixs.get_F0('f', slat_i[1], slat_i[2], slat_i[3])
+
+    # Intermediate Hamiltonian
+    slat_n[1], slat_n[2], slat_n[3] = slat_n[1] * 0.77, slat_n[2] * 0.77, slat_n[3] * 0.77
+    slat_n[0] = Uf_ave + edrixs.get_F0('f', slat_n[1], slat_n[2], slat_n[3])
+
+    slat_n[5], slat_n[6] = slat_n[5] * 0.6, slat_n[6] * 0.6
+    slat_n[7], slat_n[8], slat_n[9] = slat_n[7] * 0.6, slat_n[8] * 0.6, slat_n[9] * 0.6
+
+    Ufd_ave = 0.0
+    slat_n[4] = Ufd_ave + edrixs.get_F0('fd', slat_n[7], slat_n[8], slat_n[9])
+
+    slater = (slat_i, slat_n)
 
     # Spin-Orbit Coupling (SOC) zeta
     # 5f, without core-hole, from Cowan's code
-    zeta_f_i = 0.261 * 0.9
+    zeta_f_i = res['v_soc_i'][0] * 0.9
     # 5f, with core-hole, from Cowan's code
-    zeta_f_n = 0.274 * 0.9
-    zeta_d_n = 4.4
-
-    # Occupancy of U 5f orbitals
-    noccu = 6
+    zeta_f_n = res['v_soc_n'][0] * 0.9
+    zeta_d_n = (res['edge_ene'][0] - res['edge_ene'][1]) / 2.5
 
     # Energy shift of the core level
-    om_shift = 106.4
+    om_shift = (2 * res['edge_ene'][0] + 3 * res['edge_ene'][1]) / 5.0
 
     # XAS and RIXS settings
     # ---------------------
@@ -101,9 +108,5 @@ if __name__ == "__main__":
         with open('rixs_poles.json', 'w') as f:
             json.dump(rixs_poles, f, indent=4)
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
-        rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
         np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
-        np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
-        # Plot RIXS map
         edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
-        edrixs.plot_rixs_map(rixs_sigma, ominc_rixs, eloss, "rixsmap_sigma.pdf")
