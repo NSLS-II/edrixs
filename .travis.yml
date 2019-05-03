@@ -13,6 +13,9 @@ cache:
     - $HOME/.cache/pip
     - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
 
+before_install:
+  - sudo apt-get install openmpi-bin openmpi-doc libopenmpi-dev
+
 install:
   # Install this package and the packages listed in requirements.txt.
   - pip install .
@@ -25,7 +28,7 @@ script:
   - coverage report -m  # Generate test coverage report.
   - codecov  # Upload the report to codecov.
   # Temporary commenting it out so we can test docs build.
-  # - flake8 --max-line-length=115  # Enforce code style (but relax line length limit a bit).
+  - flake8 --max-line-length=115  # Enforce code style (but relax line length limit a bit).
   - make -C docs html  # Build the documentation.
   - pip install doctr
   - doctr deploy --built-docs docs/build/html .
