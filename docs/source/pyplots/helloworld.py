@@ -15,18 +15,15 @@ name_i, slat_i = [list(i) for i in zip(*res['slater_i'])]
 name_n, slat_n = [list(i) for i in zip(*res['slater_n'])]
 
 # Slater integrals for initial Hamiltonian without core-hole
-slat_i[1], slat_i[2] = slat_i[1] * 0.65, slat_i[2] * 0.65  # F2_dd, F4_dd
-slat_i[0] = edrixs.get_F0('d', slat_i[1], slat_i[2])  # F0_dd
+si = edrixs.rescale(slat_i, ([1, 2], [0.65]*2))
+si[0] = edrixs.get_F0('d', si[1], si[2])    # F0_dd
 
 # Slater integrals for intermediate Hamiltonian with core-hole
-slat_n[1], slat_n[2] = slat_n[1] * 0.65, slat_n[2] * 0.65  # F2_dd, F4_dd
-slat_n[0] = edrixs.get_F0('d', slat_n[1], slat_n[2])  # F0_dd
+sn = edrixs.rescale(slat_n, ([1, 2, 4, 5, 6], [0.65, 0.65, 0.95, 0.7, 0.7]))
+sn[0] = edrixs.get_F0('d', sn[1], sn[2])     # F0_dd
+sn[3] = edrixs.get_F0('dp', sn[5], sn[6])    # F0_dp
 
-slat_n[5], slat_n[6] = slat_n[5] * 0.7, slat_n[6] * 0.7  # G1_dp, G3_dp
-slat_n[3] = edrixs.get_F0('dp', slat_n[5], slat_n[6])  # F0_dp
-slat_n[4] = slat_n[4] * 0.95  # F2_dp
-
-slater = (slat_i, slat_n)
+slater = (si, sn)
 
 # Spin-orbit coupling strengths
 zeta_d_i = res['v_soc_i'][0]  # valence 3d electron without core-hole
