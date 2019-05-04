@@ -68,11 +68,11 @@ Installation
     .. code-block:: bash
 
        $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext \
-         --link-objects="-L./src -ledrixsfortran -L${path/to/openblas} -lopenblas \
-         -L${path/to/arpack} -lparpack -larpack"
-       $ python setup.py install
+         --libraries=openblas,parpack,arpack --library-dirs=/usr/lib:/opt/local/lib \
+         --link-objects=./src/libedrixsfortran.a
+       $ pip install .
 
-  where, ${path/to/openblas} is the path of openblas and ${path/to/arpack} is the path of arpack.
+  where, **--library-dirs** ares the paths to search **--libraries**, please set it according to your environments.
 
 
 How to cite
