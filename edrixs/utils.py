@@ -2,7 +2,7 @@ __all__ = ['beta_to_kelvin', 'kelvin_to_beta', 'boltz_dist', 'UJ_to_UdJH',
            'UdJH_to_UJ', 'UdJH_to_F0F2F4', 'UdJH_to_F0F2F4F6', 'F0F2F4_to_UdJH',
            'F0F2F4_to_UJ', 'F0F2F4F6_to_UdJH', 'info_atomic_shell',
            'case_to_shell_name', 'edge_to_shell_name', 'slater_integrals_name',
-           'get_atom_data']
+           'get_atom_data', 'rescale']
 
 import numpy as np
 import json
@@ -744,3 +744,27 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None
         res['gamma_c'] = [i / 2 for i in atom_dict[edge]['gamma']]
 
     return res
+
+
+def rescale(old_list, scale=None):
+    """
+    Rescale a 1d list.
+
+    Parameters
+    ----------
+    old_list: 1d list of numerical values
+        Input list.
+    scale: a list of tuples
+        The scaling factors.
+
+    Returns
+    -------
+    new_list: 1d list
+        The rescaled list.
+    """
+
+    new_list = [i for i in old_list]
+    if scale is not None:
+        for pos, val in zip(scale[0], scale[1]):
+            new_list[pos] = new_list[pos] * val
+    return new_list

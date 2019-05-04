@@ -22,21 +22,15 @@ if __name__ == "__main__":
     name_n, slat_n = [list(i) for i in zip(*res['slater_n'])]
 
     # Initial Hamiltonian
-    slat_i[1], slat_i[2], slat_i[3] = slat_i[1] * 0.77, slat_i[2] * 0.77, slat_i[3] * 0.77
-    Uf_ave = 0
-    slat_i[0] = Uf_ave + edrixs.get_F0('f', slat_i[1], slat_i[2], slat_i[3])
+    si = edrixs.rescale(slat_i, ([1, 2, 3], [0.77]*3))
+    si[0] = edrixs.get_F0('f', si[1], si[2], si[3])
 
     # Intermediate Hamiltonian
-    slat_n[1], slat_n[2], slat_n[3] = slat_n[1] * 0.77, slat_n[2] * 0.77, slat_n[3] * 0.77
-    slat_n[0] = Uf_ave + edrixs.get_F0('f', slat_n[1], slat_n[2], slat_n[3])
+    sn = edrixs.rescale(slat_n, ([1, 2, 3, 5, 6, 7, 8, 9], [0.77]*3+[0.6]*4))
+    sn[0] = edrixs.get_F0('f', sn[1], sn[2], sn[3])
+    sn[4] = edrixs.get_F0('fd', sn[7], sn[8], sn[9])
 
-    slat_n[5], slat_n[6] = slat_n[5] * 0.6, slat_n[6] * 0.6
-    slat_n[7], slat_n[8], slat_n[9] = slat_n[7] * 0.6, slat_n[8] * 0.6, slat_n[9] * 0.6
-
-    Ufd_ave = 0.0
-    slat_n[4] = Ufd_ave + edrixs.get_F0('fd', slat_n[7], slat_n[8], slat_n[9])
-
-    slater = (slat_i, slat_n)
+    slater = (si, sn)
 
     # Spin-Orbit Coupling (SOC) zeta
     # 5f, without core-hole, from Cowan's code

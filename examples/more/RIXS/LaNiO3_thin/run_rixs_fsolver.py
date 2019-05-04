@@ -25,17 +25,14 @@ if __name__ == "__main__":
     name_n, slater_n = [list(i) for i in zip(*res['slater_n'])]  # Intermediate
 
     # Slater integrals
-    slater_i[1], slater_i[2] = slater_i[1] * 0.65, slater_i[2] * 0.65  # F2_dd, F4_dd
-    slater_i[0] = edrixs.get_F0('d', slater_i[1], slater_i[2])  # F0_dd
+    si = edrixs.rescale(slater_i, ([1, 2], [0.65, 0.65]))
+    si[0] = edrixs.get_F0('d', si[1], si[2])  # F0_dd
 
-    slater_n[1], slater_n[2] = slater_n[1] * 0.65, slater_n[2] * 0.65  # F2_dd, F4_dd
-    slater_n[0] = edrixs.get_F0('d', slater_n[1], slater_n[2])  # F0_dd
+    sn = edrixs.rescale(slater_n, ([1, 2, 4, 5, 6], [0.65, 0.65, 0.95, 0.7, 0.7]))
+    sn[0] = edrixs.get_F0('d', sn[1], sn[2])  # F0_dd
+    sn[3] = edrixs.get_F0('dp', sn[5], sn[6])  # F0_dp
 
-    slater_n[5], slater_n[6] = slater_n[5] * 0.7, slater_n[6] * 0.7  # G1_dp, G3_dp
-    slater_n[3] = edrixs.get_F0('dp', slater_n[5], slater_n[6])  # F0_dp
-    slater_n[4] = slater_n[4] * 0.95  # F2_dp
-
-    slater = (slater_i, slater_n)
+    slater = (si, sn)
 
     # Spin-orbit coupling strength
     zeta_d_i, zeta_d_n = res['v_soc_i'][0], res['v_soc_n'][0]
