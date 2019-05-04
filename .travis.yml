@@ -25,6 +25,7 @@ install:
   - make
   - cd ..
   # Build Python interface
+  - python setup.py build_ext --inplace
   - python setup.py build_ext
   # Install this package and the packages listed in requirements.txt.
   - pip install .
