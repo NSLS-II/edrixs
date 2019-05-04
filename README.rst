@@ -26,7 +26,7 @@ Installation
 ------------
 * Required tools and libraries
 
-   * gfortran (recommended) or ifort 
+   * gfortran or ifort 
    * MPI environment (openmpi or mpich)
    * mpif90 (binding with gfortran or ifort)
    * Python3
@@ -55,7 +55,7 @@ Installation
        $ make
        $ make install
 
-  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
+  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS or ifort+MKL. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
 
     .. code-block:: bash
 
