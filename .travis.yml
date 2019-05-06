@@ -21,9 +21,7 @@ before_install:
 
 install:
   # Compile Fortran code
-  - cd src
-  - make
-  - cd ..
+  - make -C src
   # Build Python interface
   - python setup.py build_ext --inplace
   - python setup.py build_ext
