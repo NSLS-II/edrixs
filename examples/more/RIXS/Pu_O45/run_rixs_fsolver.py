@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import pickle
 import numpy as np
 from mpi4py import MPI
 import edrixs
@@ -16,31 +15,32 @@ if __name__ == "__main__":
 
     # PARAMETERS
     # -----------
-    F2_ff, F4_ff, F6_ff = 9.711 * 0.77, 6.364 * 0.77, 4.677 * 0.77
-    Uf_av = 0.0
-    F0_ff = Uf_av + edrixs.get_F0('f', F2_ff, F4_ff, F6_ff)
+    # Occupancy of U 5f orbitals
+    noccu = 6
+    res = edrixs.get_atom_data('Pu', v_name='5f', v_noccu=noccu, edge='O45')
+    name_i, slat_i = [list(i) for i in zip(*res['slater_i'])]
+    name_n, slat_n = [list(i) for i in zip(*res['slater_n'])]
 
-    F2_fd, F4_fd = 10.652 * 0.6, 6.850 * 0.6
-    G1_fd, G3_fd, G5_fd = 12.555 * 0.6, 7.768 * 0.6, 5.544 * 0.6
-    Ufd_av = 0.0
-    F0_fd = Ufd_av + edrixs.get_F0('fd', G1_fd, G3_fd, G5_fd)
-    slater = (
-        [F0_ff, F2_ff, F4_ff, F6_ff],  # Initial
-        [F0_ff, F2_ff, F4_ff, F6_ff, F0_fd, F2_fd, F4_fd, G1_fd, G3_fd, G5_fd]   # Intermediate
-    )
+    # Initial Hamiltonian
+    si = edrixs.rescale(slat_i, ([1, 2, 3], [0.77]*3))
+    si[0] = edrixs.get_F0('f', si[1], si[2], si[3])
+
+    # Intermediate Hamiltonian
+    sn = edrixs.rescale(slat_n, ([1, 2, 3, 5, 6, 7, 8, 9], [0.77]*3+[0.6]*4))
+    sn[0] = edrixs.get_F0('f', sn[1], sn[2], sn[3])
+    sn[4] = edrixs.get_F0('fd', sn[7], sn[8], sn[9])
+
+    slater = (si, sn)
 
     # Spin-Orbit Coupling (SOC) zeta
     # 5f, without core-hole, from Cowan's code
-    zeta_f_i = 0.261 * 0.9
+    zeta_f_i = res['v_soc_i'][0] * 0.9
     # 5f, with core-hole, from Cowan's code
-    zeta_f_n = 0.274 * 0.9
-    zeta_d_n = 4.4
-
-    # Occupancy of U 5f orbitals
-    noccu = 6
+    zeta_f_n = res['v_soc_n'][0] * 0.9
+    zeta_d_n = (res['edge_ene'][0] - res['edge_ene'][1]) / 2.5
 
     # Energy shift of the core level
-    om_shift = 106.4
+    om_shift = (2 * res['edge_ene'][0] + 3 * res['edge_ene'][1]) / 5.0
 
     # XAS and RIXS settings
     # ---------------------
@@ -88,8 +88,7 @@ if __name__ == "__main__":
     )
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
-        with open('xas_poles.pkl', 'wb') as f:
-            pickle.dump(xas_poles, f)
+        edrixs.dump_poles(xas_poles, 'xas_poles')
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -98,12 +97,7 @@ if __name__ == "__main__":
         num_gs=num_gs, nkryl=200, temperature=T
     )
     if rank == 0:
-        with open('rixs_poles.pkl', 'wb') as f:
-            pickle.dump(rixs_poles, f)
+        edrixs.dump_poles(rixs_poles, 'rixs_poles')
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
-        rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
         np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
-        np.savetxt('rixs_sigma.dat', np.concatenate((np.array([eloss]).T, rixs_sigma.T), axis=1))
-        # Plot RIXS map
         edrixs.plot_rixs_map(rixs_pi, ominc_rixs, eloss, "rixsmap_pi.pdf")
-        edrixs.plot_rixs_map(rixs_sigma, ominc_rixs, eloss, "rixsmap_sigma.pdf")

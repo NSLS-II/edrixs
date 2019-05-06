@@ -2,6 +2,7 @@ from os import path
 from setuptools import find_packages
 import sys
 import versioneer
+# It needs f2py, https://www.numpy.org/devdocs/f2py/distutils.html
 from numpy.distutils.core import Extension
 from numpy.distutils.core import setup
 
@@ -44,8 +45,8 @@ setup(
     description="An open source toolkit for simulating RIXS spectra based on ED",
     long_description=readme,
     author="Brookhaven National Lab",
-    author_email='dama@bnl.gov',
-    url='https://github.com/mrakitin/edrixs',
+    author_email='yilinwang@bnl.gov',
+    url='https://github.com/NSLS-II/edrixs',
     packages=find_packages(exclude=['docs', 'tests', 'bin', 'examples', 'src']),
     entry_points={
         'console_scripts': [
@@ -59,6 +60,7 @@ setup(
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',
             "edrixs/*",
+            "edrixs/atom_data/*",
             ]
         },
     install_requires=requirements,

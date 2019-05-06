@@ -26,7 +26,7 @@ Installation
 ------------
 * Required tools and libraries
 
-   * gfortran (recommended) or ifort 
+   * gfortran or ifort 
    * MPI environment (openmpi or mpich)
    * mpif90 (binding with gfortran or ifort)
    * Python3
@@ -55,7 +55,7 @@ Installation
        $ make
        $ make install
 
-  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
+  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS or ifort+MKL. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
 
     .. code-block:: bash
 
@@ -68,11 +68,11 @@ Installation
     .. code-block:: bash
 
        $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext \
-         --link-objects="-L./src -ledrixsfortran -L${path/to/openblas} -lopenblas \
-         -L${path/to/arpack} -lparpack -larpack"
-       $ python setup.py install
+         --libraries=openblas,parpack,arpack --library-dirs=/usr/lib:/opt/local/lib \
+         --link-objects=./src/libedrixsfortran.a
+       $ pip install .
 
-  where, ${path/to/openblas} is the path of openblas and ${path/to/arpack} is the path of arpack.
+  where, **--library-dirs** ares the paths to search **--libraries**, please set it according to your environments.
 
 
 How to cite

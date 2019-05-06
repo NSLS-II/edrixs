@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import pickle
 import numpy as np
 import edrixs
 from mpi4py import MPI
@@ -11,25 +10,33 @@ if __name__ == "__main__":
 
     Use Fortran ED, XAS, RIXS solvers.
 
+    In this example, we call function edrixs.get_atom_data to return the default atomic
+    parameters of Ni, inlucding slater integrals, SOC, resonant energy of :math:`L_{2,3}`-edge
+    and core-hole life-time broadening.
+
     How to run
     ----------
     mpiexec -n 2 python run_rixs_fsolver.py
     """
     # Atomic shell settings
     # ---------------------
+    res = edrixs.get_atom_data('Ni', v_name='3d', v_noccu=8, edge='L23')
+    name_i, slater_i = [list(i) for i in zip(*res['slater_i'])]  # Initial
+    name_n, slater_n = [list(i) for i in zip(*res['slater_n'])]  # Intermediate
+
     # Slater integrals
-    F2_dd, F4_dd = 12.234 * 0.65, 7.598 * 0.65
-    F0_dd = edrixs.get_F0('d', F2_dd, F4_dd)
-    G1_dp, G3_dp = 5.787 * 0.7, 3.291 * 0.7
-    F0_dp = edrixs.get_F0('dp', G1_dp, G3_dp)
-    F2_dp = 7.721 * 0.95
-    slater = (
-        [F0_dd, F2_dd, F4_dd],  # Initial
-        [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp]   # Intermediate
-    )
+    si = edrixs.rescale(slater_i, ([1, 2], [0.65, 0.65]))
+    si[0] = edrixs.get_F0('d', si[1], si[2])  # F0_dd
+
+    sn = edrixs.rescale(slater_n, ([1, 2, 4, 5, 6], [0.65, 0.65, 0.95, 0.7, 0.7]))
+    sn[0] = edrixs.get_F0('d', sn[1], sn[2])  # F0_dd
+    sn[3] = edrixs.get_F0('dp', sn[5], sn[6])  # F0_dp
+
+    slater = (si, sn)
 
     # Spin-orbit coupling strength
-    zeta_d_i, zeta_d_n, zeta_p_n = 0.083, 0.102, 11.24
+    zeta_d_i, zeta_d_n = res['v_soc_i'][0], res['v_soc_n'][0]
+    zeta_p_n = (res['edge_ene'][0] - res['edge_ene'][1]) / 1.5
 
     # Tetragonal crystal field splitting
     dq10, d1, d3 = 1.3, 0.05, 0.2
@@ -44,11 +51,15 @@ if __name__ == "__main__":
     thin, thout, phi = 15 / 180.0 * np.pi, 75 / 180.0 * np.pi, 0.0
     poltype_xas = [('linear', 0.0), ('linear', np.pi / 2.0),
                    ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
-    gamma_c, gamma_f = 0.2, 0.1
-    # L3-edge
-    ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 10)
+
     # L2-edge
+    # gamma_c, gamma_f = res['gamma_c'][0], 0.1
     # ominc_rixs = np.linspace(10.9 + off, 14.9 + off, 100)
+
+    # L3-edge
+    gamma_c, gamma_f = res['gamma_c'][1], 0.1
+    ominc_rixs = np.linspace(-5.9 + off, -0.9 + off, 10)
+
     eloss = np.linspace(-0.5, 5.0, 1000)
     poltype_rixs = [('linear', 0, 'linear', 0),
                     ('linear', 0, 'linear', np.pi/2.0),
@@ -74,8 +85,7 @@ if __name__ == "__main__":
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
         # Save XAS pole files for later plots
-        with open('xas_poles.pkl', 'wb') as f:
-            pickle.dump(xas_poles, f)
+        edrixs.dump_poles(xas_poles, 'xas_poles')
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -85,8 +95,7 @@ if __name__ == "__main__":
     )
     if rank == 0:
         # Save RIXS pole files for later plots
-        with open('rixs_poles.pkl', 'wb') as f:
-            pickle.dump(rixs_poles, f)
+        edrixs.dump_poles(rixs_poles, 'rixs_poles')
         # Save RIXS spectra
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
         rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)

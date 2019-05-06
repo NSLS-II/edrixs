@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import pickle
 import numpy as np
 from mpi4py import MPI
 import edrixs
@@ -122,8 +121,7 @@ if __name__ == "__main__":
     )
     if rank == 0:
         np.savetxt('xas.dat', np.concatenate((np.array([ominc]).T, xas), axis=1))
-        with open('xas_poles.pkl', 'wb') as f:
-            pickle.dump(xas_poles, f)
+        edrixs.dump_poles(xas_poles, 'xas_poles')
 
     # Run RIXS
     rixs, rixs_poles = edrixs.rixs_1v1c_fort(
@@ -132,8 +130,7 @@ if __name__ == "__main__":
         num_gs=num_gs, nkryl=100, temperature=T
     )
     if rank == 0:
-        with open('rixs_poles.pkl', 'wb') as f:
-            pickle.dump(rixs_poles, f)
+        edrixs.dump_poles(rixs_poles, 'rixs_poles')
         rixs_pi = np.sum(rixs[:, :, 0:2], axis=2)
         rixs_sigma = np.sum(rixs[:, :, 2:4], axis=2)
         np.savetxt('rixs_pi.dat', np.concatenate((np.array([eloss]).T, rixs_pi.T), axis=1))
