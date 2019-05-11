@@ -2,8 +2,8 @@
 edrixs
 ===============================
 
-.. image:: https://img.shields.io/travis/mrakitin/edrixs.svg
-        :target: https://travis-ci.org/mrakitin/edrixs
+.. image:: https://img.shields.io/travis/NSLS-II/edrixs.svg
+        :target: https://travis-ci.org/NSLS-II/edrixs
 
 .. image:: https://img.shields.io/pypi/v/edrixs.svg
         :target: https://pypi.python.org/pypi/edrixs
@@ -72,7 +72,7 @@ Installation
 
 Run edrixs in docker
 --------------------
-To make life easier, we have built a docker image based on Ubuntu Linux (18.04) for edrixs, so you don't need to struggle with the installation anymore.
+To make life easier, we have built a docker image based on Ubuntu Linux (18.04) for edrixs, so you don't need to struggle with the installation anymore. 
 The docker image can be used on any OS as long as the `docker <https://www.docker.com/>`_ application are available.
 Follow these steps to use the docker image:
 
@@ -88,18 +88,18 @@ Follow these steps to use the docker image:
      $ cp -r ../edrixs_examples .
      $ Play with edrixs ... 
 
-* "-u rixs" means use a default user **rixs** to login the Ubuntu Linux, the password of the user **rixs** is: `rixs`. 
-* "-v /dir/on/your/host/os:/home/rixs/data" means mount the directory "/dir/on/your/host/os" on your host OS to    "/home/rixs/data" on this virtual Ubuntu Linux in the container. 
+* "-u rixs" means using a default user *rixs* to login the Ubuntu Linux, the password is *rixs*. 
+* "-v /dir/on/your/host/os:/home/rixs/data" means mounting the directory "/dir/on/your/host/os" from your host OS to    "/home/rixs/data" on the Ubuntu Linux in the container. 
    
-After launching the container, you will see **data** and **edrixs_examples** in "/home/rixs" directory. If you want to save the data from edrixs calculations to your host system, you need to work in "/home/rixs/data" directory and the changes can be seen in the directory "/dir/on/your/host/os" on your host system. 
+After launching the container, you will see *data* and *edrixs_examples* in "/home/rixs" directory. If you want to save the data from edrixs calculations to your host system, you need to work in "/home/rixs/data" directory.
 
-Note that any changes outside "/home/rixs/data" will lost when this container stops. You can only use your host OS to make interactive plots. Use "sudo apt-get install" to install softwares if they are needed. Type **exit** in the container to exit. You can delete the stopped containers by
+Note that any changes outside "/home/rixs/data" will lost when this container stops. You can only use your host OS to make interactive plots. Use "sudo apt-get install" to install softwares if they are needed. Type *exit* in the container to exit. You can delete all the stopped containers by
 
    .. code-block:: bash
       
       $ docker rm $(docker ps -a -q)
 
-You can delete the edrixs image if you don't want to play with it anymore,
+You can delete the edrixs image by
 
    .. code-block:: bash
    
