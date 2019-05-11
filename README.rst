@@ -79,14 +79,14 @@ Follow these steps to use the docker image:
 * Install the `docker <https://www.docker.com/>`_ application on your system and `learn how to use it <https://docs.docker.com/get-started/>`_.
 * Once the docker is running, create a directory to store data in your host OS and launch a container to run edrixs
 
-  .. code-block:: bash
+    .. code-block:: bash
       
-     $ mkdir /dir/on/your/host/os   # A directory on your host OS
-     $ docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
-     # in the container
-     $ cd /home/rixs/data
-     $ cp -r ../edrixs_examples .
-     $ Play with edrixs ... 
+       $ mkdir /dir/on/your/host/os   # A directory on your host OS
+       $ docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
+       # in the container
+       $ cd /home/rixs/data
+       $ cp -r ../edrixs_examples .
+       $ Play with edrixs ... 
 
 * "-u rixs" means using a default user *rixs* to login the Ubuntu Linux, the password is *rixs*. 
 * "-v /dir/on/your/host/os:/home/rixs/data" means mounting the directory "/dir/on/your/host/os" from your host OS to    "/home/rixs/data" on the Ubuntu Linux in the container. 
