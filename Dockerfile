@@ -42,8 +42,13 @@ RUN wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz \
     && make install \
     && cd .. \
     && rm -rf arpack-ng-3.6.3 3.6.3.tar.gz \
-    # install numpy
-    && pip install numpy 
+    # install python deps
+    && pip install numpy scipy sympy matplotlib sphinx mpi4py \
+    # set env
+    && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> ~/.bashrc  \
+    && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> /home/rixs/.bashrc  \
+    && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc  \
+    && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> /home/rixs/.bashrc
 
 COPY . ./src/edrixs
 
@@ -53,13 +58,9 @@ RUN export LD_LIBRARY_PATH="/usr/local/lib:\$LD_LIBRARY_PATH" \
     && make install -C src/edrixs/src \
     # build python part of edrixs
     && cd src/edrixs \
-    && python setup.py build --library-dirs=/usr/local/lib \
+    && python setup.py build_ext --library-dirs=/usr/local/lib \
     && pip install . \
     && cd ../../  \
-    # set env
+    # copy examples to /home/rixs
     && cp -r src/edrixs/examples /home/rixs/edrixs_examples \
     && chown -R rixs:rixs /home/rixs/edrixs_examples \
-    && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> ~/.bashrc  \
-    && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> /home/rixs/.bashrc  \
-    && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc  \
-    && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> /home/rixs/.bashrc
