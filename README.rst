@@ -47,15 +47,10 @@ Installation
     .. code-block:: bash
 
        $ cd src
-
-  edit make.sys to set the correct libraries of BLAS/LAPACK, arpack-ng and f2py compiler options.
-
-    .. code-block:: bash
-
-       $ make
+       $ make F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack"
        $ make install
 
-  There will be problems when using gfortran and f2py with MKL, so we recommend gfortran+OpenBLAS or ifort+MKL. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
+  where, you may need to change **F90** and **LIBS** according to your specific environment. There will be problems when using gfortran with MKL, so we recommend gfortran+OpenBLAS or ifort+MKL. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
 
     .. code-block:: bash
 
@@ -68,11 +63,40 @@ Installation
     .. code-block:: bash
 
        $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext \
-         --libraries=openblas,parpack,arpack --library-dirs=/usr/lib:/opt/local/lib \
+         --libraries=openblas,parpack,arpack --library-dirs=/usr/lib:/usr/local/lib:/opt/local/lib \
          --link-objects=./src/libedrixsfortran.a
        $ pip install .
 
   where, **--library-dirs** ares the paths to search **--libraries**, please set it according to your environments.
+
+
+Run edrixs in docker
+--------------------
+To make life easier, we have built a docker image based on Ubuntu Linux (18.04) for edrixs, so you don't need to struggle with the installation anymore.
+The docker image can be used on any OS as long as the `docker <https://www.docker.com/>`_ application are available.
+Follow these steps to use the docker image:
+
+   * Install the `docker <https://www.docker.com/>`_ application on your system and `learn how to use it <https://docs.docker.com/get-started/>`_.
+   * Once the docker is running, create a directory to store data in your host OS and launch a container to run edrixs
+
+   .. code-block:: bash
+      
+      mkdir /dir/on/your/host/os   # A directory on your host OS
+      docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
+      cd /home/rixs/data
+      cp -r ../edrixs_examples .
+      Play with edrixs ... 
+
+   where, **-u rixs** means use a default user **rixs** to login the Ubuntu Linux, the password of the user **rixs** is: `rixs`. **-v /dir/on/your/host/os:/home/rixs/data** means mount the directory `/dir/on/your/host/os` on your host OS to `/home/rixs/data` on this virtual Ubuntu Linux in the container. After launching the container, you will see **data** and**edrixs_examples** in `/home/rixs` directory. If you want to save the data from edrixs calculations to your host system, you need to work in `/home/rixs/data` directory and the changes can be seen in the directory `/dir/on/your/host/os` on your host system. Note that any changes outside `/home/rixs/data` will lost when this container stops. You can only use your host OS to make interactive plots. Use `sudo apt-get install` to install softwares if they are needed. Type `exit` in the container to exit. You can delete the stopped containers by
+
+   .. code-block:: bash
+      
+      docker rm $(docker ps -a -q)
+
+   You can delete the edrixs image if you don't want to play with it anymore,
+
+   .. code-block:: bash
+      docker rmi laowang2017/edrixs   
 
 
 How to cite
