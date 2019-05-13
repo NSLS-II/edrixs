@@ -1,7 +1,7 @@
 .. _reference:
 
 ################
-EDRIXS Reference
+edrixs Reference
 ################
 
 :Release: |version|

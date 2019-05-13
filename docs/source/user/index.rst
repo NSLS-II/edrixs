@@ -1,7 +1,7 @@
 .. _user:
 
 #################
-EDRIXS User Guide
+edrixs User Guide
 #################
 
 :Release: |version|
@@ -12,5 +12,6 @@ EDRIXS User Guide
 
    whatisedrixs
    installation
+   usedocker
    quickstart
    basics

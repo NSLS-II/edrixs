@@ -1,5 +1,5 @@
 *************
-EDRIXS basics
+edrixs basics
 *************
 
 .. toctree::
