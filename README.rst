@@ -54,7 +54,7 @@ Installation
 
     .. code-block:: bash
 
-       export PATH=edrixs/bin:$PATH
+       export PATH=/root_dir_of_edrixs/edrixs/bin:$PATH
 
 * Install Python parts of edrixs
 
