@@ -26,12 +26,12 @@ Installation
 ------------
 * Required tools and libraries
 
-   * gfortran or ifort 
-   * MPI environment (openmpi or mpich)
-   * mpif90 (binding with gfortran or ifort)
+   * Fortran compiler: gfortran and ifort are supported 
+   * MPI environment: openmpi and mpich are tested
+   * mpif90 (binding with gfortran or ifort) and mpicc (binding with gcc)
    * Python3
-   * BLAS and LAPACK (gfortran+OpenBLAS or ifort+MKL)
-   * arpack-ng (enable mpi)
+   * BLAS and LAPACK: gfortran+OpenBLAS or ifort+MKL
+   * arpack-ng (with mpi enabled)
    * Numpy
    * Scipy
    * Sympy
@@ -40,7 +40,7 @@ Installation
    * Sphinx
    * Numpydoc
 
-  Be sure to compile OpenBLAS, arpack-ng, mpi4py and edrixs with the same Fortran (MPI) compiler.
+  Be sure to compile OpenBLAS, arpack-ng, mpi4py and edrixs with the same (MPI) Fortran compiler.
 
 * Install Fortran parts of edrixs
 
@@ -50,7 +50,7 @@ Installation
        $ make F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack"
        $ make install
 
-  where, you may need to change **F90** and **LIBS** according to your specific environment. There will be problems when using gfortran with MKL, so we recommend gfortran+OpenBLAS or ifort+MKL. libedrixsfortran.a will be generated, which will be used when building python interface. The executable .x files will be installed in bin directory and add the following line in .bashrc or .bash_profile file,
+  where, you may need to change ``F90`` and ``LIBS`` according to your specific environment. There will be problems when using gfortran with MKL, so we recommend ``gfortran+OpenBLAS`` or ``ifort+MKL``. ``libedrixsfortran.a`` will be generated, which will be used when building python interface. The executable ``.x`` files will be installed in ``edrixs/bin`` directory and add the following line in ``.bashrc`` or ``.bash_profile`` file,
 
     .. code-block:: bash
 
@@ -58,7 +58,7 @@ Installation
 
 * Install Python parts of edrixs
 
-  Be sure to first make libedrixsfortran.a in src.
+  Be sure to first make ``libedrixsfortran.a`` in src.
 
     .. code-block:: bash
 
@@ -67,7 +67,7 @@ Installation
          --link-objects=./src/libedrixsfortran.a
        $ pip install .
 
-  where, **--library-dirs** ares the paths to search **--libraries**, please set it according to your environments.
+  where, ``--library-dirs`` ares the paths to search ``--libraries``, please set it according to your environments.
 
 
 Run edrixs in docker
