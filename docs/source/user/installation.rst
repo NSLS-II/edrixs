@@ -12,14 +12,14 @@ Several tools and libraries are required to build and install edrixs,
    * BLAS and LAPACK libraries: `OpenBLAS <https://github.com/xianyi/OpenBLAS/>`_ with gfortran and MKL with ifort
    * ARPACK library: `arpack-ng <https://github.com/opencollab/arpack-ng/>`_  with mpi enabled
    * Only Python3 is supported
-   * Numpy, Scipy, Sympy, Matplotlib
-   * mpi4py with same MPI C compiler as building edrixs
+   * numpy, scipy, sympy, matplotlib, sphinx, numpydoc
+   * mpi4py with same MPI compilers as building edrixs
 
 Build from source 
 =================
 We will show how to build edrixs from source on Ubuntu Linux 18.04 and macOS Mojave (OSX 10.14) as examples.
 We will use gcc, gfortran, openmpi and OpenBLAS in these examples.
-Building edrixs on other versions of Linux or OSX will be similar.
+Building edrixs on other versions of Linux or OSX, or with Intel's ifort+MKL will be similar.
 
 Ubuntu Linux 18.04
 ------------------
@@ -29,9 +29,8 @@ Install compilers and tools::
     $ sudo apt-get install gcc libgcc-7-dev gfortran g++
     $ sudo apt-get install git autoconf automake ssh wget
     $ sudo apt-get install python3 libpython3-dev python3-pip
-    $ sudo pip3 install numpy scipy sympy matplotlib
 
-We will assume python pointing to python3.7 and pip pointing to pip3.7 now. If this is not the case, you can make link explicitly.
+We will assume ``python`` pointing to ``python3.7`` and ``pip`` pointing to ``pip3.7`` from now on. If this is not the case, you can make links explicitly.
 Check we are using the expected python and pip::
 
     $ which python
@@ -39,8 +38,12 @@ Check we are using the expected python and pip::
     $ which pip
     $ pip --version
 
-openmpi, OpenBLAS, ARPACK can be installed by *apt-get*, but their versions are a little older and may not work properly.
-They can also be compiled from source easily. In the following, we will show both ways, but we always recommend to build newer ones from source. 
+Install python libraries::
+
+    $ sudo pip install numpy scipy sympy matplotlib
+
+openmpi, OpenBLAS, ARPACK can be installed by ``apt-get``, but their versions are old and may not work properly.
+However, they can also be compiled from source easily. In the following, we will show both ways, but we always recommend to build newer ones from source. 
 
 openmpi can be installed by::
 
@@ -127,15 +130,26 @@ Now, we are ready to build edrixs::
     $ git clone https://github.com/NSLS-II/edrixs.git
     $ cd edrixs
     $ make -C src F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack" 
-    $ make -C src install
+    $ make -C src install   
     $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/usr/local/lib
     $ sudo pip install .
 
-You can add *edrixs/bin* to PATH. Start to play with edrixs by::
+You can add ``edrixs/bin`` to ``PATH``. Start to play with edrixs by::
 
     $ python
     >>> import edrixs
+    >>> edrixs.some_functions(...)
 
+or go to ``examples`` directory to run some examples::
+
+    $ cd examples/more/ED/14orb
+    $ ./get_inputs.py
+    $ mpirun -np 2 ../../../../src/ed.x
+    $ mpirun -np 2 ./run_fedsolver.py
+    $ cd ../../RIXS/LaNiO3_thin
+    $ mpirun -np 2 ./run_rixs_fsolver.py
+
+if no errors, the installation is successful.
 
 macOS Mojave (OSX 10.14)
 ------------------------
@@ -152,6 +166,8 @@ Install gcc8, arpack, openblas and openmpi::
 
     $ sudo port -v install gcc8
     $ sudo port select gcc mp-gcc8
+    $ sudo port -v install openmpi-default +gcc8
+    $ sudo port -v install openblas +gcc8 
     $ sudo port -v install arpack +openblas +openmpi
     $ sudo port select --set mpi openmpi-mp-fortran
 
@@ -163,10 +179,13 @@ Install Python, pip, numpy, scipy, sympy, matplotlib::
     $ sudo port -v install py37-sympy
     $ sudo port -v install py37-matplotlib
 
-NOTE: DO NOT use pip to install numpy because it will use **clang** as default compiler, which has a strange bug when using f2py with mpif90 compileer.
-Always use gcc to compile numpy if you want to build it from source.
+**Notes:**
 
-We will assume python pointing to python3.7 and pip pointing to pip3.7 now. If this is not the case, you can make link explicitly.
+* DO NOT use pip to install numpy because it will use ``clang`` as default compiler, which has a strange bug when using ``f2py`` with ``mpif90`` compiler. If you cannot solve this issue by ``sudo port install py37-numpy +gcc8``, you can compile numpy from its source with ``gcc`` compiler. Always use gcc to compile numpy if you want to build it from source.
+
+* You can also try ``gcc9`` if it is already avaiable, but be sure to change all ``gcc8`` to ``gcc9`` in the above commands.
+
+We will assume ``python`` pointing to ``python3.7`` and ``pip`` pointing to ``pip3.7`` from now on. If this is not the case, you can make links explicitly.
 Check we are using the expected python and pip::
 
     $ which python
@@ -174,7 +193,7 @@ Check we are using the expected python and pip::
     $ which pip
     $ pip --version
 
-Add the following two lines into ~/.bash_profile::
+Add the following two lines into ``~/.bash_profile``::
 
     export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
     export PATH=/opt/local/Library/Frameworks/Python.framework/Versions/3.7/bin:$PATH
@@ -202,7 +221,18 @@ Now, we are ready to build edrixs::
     $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/opt/local/lib
     $ sudo pip install .
 
-You can add *edrixs/bin* to the enviroment variable **PATH** in ~/.bash_profile.
+You can add ``edrixs/bin`` to the enviroment variable ``PATH`` in ~/.bash_profile.
+
+Go to ``examples`` directory to run some examples::
+
+    $ cd examples/more/ED/14orb
+    $ ./get_inputs.py
+    $ mpirun -np 2 ../../../../src/ed.x
+    $ mpirun -np 2 ./run_fedsolver.py
+    $ cd ../../RIXS/LaNiO3_thin
+    $ mpirun -np 2 ./run_rixs_fsolver.py
+
+if no errors, the installation is successful.
 
 All done, enjoy!
 
@@ -212,7 +242,7 @@ Install Homebrew::
 
     $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-Add following line to ~/.bash_profile::
+Add following line to ``~/.bash_profile``::
 
     export PATH="/usr/local/bin:$PATH"
 
@@ -231,7 +261,7 @@ Install python3.7::
 
     $ brew install python
 
-We will assume python pointing to python3.7 and pip pointing to pip3.7 now. If this is not the case, you can make link explicitly.
+We will assume ``python`` pointing to ``python3.7`` and ``pip`` pointing to ``pip3.7`` from now on. If this is not the case, you can make link explicitly.
 Check we are using the expected python and pip::
 
     $ which python
@@ -239,13 +269,13 @@ Check we are using the expected python and pip::
     $ which pip
     $ pip --version
 
-Make links if gcc, g++ and gfortran are not pointing to gcc-9, g++-9, gfortran-9::
+Make links if gcc, g++ and gfortran are not pointing to gcc-9, g++-9, gfortran-9, for example::
 
     $ ln -s /usr/local/Cellar/gcc/9.1.0/bin/gcc-9 /usr/local/bin/gcc
     $ ln -s /usr/local/Cellar/gcc/9.1.0/bin/g++-9 /usr/local/bin/g++
     $ ln -s /usr/local/Cellar/gcc/9.1.0/bin/gfortran-9 /usr/local/bin/gfortran
 
-DO NOT install numpy by pip because it uses **clang** as default compiler, which will cause problem.
+DO NOT install numpy through ``pip`` because it uses ``clang`` as default compiler, which will cause problems.
 We will build numpy from source with gcc::
 
     $ wget https://github.com/numpy/numpy/archive/v1.16.3.tar.gz
@@ -277,6 +307,17 @@ Now, we are ready to build edrixs::
     $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/usr/local/lib:/usr/local/opt/openblas/lib
     $ pip install .
 
-You can add *edrixs/bin* to the enviroment variable **PATH** in ~/.bash_profile.
+You can add ``edrixs/bin`` to the enviroment variable ``PATH`` in ``~/.bash_profile``.
+
+Go to ``examples`` directory to run some examples::
+
+    $ cd examples/more/ED/14orb
+    $ ./get_inputs.py
+    $ mpirun -np 2 ../../../../src/ed.x
+    $ mpirun -np 2 ./run_fedsolver.py
+    $ cd ../../RIXS/LaNiO3_thin
+    $ mpirun -np 2 ./run_rixs_fsolver.py
+
+if no errors, the installation is successful.
 
 All done, enjoy!
