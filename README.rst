@@ -83,23 +83,29 @@ Follow these steps to use the docker image:
       
        $ mkdir /dir/on/your/host/os   # A directory on your host OS
        $ docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
-       # in the container
+       
+  it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/laowang2017/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time.
+  
+  * ``-u rix`` means using a default user ``rixs`` to login the Ubuntu Linux, the password is ``rixs``. 
+  * ``-v /dir/on/your/host/os:/home/rixs/dat`` means mounting the directory ``/dir/on/your/host/os`` from your host OS to    ``/home/rixs/data`` on the Ubuntu Linux in the container. 
+   
+* After launching the container, you will see ``data`` and ``edrixs_examples`` in ``/home/rixs`` directory. If you want to save the data from edrixs calculations to your host system, you need to work in ``/home/rixs/data`` directory.
+
+    .. code-block:: bash
+    
        $ cd /home/rixs/data
        $ cp -r ../edrixs_examples .
        $ Play with edrixs ... 
 
-* "-u rixs" means using a default user *rixs* to login the Ubuntu Linux, the password is *rixs*. 
-* "-v /dir/on/your/host/os:/home/rixs/data" means mounting the directory "/dir/on/your/host/os" from your host OS to    "/home/rixs/data" on the Ubuntu Linux in the container. 
-   
-After launching the container, you will see *data* and *edrixs_examples* in "/home/rixs" directory. If you want to save the data from edrixs calculations to your host system, you need to work in "/home/rixs/data" directory.
-
-Note that any changes outside "/home/rixs/data" will lost when this container stops. You can only use your host OS to make interactive plots. Use "sudo apt-get install" to install softwares if they are needed. Type *exit* in the container to exit. You can delete all the stopped containers by
+  Note that any changes outside ``/home/rixs/data`` will lost when this container stops. You can only use your host OS to make interactive plots. Use ``sudo apt-get install`` to install softwares if they are needed. 
+  
+* Type ``exit`` in the container to exit. You can delete all the stopped containers by
 
    .. code-block:: bash
       
       $ docker rm $(docker ps -a -q)
 
-You can delete the edrixs image by
+* You can delete the edrixs image by
 
    .. code-block:: bash
    
