@@ -252,13 +252,13 @@ def get_umat_kanamori_ge(norbs, U1, U2, J, Jx, Jp):
         for beta in range(alpha + 1, norbs):
             for gamma in range(0, norbs - 1):
                 for delta in range(gamma + 1, norbs):
-                    aband = alpha / 2
+                    aband = alpha // 2
                     aspin = alpha % 2
-                    bband = beta / 2
+                    bband = beta // 2
                     bspin = beta % 2
-                    gband = gamma / 2
+                    gband = gamma // 2
                     gspin = gamma % 2
-                    dband = delta / 2
+                    dband = delta // 2
                     dspin = delta % 2
 
                     dtmp = 0.0

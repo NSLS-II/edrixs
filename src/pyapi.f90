@@ -2,6 +2,7 @@ subroutine ed_fsolver(comm, my_id, num_procs)
     use m_control, only: master, origin_myid, origin_nprocs, origin_comm
     use m_control, only: myid, nprocs, new_comm, ndim_i
     use m_global, only: dealloc_fock_i
+    use mpi
 
     implicit none
 
@@ -58,6 +59,7 @@ subroutine xas_fsolver(comm, my_id, num_procs)
     use m_control, only: master, origin_myid, origin_nprocs, origin_comm
     use m_control, only: myid, nprocs, new_comm, ndim_n, ndim_i, ndim_n_nocore, num_core_orbs
     use m_global, only: dealloc_fock_i, dealloc_fock_n
+    use mpi
 
     implicit none
 
@@ -119,6 +121,7 @@ subroutine rixs_fsolver(comm, my_id, num_procs)
     use m_control, only: master, origin_myid, origin_nprocs, origin_comm
     use m_control, only: myid, nprocs, new_comm, ndim_n, ndim_i, ndim_f, ndim_n_nocore, num_core_orbs
     use m_global, only: dealloc_fock_i, dealloc_fock_n, dealloc_fock_f
+    use mpi
 
     implicit none
 
@@ -182,6 +185,7 @@ subroutine opavg_fsolver(comm, my_id, num_procs)
     use m_control, only: master, origin_myid, origin_nprocs, origin_comm
     use m_control, only: myid, nprocs, new_comm, ndim_i
     use m_global, only: dealloc_fock_i
+    use mpi
 
     implicit none
 
