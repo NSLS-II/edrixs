@@ -35,7 +35,9 @@ We will assume python pointing to python3.7 and pip pointing to pip3.7 now. If t
 Check we are using the expected python and pip::
 
     $ which python
+    $ python --version
     $ which pip
+    $ pip --version
 
 openmpi, OpenBLAS, ARPACK can be installed by *apt-get*, but their versions are a little older and may not work properly.
 They can also be compiled from source easily. In the following, we will show both ways, but we always recommend to build newer ones from source. 
@@ -168,7 +170,9 @@ We will assume python pointing to python3.7 and pip pointing to pip3.7 now. If t
 Check we are using the expected python and pip::
 
     $ which python
+    $ python --version
     $ which pip
+    $ pip --version
 
 Add the following two lines into ~/.bash_profile::
 
@@ -231,7 +235,9 @@ We will assume python pointing to python3.7 and pip pointing to pip3.7 now. If t
 Check we are using the expected python and pip::
 
     $ which python
+    $ python --version
     $ which pip
+    $ pip --version
 
 Make links if gcc, g++ and gfortran are not pointing to gcc-9, g++-9, gfortran-9::
 

@@ -14,26 +14,23 @@ Follow these steps to use the docker image:
 
   it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/laowang2017/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time. 
 
-  * "-u rixs" means using a default user *rixs* to login the Ubuntu Linux, the password is *rixs*. 
+  * ``-u rixs`` means using a default user ``rixs`` to login the Ubuntu Linux, the password is ``rixs``. 
 
-  * "-v /dir/on/your/host/os:/home/rixs/data" means mounting the directory "/dir/on/your/host/os" from your host OS to "/home/rixs/data" on the Ubuntu Linux in the container. 
+  * ``-v /dir/on/your/host/os:/home/rixs/data`` means mounting the directory ``/dir/on/your/host/os`` from your host OS to ``/home/rixs/data`` on the Ubuntu Linux in the container. 
  
-* In the container, you can play with edrixs as you are using an isolated Ubuntu Linux system. After launching the container, you will see *data* and *edrixs_examples* in "/home/rixs" directory. If you want to save the data from edrixs calculations to your host system, you need to work in "/home/rixs/data" directory::
+* In the container, you can play with edrixs as you are using an isolated Ubuntu Linux system. After launching the container, you will see ``data`` and ``edrixs_examples`` in ``/home/rixs`` directory. If you want to save the data from edrixs calculations to your host system, you need to work in ``/home/rixs/data`` directory::
 
     $ cd /home/rixs/data
     $ cp -r ../edrixs_examples .
 
     Play with edrixs ... 
  
-  Note that any changes outside "/home/rixs/data" will lost when this container stops. You can only use your host OS to make interactive plots. Use "sudo apt-get install" to install softwares if they are needed. 
+  Note that any changes outside ``/home/rixs/data`` will lost when this container stops. You can only use your host OS to make interactive plots. Use ``sudo apt-get install`` to install softwares if they are needed. 
 
-* Type *exit* in the container to exit. You can delete all the stopped containers by::
+* Type ``exit`` in the container to exit. You can delete all the stopped containers by::
       
     $ docker rm $(docker ps -a -q)
 
 * If you do not need the image anymore, you can delete it by::
 
     $ docker rmi laowang2017/edrixs   
-
-
-
