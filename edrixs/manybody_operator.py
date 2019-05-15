@@ -1,4 +1,5 @@
-__all__ = ['one_fermion_annihilation', 'two_fermion', 'four_fermion', 'density_matrix']
+__all__ = ['one_fermion_annihilation', 'two_fermion', 'four_fermion',
+           'build_opers', 'density_matrix']
 
 import numpy as np
 from collections import defaultdict
@@ -60,7 +61,7 @@ def two_fermion(emat, lb, rb=None, tol=1E-10):
     ----------
     emat: 2d complex array
         The impurity matrix.
-    lb: list or array
+    lb: list of array
         Left fock basis :math:`<F_{l}|`.
     rb: list of array
         Right fock basis :math:`|F_{r}>`.
@@ -118,7 +119,7 @@ def four_fermion(umat, lb, rb=None, tol=1E-10):
     ----------
     umat: 4d complex array
         The 4 index Coulomb interaction tensor.
-    lb: list or array
+    lb: list of array
         Left fock basis :math:`<F_{l}|`.
     rb: list of array
         Right fock basis :math:`|F_{r}>`.
@@ -214,7 +215,7 @@ def build_opers(nfermion, coeff, lb, rb=None, tol=1E-10):
 
           - coeff.shape = (2, 3, 10, 10, 10, 10), means :math:`2 \\times 3=6` operators with
             :math:`10 \\times 10 \\times 10 \\times 10` coefficients tensor.
-    lb: list or array
+    lb: list of array
         Left fock basis :math:`<F_{l}|`.
     rb: list of array
         Right fock basis :math:`|F_{r}>`.
@@ -265,7 +266,7 @@ def build_opers(nfermion, coeff, lb, rb=None, tol=1E-10):
             coeff_tmp = coeff.reshape((tot, dim[-4], dim[-3], dim[-2], dim[-1]))
             for i in range(tot):
                 hmat_tmp[i] = four_fermion(coeff_tmp[i], lb, rb, tol)
-            hmat = hmat_tmp.reshape((dim[0:-2], nl, nr))
+            hmat = hmat_tmp.reshape((dim[0:-4], nl, nr))
 
     return hmat
 
