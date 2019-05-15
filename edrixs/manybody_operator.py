@@ -253,7 +253,7 @@ def build_opers(nfermion, coeff, lb, rb=None, tol=1E-10):
             coeff_tmp = coeff.reshape((tot, dim[-2], dim[-1]))
             for i in range(tot):
                 hmat_tmp[i] = two_fermion(coeff_tmp[i], lb, rb, tol)
-            hmat = hmat_tmp.reshape((dim[0:-2], nl, nr))
+            hmat = hmat_tmp.reshape(dim[0:-2] + (nl, nr))
     if nfermion == 4:
         dim = coeff.shape
         if len(dim) < 4:
@@ -266,7 +266,7 @@ def build_opers(nfermion, coeff, lb, rb=None, tol=1E-10):
             coeff_tmp = coeff.reshape((tot, dim[-4], dim[-3], dim[-2], dim[-1]))
             for i in range(tot):
                 hmat_tmp[i] = four_fermion(coeff_tmp[i], lb, rb, tol)
-            hmat = hmat_tmp.reshape((dim[0:-4], nl, nr))
+            hmat = hmat_tmp.reshape(dim[0:-4] + (nl, nr))
 
     return hmat
 
