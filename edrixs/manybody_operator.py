@@ -48,7 +48,7 @@ def one_fermion_annihilation(iorb, lb, rb):
     return hmat
 
 
-def two_fermion(emat, lb, rb, tol=1E-10):
+def two_fermion(emat, lb, rb=None, tol=1E-10):
     """
     Build matrix form of a two-fermionic operator in the given Fock basis,
 
@@ -64,6 +64,7 @@ def two_fermion(emat, lb, rb, tol=1E-10):
         Left fock basis :math:`<F_{l}|`.
     rb: list of array
         Right fock basis :math:`|F_{r}>`.
+        rb = lb if rb is None
     tol: float (default: 1E-10)
         Only consider the elements of emat that are larger than tol.
 
@@ -72,7 +73,8 @@ def two_fermion(emat, lb, rb, tol=1E-10):
     hmat: 2d complex array
         The matrix form of the two-fermionic operator.
     """
-
+    if rb is None:
+        rb = lb
     lb, rb = np.array(lb), np.array(rb)
     nr, nl, norbs = len(rb), len(lb), len(rb[0])
     indx = defaultdict(lambda: -1)
@@ -103,20 +105,23 @@ def two_fermion(emat, lb, rb, tol=1E-10):
     return hmat
 
 
-def four_fermion(umat, basis, tol=1E-10):
+def four_fermion(umat, lb, rb=None, tol=1E-10):
     """
     Build matrix form of a four-fermionic operator in the given Fock basis,
 
     .. math::
 
-        <F|\\sum_{ij}U_{ijkl}\\hat{f}_{i}^{\\dagger}\\hat{f}_{j}^{\\dagger}\\hat{f}_{k}\\hat{f}_{l}|F>
+        <F_l|\\sum_{ij}U_{ijkl}\\hat{f}_{i}^{\\dagger}\\hat{f}_{j}^{\\dagger}\\hat{f}_{k}\\hat{f}_{l}|F_r>
 
     Parameters
     ----------
     umat: 4d complex array
         The 4 index Coulomb interaction tensor.
-    basis: list or array
-        Fock basis :math:`|F>`.
+    lb: list or array
+        Left fock basis :math:`<F_{l}|`.
+    rb: list of array
+        Right fock basis :math:`|F_{r}>`.
+        rb = lb if rb is None
     tol: float (default: 1E-10)
         Only consider the elements of umat that are larger than tol.
 
@@ -125,23 +130,24 @@ def four_fermion(umat, basis, tol=1E-10):
     hmat: 2d complex array
         The matrix form of the four-fermionic operator.
     """
-
-    basis = np.array(basis)
-    ncfgs, norbs = len(basis), len(basis[0])
+    if rb is None:
+        rb = lb
+    lb, rb = np.array(lb), np.array(rb)
+    nr, nl, norbs = len(rb), len(lb), len(rb[0])
     indx = defaultdict(lambda: -1)
-    for i, j in enumerate(basis):
+    for i, j in enumerate(lb):
         indx[tuple(j)] = i
 
     a1, a2, a3, a4 = np.nonzero(abs(umat) > tol)
     nonzero = np.stack((a1, a2, a3, a4), axis=-1)
 
-    hmat = np.zeros((ncfgs, ncfgs), dtype=np.complex128)
+    hmat = np.zeros((nl, nr), dtype=np.complex128)
     tmp_basis = np.zeros(norbs)
     for lorb, korb, jorb, iorb in nonzero:
         if iorb == jorb or korb == lorb:
             continue
-        for icfg in range(ncfgs):
-            tmp_basis[:] = basis[icfg]
+        for icfg in range(nr):
+            tmp_basis[:] = rb[icfg]
             if tmp_basis[iorb] == 0:
                 continue
             else:
