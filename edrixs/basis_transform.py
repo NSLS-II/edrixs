@@ -4,13 +4,13 @@ __all__ = ['cb_op', 'cb_op2', 'tmat_c2r', 'tmat_r2c', 'tmat_r2cub_f',
 import numpy as np
 
 
-def cb_op(oper_O, tmat_L, tmat_R=None):
+def cb_op(oper_O, TL, TR=None):
     """
     Change the basis of an operator :math:`\\hat{O}`.
 
     .. math::
 
-        O^{\\prime} = (tmat_L)^{\\dagger} O (tmat_R),
+        O^{\\prime} = (T_L)^{\\dagger} O (T_R),
 
     Parameters
     ----------
@@ -23,36 +23,38 @@ def cb_op(oper_O, tmat_L, tmat_R=None):
 
         - oper_O.shape = (2, 3, 10, 10), means :math:`2 \\time 3=6` operators with
           dimension :math:`10 \\times 10`
-    tmat_L: 2d array
+    TL: 2d array
         The unitary transformation matrix from basis :math:`A` to
         basis :math:`B`,  namely,
-        :math:`tmat_L_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
 
-    tmat_R: 2d array
+        :math:`TL_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
+
+    TR: 2d array
         The unitary transformation matrix from basis :math:`A` to
         basis :math:`B`,  namely,
-        :math:`tmat_R_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
 
-        if tmat_R = None, tmat_R = tmat_L
+        :math:`TR_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
+
+        if TR = None, TR = TL
 
     Returns
     -------
-    res : same shape as oper_O
+    res: same shape as oper_O
         The matrices form of operators :math:`\\hat{O}` in new basis.
     """
     oper_O = np.array(oper_O, order='C')
     dim = oper_O.shape
-    if tmat_R is None:
-        tmat_R = tmat_L
+    if TR is None:
+        TR = TL
     if len(dim) < 2:
         raise Exception("Dimension of oper_O should be at least 2")
     elif len(dim) == 2:
-        res = np.dot(np.dot(np.conj(np.transpose(tmat_L)), oper_O), tmat_R)
+        res = np.dot(np.dot(np.conj(np.transpose(TL)), oper_O), TR)
     else:
         tot = np.prod(dim[0:-2])
         tmp_oper = oper_O.reshape((tot, dim[-2], dim[-1]))
         for i in range(tot):
-            tmp_oper[i] = np.dot(np.dot(np.conj(np.transpose(tmat_L)), tmp_oper[i]), tmat_R)
+            tmp_oper[i] = np.dot(np.dot(np.conj(np.transpose(TL)), tmp_oper[i]), TR)
         res = tmp_oper.reshape(dim)
 
     return res
@@ -64,7 +66,7 @@ def cb_op2(oper_O, TL, TR):
 
     .. math::
 
-        O^{\\prime} = (TL)^{\\dagger} O (TR),
+        O^{\\prime} = (T_L)^{\\dagger} O (T_R),
 
 
     Parameters
@@ -85,7 +87,7 @@ def cb_op2(oper_O, TL, TR):
 
     Returns
     -------
-    res : same shape as oper_O
+    res: same shape as oper_O
         The matrices form of operators :math:`\\hat{O}` in new basis.
     """
     oper_O = np.array(oper_O, order='C')

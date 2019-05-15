@@ -202,11 +202,11 @@ def get_orb_momentum(l, ispin=False):
     res: 3d complex array
         The matrix form of
 
-        - res[0], :math:`l_x`
+        - res[0]: :math:`l_x`
 
-        - res[1], :math:`l_y`
+        - res[1]: :math:`l_y`
 
-        - res[2], :math:`l_z`
+        - res[2]: :math:`l_z`
 
         If ispin=True, the dimension will be :math:`3 \\times 2(2l+1) \\times 2(2l+1)`,
 
@@ -352,11 +352,11 @@ def get_spin_momentum(l):
     res: 3d complex array
         The matrix form of
 
-        - res[0], :math:`s_x`
+        - res[0]: :math:`s_x`
 
-        - res[1], :math:`s_y`
+        - res[1]: :math:`s_y`
 
-        - res[2], :math:`s_z`
+        - res[2]: :math:`s_z`
 
         the dimension is :math:`3 \\times 2(2l+1) \\times 2(2l+1)`,
 
