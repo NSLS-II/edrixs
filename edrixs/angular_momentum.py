@@ -1,6 +1,6 @@
-__all__ = ['get_ladd', 'get_lminus', 'get_lx', 'get_ly', 'get_lz', 'get_pauli',
-           'get_sx', 'get_sy', 'get_sz', 'euler_to_rmat', 'rmat_to_euler',
-           'where_is_angle', 'dmat_spinor', 'zx_to_rmat', 'get_wigner_dmat',
+__all__ = ['get_ladd', 'get_lminus', 'get_lx', 'get_ly', 'get_lz', 'get_orb_momentum',
+           'get_pauli', 'get_sx', 'get_sy', 'get_sz', 'get_spin_momentum', 'euler_to_rmat',
+           'rmat_to_euler', 'where_is_angle', 'dmat_spinor', 'zx_to_rmat', 'get_wigner_dmat',
            'cf_cubic_d', 'cf_tetragonal_d', 'cf_trigonal_t2g']
 
 import numpy as np
@@ -185,6 +185,45 @@ def get_lz(l, ispin=False):
         return lz
 
 
+def get_orb_momentum(l, ispin=False):
+    """
+    Get the matrix form of the orbital angular momentum
+    operator :math:`l_x, l_y, l_z` in the complex spherical harmonics basis.
+
+    Parameters
+    ----------
+    l: int
+        Orbital angular momentum number.
+    ispin: logical
+        Whether including spin or not (default: False).
+
+    Returns
+    -------
+    res: 3d complex array
+        The matrix form of
+
+        - res[0], :math:`l_x`
+
+        - res[1], :math:`l_y`
+
+        - res[2], :math:`l_z`
+
+        If ispin=True, the dimension will be :math:`3 \\times 2(2l+1) \\times 2(2l+1)`,
+
+        otherwise, it will be :math:`3 \\times (2l+1) \\times (2l+1)`.
+    """
+    norbs = 2 * l + 1
+    if ispin:
+        res = np.zeros((3, 2*norbs, 2*norbs), dtype=np.complex128)
+    else:
+        res = np.zeros((3, norbs, norbs), dtype=np.complex128)
+    res[0] = get_lx(l, ispin)
+    res[1] = get_ly(l, ispin)
+    res[2] = get_lz(l, ispin)
+
+    return res
+
+
 def get_pauli():
     """
     Get the Pauli matrix
@@ -193,11 +232,11 @@ def get_pauli():
     -------
     sigma: 3d complex array, shape=(3, 2, 2)
 
-        sigma[0] is :math:`\\sigma_x`,
+        - sigma[0] is :math:`\\sigma_x`,
 
-        sigma[1] is :math:`\\sigma_y`,
+        - sigma[1] is :math:`\\sigma_y`,
 
-        sigma[2] is :math:`\\sigma_z`,
+        - sigma[2] is :math:`\\sigma_z`,
     """
 
     sigma = np.zeros((3, 2, 2), dtype=np.complex128)
@@ -296,6 +335,41 @@ def get_sz(l):
         sz[2 * i:2 * i + 2, 2 * i:2 * i + 2] = sigma[2, :, :] / 2.0
 
     return sz
+
+
+def get_spin_momentum(l):
+    """
+    Get the matrix form of the spin angular momentum
+    operator :math:`s_x, s_y, s_z` in the complex spherical harmonics basis.
+
+    Parameters
+    ----------
+    l: int
+        Orbital angular momentum number.
+
+    Returns
+    -------
+    res: 3d complex array
+        The matrix form of
+
+        - res[0], :math:`s_x`
+
+        - res[1], :math:`s_y`
+
+        - res[2], :math:`s_z`
+
+        the dimension is :math:`3 \\times 2(2l+1) \\times 2(2l+1)`,
+
+        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
+        \\|+l, up\\>, \\|+l,down\\>
+    """
+    norbs = 2 * (2 * l + 1)
+    res = np.zeros((3, norbs, norbs), dtype=np.complex128)
+    res[0] = get_sx(l)
+    res[1] = get_sy(l)
+    res[2] = get_sz(l)
+
+    return res
 
 
 def euler_to_rmat(alpha, beta, gamma):
