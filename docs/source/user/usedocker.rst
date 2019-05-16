@@ -41,6 +41,8 @@ Follow these steps to use the docker image:
 
 Connect to docker python session with Jupyter
 ------------------------------
-`Jupyter <https://jupyter.org/>`_  is a popular way to integrate your code with rich output including plots. You may find this working mode particularly useful for exploratory work, when you try many different approaches to calculations or analysis. To use this follow the steps in running_docker_ and from within the container initiate the jupyter session as
+`Jupyter <https://jupyter.org/>`_  is a popular way to integrate your code with rich output including plots. You may find this working mode particularly useful for exploratory work, when you try many different approaches to calculations or analysis. To use this follow the steps in running_docker_, but pass an additional command ``-p 8888`` when you launch the container i.e.
+    $ docker run -it -p 8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
+from within the container initiate the jupyter session as
     $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser
-This will return a URL that you can enter in a browser on your machine. 
+This will return a URL that you can enter in a browser on your machine.
