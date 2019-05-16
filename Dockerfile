@@ -43,7 +43,7 @@ RUN wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz \
     && cd .. \
     && rm -rf arpack-ng-3.6.3 3.6.3.tar.gz \
     # install python deps
-    && pip install numpy scipy sympy matplotlib sphinx mpi4py \
+    && pip install numpy scipy sympy matplotlib sphinx mpi4py jupyter jupyterlab prompt-toolkit==1.0.15 \
     # set env
     && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> ~/.bashrc  \
     && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> /home/rixs/.bashrc  \
@@ -64,6 +64,3 @@ RUN export LD_LIBRARY_PATH="/usr/local/lib:\$LD_LIBRARY_PATH" \
     # copy examples to /home/rixs
     && cp -r src/edrixs/examples /home/rixs/edrixs_examples \
     && chown -R rixs:rixs /home/rixs/edrixs_examples \
-
-  # add components needed for jupyter
-RUN pip install jupyter jupyterlab prompt-toolkit==1.0.15
