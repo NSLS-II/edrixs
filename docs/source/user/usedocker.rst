@@ -2,9 +2,9 @@
 edrixs and docker
 *********************
 
-.. _running_docker:
 Run edrixs in a docker container
-------------------------------
+--------------------------------
+
 To make life easier, we have built a docker image based on Ubuntu Linux (18.04) for edrixs, so you don't need to struggle with the installation anymore.
 The docker image can be used on any OS as long as the `docker <https://www.docker.com/>`_ application are available.
 Follow these steps to use the docker image:
@@ -40,9 +40,16 @@ Follow these steps to use the docker image:
     $ docker rmi laowang2017/edrixs
 
 Connect to docker python session with Jupyter
-------------------------------
-`Jupyter <https://jupyter.org/>`_  is a popular way to integrate your code with rich output including plots. You may find this working mode particularly useful for exploratory work, when you try many different approaches to calculations or analysis. To use this follow the steps in running_docker_, but pass an additional command ``-p 8888`` when you launch the container i.e.
+----------------------------------------------
+
+`Jupyter <https://jupyter.org/>`_  is a popular way to integrate your code with rich output including plots. You may find this working mode particularly useful for exploratory work, when you try many different approaches to calculations or analysis.
+
+* To use this follow the steps above, but pass an additional command ``-p 8888`` when you launch the container i.e.::
+
     $ docker run -it -p 8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
-from within the container initiate the jupyter session as
+
+  from within the container initiate the jupyter session as::
+
     $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser
-This will return a URL that you can enter in a browser on your machine.
+
+  This will return a URL that you can enter in a browser on your machine.
