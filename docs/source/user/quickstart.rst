@@ -5,33 +5,29 @@ Quickstart tutorial
 Use edrixs as an ED calculator
 ------------------------------
 edrixs can be used as a simple ED calculator to get eigenvalues (eigenvectors) of a many-body Hamiltonian with small size dimension (:math:`< 1,000`).
-We will give an example to get eigenvalues for a :math:`p`-orbital system (:math:`l=1`). There are 6 orbitals including spin.
+We will give an example to get eigenvalues for a :math:`t_{2g}`-orbital system (:math:`l_{eff}=1`). There are 6 orbitals including spin.
 
 Launch your favorite python terminal::
     
     >>> import edrixs
-    >>> norb = 6    # number of orbitals
-    >>> U, J = 4.0, 1.0    # Coulomb U and Hund's coupling J
-    >>> mu = 5 * (U / 2 - J)    # chemical potential, particle-hole symmetry
-    >>> emat = - np.eye(norb) * mu
-    >>> umat = edrixs.get_umat_kanamori(norb, U, J)    # Kanamori type of Coulomb interaction
-    >>> eigval = []
-    >>> eigvec = []
-    >>> for noccu in range(norb+1):    # loop over all the possible occupancy
-    ...     basis = edrixs.get_fock_bin_by_N(norb, noccu)    # Fock basis
-    ...     H = edrixs.two_fermion(emat, basis, basis)    # Hamiltonian, two fermion terms
-    ...     H += edrixs.four_fermion(umat, basis)    # Hamiltonian, four fermion terms
-    ...     e, v = scipy.linalg.eigh(H)  # do ED
-    ...     print(noccu, e)
-    ...     eigval.append(e)
-    ...     eigvec.append(v)
-    0 [0.]
-    1 [-5. -5. -5. -5. -5. -5.]
-    2 [-9. -9. -9. -9. -9. -9. -9. -9. -9. -7. -7. -7. -7. -7. -4.]
-    3 [-12. -12. -12. -12.  -9.  -9.  -9.  -9.  -9.  -9.  -9.  -9.  -9.  -9.  -7.  -7.  -7.  -7.  -7.  -7.]
-    4 [-9. -9. -9. -9. -9. -9. -9. -9. -9. -7. -7. -7. -7. -7. -4.]
-    5 [-5. -5. -5. -5. -5. -5.]
-    6 [0.]
+    >>> import scipy
+    >>> norb = 6
+    >>> noccu = 2
+    >>> Ud, JH = edrixs.UJ_to_UdJH(4, 1)
+    >>> F0, F2, F4 = edrixs.UdJH_to_F0F2F4(Ud, JH)
+    >>> umat = edrixs.get_umat_slater('t2g', F0, F2, F4)
+    >>> emat = edrixs.atom_hsoc('t2g', 0.2)
+    >>> basis = edrixs.get_fock_bin_by_N(norb, noccu)
+    >>> H = edrixs.build_opers(4, umat, basis)
+    >>> e1, v1 = scipy.linalg.eigh(H)
+    >>> H += edrixs.build_opers(2, emat, basis)
+    >>> e2, v2 = scipy.linalg.eigh(H)
+    >>> print(e1)
+    [1. 1. 1. 1. 1. 1. 1. 1. 1. 3. 3. 3. 3. 3. 6.]
+    >>> print(e2)
+    [0.890519 0.890519 0.890519 0.890519 0.890519 1.1      1.1      1.1
+     1.183391 3.009481 3.009481 3.009481 3.009481 3.009481 6.016609]
+
 
 Hello RIXS!
 -----------

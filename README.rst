@@ -97,7 +97,7 @@ Follow these steps to use the docker image:
        $ cp -r ../edrixs_examples .
        $ Play with edrixs ... 
 
-  Note that any changes outside ``/home/rixs/data`` will lost when this container stops. You can only use your host OS to make interactive plots. Use ``sudo apt-get install`` to install softwares if they are needed. 
+  Note that any changes outside ``/home/rixs/data`` will be lost when this container stops. You can only use your host OS to make interactive plots. Use ``sudo apt-get install`` to install softwares if they are needed. 
   
 * Type ``exit`` in the container to exit. You can delete all the stopped containers by
 

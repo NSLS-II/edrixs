@@ -4,51 +4,82 @@ __all__ = ['cb_op', 'cb_op2', 'tmat_c2r', 'tmat_r2c', 'tmat_r2cub_f',
 import numpy as np
 
 
-def cb_op(oper_A, t_mat):
-    """
-    Change the basis of an operator :math:`\\hat{O}` from one
-    basis :math:`A`: :math:`\\psi^{A}_{i}` to another
-    basis :math:`B`: :math:`\\phi^{B}_{j}`.
-
-    .. math::
-
-        O^{\\prime} = T^{\\dagger} O T,
-
-        T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>.
-
-
-    Parameters
-    ----------
-    oper_A: 2d array
-        The matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
-    t_mat: 2d array
-        The unitary transformation matrix from basis :math:`A` to
-        basis :math:`B`,  namely,
-        :math:`T_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
-
-    Returns
-    -------
-    oper_B : 2d array
-        The matrix form of operator :math:`\\hat{O}` in basis :math:`B`.
-    """
-
-    oper_B = np.dot(np.dot(np.conj(np.transpose(t_mat)), oper_A), t_mat)
-    return oper_B
-
-
-def cb_op2(oper_A, TL, TR):
+def cb_op(oper_O, TL, TR=None):
     """
     Change the basis of an operator :math:`\\hat{O}`.
 
     .. math::
 
-        O^{\\prime} = (TL)^{\\dagger} O (TR),
+        O^{\\prime} = (T_L)^{\\dagger} O (T_R),
+
+    Parameters
+    ----------
+    oper_O: array-like
+        At least 2-dimension, the last 2-dimension is the dimension of the
+        matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
+        For example:
+
+        - oper_O.shape = (3, 10, 10), means 3 operatos with dimension :math:`10 \\times 10`
+
+        - oper_O.shape = (2, 3, 10, 10), means :math:`2 \\times 3=6` operators with
+          dimension :math:`10 \\times 10`
+    TL: 2d array
+        The unitary transformation matrix from basis :math:`A` to
+        basis :math:`B`,  namely,
+
+        :math:`TL_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
+
+    TR: 2d array
+        The unitary transformation matrix from basis :math:`A` to
+        basis :math:`B`,  namely,
+
+        :math:`TR_{ij} = <\\psi^{A}_{i}|\\phi^{B}_{j}>`.
+
+        if TR = None, TR = TL
+
+    Returns
+    -------
+    res: same shape as oper_O
+        The matrices form of operators :math:`\\hat{O}` in new basis.
+    """
+    oper_O = np.array(oper_O, order='C')
+    dim = oper_O.shape
+    if TR is None:
+        TR = TL
+    if len(dim) < 2:
+        raise Exception("Dimension of oper_O should be at least 2")
+    elif len(dim) == 2:
+        res = np.dot(np.dot(np.conj(np.transpose(TL)), oper_O), TR)
+    else:
+        tot = np.prod(dim[0:-2])
+        tmp_oper = oper_O.reshape((tot, dim[-2], dim[-1]))
+        for i in range(tot):
+            tmp_oper[i] = np.dot(np.dot(np.conj(np.transpose(TL)), tmp_oper[i]), TR)
+        res = tmp_oper.reshape(dim)
+
+    return res
+
+
+def cb_op2(oper_O, TL, TR):
+    """
+    Change the basis of an operator :math:`\\hat{O}`.
+
+    .. math::
+
+        O^{\\prime} = (T_L)^{\\dagger} O (T_R),
 
 
     Parameters
     ----------
-    oper_A: 2d array
-        The matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
+    oper_O: array-like
+        At least 2-dimension, the last 2-dimension is the dimension of the
+        matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
+        For example:
+
+        - oper_O.shape = (3, 10, 10), means 3 operatos with dimension :math:`10 \\times 10`
+
+        - oper_O.shape = (2, 3, 10, 10), means :math:`2 \\times 3=6` operators with
+          dimension :math:`10 \\times 10`
     TL: 2d array
         The unitary transformation matrix applied on the left.
     TR: 2d array
@@ -56,12 +87,23 @@ def cb_op2(oper_A, TL, TR):
 
     Returns
     -------
-    oper_B: 2d array
-        The matrix form of operator :math:`\\hat{O}` after the transformation.
+    res: same shape as oper_O
+        The matrices form of operators :math:`\\hat{O}` in new basis.
     """
+    oper_O = np.array(oper_O, order='C')
+    dim = oper_O.shape
+    if len(dim) < 2:
+        raise Exception("Dimension of oper_O should be at least 2")
+    elif len(dim) == 2:
+        res = np.dot(np.dot(np.conj(np.transpose(TL)), oper_O), TR)
+    else:
+        tot = np.prod(dim[0:-2])
+        tmp_oper = oper_O.reshape((tot, dim[-2], dim[-1]))
+        for i in range(tot):
+            tmp_oper[i] = np.dot(np.dot(np.conj(np.transpose(TL)), tmp_oper[i]), TR)
+        res = tmp_oper.reshape(dim)
 
-    oper_B = np.dot(np.dot(np.conj(np.transpose(TL)), oper_A), TR)
-    return oper_B
+    return res
 
 
 def tmat_c2r(case, ispin=False):
