@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:18.04
 WORKDIR /project
 
 RUN apt-get update \
@@ -10,7 +10,7 @@ RUN apt-get update \
     # turn off the error reports from openmpi
     && echo "export OMPI_MCA_btl_vader_single_copy_mechanism=none" >> ~/.bashrc  \
     && echo "export OMPI_MCA_btl_vader_single_copy_mechanism=none" >> /home/rixs/.bashrc \
-    # install deps 
+    # install deps
     && apt-get install -y gcc libgcc-7-dev g++ gfortran ssh wget vim libtool autoconf make \
     && apt-get install -y python3 libpython3-dev python3-pip ipython3 \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3 10 \
@@ -43,7 +43,7 @@ RUN wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz \
     && cd .. \
     && rm -rf arpack-ng-3.6.3 3.6.3.tar.gz \
     # install python deps
-    && pip install numpy scipy sympy matplotlib sphinx mpi4py \
+    && pip install numpy scipy sympy matplotlib sphinx mpi4py jupyter jupyterlab prompt-toolkit==1.0.15 \
     # set env
     && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> ~/.bashrc  \
     && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> /home/rixs/.bashrc  \
