@@ -23,7 +23,6 @@ from .utils import info_atomic_shell, slater_integrals_name, boltz_dist
 from .rixs_utils import scattering_mat
 from .plot_spectrum import get_spectra_from_poles
 from .soc import atom_hsoc
-from .fedrixs import ed_fsolver, xas_fsolver, rixs_fsolver
 
 
 def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
@@ -878,6 +877,7 @@ def _ed_1or2_valence_1core(
         hopping_v1v2=None, do_ed=True, ed_solver=2, neval=1, nvector=1, ncv=3,
         idump=False, maxiter=500, eigval_tol=1e-8, min_ndim=1000
         ):
+    from .fedrixs import ed_fsolver
 
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -1281,6 +1281,7 @@ def _xas_1or2_valence_1core(
         pol_type=None, num_gs=1, nkryl=200, temperature=1.0,
         loc_axis=None, scatter_axis=None
         ):
+    from .fedrixs import xas_fsolver
 
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -1635,6 +1636,7 @@ def _rixs_1or2_valence_1core(
         pol_type=None, num_gs=1, nkryl=200, linsys_max=500, linsys_tol=1e-8,
         temperature=1.0, loc_axis=None, scatter_axis=None
         ):
+    from .fedrixs import rixs_fsolver
 
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -1899,6 +1901,8 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     noccu_gs: int
         Occupancy of the ground state.
     """
+    from .fedrixs import ed_fsolver
+
     rank = comm.Get_rank()
     size = comm.Get_size()
     fcomm = comm.py2f()
@@ -2263,6 +2267,8 @@ def xas_siam_fort(comm, shell_name, nbath, ominc, *, gamma_c=0.1,
     poles: list of dict, shape=(len(pol_type), )
         The calculated XAS poles for different polarizations.
     """
+    from .fedrixs import xas_fsolver
+
     rank = comm.Get_rank()
     size = comm.Get_size()
     fcomm = comm.py2f()
@@ -2463,6 +2469,8 @@ def rixs_siam_fort(comm, shell_name, nbath, ominc, eloss, *, gamma_c=0.1, gamma_
         The calculated RIXS poles. The 1st dimension is for incident energy, and the
         2nd dimension is for different polarizations.
     """
+    from .fedrixs import rixs_fsolver
+
     rank = comm.Get_rank()
     size = comm.Get_size()
     fcomm = comm.py2f()
