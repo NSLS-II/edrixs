@@ -46,10 +46,10 @@ Connect to docker python session with Jupyter
 
 * To use this follow the steps above, but pass an additional command ``-p 8888`` when you launch the container i.e.::
 
-    $ docker run -it -p 8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
+    $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data mpmdean/edrixs
 
   from within the container initiate the jupyter session as::
 
-    $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser
+    $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 
   This will return a URL that you can enter in a browser on your machine.
