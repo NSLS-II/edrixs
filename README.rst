@@ -10,7 +10,7 @@ edrixs
 
 
 An open source toolkit for simulating RIXS spectra based on exact diagonalization (ED) for strongly correlated materials.
-It is developed as part of `COMSCOPE project <https://www.bnl.gov/comscope/software/comsuite.php/>`_ in the Center for Computational Material Spectroscopy and Design, Brookhaven National Laboratory
+`It is developed <https://www.bnl.gov/comscope/software/EDRIXS.php>`_ as part of `COMSCOPE project <https://www.bnl.gov/comscope/software/comsuite.php/>`_ in the Center for Computational Material Spectroscopy and Design, Brookhaven National Laboratory
 
 * Free software: GNU General Public License Version 3
 * Documentation: https://nsls-ii.github.io/edrixs.
