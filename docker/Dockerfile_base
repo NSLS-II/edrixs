@@ -30,9 +30,9 @@ RUN apt-get update \
     && make  \
     && make install  \
     && cd ..  \
-    && rm -rf openmpi-3.1.4 openmpi-3.1.4.tar.bz2
+    && rm -rf openmpi-3.1.4 openmpi-3.1.4.tar.bz2 \
     # install arpack-ng
-RUN wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz \
+    && wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz \
     && tar -xzf 3.6.3.tar.gz \
     && cd arpack-ng-3.6.3 \
     && export LD_LIBRARY_PATH="/usr/local/lib:\$LD_LIBRARY_PATH" \
@@ -45,22 +45,5 @@ RUN wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz \
     # install python deps
     && pip install numpy scipy sympy matplotlib sphinx mpi4py jupyter jupyterlab prompt-toolkit==1.0.15 \
     # set env
-    && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> ~/.bashrc  \
-    && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> /home/rixs/.bashrc  \
     && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc  \
     && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> /home/rixs/.bashrc
-
-COPY . ./src/edrixs
-
-    # build fortran part of edrixs
-RUN export LD_LIBRARY_PATH="/usr/local/lib:\$LD_LIBRARY_PATH" \
-    && make -C src/edrixs/src F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack" \
-    && make install -C src/edrixs/src \
-    # build python part of edrixs
-    && cd src/edrixs \
-    && python setup.py build_ext --library-dirs=/usr/local/lib \
-    && pip install . \
-    && cd ../../  \
-    # copy examples to /home/rixs
-    && cp -r src/edrixs/examples /home/rixs/edrixs_examples \
-    && chown -R rixs:rixs /home/rixs/edrixs_examples \

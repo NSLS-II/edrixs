@@ -14,7 +14,8 @@ Follow these steps to use the docker image:
 * Once the docker is running, create a directory to store data in your host OS and launch a container to run edrixs::
 
     $ mkdir /dir/on/your/host/os   # A directory on your host OS
-    $ docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
+    $ docker pull edrixs/edrixs    # pull latest version
+    $ docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs
 
   it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/laowang2017/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time.
 
@@ -37,7 +38,7 @@ Follow these steps to use the docker image:
 
 * If you do not need the image anymore, you can delete it by::
 
-    $ docker rmi laowang2017/edrixs
+    $ docker rmi edrixs/edrixs
 
 Connect to docker python session with Jupyter
 ----------------------------------------------
@@ -46,10 +47,10 @@ Connect to docker python session with Jupyter
 
 * To use this follow the steps above, but pass an additional command ``-p 8888`` when you launch the container i.e.::
 
-    $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data laowang2017/edrixs
+    $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs
 
   from within the container initiate the jupyter session as::
 
     $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 
-  This will return a URL that you can enter in a browser on your machine.
+  This will return a URL that you can enter in a browser on your host machine.

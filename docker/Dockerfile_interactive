@@ -1,0 +1,10 @@
+FROM edrixs/edrixs
+WORKDIR /project
+
+RUN apt-get update \
+    && apt-get install -y curl \
+    && curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - \
+    && apt install -y nodejs \
+    && pip install ipympl \
+    && jupyter labextension install @jupyter-widgets/jupyterlab-manager \
+    && jupyter labextension install jupyter-matplotlib \
