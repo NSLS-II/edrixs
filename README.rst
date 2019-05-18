@@ -85,7 +85,7 @@ Follow these steps to use the docker image:
        $ docker pull edrixs/edrixs    # pull latest version
        $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs
        
-  it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/laowang2017/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time.
+  it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/edrixs/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time.
   
   * ``-p 8888:8888`` maps container's port 8888 to host port 8888.
   * ``-u rix`` means using a default user ``rixs`` to login the Ubuntu Linux, the password is ``rixs``. 
