@@ -10,7 +10,7 @@ edrixs
 
 
 An open source toolkit for simulating RIXS spectra based on exact diagonalization (ED) for strongly correlated materials.
-It is developed as part of `COMSCOPE project <https://www.bnl.gov/comscope/software/comsuite.php/>`_ in the Center for Computational Material Spectroscopy and Design, Brookhaven National Laboratory
+`It is developed <https://www.bnl.gov/comscope/software/EDRIXS.php>`_ as part of `COMSCOPE project <https://www.bnl.gov/comscope/software/comsuite.php/>`_ in the Center for Computational Material Spectroscopy and Design, Brookhaven National Laboratory
 
 * Free software: GNU General Public License Version 3
 * Documentation: https://nsls-ii.github.io/edrixs.
@@ -85,7 +85,7 @@ Follow these steps to use the docker image:
        $ docker pull edrixs/edrixs    # pull latest version
        $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs
        
-  it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/laowang2017/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time.
+  it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/edrixs/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time.
   
   * ``-p 8888:8888`` maps container's port 8888 to host port 8888.
   * ``-u rix`` means using a default user ``rixs`` to login the Ubuntu Linux, the password is ``rixs``. 
