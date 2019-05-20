@@ -17,4 +17,4 @@ RUN export LD_LIBRARY_PATH="/usr/local/lib:\$LD_LIBRARY_PATH" \
     && echo "export PATH=/project/src/edrixs/bin:\$PATH" >> /home/rixs/.bashrc  \
     # copy examples to /home/rixs
     && cp -r src/edrixs/examples /home/rixs/edrixs_examples \
-    && chown -R rixs:rixs /home/rixs/edrixs_examples \
+    && chown -R rixs:rixs /home/rixs/edrixs_examples
