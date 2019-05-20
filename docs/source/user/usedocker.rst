@@ -6,12 +6,12 @@ Run edrixs in a docker container
 --------------------------------
 
 To make life easier, we have built a docker image based on Ubuntu Linux (18.04) for edrixs, so you don't need to struggle with the installation anymore.
-The docker image can be used on any OS as long as the `docker <https://www.docker.com/>`_ application are available.
+The docker image can be used on any OS as long as the `docker <https://www.docker.com/>`_ application is available.
 Follow these steps to use the docker image:
 
 * Install the `docker <https://www.docker.com/>`_ application on your system and `learn how to use it <https://docs.docker.com/get-started/>`_.
 
-* Once the docker is running, create a directory to store data in your host OS and launch a container to run edrixs::
+* Once Docker is running, create a directory to store data in your host OS and launch a container to run edrixs::
 
     $ mkdir /dir/on/your/host/os   # A directory on your host OS
     $ docker pull edrixs/edrixs    # pull latest version
@@ -53,4 +53,4 @@ Connect to docker python session with Jupyter
 
     $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 
-  This will return a URL that you can enter in a browser on your host machine.
+  This will return a URL that you can enter in a browser on your host machine. If you want to use interactive `ipython widgets <https://ipywidgets.readthedocs.io/en/stable/>`_ and `plotting <https://github.com/matplotlib/jupyter-matplotlib>`_, replace ``edrixs/edrixs`` with ``edrixs/edrixs_interactive``. This downloads a (larger) container with the required additional packages.
