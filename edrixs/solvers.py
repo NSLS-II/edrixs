@@ -401,6 +401,7 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
                             prob[j] * np.sum(np.abs(trans_op[k, :, j])**2 * gamma_core[i] / np.pi /
                                              ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2))
                         )
+                    xas[i, it] = xas[i, it] / npol
                 else:
                     F_mag = np.zeros(ncfg_n, dtype=np.complex)
                     for k in range(npol):
