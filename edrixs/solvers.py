@@ -1369,35 +1369,50 @@ def _xas_1or2_valence_1core(
     poles = []
     comm.Barrier()
     for it, (pt, alpha) in enumerate(pol_type):
-        if rank == 0:
-            print("edrixs >>> Loop over for polarization: ", it, flush=True)
-            kvec = unit_wavevector(thin, phi, scatter_axis, 'in')
-            polvec = np.zeros(npol, dtype=np.complex)
-            if pt.strip() == 'isotropic':
-                pol = np.ones(3)/np.sqrt(3.0)
-            elif pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
+        if pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
+            if rank == 0:
+                print("edrixs >>> Loop over for polarization: ", it, pt, flush=True)
+                kvec = unit_wavevector(thin, phi, scatter_axis, 'in')
+                polvec = np.zeros(npol, dtype=np.complex)
                 pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
-            else:
-                raise Exception("Unknown polarization type: ", pt)
-            if npol == 3:  # Dipolar transition
-                polvec[:] = pol
-            if npol == 5:  # Quadrupolar transition
-                polvec[:] = quadrupole_polvec(pol, kvec)
+                if npol == 3:  # Dipolar transition
+                    polvec[:] = pol
+                if npol == 5:  # Quadrupolar transition
+                    polvec[:] = quadrupole_polvec(pol, kvec)
+                trans = np.zeros((ntot, ntot), dtype=np.complex)
+                for i in range(npol):
+                    trans[:, :] += trans_mat[i] * polvec[i]
+                write_emat(trans, 'transop_xas.in')
 
-            trans = np.zeros((ntot, ntot), dtype=np.complex)
-            for i in range(npol):
-                trans[:, :] += trans_mat[i] * polvec[i]
-            write_emat(trans, 'transop_xas.in')
+            # call XAS solver in fedrixs
+            comm.Barrier()
+            xas_fsolver(fcomm, rank, size)
+            comm.Barrier()
 
-        # call XAS solver in fedrixs
-        comm.Barrier()
-        xas_fsolver(fcomm, rank, size)
-        comm.Barrier()
+            file_list = ['xas_poles.' + str(i+1) for i in range(num_gs)]
+            pole_dict = read_poles_from_file(file_list)
+            poles.append(pole_dict)
+            xas[:, it] = get_spectra_from_poles(pole_dict, ominc, gamma_core, temperature)
+        elif pt.strip() == 'isotropic':
+            pole_dicts = []
+            for k in range(npol):
+                if rank == 0:
+                    print("edrixs >>> Loop over for polarization: ", it, pt, flush=True)
+                    print("edrixs >>> Isotropic, component: ", k, flush=True)
+                    write_emat(trans_mat[k], 'transop_xas.in')
+                # call XAS solver in fedrixs
+                comm.Barrier()
+                xas_fsolver(fcomm, rank, size)
+                comm.Barrier()
 
-        file_list = ['xas_poles.' + str(i+1) for i in range(num_gs)]
-        pole_dict = read_poles_from_file(file_list)
-        poles.append(pole_dict)
-        xas[:, it] = get_spectra_from_poles(pole_dict, ominc, gamma_core, temperature)
+                file_list = ['xas_poles.' + str(i+1) for i in range(num_gs)]
+                pole_tmp = read_poles_from_file(file_list)
+                xas[:, it] += get_spectra_from_poles(pole_tmp, ominc, gamma_core, temperature)
+                pole_dicts.append(pole_tmp)
+            xas[:, it] = xas[:, it] / npol
+            poles.append(merge_pole_dict(pole_dicts))
+        else:
+            raise Exception("Unknown polarization type: ", pt)
 
     return xas, poles
 
