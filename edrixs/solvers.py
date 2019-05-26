@@ -1327,37 +1327,37 @@ def _xas_1or2_valence_1core(
         write_fock_dec_by_N(v1v2_norb, v_tot_noccu, "fock_i.in")
         write_fock_dec_by_N(v1v2_norb, v_tot_noccu + 1, "fock_n.in")
 
-        # Build transition operators in local-xyz axis
-        if trans_to_which == 1:
-            case = v1_name + c_name
-        elif trans_to_which == 2 and v2_name != 'empty':
-            case = v2_name + c_name
-        else:
-            raise Exception('Unkonwn trans_to_which: ', trans_to_which)
-        tmp = get_trans_oper(case)
-        npol, n, m = tmp.shape
-        tmp_g = np.zeros((npol, n, m), dtype=np.complex)
-        trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
-        # Transform the transition operators to global-xyz axis
-        # dipolar transition
-        if npol == 3:
-            for i in range(3):
-                for j in range(3):
-                    tmp_g[i] += loc_axis[i, j] * tmp[j]
-        # quadrupolar transition
-        elif npol == 5:
-            alpha, beta, gamma = rmat_to_euler(loc_axis)
-            wignerD = get_wigner_dmat(4, alpha, beta, gamma)
-            rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
-            for i in range(5):
-                for j in range(5):
-                    tmp_g[i] += rotmat[i, j] * tmp[j]
-        else:
-            raise Exception("Have NOT implemented this case: ", npol)
-        if trans_to_which == 1:
-            trans_mat[:, 0:v1_norb, v1v2_norb:ntot] = tmp_g
-        else:
-            trans_mat[:, v1_norb:v1v2_norb, v1v2_norb:ntot] = tmp_g
+    # Build transition operators in local-xyz axis
+    if trans_to_which == 1:
+        case = v1_name + c_name
+    elif trans_to_which == 2 and v2_name != 'empty':
+        case = v2_name + c_name
+    else:
+        raise Exception('Unkonwn trans_to_which: ', trans_to_which)
+    tmp = get_trans_oper(case)
+    npol, n, m = tmp.shape
+    tmp_g = np.zeros((npol, n, m), dtype=np.complex)
+    trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+    # Transform the transition operators to global-xyz axis
+    # dipolar transition
+    if npol == 3:
+        for i in range(3):
+            for j in range(3):
+                tmp_g[i] += loc_axis[i, j] * tmp[j]
+    # quadrupolar transition
+    elif npol == 5:
+        alpha, beta, gamma = rmat_to_euler(loc_axis)
+        wignerD = get_wigner_dmat(4, alpha, beta, gamma)
+        rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
+        for i in range(5):
+            for j in range(5):
+                tmp_g[i] += rotmat[i, j] * tmp[j]
+    else:
+        raise Exception("Have NOT implemented this case: ", npol)
+    if trans_to_which == 1:
+        trans_mat[:, 0:v1_norb, v1v2_norb:ntot] = tmp_g
+    else:
+        trans_mat[:, v1_norb:v1v2_norb, v1v2_norb:ntot] = tmp_g
 
     n_om = len(ominc)
     gamma_core = np.zeros(n_om, dtype=np.float)
@@ -2330,28 +2330,28 @@ def xas_siam_fort(comm, shell_name, nbath, ominc, *, gamma_c=0.1,
         write_fock_dec_by_N(ntot_v, v_noccu, "fock_i.in")
         write_fock_dec_by_N(ntot_v, v_noccu + 1, "fock_n.in")
 
-        case = v_name + c_name
-        tmp = get_trans_oper(case)
-        npol, n, m = tmp.shape
-        tmp_g = np.zeros((npol, n, m), dtype=np.complex)
-        trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
-        # Transform the transition operators to global-xyz axis
-        # dipolar transition
-        if npol == 3:
-            for i in range(3):
-                for j in range(3):
-                    tmp_g[i] += loc_axis[i, j] * tmp[j]
-        # quadrupolar transition
-        elif npol == 5:
-            alpha, beta, gamma = rmat_to_euler(loc_axis)
-            wignerD = get_wigner_dmat(4, alpha, beta, gamma)
-            rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
-            for i in range(5):
-                for j in range(5):
-                    tmp_g[i] += rotmat[i, j] * tmp[j]
-        else:
-            raise Exception("Have NOT implemented this case: ", npol)
-        trans_mat[:, 0:v_norb, ntot_v:ntot] = tmp_g
+    case = v_name + c_name
+    tmp = get_trans_oper(case)
+    npol, n, m = tmp.shape
+    tmp_g = np.zeros((npol, n, m), dtype=np.complex)
+    trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+    # Transform the transition operators to global-xyz axis
+    # dipolar transition
+    if npol == 3:
+        for i in range(3):
+            for j in range(3):
+                tmp_g[i] += loc_axis[i, j] * tmp[j]
+    # quadrupolar transition
+    elif npol == 5:
+        alpha, beta, gamma = rmat_to_euler(loc_axis)
+        wignerD = get_wigner_dmat(4, alpha, beta, gamma)
+        rotmat = np.dot(np.dot(tmat_r2c('d'), wignerD), np.conj(np.transpose(tmat_r2c('d'))))
+        for i in range(5):
+            for j in range(5):
+                tmp_g[i] += rotmat[i, j] * tmp[j]
+    else:
+        raise Exception("Have NOT implemented this case: ", npol)
+    trans_mat[:, 0:v_norb, ntot_v:ntot] = tmp_g
 
     n_om = len(ominc)
     gamma_core = np.zeros(n_om, dtype=np.float)
