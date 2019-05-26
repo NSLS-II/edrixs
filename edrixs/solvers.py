@@ -384,25 +384,31 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
     for i, om in enumerate(ominc):
         for it, (pt, alpha) in enumerate(pol_type):
             polvec = np.zeros(npol, dtype=np.complex)
-            if pt.strip() == 'isotropic':
-                pol = np.ones(3)/np.sqrt(3.0)
-            elif pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
+            if pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
                 pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
+                if npol == 3:  # dipolar transition
+                    polvec[:] = pol
+                if npol == 5:  # quadrupolar transition
+                    polvec[:] = quadrupole_polvec(pol, kvec)
             else:
                 raise Exception("Unknown polarization type: ", pt)
-            if npol == 3:  # dipolar transition
-                polvec[:] = pol
-            if npol == 5:  # quadrupolar transition
-                polvec[:] = quadrupole_polvec(pol, kvec)
+            
             # loop over all the initial states
             for j in gs_list:
-                F_mag = np.zeros(ncfg_n, dtype=np.complex)
-                for k in range(npol):
-                    F_mag += trans_op[k, :, j] * polvec[k]
-                xas[i, it] += (
-                    prob[j] * np.sum(np.abs(F_mag)**2 * gamma_core[i] / np.pi /
-                                     ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2))
-                )
+                if pt.strip() == 'isotropic':
+                    for k in range(npol):
+                        xas[i, it] += (
+                            prob[j] * np.sum(np.abs(trans_op[k, :, j])**2 * gamma_core[i] / np.pi /
+                                             ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2))
+                        )
+                else:
+                    F_mag = np.zeros(ncfg_n, dtype=np.complex)
+                    for k in range(npol):
+                        F_mag += trans_op[k, :, j] * polvec[k]
+                    xas[i, it] += (
+                        prob[j] * np.sum(np.abs(F_mag)**2 * gamma_core[i] / np.pi /
+                                         ((om - (eval_n[:] - eval_i[j]))**2 + gamma_core[i]**2))
+                    )
 
     print("edrixs >>> XAS Done !")
 
