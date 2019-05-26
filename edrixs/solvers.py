@@ -383,6 +383,8 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
     kvec = unit_wavevector(thin, phi, scatter_axis, 'in')
     for i, om in enumerate(ominc):
         for it, (pt, alpha) in enumerate(pol_type):
+            if pt.strip() not in ['left', 'right', 'linear', 'isotropic']:
+                raise Exception("Unknown polarization type: ", pt)
             polvec = np.zeros(npol, dtype=np.complex)
             if pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
                 pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
@@ -390,8 +392,6 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
                     polvec[:] = pol
                 if npol == 5:  # quadrupolar transition
                     polvec[:] = quadrupole_polvec(pol, kvec)
-            else:
-                raise Exception("Unknown polarization type: ", pt)
 
             # loop over all the initial states
             for j in gs_list:
