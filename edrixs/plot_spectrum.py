@@ -1,4 +1,4 @@
-__all__ = ['get_spectra_from_poles', 'plot_spectrum', 'plot_rixs_map']
+__all__ = ['get_spectra_from_poles', 'merge_pole_dicts', 'plot_spectrum', 'plot_rixs_map']
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -59,6 +59,38 @@ def get_spectra_from_poles(poles_dict, omega_mesh, gamma_mesh, temperature):
         spectra[:] += -1.0 / np.pi * np.imag(tmp_vec) * norm * gs_dist[i]
 
     return spectra
+
+
+def merge_pole_dicts(list_pole_dict):
+    """
+    Given a list of dict of poles, merge them into one dict of poles
+
+    Parameters
+    ----------
+    list_pole_dict:  list of dict
+        Dict containing information of poles, which are calculated from
+        xas_fsolver and rixs_fsolver.
+
+    Returns
+    -------
+    new_pole_dict: dict of poles
+        New dict of poles.
+    """
+    new_pole_dict = {
+        'eigval': [],
+        'npoles': [],
+        'norm': [],
+        'alpha': [],
+        'beta': []
+    }
+    for poles_dict in list(list_pole_dict):
+        new_pole_dict['eigval'].extend(poles_dict['eigval'])
+        new_pole_dict['npoles'].extend(poles_dict['npoles'])
+        new_pole_dict['norm'].extend(poles_dict['norm'])
+        new_pole_dict['alpha'].extend(poles_dict['alpha'])
+        new_pole_dict['beta'].extend(poles_dict['beta'])
+
+    return new_pole_dict
 
 
 def plot_spectrum(file_list, omega_mesh, gamma_mesh, T=1.0, fname='spectrum.dat',

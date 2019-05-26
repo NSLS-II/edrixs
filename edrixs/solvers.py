@@ -1410,7 +1410,7 @@ def _xas_1or2_valence_1core(
                 xas[:, it] += get_spectra_from_poles(pole_tmp, ominc, gamma_core, temperature)
                 pole_dicts.append(pole_tmp)
             xas[:, it] = xas[:, it] / npol
-            poles.append(merge_pole_dict(pole_dicts))
+            poles.append(merge_pole_dicts(pole_dicts))
         else:
             raise Exception("Unknown polarization type: ", pt)
 
