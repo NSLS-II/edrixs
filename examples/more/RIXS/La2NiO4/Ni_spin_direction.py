@@ -77,7 +77,7 @@ def do_ed(dq10=1.6, d1=0.1, d3=0.75,
 def get_xas(eval_i, eval_n, dipole_ops,
             om_mesh=np.linspace(-10, 20, 1000), om_offset=857.40,
             thin=115 / 180.0 * np.pi, phi=0.0,
-            gamma=0.2, T=30.):
+            gamma_c=0.2, T=30.):
     '''
     Calculate XAS spectrum.
 
@@ -99,7 +99,7 @@ def get_xas(eval_i, eval_n, dipole_ops,
         c-axis
     phi: float
         Azimutal x-ray angle in radians
-    gamma: float
+    gamma_c: float
         core-hole life-time broadening
     T: float
         Temperature in Kelvin
@@ -125,7 +125,7 @@ def get_xas(eval_i, eval_n, dipole_ops,
     poltype = [('linear', 0.0), ('linear', np.pi / 2.0),
                ('left', 0.0), ('right', 0.0), ('isotropic', 0.0)]
     xas = edrixs.xas_1v1c_py(
-        eval_i, eval_n, dipole_ops, om_mesh, gamma_c=gamma, thin=thin,
+        eval_i, eval_n, dipole_ops, om_mesh, gamma_c=gamma_c, thin=thin,
         phi=phi, pol_type=poltype, gs_list=[0, 1, 2], temperature=T
     )
 
@@ -136,7 +136,7 @@ def get_rixs(eval_i, eval_n, dipole_ops,
              om_mesh=np.linspace(-8, 0, 100), om_offset=857.40,
              eloss_mesh=np.linspace(-1, 5.0, 1000),
              thin=115 / 180.0 * np.pi, thout=15 / 180.0 * np.pi, phi=0.0,
-             gamma_n=0.5, gamma_f=0.10, emi_res=0.1, T=30.):
+             gamma_c=0.5, gamma_f=0.10, emi_res=0, T=30.):
     """
     Calculate RIXS map.
 
@@ -163,10 +163,10 @@ def get_rixs(eval_i, eval_n, dipole_ops,
         c-axis
     phi: float
         Azimutal x-ray angle in radians
-    gamma: float
-        core-hole life-time broadening
+    gamma_c: float
+        core-hole life-time Lorentzian broadening
     gamma_f: float
-        final state life-time broadening
+        final state life-time Lorentzian broadening
     emi_res: float
         resolution for the emitted x-rays
         Gaussian convolution defined as sigma (not FWHM)
@@ -195,12 +195,13 @@ def get_rixs(eval_i, eval_n, dipole_ops,
                     ('linear', np.pi/2.0, 'linear', 0.0),
                     ('linear', np.pi/2.0, 'linear', np.pi/2.0)]
     rixs = edrixs.rixs_1v1c_py(
-        eval_i, eval_n, dipole_ops, om_mesh, eloss_mesh, gamma_c=gamma_n, gamma_f=gamma_f,
+        eval_i, eval_n, dipole_ops, om_mesh, eloss_mesh, gamma_c=gamma_c, gamma_f=gamma_f,
         thin=thin, thout=thout, phi=phi, pol_type=poltype_rixs, gs_list=[0, 1, 2], temperature=T
     )
     # Apply gaussian broadening
-    dx = np.mean(np.abs(eloss_mesh[1:] - eloss_mesh[:-1]))
-    rixs = np.apply_along_axis(gaussian_filter1d, 2, rixs, emi_res / dx)
+    if emi_res > 0:
+        dx = np.mean(np.abs(eloss_mesh[1:] - eloss_mesh[:-1]))
+        rixs = np.apply_along_axis(gaussian_filter1d, 2, rixs, emi_res / dx)
 
     return om_mesh, om_offset, eloss_mesh, rixs
 
@@ -208,7 +209,7 @@ def get_rixs(eval_i, eval_n, dipole_ops,
 fig, (ax_XAS, ax_RIXS, ax_spin) = plt.subplots(1, 3, figsize=(10, 3))
 # Compute XAS
 eval_i, eval_n, dipole_op = do_ed(dq10=1.6, d1=0.1, d3=0.75)
-om_mesh, om_offset, xas = get_xas(eval_i, eval_n, dipole_op, gamma=.5)
+om_mesh, om_offset, xas = get_xas(eval_i, eval_n, dipole_op, gamma_c=.5)
 ax_XAS.plot(om_mesh + om_offset, xas[:, -1])
 ax_XAS.set_xlabel('Incident energy (eV)')
 ax_XAS.set_ylabel('XAS')
@@ -217,7 +218,7 @@ ax_XAS.set_ylabel('XAS')
 res_e = om_mesh[np.argmax(xas[:, -1])]
 
 # Compute a RIXS MAP
-om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op, gamma_n=0.5, emi_res=.1)
+om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op, gamma_c=0.5, emi_res=.1)
 art = ax_RIXS.pcolorfast(eloss_mesh, om_mesh + om_offset, rixs[:, :, 0:2].sum(2))
 ax_RIXS.set_ylabel('Incident energy (eV)')
 ax_RIXS.set_xlabel('Energy loss')
@@ -237,7 +238,7 @@ for phi, color in zip(phis, colors):
 
     om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op,
                                                     om_mesh=np.array([res_e]),
-                                                    gamma_n=1, emi_res=.07, T=20)
+                                                    gamma_c=0.5, emi_res=.07, T=20)
     intensity = rixs[:, :, 0:2].sum((0, 2))
     ax_spin.plot(eloss_mesh, intensity, color=color,
                  label=r'$\phi = {:.3f}$'.format(phi))
