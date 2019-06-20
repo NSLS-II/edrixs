@@ -238,7 +238,7 @@ for phi, color in zip(phis, colors):
 
     om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op,
                                                     om_mesh=np.array([res_e]),
-                                                    gamma_c=gamma_c, emi_res=.07, T=20)
+                                                    gamma_c=0.5, emi_res=.07, T=20)
     intensity = rixs[:, :, 0:2].sum((0, 2))
     ax_spin.plot(eloss_mesh, intensity, color=color,
                  label=r'$\phi = {:.3f}$'.format(phi))
