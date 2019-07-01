@@ -38,7 +38,7 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
 if 'linux' in sys.platform:
     extra_link_args = ['-shared']
 else:
-    extra_link_args=[]
+    extra_link_args = []
 ext_fortran = Extension(name='edrixs.fedrixs',
                         sources=['src/pyapi.f90'],
                         extra_link_args=extra_link_args)
