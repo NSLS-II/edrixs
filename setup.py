@@ -36,7 +36,7 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
 
 # Python interface to call fortran subroutines
 if 'linux' in sys.platform:
-    extra_link_args=['-shared']
+    extra_link_args = ['-shared']
 else:
     extra_link_args=[]
 ext_fortran = Extension(name='edrixs.fedrixs',
