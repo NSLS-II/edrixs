@@ -30,7 +30,7 @@ Install compilers and tools::
     $ sudo apt-get install git autoconf automake ssh wget
     $ sudo apt-get install python3 libpython3-dev python3-pip
 
-We will assume ``python`` pointing to ``python3.7`` and ``pip`` pointing to ``pip3.7`` from now on. If this is not the case, you can make links explicitly.
+We will assume ``python`` pointing to ``python3.7`` and ``pip`` pointing to ``pip3.7`` from now on. If this is not the case, you can make links explicitly [#]_ [#]_.
 Check we are using the expected python and pip::
 
     $ which python
@@ -321,3 +321,7 @@ Go to ``examples`` directory to run some examples::
 if no errors, the installation is successful.
 
 All done, enjoy!
+
+.. [#] To change your default python you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias python='/usr/local/bin/python3'`` where the path is determined by calling ``which python3`` from your terminal. 
+
+.. [#] To change your default pip you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias pip='/usr/bin/pip3'`` where the path is determined by calling ``which pip3`` from your terminal. 
