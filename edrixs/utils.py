@@ -652,6 +652,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None
     atom = atom.strip()
     avail_atoms = ['Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu',
                    'Re', 'Os', 'Ir',
+                   'Sm',
                    'U', 'Pu']
     avail_shells = ['1s', '2s', '2p', '3s', '3p', '3d', '4s', '4p', '4d', '4f',
                     '5s', '5p', '5d', '5f', '6s', '6p', '6d']
