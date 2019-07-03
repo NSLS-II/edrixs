@@ -17,7 +17,7 @@ Several tools and libraries are required to build and install edrixs,
 
 Install and use edrixs via Anaconda (only Linux now)
 ====================================================
-A conda package has been built for Linux systems. To use edrixs via Anaconda, you need first to install Anaconda in your system.
+A conda package has been built for Linux systems. To use edrixs via Anaconda, you need first to install `Anaconda <https://www.anaconda.com/distribution/>`_ in your system.
 Then, create and activate a conda env, for example, called ``edrixs_env``::
 
     $ conda create --name edrixs_env python=3.7
