@@ -22,8 +22,15 @@ Features
 * XAS spectra
 * RIXS spectra
 
-Installation
-------------
+Install via Anaconda (only Linux now)
+-------------------------------------
+
+  .. code-block:: bash
+  
+     $ conda install -c lightsource2-tag edrixs
+     
+Install from source
+-------------------
 * Required tools and libraries
 
    * Fortran compiler: gfortran and ifort are supported 
