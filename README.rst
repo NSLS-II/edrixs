@@ -116,10 +116,7 @@ Follow these steps to use the docker image:
 
 How to cite
 -----------
-If you are using the EDRIXS code to do some studies and would like to publish your great works, it would be really appreciated if you can cite the following paper
+If you are using the EDRIXS code to do some studies and would like to publish your great works, it would be really appreciated if you can cite the following paper:
 
- .. code-block:: bash
-
-   EDRIXS: An open source toolkit for simulating spectra of resonant inelastic x-ray scattering
-   Y.L. Wang, G. Fabbris, M.P.M. Dean and G. Kotliar, arXiv:1812.05735. Accepted as publication in CPC.
+``EDRIXS: An open source toolkit for simulating spectra of resonant inelastic x-ray scattering, Y.L. Wang, G. Fabbris, M.P.M. Dean and G. Kotliar``, `Computer Physics Communications,243, 151 (2019) <https://doi.org/10.1016/j.cpc.2019.04.018/>`_, `arXiv:1812.05735 <https://arxiv.org/abs/1812.05735/>`_.
 
