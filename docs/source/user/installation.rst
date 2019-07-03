@@ -15,6 +15,20 @@ Several tools and libraries are required to build and install edrixs,
    * numpy, scipy, sympy, matplotlib, sphinx, numpydoc
    * mpi4py with same MPI compilers as building edrixs
 
+Install and use edrixs via Anaconda (only Linux now)
+====================================================
+A conda package has been built for Linux systems. To use edrixs via Anaconda, you need first to install `Anaconda <https://www.anaconda.com/distribution/>`_ in your system.
+Then, create and activate a conda env, for example, called ``edrixs_env``::
+
+    $ conda create --name edrixs_env python=3.7
+    $ conda activate edrixs_env
+
+Install edrixs by::
+
+    $ conda install -c lightsource2-tag edrixs
+
+where, `lightsource2-tag <https://anaconda.org/lightsource2-tag/>`_ is an Anaconda package repository maintained by `DAMA <https://github.com/NSLS-II/lightsource2-recipes/>`_ at NSLS-II at  Brookhaven National Laboratory.
+
 Build from source 
 =================
 We will show how to build edrixs from source on Ubuntu Linux 18.04 and macOS Mojave (OSX 10.14) as examples.
