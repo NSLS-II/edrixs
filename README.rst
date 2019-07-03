@@ -68,6 +68,8 @@ Installation
        $ pip install .
 
   where, ``--library-dirs`` ares the paths to search ``--libraries``, please set it according to your environments.
+  
+Please see our `online documentation <https://nsls-ii.github.io/edrixs/user/installation.html>`_ for more details of installation. 
 
 
 Run edrixs in docker
