@@ -387,10 +387,9 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
                 raise Exception("Unknown polarization type: ", pt)
             polvec = np.zeros(npol, dtype=np.complex)
             if pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
-                pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
                 if npol == 3:  # dipolar transition
-                    polvec[:] = pol
-                if npol == 5:  # quadrupolar transition
+                    polvec[:] = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
+                elif npol == 5:  # quadrupolar transition
                     polvec[:] = quadrupole_polvec(pol, kvec)
 
             # loop over all the initial states
@@ -1376,10 +1375,9 @@ def _xas_1or2_valence_1core(
                 print("edrixs >>> Loop over for polarization: ", it, pt, flush=True)
                 kvec = unit_wavevector(thin, phi, scatter_axis, 'in')
                 polvec = np.zeros(npol, dtype=np.complex)
-                pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
                 if npol == 3:  # Dipolar transition
-                    polvec[:] = pol
-                if npol == 5:  # Quadrupolar transition
+                    polvec[:] = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
+                elif npol == 5:  # Quadrupolar transition
                     polvec[:] = quadrupole_polvec(pol, kvec)
                 trans = np.zeros((ntot, ntot), dtype=np.complex)
                 for i in range(npol):
