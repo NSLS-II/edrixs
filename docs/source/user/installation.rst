@@ -1,6 +1,7 @@
 ************
 Installation
 ************
+For those who just want to get started, using the :ref:`docker instructions <edrixsanddocker>` is relatively straightforward and is compatible with essentially all platforms. For linux users :ref:`installing with anaconda <AnacondaInstall>` should also be easy. You can also compile the code from the source for Linux and OSX.
 
 Requirements
 ============
@@ -14,6 +15,8 @@ Several tools and libraries are required to build and install edrixs,
    * Only Python3 is supported
    * numpy, scipy, sympy, matplotlib, sphinx, numpydoc
    * mpi4py with same MPI compilers as building edrixs
+
+.. _AnacondaInstall:
 
 Install and use edrixs via Anaconda (only Linux now)
 ====================================================

@@ -1,3 +1,5 @@
+.. _edrixsanddocker:
+
 *********************
 edrixs and docker
 *********************
