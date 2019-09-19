@@ -770,6 +770,7 @@ def rescale(old_list, scale=None):
             new_list[pos] = new_list[pos] * val
     return new_list
 
+
 def slater_to_racah(slater):
     """
     Transform the Slater-Condon-Parameter F_2 and F_4 to the Rach-Parameter B and C
@@ -815,7 +816,7 @@ def racah_to_slater(racah):
 def eV_to_cm(eV):
     """
     Transform eV to wavenumbers (cm-)
-    
+
     Parameters
     ----------
     eV: float as single
