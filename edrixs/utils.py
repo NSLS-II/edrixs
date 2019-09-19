@@ -773,7 +773,7 @@ def rescale(old_list, scale=None):
 def slater_to_racah(slater):
     """
     Transform the Slater-Condon-Parameter F_2 and F_4 to the Rach-Parameter B and C
-    
+
     Parameters
     ----------
     racah: 1D float list
@@ -794,7 +794,7 @@ def racah_to_slater(racah):
     """
     Transform the Racah-Parameter B and C to the normalized
     Slater-Condon-Parameter F^2 and F^4
-   
+
     Parameters
     ----------
     racah: 1D float list
