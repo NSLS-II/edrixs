@@ -789,6 +789,7 @@ def slater_to_racah(slater):
     racah = [B, C]
     return racah
 
+
 def racah_to_slater(racah):
     """
     Transform the Racah-Parameter B and C to the normalized
@@ -810,6 +811,7 @@ def racah_to_slater(racah):
     slater = [F2, F4]
     return slater
 
+
 def eV_to_cm(eV):
     """
     Transform eV to wavenumbers (cm-)
@@ -825,9 +827,11 @@ def eV_to_cm(eV):
     """
     return eV * 8065.54
 
+
 def cm_to_eV(cm):
     """
     Transform wavenumbers (cm-) to eV
+
     Parameters
     ----------
     cm: float as single or array
@@ -839,11 +843,11 @@ def cm_to_eV(cm):
     """
     return cm * 1 / 8065.54
 
+
 def crystalfield_symmetry(sym):
     """
-    Defining the crystal-field-splitting from
-    1. sperical symmetry to Oh (-Oh = Tg) to D4h
-    2. with real orbital energy in eV
+    Defining the crystal-field-splitting from:
+    sperical symmetry to Oh (-Oh = Tg) to D4h
 
     Parameters
     ----------
@@ -892,5 +896,5 @@ def crystalfield_symmetry(sym):
         cryst[3, 3] = + 6 * dq + 2 * ds - 1 * dt  # dx2y2
         cryst[4, 4] = + 6 * dq - 2 * ds - 6 * dt  # dz2
     else:
-         print("Error in the definition of the crystal-field!")
+        print("Error in the definition of the crystal-field!")
     return cryst
