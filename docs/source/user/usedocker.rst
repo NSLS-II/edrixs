@@ -49,10 +49,10 @@ Connect to docker python session with Jupyter
 
 * To use this follow the steps above, but pass an additional command ``-p 8888`` when you launch the container i.e.::
 
-    $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs
+    $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs_interactive
 
-  from within the container initiate the jupyter session as::
+the container will automatically launch a jupyter session as::
 
     $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 
-  This will return a URL that you can enter in a browser on your host machine. If you want to use interactive `ipython widgets <https://ipywidgets.readthedocs.io/en/stable/>`_ and `plotting <https://github.com/matplotlib/jupyter-matplotlib>`_, replace ``edrixs/edrixs`` with ``edrixs/edrixs_interactive``. This downloads a (larger) container with the required additional packages.
+  and will return a URL that you can enter in a browser on your host machine. The larger ``edrixs/edrixs_interactive'' container includes [ipywidgets](https://ipywidgets.readthedocs.io/en/latest/) and [ipympl](https://github.com/matplotlib/jupyter-matplotlib) for interactive computing.
