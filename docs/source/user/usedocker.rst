@@ -15,9 +15,9 @@ Follow these steps to use the docker image:
 
 * Once Docker is running, create a directory to store data in your host OS and launch a container to run edrixs::
 
-    $ mkdir /dir/on/your/host/os   # A directory on your host OS
-    $ docker pull edrixs/edrixs    # pull latest version
-    $ docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs
+    mkdir /dir/on/your/host/os   # A directory on your host OS
+    docker pull edrixs/edrixs    # pull latest version
+    docker run -it -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs
 
   it will take a while to pull the image from `Docker Hub <https://cloud.docker.com/repository/docker/edrixs/edrixs/>`_ for the first time, while, it will launch the local one very fast at the next time.
 
@@ -27,8 +27,8 @@ Follow these steps to use the docker image:
 
 * In the container, you can play with edrixs as you are using an isolated Ubuntu Linux system. After launching the container, you will see ``data`` and ``edrixs_examples`` in ``/home/rixs`` directory. If you want to save the data from edrixs calculations to your host system, you need to work in ``/home/rixs/data`` directory::
 
-    $ cd /home/rixs/data
-    $ cp -r ../edrixs_examples .
+    cd /home/rixs/data
+    cp -r ../edrixs_examples .
 
     Play with edrixs ...
 
@@ -36,11 +36,11 @@ Follow these steps to use the docker image:
 
 * Type ``exit`` in the container to exit. You can delete all the stopped containers by::
 
-    $ docker rm $(docker ps -a -q)
+    docker rm $(docker ps -a -q)
 
 * If you do not need the image anymore, you can delete it by::
 
-    $ docker rmi edrixs/edrixs
+    docker rmi edrixs/edrixs
 
 Connect to docker python session with Jupyter
 ----------------------------------------------
@@ -49,10 +49,10 @@ Connect to docker python session with Jupyter
 
 * To use this follow the steps above, but pass an additional command ``-p 8888`` when you launch the container i.e.::
 
-    $ docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs_interactive
+    docker run -it -p 8888:8888 -u rixs -w /home/rixs -v /dir/on/your/host/os:/home/rixs/data edrixs/edrixs_interactive
 
-the container will automatically launch a jupyter session as::
+* the container will automatically launch a jupyter session as::
 
-    $ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+    jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 
-  and will return a URL that you can enter in a browser on your host machine. The larger ``edrixs/edrixs_interactive'' container includes [ipywidgets](https://ipywidgets.readthedocs.io/en/latest/) and [ipympl](https://github.com/matplotlib/jupyter-matplotlib) for interactive computing.
+  and will return a URL that you can enter in a browser on your host machine. The larger ``edrixs/edrixs_interactive`` container includes `ipywidgets <https://ipywidgets.readthedocs.io/en/latest/>`_ and `ipympl <https://github.com/matplotlib/jupyter-matplotlib>`_ for interactive computing.
