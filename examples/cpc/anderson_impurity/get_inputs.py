@@ -11,7 +11,7 @@ def build_dirs():
     for path in ["search_gs", "ed", "xas", "rixs_pp", "rixs_ps"]:
         if os.path.isdir(path):
             shutil.rmtree(path)
-        os.mkdir(path)
+        os.mkdirs(path)
 
 
 def set_config():
