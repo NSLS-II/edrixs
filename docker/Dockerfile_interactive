@@ -7,9 +7,15 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
     && curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - \
     && apt install -y git \
     && apt install -y nodejs \
-    && pip install ipympl \
-    && jupyter labextension install @jupyter-widgets/jupyterlab-manager \
-    && jupyter labextension install jupyter-matplotlib
+    && pip install ipympl==0.5.* \
+    # Also activate ipywidgets extension for JupyterLab
+    # Check this URL for most recent compatibilities
+    # https://github.com/jupyter-widgets/ipywidgets/tree/master/packages/jupyterlab-manager
+    && jupyter labextension install @jupyter-widgets/jupyterlab-manager@^2.0.0 --no-build \
+    && jupyter labextension install @bokeh/jupyter_bokeh@^2.0.0 --no-build \
+    && jupyter labextension install jupyter-matplotlib@^0.7.2 --no-build \
+    && jupyter lab build -y \
+    && jupyter lab clean -y
 
     # Get edrixs
 RUN git clone https://github.com/NSLS-II/edrixs.git \
