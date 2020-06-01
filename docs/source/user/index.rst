@@ -15,3 +15,4 @@ edrixs User Guide
    usedocker
    quickstart
    basics
+   pythontips
