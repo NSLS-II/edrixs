@@ -45,7 +45,7 @@ A brute force option to look at a variable deep within the code is to use a debu
      python3 -m pdb myscript.py
 
 Use ``import pdb; pdb.set_trace()`` to set the place where you want to enter the
-debugger. See `here <docs.python.org/3/library/pdb.html>`_ for more details.
+debugger. See `here <https://docs.python.org/3/library/pdb.html>`_ for more details.
 
 If you are feeling even braver, you can browse the Fortran code which does the
 heavyweight computation. Either in the source edrixs directory or via the online
