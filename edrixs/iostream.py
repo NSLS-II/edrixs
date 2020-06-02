@@ -80,16 +80,16 @@ def write_tensor_4(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
     for i in range(n1):
         for j in range(n2):
             for k in range(n3):
-                for l in range(n4):
-                    if only_nonzeros and abs(tensor[i, j, k, l]) < tol:
+                for m in range(n4):
+                    if only_nonzeros and abs(tensor[i, j, k, m]) < tol:
                         continue
                     if is_cmplx:
                         fmt_string = (fmt_int + space) * 4 + (fmt_float + space) * 2 + '\n'
-                        f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1,
-                                tensor[i, j, k, l].real, tensor[i, j, k, l].imag))
+                        f.write(fmt_string.format(i + 1, j + 1, k + 1, m + 1,
+                                tensor[i, j, k, m].real, tensor[i, j, k, m].imag))
                     else:
                         fmt_string = (fmt_int + space) * 4 + fmt_float + space + '\n'
-                        f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, tensor[i, j, k, l]))
+                        f.write(fmt_string.format(i + 1, j + 1, k + 1, m + 1, tensor[i, j, k, m]))
     f.close()
 
 
