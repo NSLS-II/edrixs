@@ -1,19 +1,21 @@
 #!/usr/bin/env python
+# usage: python run_ed.py
 
 import numpy as np
 import scipy
 import edrixs
 
-def do_ed():    
+
+def do_ed():
     """
     An example showing how to do exact diagonalization of a many-body Hamiltonian
 
-    .. math::  
+    .. math::
 
         \\hat{H}=\\sum_{\\alpha,\\beta}E_{\\alpha,\\beta}\\hat{f}^{\\dagger}_{\\alpha}
         \\hat{f}_{\\beta} + \\sum_{\\alpha,\\beta,\\gamma,\\delta}
         U_{\\alpha,\\beta,\\gamma,\\delta}\\hat{f}^{\\dagger}_{\\alpha}\\hat{f}^{\\dagger}_{\\beta}
-        \\hat{f}_{\\gamma}\\hat{f}_{\\delta}    
+        \\hat{f}_{\\gamma}\\hat{f}_{\\delta}
 
     based on the second quantization language, where :math:`E_{\\alpha,\\beta}` is the matrix
     for two-fermion terms and :math:`U_{\\alpha,\\beta,\\gamma,\\delta}` is the Coulomb
@@ -34,7 +36,7 @@ def do_ed():
     # Hubbard U and Hund's coupling J in the form of Kanamori Coulomb interaction
     U, J = 4, 1
     # Hubbard Ud and Hund's coupling JH in the form of Slater Coulomb interaction
-    Ud, JH = edrixs.UJ_to_UdJH(4, 1)
+    Ud, JH = edrixs.UJ_to_UdJH(U, J)
     # Slater integrals
     F0, F2, F4 = edrixs.UdJH_to_F0F2F4(Ud, JH)
     # Two fermion terms: spin-orbital coupling (SOC)
@@ -44,14 +46,14 @@ def do_ed():
     # The 4-rank tensor is in the complex spherical Harmonics basis
     umat = edrixs.get_umat_slater('t2g', F0, F2, F4)
     # Fock basis in the complex spherical Harmonics basis with the orbital ordering:
-    # |-1,up>, |-1,dn>, |0,up>, |0,dn>, |+1,up>, |+1,dn> 
+    # |-1,up>, |-1,dn>, |0,up>, |0,dn>, |+1,up>, |+1,dn>
     # basis: 2d list of integers with 1 or 0, the shape is (15, 6) in this case
     # where, 15=6*5/2 is the total number of Fock basis and 6 is the total number of
     # single-particle orbitals
     basis = edrixs.get_fock_bin_by_N(norb, noccu)
 
     # quantum number of orbital angular momentum for t2g: ll=1
-    ll=1
+    ll = 1
     # Matrices of lx,ly,lz,sx,sy,sz,jx,jy,jz in the single-particle basis
     # lx: l_orb[0], ly: l_orb[1], lz: l_orb[2]
     l_orb = edrixs.get_orb_momentum(ll, True)
@@ -63,10 +65,10 @@ def do_ed():
     # very small Zeeman splitting along z-direction
     emat_zeeman = (l_orb[2] + s_spin[2]) * 1e-10
 
-    # many-body operators of L^2, Lz 
+    # many-body operators of L^2, Lz
     Lxyz = edrixs.build_opers(2, l_orb, basis)
     L2 = np.dot(Lxyz[0], Lxyz[0]) + np.dot(Lxyz[1], Lxyz[1]) + np.dot(Lxyz[2], Lxyz[2])
-    Lz = Lxyz[2]  
+    Lz = Lxyz[2]
     # many-body operators of S^2, Sz
     Sxyz = edrixs.build_opers(2, s_spin, basis)
     S2 = np.dot(Sxyz[0], Sxyz[0]) + np.dot(Sxyz[1], Sxyz[1]) + np.dot(Sxyz[2], Sxyz[2])
@@ -99,7 +101,7 @@ def do_ed():
     # Build many-body operator for four-fermion terms in the Fock basis
     # H has the dimension of 15*15
     H_U = edrixs.build_opers(4, umat, basis)
-    # Build many-body operator for two-fermion terms in the Fock basis 
+    # Build many-body operator for two-fermion terms in the Fock basis
     H_soc = edrixs.build_opers(2, emat_soc, basis)
     H_zeeman = edrixs.build_opers(2, emat_zeeman, basis)
 
@@ -113,7 +115,7 @@ def do_ed():
     # print out eigenval
     edrixs.write_tensor(eigenval, "eigenval_nosoc.dat")
     # print out the non-zeros of coefficients of wave function by one by
-    # By default, write_tensor print row after row, so we print out the transpose 
+    # By default, write_tensor print row after row, so we print out the transpose
     # of eigenvec, so for example, one line of " 1 3 0.5 0.5" is the 3rd coefficient
     # 0.5+0.5i of the 1st eigenvector
     edrixs.write_tensor(eigenvec.T, "eigenvec_nosoc.dat", only_nonzeros=True)
@@ -129,7 +131,7 @@ def do_ed():
     # get the expectation values for nd
     nd_expt = np.array([edrixs.cb_op(i, eigenvec).diagonal().real for i in nd_manybody_oper])
     edrixs.write_tensor(nd_expt.T, "nd_nosoc.dat")
- 
+
     # case 2: with SOC
     H = H_U + H_soc + H_zeeman
     eigenval, eigenvec = scipy.linalg.eigh(H)
@@ -148,7 +150,7 @@ def do_ed():
     # get the expectation values for nd
     nd_expt = np.array([edrixs.cb_op(i, eigenvec).diagonal().real for i in nd_manybody_oper])
     edrixs.write_tensor(nd_expt.T, "nd_withsoc.dat")
-    
-    
+
+
 if __name__ == "__main__":
     do_ed()
