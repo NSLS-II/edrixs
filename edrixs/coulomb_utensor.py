@@ -691,8 +691,8 @@ def get_umat_slater_3shells(shell_name, *args):
     for i in range(v1_norb + v3_norb):
         for j in range(v1_norb + v3_norb):
             for k in range(v1_norb + v3_norb):
-                for l in range(v1_norb + v3_norb):
-                    umat[aa[i], aa[j], aa[k], aa[l]] += umat_tmp[i, j, k, l]
+                for m in range(v1_norb + v3_norb):
+                    umat[aa[i], aa[j], aa[k], aa[m]] += umat_tmp[i, j, k, m]
 
     # v2-v3
     case = v2_name + v3_name
@@ -704,8 +704,8 @@ def get_umat_slater_3shells(shell_name, *args):
     for i in range(v2_norb + v3_norb):
         for j in range(v2_norb + v3_norb):
             for k in range(v2_norb + v3_norb):
-                for l in range(v2_norb + v3_norb):
-                    umat[aa[i], aa[j], aa[k], aa[l]] += umat_tmp[i, j, k, l]
+                for m in range(v2_norb + v3_norb):
+                    umat[aa[i], aa[j], aa[k], aa[m]] += umat_tmp[i, j, k, m]
 
     return umat
 
