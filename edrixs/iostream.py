@@ -104,18 +104,18 @@ def write_tensor_5(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
     for i in range(n1):
         for j in range(n2):
             for k in range(n3):
-                for l in range(n4):
+                for r in range(n4):
                     for m in range(n5):
-                        if only_nonzeros and abs(tensor[i, j, k, l, m]) < tol:
+                        if only_nonzeros and abs(tensor[i, j, k, r, m]) < tol:
                             continue
                         if is_cmplx:
                             fmt_string = (fmt_int + space) * 5 + (fmt_float + space) * 2 + '\n'
-                            f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, m + 1,
-                                    tensor[i, j, k, l, m].real, tensor[i, j, k, l, m].imag))
+                            f.write(fmt_string.format(i + 1, j + 1, k + 1, r + 1, m + 1,
+                                    tensor[i, j, k, r, m].real, tensor[i, j, k, r, m].imag))
                         else:
                             fmt_string = (fmt_int + space) * 5 + fmt_float + space + '\n'
-                            f.write(fmt_string.format(i + 1, j + 1, k + 1, l + 1, m + 1,
-                                    tensor[i, j, k, l, m]))
+                            f.write(fmt_string.format(i + 1, j + 1, k + 1, r + 1, m + 1,
+                                    tensor[i, j, k, r, m]))
     f.close()
 
 
