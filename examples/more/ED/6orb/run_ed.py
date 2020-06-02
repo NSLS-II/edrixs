@@ -23,7 +23,7 @@ def do_ed():
 
     To build the Hamiltonian or other many-body operators, we need a Fock basis that is defined
     on top of particular single-particle basis. In this example, we do ED on a :math:`t_{2g}`
-    system with the default single-particle basis on complex spherical harmonics (same to :math:`p`
+    system with the default single-particle basis of complex spherical harmonics (same to :math:`p`
     orbital system) and the orbital ordering: |-1,up>, |-1,dn>, |0,up>, |0,dn>, |+1,up>, |+1,dn>.
 
     To get the expectation values of some operators in the many-body states, one should first
@@ -41,7 +41,8 @@ def do_ed():
     F0, F2, F4 = edrixs.UdJH_to_F0F2F4(Ud, JH)
     # Two fermion terms: spin-orbital coupling (SOC)
     # The matrix is in the complex spherical Harmonics basis
-    emat_soc = edrixs.atom_hsoc('t2g', 0.4)
+    soc_zeta = 0.4
+    emat_soc = edrixs.atom_hsoc('t2g', soc_zeta)
     # Four fermion terms: Coulomb interaction
     # The 4-rank tensor is in the complex spherical Harmonics basis
     umat = edrixs.get_umat_slater('t2g', F0, F2, F4)
@@ -52,7 +53,7 @@ def do_ed():
     # single-particle orbitals
     basis = edrixs.get_fock_bin_by_N(norb, noccu)
 
-    # quantum number of orbital angular momentum for t2g: ll=1
+    # quantum number of orbital angular momentum for t2g: l=1
     ll = 1
     # Matrices of lx,ly,lz,sx,sy,sz,jx,jy,jz in the single-particle basis
     # lx: l_orb[0], ly: l_orb[1], lz: l_orb[2]
@@ -98,10 +99,10 @@ def do_ed():
     # Build the many-body operators for nd
     nd_manybody_oper = edrixs.build_opers(2, nd_oper, basis)
 
-    # Build many-body operator for four-fermion terms in the Fock basis
+    # Build many-body Hamiltonian for four-fermion terms in the Fock basis
     # H has the dimension of 15*15
     H_U = edrixs.build_opers(4, umat, basis)
-    # Build many-body operator for two-fermion terms in the Fock basis
+    # Build many-body Hamiltonian for two-fermion terms in the Fock basis
     H_soc = edrixs.build_opers(2, emat_soc, basis)
     H_zeeman = edrixs.build_opers(2, emat_zeeman, basis)
 
