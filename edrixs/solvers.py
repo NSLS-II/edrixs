@@ -1986,9 +1986,9 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     for i in range(v_norb+c_norb):
         for j in range(v_norb+c_norb):
             for k in range(v_norb+c_norb):
-                for l in range(v_norb+c_norb):
-                    umat_i[indx[i], indx[j], indx[k], indx[l]] = umat_tmp_i[i, j, k, l]
-                    umat_n[indx[i], indx[j], indx[k], indx[l]] = umat_tmp_n[i, j, k, l]
+                for m in range(v_norb+c_norb):
+                    umat_i[indx[i], indx[j], indx[k], indx[m]] = umat_tmp_i[i, j, k, m]
+                    umat_n[indx[i], indx[j], indx[k], indx[m]] = umat_tmp_n[i, j, k, m]
     if rank == 0:
         write_umat(umat_i, 'coulomb_i.in')
         write_umat(umat_n, 'coulomb_n.in')
