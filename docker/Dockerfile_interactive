@@ -9,6 +9,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
     && apt install -y nodejs \
     && pip install ipympl==0.5.* \
     # Also activate ipywidgets extension for JupyterLab
+    && jupyter nbextension enable --py widgetsnbextension --sys-prefix \
     # Check this URL for most recent compatibilities
     # https://github.com/jupyter-widgets/ipywidgets/tree/master/packages/jupyterlab-manager
     && jupyter labextension install @jupyter-widgets/jupyterlab-manager@^2.0.0 --no-build \
