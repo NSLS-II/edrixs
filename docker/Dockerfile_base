@@ -43,7 +43,7 @@ RUN apt-get update \
     && cd .. \
     && rm -rf arpack-ng-3.6.3 3.6.3.tar.gz \
     # install python deps
-    && pip install numpy scipy sympy matplotlib sphinx mpi4py jupyter jupyterlab prompt-toolkit==1.0.15 \
+    && pip install numpy scipy sympy matplotlib sphinx mpi4py jupyter jupyterlab==2.1.3 prompt-toolkit==1.0.15 \
     # set env
     && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc  \
     && echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> /home/rixs/.bashrc
