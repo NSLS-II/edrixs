@@ -56,9 +56,9 @@ if __name__ == "__main__":
         for i in range(12):
             for j in range(12):
                 for k in range(12):
-                    for l in range(12):
+                    for ll in range(12):
                         umat_n[m, indx[m, i], indx[m, j], indx[m, k],
-                               indx[m, l]] += umat_t2gp_n[i, j, k, l]
+                               indx[m, ll]] += umat_t2gp_n[i, j, k, ll]
 
     emat_i = np.zeros((norbs, norbs), dtype=np.complex128)
     emat_n = np.zeros((2, norbs, norbs), dtype=np.complex128)

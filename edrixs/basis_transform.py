@@ -449,7 +449,7 @@ def transform_utensor(umat, tmat):
     a1, a2, a3, a4 = np.nonzero(abs(umat) > 1E-16)
     nonzero = np.stack((a1, a2, a3, a4), axis=-1)
 
-    for ii, jj, kk, ll in nonzero:
+    for ii, jj, kk, mm in nonzero:
         for i in range(n):
             if abs(tmat[ii, i]) < 1E-16:
                 continue
@@ -462,12 +462,12 @@ def transform_utensor(umat, tmat):
                             if abs(tmat[kk, k]) < 1E-16:
                                 continue
                             else:
-                                for l in range(n):
-                                    umat_new[i, j, k, l] += (np.conj(tmat[ii, i]) *
+                                for m in range(n):
+                                    umat_new[i, j, k, m] += (np.conj(tmat[ii, i]) *
                                                              np.conj(tmat[jj, j]) *
-                                                             umat[ii, jj, kk, ll] *
+                                                             umat[ii, jj, kk, mm] *
                                                              tmat[kk, k] *
-                                                             tmat[ll, l])
+                                                             tmat[mm, m])
 
     return umat_new
 

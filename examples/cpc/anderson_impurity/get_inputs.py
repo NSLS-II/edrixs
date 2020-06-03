@@ -81,9 +81,9 @@ def get_hopping_coulomb():
     for i in range(10):
         for j in range(10):
             for k in range(10):
-                for l in range(10):
-                    umat_n[id2[i], id2[j], id2[k], id2[l]
-                           ] = umat_tmp[id1[i], id1[j], id1[k], id1[l]]
+                for ll in range(10):
+                    umat_n[id2[i], id2[j], id2[k], id2[ll]
+                           ] = umat_tmp[id1[i], id1[j], id1[k], id1[ll]]
 
     emat_i = np.zeros((norbs, norbs), dtype=np.complex128)
     emat_n = np.zeros((norbs, norbs), dtype=np.complex128)

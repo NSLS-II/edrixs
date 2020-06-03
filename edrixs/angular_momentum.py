@@ -7,18 +7,18 @@ import numpy as np
 from .basis_transform import cb_op, tmat_r2c
 
 
-def get_ladd(l, ispin=False):
+def get_ladd(ll, ispin=False):
     """
     Get the matrix form of the raising operator :math:`l^+` in the
     complex spherical harmonics basis
 
     .. math::
 
-        l^+|l,m> = \\sqrt{(l-m)(l+m+1)} |l,m+1>
+        l^+|ll,m> = \\sqrt{(ll-m)(ll+m+1)} |ll,m+1>
 
     Parameters
     ----------
-    l: int
+    ll: int
         Orbital angular momentum number.
     ispin: logical
         Whether including spin or not (default: False).
@@ -28,16 +28,16 @@ def get_ladd(l, ispin=False):
     ladd: 2d complex array
         The matrix form of :math:`l^+`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2ll+1) \\times 2(2ll+1)`,
 
-        otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
+        otherwise, it will be :math:`(2ll+1) \\times (2ll+1)`.
     """
 
-    norbs = 2 * l + 1
+    norbs = 2 * ll + 1
     ladd = np.zeros((norbs, norbs), dtype=np.complex128)
     cone = np.complex128(1.0 + 0.0j)
-    for m in range(-l, l):
-        ladd[l + m + 1, l + m] = np.sqrt((l - m) * (l + m + 1.0) * cone)
+    for m in range(-ll, ll):
+        ladd[ll + m + 1, ll + m] = np.sqrt((ll - m) * (ll + m + 1.0) * cone)
     if ispin:
         ladd_spin = np.zeros((2 * norbs, 2 * norbs), dtype=np.complex128)
         ladd_spin[0:2 * norbs:2, 0:2 * norbs:2] = ladd
@@ -47,18 +47,18 @@ def get_ladd(l, ispin=False):
         return ladd
 
 
-def get_lminus(l, ispin=False):
+def get_lminus(ll, ispin=False):
     """
     Get the matrix form of the lowering operator :math:`l^-` in the
     complex spherical harmonics basis
 
     .. math::
 
-        l^-|l,m> = \\sqrt{(l+m)(l-m+1)} |l,m-1>
+        l^-|ll,m> = \\sqrt{(ll+m)(ll-m+1)} |ll,m-1>
 
     Parameters
     ----------
-    l: int
+    ll: int
         Orbital angular momentum number.
     ispin: logical
         Whether including spin or not (default: False).
@@ -68,16 +68,16 @@ def get_lminus(l, ispin=False):
     lminus: 2d complex array
         The matrix form of :math:`l^-`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2ll+1) \\times 2(2ll+1)`,
 
-        otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
+        otherwise, it will be :math:`(2ll+1) \\times (2ll+1)`.
     """
 
-    norbs = 2 * l + 1
+    norbs = 2 * ll + 1
     lminus = np.zeros((norbs, norbs), dtype=np.complex128)
     cone = np.complex128(1.0 + 0.0j)
-    for m in range(-l + 1, l + 1):
-        lminus[l + m - 1, l + m] = np.sqrt((l + m) * (l - m + 1.0) * cone)
+    for m in range(-ll + 1, ll + 1):
+        lminus[ll + m - 1, ll + m] = np.sqrt((ll + m) * (ll - m + 1.0) * cone)
     if ispin:
         lminus_spin = np.zeros((2 * norbs, 2 * norbs), dtype=np.complex128)
         lminus_spin[0:2 * norbs:2, 0:2 * norbs:2] = lminus
@@ -87,7 +87,7 @@ def get_lminus(l, ispin=False):
         return lminus
 
 
-def get_lx(l, ispin=False):
+def get_lx(ll, ispin=False):
     """
     Get the matrix form of the orbital angular momentum
     operator :math:`l_x` in the complex spherical harmonics basis,
@@ -98,7 +98,7 @@ def get_lx(l, ispin=False):
 
     Parameters
     ----------
-    l: int
+    ll: int
         Orbital angular momentum number.
     ispin: logical
         Whether including spin or not (default: False).
@@ -108,18 +108,18 @@ def get_lx(l, ispin=False):
     lx: 2d complex array
         The matrix form of :math:`l_x`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2ll+1) \\times 2(2ll+1)`,
 
-        otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
+        otherwise, it will be :math:`(2ll+1) \\times (2ll+1)`.
     """
 
     if ispin:
-        return (get_ladd(l, True) + get_lminus(l, True)) / 2.0
+        return (get_ladd(ll, True) + get_lminus(ll, True)) / 2.0
     else:
-        return (get_ladd(l) + get_lminus(l)) / 2.0
+        return (get_ladd(ll) + get_lminus(ll)) / 2.0
 
 
-def get_ly(l, ispin=False):
+def get_ly(ll, ispin=False):
     """
     Get the matrix form of the orbital angular momentum
     operator :math:`l_y` in the complex spherical harmonics basis,
@@ -130,7 +130,7 @@ def get_ly(l, ispin=False):
 
     Parameters
     ----------
-    l: int
+    ll: int
         Orbital angular momentum number.
     ispin: logical
         Whether including spin or not (default: False).
@@ -140,25 +140,25 @@ def get_ly(l, ispin=False):
     ly: 2d complex array
         The matrix form of :math:`l_y`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2ll+1) \\times 2(2ll+1)`,
 
-        otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
+        otherwise, it will be :math:`(2ll+1) \\times (2ll+1)`.
     """
 
     if ispin:
-        return (get_ladd(l, True) - get_lminus(l, True)) / 2.0 * -1j
+        return (get_ladd(ll, True) - get_lminus(ll, True)) / 2.0 * -1j
     else:
-        return (get_ladd(l) - get_lminus(l)) / 2.0 * -1j
+        return (get_ladd(ll) - get_lminus(ll)) / 2.0 * -1j
 
 
-def get_lz(l, ispin=False):
+def get_lz(ll, ispin=False):
     """
     Get the matrix form of the orbital angular momentum
     operator :math:`l_z` in the complex spherical harmonics basis.
 
     Parameters
     ----------
-    l: int
+    ll: int
         Orbital angular momentum number.
     ispin: logical
         Whether including spin or not (default: False).
@@ -168,14 +168,14 @@ def get_lz(l, ispin=False):
     lz: 2d complex array
         The matrix form of :math:`l_z`.
 
-        If ispin=True, the dimension will be :math:`2(2l+1) \\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`2(2ll+1) \\times 2(2ll+1)`,
 
-        otherwise, it will be :math:`(2l+1) \\times (2l+1)`.
+        otherwise, it will be :math:`(2ll+1) \\times (2ll+1)`.
     """
-    norbs = 2 * l + 1
+    norbs = 2 * ll + 1
     lz = np.zeros((norbs, norbs), dtype=np.complex128)
-    for m in range(-l, l + 1):
-        lz[l + m, l + m] = m
+    for m in range(-ll, ll + 1):
+        lz[ll + m, ll + m] = m
     if ispin:
         lz_spin = np.zeros((2 * norbs, 2 * norbs), dtype=np.complex128)
         lz_spin[0:2 * norbs:2, 0:2 * norbs:2] = lz
@@ -185,14 +185,14 @@ def get_lz(l, ispin=False):
         return lz
 
 
-def get_orb_momentum(l, ispin=False):
+def get_orb_momentum(ll, ispin=False):
     """
     Get the matrix form of the orbital angular momentum
     operator :math:`l_x, l_y, l_z` in the complex spherical harmonics basis.
 
     Parameters
     ----------
-    l: int
+    ll: int
         Orbital angular momentum number.
     ispin: logical
         Whether including spin or not (default: False).
@@ -208,18 +208,18 @@ def get_orb_momentum(l, ispin=False):
 
         - res[2]: :math:`l_z`
 
-        If ispin=True, the dimension will be :math:`3 \\times 2(2l+1) \\times 2(2l+1)`,
+        If ispin=True, the dimension will be :math:`3 \\times 2(2ll+1) \\times 2(2ll+1)`,
 
-        otherwise, it will be :math:`3 \\times (2l+1) \\times (2l+1)`.
+        otherwise, it will be :math:`3 \\times (2ll+1) \\times (2ll+1)`.
     """
-    norbs = 2 * l + 1
+    norbs = 2 * ll + 1
     if ispin:
         res = np.zeros((3, 2*norbs, 2*norbs), dtype=np.complex128)
     else:
         res = np.zeros((3, norbs, norbs), dtype=np.complex128)
-    res[0] = get_lx(l, ispin)
-    res[1] = get_ly(l, ispin)
-    res[2] = get_lz(l, ispin)
+    res[0] = get_lx(ll, ispin)
+    res[1] = get_ly(ll, ispin)
+    res[2] = get_lz(ll, ispin)
 
     return res
 
@@ -250,101 +250,101 @@ def get_pauli():
     return sigma
 
 
-def get_sx(l):
+def get_sx(ll):
     """
     Get the matrix form of spin angular momentum operator :math:`s_x` in the
     complex spherical harmonics basis.
 
     Parameters
     ----------
-    l: int
+    ll: int
         Quantum number of orbital angular momentum.
 
     Returns
     -------
     sx: 2d complex array.
         Matrix form of :math:`s_x`, the dimension
-        is :math:`2(2l+1) \\times 2(2l+1)`,
+        is :math:`2(2ll+1) \\times 2(2ll+1)`,
 
-        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
-        \\|+l, up\\>, \\|+l,down\\>.
+        Orbital order is: \\|-ll,up\\>, \\|-ll,down\\>, ...,
+        \\|+ll, up\\>, \\|+ll,down\\>.
     """
 
-    norbs = 2 * (2 * l + 1)
+    norbs = 2 * (2 * ll + 1)
     sx = np.zeros((norbs, norbs), dtype=np.complex128)
     sigma = get_pauli()
-    for i in range(2 * l + 1):
+    for i in range(2 * ll + 1):
         sx[2 * i:2 * i + 2, 2 * i:2 * i + 2] = sigma[0, :, :] / 2.0
 
     return sx
 
 
-def get_sy(l):
+def get_sy(ll):
     """
     Get the matrix form of spin angular momentum operator :math:`s_y` in the
     complex spherical harmonics basis.
 
     Parameters
     ----------
-    l: int
+    ll: int
         Quantum number of orbital angular momentum.
 
     Returns
     -------
     sy: 2d complex array.
         Matrix form of :math:`s_y`, the dimension
-        is :math:`2(2l+1) \\times 2(2l+1)`, spin order is:
+        is :math:`2(2ll+1) \\times 2(2ll+1)`, spin order is:
 
-        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
-        \\|+l, up\\>, \\|+l,down\\>
+        Orbital order is: \\|-ll,up\\>, \\|-ll,down\\>, ...,
+        \\|+ll, up\\>, \\|+ll,down\\>
     """
 
-    norbs = 2 * (2 * l + 1)
+    norbs = 2 * (2 * ll + 1)
     sy = np.zeros((norbs, norbs), dtype=np.complex128)
     sigma = get_pauli()
-    for i in range(2 * l + 1):
+    for i in range(2 * ll + 1):
         sy[2 * i:2 * i + 2, 2 * i:2 * i + 2] = sigma[1, :, :] / 2.0
 
     return sy
 
 
-def get_sz(l):
+def get_sz(ll):
     """
     Get the matrix form of spin angular momentum operator :math:`s_z` in the
     complex spherical harmonics basis.
 
     Parameters
     ----------
-    l: int
+    ll: int
         Quantum number of orbital angular momentum.
 
     Returns
     -------
     sz: 2d complex array.
         Matrix form of :math:`s_z`, the dimension
-        is :math:`2(2l+1) \\times 2(2l+1)`.
+        is :math:`2(2ll+1) \\times 2(2ll+1)`.
 
-        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
-        \\|+l, up\\>, \\|+l,down\\>
+        Orbital order is: \\|-ll,up\\>, \\|-ll,down\\>, ...,
+        \\|+ll, up\\>, \\|+ll,down\\>
     """
 
-    norbs = 2 * (2 * l + 1)
+    norbs = 2 * (2 * ll + 1)
     sz = np.zeros((norbs, norbs), dtype=np.complex128)
     sigma = get_pauli()
-    for i in range(2 * l + 1):
+    for i in range(2 * ll + 1):
         sz[2 * i:2 * i + 2, 2 * i:2 * i + 2] = sigma[2, :, :] / 2.0
 
     return sz
 
 
-def get_spin_momentum(l):
+def get_spin_momentum(ll):
     """
     Get the matrix form of the spin angular momentum
     operator :math:`s_x, s_y, s_z` in the complex spherical harmonics basis.
 
     Parameters
     ----------
-    l: int
+    ll: int
         Orbital angular momentum number.
 
     Returns
@@ -358,16 +358,16 @@ def get_spin_momentum(l):
 
         - res[2]: :math:`s_z`
 
-        the dimension is :math:`3 \\times 2(2l+1) \\times 2(2l+1)`,
+        the dimension is :math:`3 \\times 2(2ll+1) \\times 2(2ll+1)`,
 
-        Orbital order is: \\|-l,up\\>, \\|-l,down\\>, ...,
-        \\|+l, up\\>, \\|+l,down\\>
+        Orbital order is: \\|-ll,up\\>, \\|-ll,down\\>, ...,
+        \\|+ll, up\\>, \\|+ll,down\\>
     """
-    norbs = 2 * (2 * l + 1)
+    norbs = 2 * (2 * ll + 1)
     res = np.zeros((3, norbs, norbs), dtype=np.complex128)
-    res[0] = get_sx(l)
-    res[1] = get_sy(l)
-    res[2] = get_sz(l)
+    res[0] = get_sx(ll)
+    res[1] = get_sy(ll)
+    res[2] = get_sz(ll)
 
     return res
 
