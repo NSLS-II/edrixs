@@ -12,4 +12,3 @@ edrixs Documentation
    user/index
    reference/index
    release-history
-
