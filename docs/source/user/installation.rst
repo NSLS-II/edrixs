@@ -32,7 +32,7 @@ Install edrixs by::
 
 where, `lightsource2-tag <https://anaconda.org/lightsource2-tag/>`_ is an Anaconda package repository maintained by `DAMA <https://github.com/NSLS-II/lightsource2-recipes/>`_ at NSLS-II at  Brookhaven National Laboratory. We endeavor to keep these up-to-date with our `tagged releases <https://github.com/NSLS-II/edrixs/releases>`_, but note that these builds will usually not correspond to the latest version of edrixs, which is available in the `master branch of edrixs <https://github.com/NSLS-II/edrixs>`_.
 
-Build from source 
+Build from source
 =================
 We will show how to build edrixs from source on Ubuntu Linux 18.04 and macOS Mojave (OSX 10.14) as examples.
 We will use gcc, gfortran, openmpi and OpenBLAS in these examples.
@@ -60,7 +60,7 @@ Install python libraries::
     sudo pip install numpy scipy sympy matplotlib
 
 openmpi, OpenBLAS, ARPACK can be installed by ``apt-get``, but their versions are old and may not work properly.
-However, they can also be compiled from source easily. In the following, we will show both ways, but we always recommend to build newer ones from source. 
+However, they can also be compiled from source easily. In the following, we will show both ways, but we always recommend to build newer ones from source.
 
 openmpi can be installed by::
 
@@ -68,10 +68,10 @@ openmpi can be installed by::
 
 or from newer version of source, for example v3.1.4::
 
-    wget https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.4.tar.bz2 
+    wget https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.4.tar.bz2
     tar -xjf openmpi-3.1.4.tar.bz2
-    cd openmpi-3.1.4 
-    ./configure CC=gcc CXX=g++ FC=gfortran 
+    cd openmpi-3.1.4
+    ./configure CC=gcc CXX=g++ FC=gfortran
     make
     sudo make install
 
@@ -79,15 +79,15 @@ the compiling process will take a while.
 
 OpenBLAS can be installed by::
 
-    sudo apt-get install libopenblas-dev 
+    sudo apt-get install libopenblas-dev
 
 or from a newer version of source::
 
-    wget https://github.com/xianyi/OpenBLAS/archive/v0.3.6.tar.gz  
+    wget https://github.com/xianyi/OpenBLAS/archive/v0.3.6.tar.gz
     tar -xzf v0.3.6.tar.gz
     cd OpenBLAS-0.3.6
-    make CC=gcc FC=gfortran 
-    sudo make PREFIX=/usr/local install 
+    make CC=gcc FC=gfortran
+    sudo make PREFIX=/usr/local install
 
 ARPACK can be installed by::
 
@@ -95,12 +95,12 @@ ARPACK can be installed by::
 
 or from a newer version of source::
 
-    wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz  
+    wget https://github.com/opencollab/arpack-ng/archive/3.6.3.tar.gz
     tar -xzf 3.6.3.tar.gz
     cd arpack-ng-3.6.3
     ./bootstrap
-    ./configure --enable-mpi --with-blas="-L/usr/local/lib/ -lopenblas" FC=gfortran F77=gfortran MPIFC=mpif90 MPIF77=mpif90 
-    make 
+    ./configure --enable-mpi --with-blas="-L/usr/local/lib/ -lopenblas" FC=gfortran F77=gfortran MPIFC=mpif90 MPIF77=mpif90
+    make
     sudo make install
 
 mpi4py can be installed by::
@@ -146,8 +146,8 @@ Now, we are ready to build edrixs::
 
     git clone https://github.com/NSLS-II/edrixs.git
     cd edrixs
-    make -C src F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack" 
-    make -C src install   
+    make -C src F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack"
+    make -C src install
     python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/usr/local/lib
     sudo pip install .
 
@@ -184,7 +184,7 @@ Install gcc8, arpack, openblas and openmpi::
     sudo port -v install gcc8
     sudo port select gcc mp-gcc8
     sudo port -v install openmpi-default +gcc8
-    sudo port -v install openblas +gcc8 
+    sudo port -v install openblas +gcc8
     sudo port -v install arpack +openblas +openmpi
     sudo port select --set mpi openmpi-mp-fortran
 
@@ -227,13 +227,13 @@ Please be sure to check whether the MPI paths of mpi4py are correct by::
     python
     >>> import mpi4py
     >>> mpi4py.get_config()
-    {'mpicc': '/opt/local/bin/mpicc'} 
+    {'mpicc': '/opt/local/bin/mpicc'}
 
 Now, we are ready to build edrixs::
 
     git clone https://github.com/NSLS-II/edrixs.git
     cd edrixs
-    make -C src F90=mpif90 LIBS="-L/opt/local/lib -lopenblas -lparpack -larpack" 
+    make -C src F90=mpif90 LIBS="-L/opt/local/lib -lopenblas -lparpack -larpack"
     make -C src install
     python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/opt/local/lib
     sudo pip install .
@@ -264,14 +264,14 @@ Add following line to ``~/.bash_profile``::
     export PATH="/usr/local/bin:$PATH"
 
 Install gcc9::
- 
+
     brew install gcc@9
 
 Install openblas and arpack::
 
-    brew install openblas 
+    brew install openblas
     brew install arpack
-   
+
 openmpi has been automatically installed when installing arpack.
 
 Install python3.7::
@@ -302,9 +302,20 @@ We will build numpy from source with gcc::
     python setup.py build
     pip install .
 
-Install scipy, sympy, matplotlib::
+You might need to do  ``brew install wget`` if it is not already installed.
+If you have BLIS or MKL installed, you will need to tell numpy to compile with
+openblas. Create a file in the numpy directory called site.cfg and put the
+following text in it::
 
-    pip install scipy, sympy, matplotlib
+    [openblas]
+    libraries = openblas
+    library_dirs = /usr/local/Cellar/openblas/0.3.9/lib
+    include_dirs = /usr/local/Cellar/openblas/0.3.9/include
+    runtime_library_dirs = /usr/local/Cellar/openblas/0.3.9/lib
+
+Now we are ready to install scipy, sympy, matplotlib::
+
+    pip install scipy sympy matplotlib
     export MPICC=/usr/local/bin/mpicc
     pip install --no-cache-dir mpi4py
 
@@ -313,13 +324,13 @@ Please be sure to check whether the MPI paths of mpi4py are correct by::
     python
     >>> import mpi4py
     >>> mpi4py.get_config()
-    {'mpicc': '/usr/local/bin/mpicc'} 
+    {'mpicc': '/usr/local/bin/mpicc'}
 
 Now, we are ready to build edrixs::
 
     git clone https://github.com/NSLS-II/edrixs.git
     cd edrixs
-    make -C src F90=mpif90 LIBS="-L/usr/local/opt/openblas/lib -lopenblas -L/usr/local/lib -lparpack -larpack" 
+    make -C src F90=mpif90 LIBS="-L/usr/local/opt/openblas/lib -lopenblas -L/usr/local/lib -lparpack -larpack"
     make -C src install
     python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/usr/local/lib:/usr/local/opt/openblas/lib
     pip install .
@@ -339,6 +350,6 @@ if no errors, the installation is successful.
 
 All done, enjoy!
 
-.. [#] To change your default python you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias python='/usr/local/bin/python3'`` where the path is determined by calling ``which python3`` from your terminal. 
+.. [#] To change your default python you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias python='/usr/local/bin/python3'`` where the path is determined by calling ``which python3`` from your terminal.
 
-.. [#] To change your default pip you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias pip='/usr/bin/pip3'`` where the path is determined by calling ``which pip3`` from your terminal. 
+.. [#] To change your default pip you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias pip='/usr/bin/pip3'`` where the path is determined by calling ``which pip3`` from your terminal.
