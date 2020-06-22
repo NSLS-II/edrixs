@@ -10,5 +10,6 @@ edrixs Documentation
    :maxdepth: 2
 
    user/index
+   auto_examples/index
    reference/index
    release-history

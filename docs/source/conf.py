@@ -206,5 +206,6 @@ intersphinx_mapping = {
 # sphinx gallery folders
 sphinx_gallery_conf = {
      'examples_dirs': '../../examples/sphinx/',   # path to your example scripts
+     'filename_pattern': '/examples_',
      'gallery_dirs': 'auto_examples',  # path to save gallery generated output
 }
