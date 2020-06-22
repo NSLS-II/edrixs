@@ -1,3 +1,3 @@
 [flake8]
-exclude = .git,__pycache__,build,dist,versioneer.py,edrixs/_version.py,edrixs/__init__.py,docs/source/conf.py
+exclude = .git,__pycache__,build,dist,versioneer.py,edrixs/_version.py,edrixs/__init__.py,docs/source/conf.py,examples/
 max-line-length = 100
