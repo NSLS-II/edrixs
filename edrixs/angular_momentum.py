@@ -690,3 +690,38 @@ def cf_trigonal_t2g(delta):
     cf[:, :] = cb_op(cf, tmat_r2c('t2g', True))
 
     return cf
+
+
+def cf_tetragonal_t2g(ten_dq, d1, d3):
+    """
+    Given 10Dq, d1, d3, return tetragonal crystal field matrix for t2g orbitals
+    in the complex harmonics basis.
+
+    Parameters
+    ----------
+    ten_dq: float scalar
+        Parameter used to label cubic crystal splitting.
+    d1: float scalar
+        Paramter used to label tetragonal splitting.
+    d3: float scalar
+        Paramter used to label tetragonal splitting.
+
+    Returns
+    -------
+    cf: 2d complex array, shape=(6, 6)
+        The matrix form of crystal field Hamiltonian in complex harmonics basis.
+    """
+    dt = (3.0 * d3 - 4.0 * d1) / 35
+    ds = (d3 + d1) / 7.0
+    dq = ten_dq / 10.0
+
+    tmp = np.zeros((3, 3), dtype=np.complex)
+    tmp[0, 0] = -4 * dq - 1 * ds + 4 * dt  # dxz
+    tmp[1, 1] = -4 * dq - 1 * ds + 4 * dt  # dyz
+    tmp[2, 2] = -4 * dq + 2 * ds - 1 * dt  # dxy
+
+    cf = np.zeros((6, 6), dtype=np.complex)
+    cf[0:6:2, 0:6:2] += tmp
+    cf[1:6:2, 1:6:2] += tmp
+    cf[:, :] = cb_op(cf, tmat_r2c('t2g', True))
+    return cf
