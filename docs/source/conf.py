@@ -43,6 +43,7 @@ extensions = [
     'matplotlib.sphinxext.plot_directive',
     'numpydoc',
     'sphinx_copybutton',
+    'sphinx_gallery.gen_gallery',
 ]
 
 # Configuration options for plot_directive. See:
@@ -200,4 +201,11 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable', None),
     'matplotlib': ('https://matplotlib.org', None),
+}
+
+# sphinx gallery folders
+sphinx_gallery_conf = {
+     'examples_dirs': '../../examples/sphinx/',   # path to your example scripts
+     'filename_pattern': '/examples_',
+     'gallery_dirs': 'auto_examples',  # path to save gallery generated output
 }
