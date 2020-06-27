@@ -19,7 +19,7 @@ def cb_op(oper_O, TL, TR=None):
         matrix form of operator :math:`\\hat{O}` in basis :math:`A`.
         For example:
 
-        - oper_O.shape = (3, 10, 10), means 3 operatos with dimension :math:`10 \\times 10`
+        - oper_O.shape = (3, 10, 10), means 3 operators with dimension :math:`10 \\times 10`
 
         - oper_O.shape = (2, 3, 10, 10), means :math:`2 \\times 3=6` operators with
           dimension :math:`10 \\times 10`
