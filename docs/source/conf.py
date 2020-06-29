@@ -203,9 +203,11 @@ intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org', None),
 }
 
+from sphinx_gallery.sorting import FileNameSortKey
 # sphinx gallery folders
 sphinx_gallery_conf = {
      'examples_dirs': '../../examples/sphinx/',   # path to your example scripts
      'filename_pattern': '/example_',
-     'gallery_dirs': 'auto_examples',  # path to save gallery generated output
+     'gallery_dirs': 'auto_examples',  # path to save gallery generated output,
+     'within_subsection_order': FileNameSortKey,
 }
