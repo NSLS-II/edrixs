@@ -9,8 +9,9 @@ This example explains how to implement crystal fields in edrixs.
 import edrixs
 import numpy as np
 import matplotlib.pyplot as plt
-np.set_printoptions(precision=2, suppress=True, linewidth=90)
 import scipy
+
+np.set_printoptions(precision=2, suppress=True, linewidth=90)
 
 ################################################################################
 # Crystal field matrices
@@ -45,13 +46,13 @@ print("{} distict energies".format(len(unique_e)))
 # This makes sense! We see two different energies split by :math:`10D_q=10`. Let
 # us look at the six columns corresponding to the lower energy eigenvalues.
 
-print(v[:,:6].real)
+print(v[:, :6].real)
 
 ################################################################################
 # These are the set of so-called :math:`t_{2g}` orbitals, composed of
 # :math:`Y^2_2, Y^{-2}_2, Y^{1}_2, Y^{-1}_2`. The rest of the eigenvectors
 # (the last four) are
-print(v[:,6:].real)
+print(v[:, 6:].real)
 
 ################################################################################
 # These are the set of so-called :math:`e_{g}` orbitals, composed of
@@ -62,7 +63,7 @@ print(v[:,6:].real)
 # transformation matrix :math:`T` as
 #
 #    .. math::
-#  
+#
 #          \hat{O}^{\prime} = (T)^{\dagger} \hat{O} (T).
 #
 # This is computed as follows
@@ -80,7 +81,7 @@ print(cfmat_rhb.real)
 # Crystal field on an atom
 # ------------------------------------------------------------------------------
 # To simulate the solid state, we need to combine the crystal field with Coulomb
-# interactions. Let us choose an atomic model for Ni. 
+# interactions. Let us choose an atomic model for Ni.
 l = 2
 norb = 10
 noccu = 8
@@ -90,14 +91,16 @@ slater = edrixs.get_atom_data('Ni', '3d', noccu, edge='L3')['slater_i']
 ################################################################################
 # Let us implement a tetragonal crystal field, for which we need to pass
 # :code:`d1` the splitting of :math:`d_{yz}/d_{zx}` and :math:`d_{xy}` and
-# :code:`d3` the splitting of :math:`d_{3z^2-r^2}` and :math:`d_{x^2-y^2}`. 
+# :code:`d3` the splitting of :math:`d_{3z^2-r^2}` and :math:`d_{x^2-y^2}`.
 ten_dq, d1, d3 = 2.5, 0.9, .2
 
 ################################################################################
 # To determine the eigenvalues and eigenvectors we need to transform both our
 # Coulomb matrix and our crystal field matrix into the same basis. See the
 # example on exact diagonalization if needed. In this case, we put this
-# procedure into a function, with the option to scale the Coulomb interactions 
+# procedure into a function, with the option to scale the Coulomb interactions.
+
+
 def diagonlize(scaleU=1):
     umat = edrixs.get_umat_slater('d',
                                   slater[0][1]*scaleU,
@@ -106,15 +109,16 @@ def diagonlize(scaleU=1):
     cfmat = edrixs.angular_momentum.cf_tetragonal_d(ten_dq=ten_dq, d1=d1, d3=d3)
     H = edrixs.build_opers(2, cfmat, basis) + edrixs.build_opers(4, umat, basis)
     e, v = scipy.linalg.eigh(H)
-    e = e - np.min(e) # define ground state as zero energy
+    e = e - np.min(e)  # define ground state as zero energy
     return e, v
+
 
 ################################################################################
 # Let us look what happens when we run the function with the Coulomb
 # interactions switched off and check the degeneracy of the output. Look at this
 # python
 # `string formatting tutorial <https://realpython.com/python-formatted-output/>`_
-# if the code is confusing.    
+# if the code is confusing.
 e, v = diagonlize(scaleU=0)
 e = e.round(decimals=6)
 unique_e = np.unique(e)
@@ -128,9 +132,8 @@ print("{} distict energies".format(len(unique_e)))
 ################################################################################
 # We see 10 distinct energies, which is the number of ways one can arrange
 # two holes among 4 energy levels -- which makes sense as the tetragonal field
-# involves four levels :math:`zx/zy, xy, 3z^2-r^2, x^2-y^2`.
-# 
-# To see what is going on in more detail, we can also calculate the expectation
+# involves four levels :math:`zx/zy, xy, 3z^2-r^2, x^2-y^2`. To see what is going
+# on in more detail, we can also calculate the expectation
 # values of the occupancy number of the orbitals
 # :math:`3z^2-r^2, zx, zy, x^2-y^2, xy`.
 # To create the operator, first write the matrix in the real harmonics basis
@@ -138,7 +141,7 @@ print("{} distict energies".format(len(unique_e)))
 # :math:`|zx,\uparrow>`, :math:`|zx,\downarrow>`, etc.
 # In this basis, they take a simple form: only the diagonal terms have element
 # 1. We therefore make a 3D empty array and assign the diagaonal as 1. Check
-# out the 
+# out the
 # `numpy indexing notes <https://numpy.org/doc/stable/reference/arrays.indexing.html>`_
 # if needed.
 nd_real_harmoic_basis = np.zeros((norb, norb, norb), dtype=np.complex)
@@ -155,7 +158,7 @@ nd_op = edrixs.build_opers(2, nd_complex_harmoic_basis, basis)
 
 ################################################################################
 # We apply the operator and print out as follows. Check the
-# `numpy docs <https://numpy.org/doc/1.18/reference/generated/numpy.reshape.html>`_ 
+# `numpy docs <https://numpy.org/doc/1.18/reference/generated/numpy.reshape.html>`_
 # if the details of how the spin pairs have been added up is not immediately
 # transparent.
 nd_expt = np.array([edrixs.cb_op(nd_vec, v).diagonal().real for nd_vec in nd_op])
