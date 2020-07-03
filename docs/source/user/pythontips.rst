@@ -19,6 +19,20 @@ output by simply redirecting the output to a file::
 
      python myscript.py > myoutput.txt
 
+Python also includes an excellent plotting package 
+`matplotlib <http://www.matplotlib.org>`_, which one can use to make publication
+quality plots.
+
+While our aim is that the huge majority of tasks can be done without modifying
+the underlying code all the python layers of code are easy to modify if you 
+would like to. If you want to modify, say, solvers.py. we would suggest copying
+solvers.py to your working directory under a different name e.g. 
+:code:`my_solvers.py`. Executing :code:`%run my_solvers.py`
+from within your script will then load the functions from the file into your
+namespace. Just be sure to tell the script to load functions from edrixs
+(and not via a relative file import) i.e. :code:`from .soc import atom_hsoc`
+should be :code:`from edrixs.soc import atom_hsoc`.
+
 For more exploratory usage,  `IPython <http://ipython.org>`_ or
 `Jupyter <http://www.jupyter.org>`_
 can be very useful. (See :ref:`edrixsanddocker` for invoking jupyter over docker.)
@@ -49,4 +63,4 @@ debugger. See `here <https://docs.python.org/3/library/pdb.html>`_ for more deta
 
 If you are feeling even braver, you can browse the Fortran code which does the
 heavyweight computation. Either in the source edrixs directory or via the online
-`edrixs repo <http://www.github.com/NSLS-II/edrixs>`_.
+`edrixs repo <http://www.github.com/NSLS-II/edrixs>`_. 
