@@ -56,3 +56,6 @@ Connect to docker python session with Jupyter
     jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 
   and will return a URL that you can enter in a browser on your host machine. The larger ``edrixs/edrixs_interactive`` container includes `ipywidgets <https://ipywidgets.readthedocs.io/en/latest/>`_ and `ipympl <https://github.com/matplotlib/jupyter-matplotlib>`_ for interactive computing.
+  
+  Jupyterlab provides access to a unix terminal, which you can create via File > New > Terminal. We suggest changing the terminal shell type by issuing the command ``bash`` in the terminal.
+  
