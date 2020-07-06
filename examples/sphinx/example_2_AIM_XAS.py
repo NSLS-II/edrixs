@@ -247,15 +247,15 @@ phi = 0.0
 ################################################################################
 # The calculation does not know the energy cost of a core hole or the inverse 
 # core hole lifetime so we need to specify these. Usually this these are though 
-# of as adjustablparameters for comparing theory to experiment. We use this to 
+# of as adjustable parameters for comparing theory to experiment. We use this to 
 # specify the range we want to compute the spectrum over.
 om_shift = 852.7
 ominc_xas = om_shift + np.linspace(-15, 45, 1000)
 gamma_c_stat = 0.48/2
 
 ################################################################################
-# The final broadening is specified in terms of half width at half maxium
-# You can either pass a constant value of an array the same size as
+# The final state broadening is specified in terms of half width at half maxium
+# You can either pass a constant value or an array the same size as
 # :code:`om_shift` with varying values to simulate, for example, different state
 # lifetimes for higher energy states.
 gamma_c = np.full(ominc_xas.shape, 0.48/2)   
@@ -277,7 +277,8 @@ on_which = 'both'
 # The number crunching uses
 # `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_. You can safely ignore 
 # this for most purposes, but see 
-# `Y. L. Wang et al., Computer Physics Communications 243, 151-165 (2019) <https://doi.org/10.1016/j.cpc.2019.04.018>`_ if you would like more details.
+# `Y. L. Wang et al., Computer Physics Communications 243, 151-165 (2019) <https://doi.org/10.1016/j.cpc.2019.04.018>`_ 
+# if you would like more details.
 # The main thing to remember is that you should call this script via::
 #
 #        mpirun -n <number of processors> python example_AIM_XAS.py
@@ -317,7 +318,7 @@ print('Bath occupation = {:.6f}\n'.format(bath_occupation))
 ################################################################################
 # We see that 0.36 electrons move from the O to the Ni in the ground state. 
 # 
-# We can now construct the XAS spectrum edrixs is applying a transition
+# We can now construct the XAS spectrum edrixs by applying a transition
 # operator to create the excitated state. We need to be careful to specify how 
 # many of the low energy states are thermally populated. In this case 
 # :code:`num_gs=3`. This can be determined by inspecting the function output. 
