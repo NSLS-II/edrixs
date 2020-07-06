@@ -6,14 +6,13 @@ Here we calculate the :math:`L`-edge XAS spectrum of an Anderson impurity model.
 This is sometimes also called a charge-transfer multiplet model.
 Everyone's favorite test case for this is NiO and we won't risk being original!
 
-The model considers the Ni :math:`3d` orbitals including crystal field, 
-magnetic field, spin- orbit couping and Coulomb interactions and a surrounding 
+The model considers the Ni :math:`3d` orbitals interacting with a surrounding 
 set of O :math:`2p` orbitals. NiO has a rocksalt structure in which all Ni 
 atoms are surrounded by six O atoms in cubic symmetry. Based on this, 
 one would assume that the NiO cluster used to simulate the crystal would 
 need to contain :math:`6` spin-orbitals per O 
 :math:`\\times 6` O atoms :math:`=36` oxygen 
-spin-orbitals. As explained by, for example, Maurits Haverkort et al., in
+spin-orbitals. As explained by, for example, Maurits Haverkort et al. in
 `Phys. Rev. B 85, 165113 (2012) 
 <https://doi.org/10.1103/PhysRevB.85.165113>`_ only 10 of these orbitals
 interact with the Ni atom and solving the problem with :math:`10+10 = 20`
@@ -28,7 +27,7 @@ and bath. In this way, our spectrum can include processes where
 electrons transition from the bath to the impurity.
 
 The crystal field and hopping parameters for such a calculation can be
-calculated by DFT. We will use values for NiO from
+obtained from DFT. We will use values for NiO from
 `Phys. Rev. B 85, 165113 (2012) 
 <https://doi.org/10.1103/PhysRevB.85.165113>`_ [1]_. 
 """
@@ -46,7 +45,8 @@ import sympy
 # valence for the impurity atom in this case :code:`nd = 8` and assume that the
 # bath of :code:`norb_bath  = 10` O spin-orbitals is full. The solver that we will
 # use can simulate multiple bath sites. In our case we specify 
-# :code:`nbath  = 1` sites. The total number of valance electrons :code:`v_noccu`
+# :code:`nbath  = 1` sites. Electrons will be able to transition from O to Ni
+# during our calculation, but the total number of valance electrons :code:`v_noccu`
 # will be conserved.
 nd = 8
 norb_d = 10
@@ -137,7 +137,8 @@ CF[diagonal_indices, diagonal_indices] = orbital_energies
 soc = edrixs.cb_op(edrixs.atom_hsoc('d', zeta_d_i), edrixs.tmat_c2r('d', True))
 
 ################################################################################
-# The total impurity matrix is then
+# The total impurity matrix is then the sum of crystal feild and spin-orbit 
+# coupling.
 imp = CF + soc
 
 ################################################################################
@@ -163,10 +164,11 @@ Delta = 4.7
 #
 # * :math:`d^{nd+2}L^8` has energy :math:`2\Delta + U`
 #
-# Using this we can write and solve three linear equations. The exercise of 
-# doing this by hand is not so hard, but if you are familiar with the
-# python package `sympy <http://www.sympy.org>`_ you can make the computer
-# do it for you.
+# Using this we can write and solve three linear equations to get
+# :math:`E_d` and :math:`E_p` the energies of the impurity and bath.
+# The exercise of  doing this by hand is not so hard, but if you are
+# familiar with the python package `sympy <http://www.sympy.org>`_ you 
+# can make the computer do it for you.
 D, U, E_p, E_d, n = sympy.symbols('\Delta U E_p E_d, n')
 eq1 = sympy.Eq(10*E_p +n*E_d     +  n*(n-1)*U/2,    rhs=0)
 eq2 = sympy.Eq(9*E_p  +(n+1)*E_d + (n+1)*n*U/2,     rhs=D)
@@ -193,14 +195,10 @@ answer = sympy.solve([eq1, eq2, eq3], (E_d, E_p))
 #        \end{aligned}
 #
 
-d_energy = answer[E_d].evalf(subs={U:Udd, n:nd, D:Delta})
-p_energy = answer[E_p].evalf(subs={U:Udd, n:nd, D:Delta})
-print("impurity_energy={:.3f}\nbath_energy={:.3f}".format(d_energy, p_energy))
+d_energy = float(answer[E_d].evalf(subs={U:Udd, n:nd, D:Delta}))
+p_energy = float(answer[E_p].evalf(subs={U:Udd, n:nd, D:Delta}))
+print("impurity_energy = {:.3f}\nbath_energy = {:.3f}".format(d_energy, p_energy))
 
-################################################################################
-# another print method
-sympy.init_printing(use_latex='mathjax')
-sympy.pprint(eq1)
 ################################################################################
 # The energy level of the bath(s) is described by a matrix where the row index 
 # denotes which bath and the column index denotes which orbital. Here we have
@@ -224,13 +222,12 @@ hyb[0, 2:6] = Te  # zx/yz
 hyb[0, 6:8] = Tb1  # x2-y2
 hyb[0, 8:] = Tb2  # xy
 
-
 ################################################################################
 # We now need to define the parameters describing the XAS. X-ray polariztion
 # can be linear, circular, isotropic (appropriate for a powder).
 poltype_xas = [('isotropic', 0)]
 ################################################################################
-# edrixs uses the tempretur in Kelvin to work out the population of the low-lying
+# edrixs uses the temperature in Kelvin to work out the population of the low-lying
 # states via a Boltzmann distribution.
 temperature = 300
 ################################################################################
