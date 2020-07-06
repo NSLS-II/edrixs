@@ -86,65 +86,13 @@ slater = ([F0_dd, F2_dd, F4_dd],  # initial
           [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])  # with core hole
 
 ################################################################################
-# The spin-orbit coupling for the valence electrons in the ground state, the
-# valence electrons with the core hole present, and for the core hole itself
-# are initialized using the atomic values.
-zeta_d_i = info['v_soc_i'][0]
-zeta_d_n = info['v_soc_n'][0]
-c_soc = info['c_soc']
-
-################################################################################
-# Build matrices describing interactions
+# Charge transfer energy scales
 # ------------------------------------------------------------------------------
-# edrixs uses complex spherical harmonics as its default basis set. If we want to
-# use another basis set, we need to pass a matrix to the solver, which transforms
-# from complex spherical harmonics into the basis we use. 
-# The solver will use this matrix when implementing the Coulomb intereactions 
-# using the :code:`slater` list of Coulomb parameters.
-# Here it is easiest to 
-# use real harmoics. We make the complex harmoics to real harmonics transformation
-# matrix via
-trans_c2n = edrixs.tmat_c2r('d',True)
-
-################################################################################
-# The crystal field and SOC needs to be passed to the solver by constructing
-# the impurity matrix in the real harmonic basis. For cubic symmetry, we need
-# to set the energies of the orbitals along the
-# diagonal of the matrix. These need to be in pairs as there are two 
-# spin-orbitals for each orbital energy. Python 
-# `list comprehension <https://realpython.com/list-comprehension-python/>`_
-# and
-# `numpy indexing <https://numpy.org/doc/stable/reference/arrays.indexing.html>`_
-# are used here.
-ten_dq = 0.56
-CF = np.zeros((10, 10), dtype=np.complex)
-diagonal_indices = np.arange(norb_d)
-
-orbital_energies = np.array([e for orbital_energy in
-                             [+0.6 * ten_dq, # dz2
-                              -0.4 * ten_dq, # dzx
-                              -0.4 * ten_dq, # dzy
-                              +0.6 * ten_dq, # dx2-y2
-                              -0.4 * ten_dq] # dxy)
-                             for e in [orbital_energy]*2]),
-
-
-CF[diagonal_indices, diagonal_indices] = orbital_energies                  
-
-################################################################################
-# The valence band SOC is constructed in the normal way and transformed into the
-# real harmonic basis.
-soc = edrixs.cb_op(edrixs.atom_hsoc('d', zeta_d_i), edrixs.tmat_c2r('d', True))
-
-################################################################################
-# The total impurity matrix is then the sum of crystal feild and spin-orbit 
-# coupling.
-imp = CF + soc
-
-################################################################################
 # The charge transfer :code:`Delta` and  monopole Coulomb :code:`Udd` parameters
-# set the centers of the different electonic configurations before they are
-# split. We choose
+# determine the centers of the different electonic configurations before they are
+# split. Note that as electrons are moved one has to pay energy costs associated
+# with both charge transfer and Coulmb interactions. The energy splitting 
+# between the bath and impurity is therefore not simply :code:`Delta`. 
 Delta = 4.7
 
 ################################################################################
@@ -199,6 +147,63 @@ d_energy = float(answer[E_d].evalf(subs={U:Udd, n:nd, D:Delta}))
 p_energy = float(answer[E_p].evalf(subs={U:Udd, n:nd, D:Delta}))
 print("impurity_energy = {:.3f}\nbath_energy = {:.3f}".format(d_energy, p_energy))
 
+
+################################################################################
+# The spin-orbit coupling for the valence electrons in the ground state, the
+# valence electrons with the core hole present, and for the core hole itself
+# are initialized using the atomic values.
+zeta_d_i = info['v_soc_i'][0]
+zeta_d_n = info['v_soc_n'][0]
+c_soc = info['c_soc']
+
+################################################################################
+# Build matrices describing interactions
+# ------------------------------------------------------------------------------
+# edrixs uses complex spherical harmonics as its default basis set. If we want to
+# use another basis set, we need to pass a matrix to the solver, which transforms
+# from complex spherical harmonics into the basis we use. 
+# The solver will use this matrix when implementing the Coulomb intereactions 
+# using the :code:`slater` list of Coulomb parameters.
+# Here it is easiest to 
+# use real harmoics. We make the complex harmoics to real harmonics transformation
+# matrix via
+trans_c2n = edrixs.tmat_c2r('d',True)
+
+################################################################################
+# The crystal field and SOC needs to be passed to the solver by constructing
+# the impurity matrix in the real harmonic basis. For cubic symmetry, we need
+# to set the energies of the orbitals along the
+# diagonal of the matrix. These need to be in pairs as there are two 
+# spin-orbitals for each orbital energy. Python 
+# `list comprehension <https://realpython.com/list-comprehension-python/>`_
+# and
+# `numpy indexing <https://numpy.org/doc/stable/reference/arrays.indexing.html>`_
+# are used here. All these energy are shifted by :code:`d_energy`.
+ten_dq = 0.56
+CF = np.zeros((10, 10), dtype=np.complex)
+diagonal_indices = np.arange(norb_d)
+
+orbital_energies = np.array([e for orbital_energy in
+                             [+0.6 * ten_dq, # dz2
+                              -0.4 * ten_dq, # dzx
+                              -0.4 * ten_dq, # dzy
+                              +0.6 * ten_dq, # dx2-y2
+                              -0.4 * ten_dq] # dxy)
+                             for e in [orbital_energy]*2])
+
+
+CF[diagonal_indices, diagonal_indices] = d_energy + orbital_energies                  
+
+################################################################################
+# The valence band SOC is constructed in the normal way and transformed into the
+# real harmonic basis.
+soc = edrixs.cb_op(edrixs.atom_hsoc('d', zeta_d_i), edrixs.tmat_c2r('d', True))
+
+################################################################################
+# The total impurity matrix is then the sum of crystal feild and spin-orbit 
+# coupling.
+imp = CF + soc
+
 ################################################################################
 # The energy level of the bath(s) is described by a matrix where the row index 
 # denotes which bath and the column index denotes which orbital. Here we have
@@ -236,7 +241,7 @@ thin =  0 / 180.0 * np.pi
 phi = 0.0
 ################################################################################
 # these are with respect to the crystal field :math:`z` and :math:`x` axes 
-# written above. (That is, unless you specify the code:`loc_axis` parameter
+# written above. (That is, unless you specify the :code:`loc_axis` parameter
 # described in the :code:`edrixs.xas_siam_fort` function documenation.)
 
 ################################################################################
@@ -245,7 +250,7 @@ phi = 0.0
 # of as adjustablparameters for comparing theory to experiment. We use this to 
 # specify the range we want to compute the spectrum over.
 om_shift = 852.7
-ominc_xas = om_shift + np.linspace(-15, 25, 1000)
+ominc_xas = om_shift + np.linspace(-15, 45, 1000)
 gamma_c_stat = 0.48/2
 
 ################################################################################
@@ -261,7 +266,7 @@ gamma_c = np.full(ominc_xas.shape, 0.48/2)
 # we create an isotropic normalized vector. :code:`on_which = 'both'` specifies to
 # apply the operator to the total spin plus orbital angular momentum as is
 # appropriate for a physical external magnetic field. You can use 
-# :code:`on_which = 'spin' to apply the operator to spin in order to simulate
+# :code:`on_which = 'spin'` to apply the operator to spin in order to simulate
 # magnetic order in the sample. The value of the Bohr Magneton can
 # be useful for converting here :math:`\mu_B = 5.7883818012\times 10^{−5}` 
 # eV/T.
@@ -313,7 +318,9 @@ print('Bath occupation = {:.6f}\n'.format(bath_occupation))
 # We see that 0.36 electrons move from the O to the Ni in the ground state. 
 # 
 # We can now construct the XAS spectrum edrixs is applying a transition
-# operator to create the excitated state.  
+# operator to create the excitated state. We need to be careful to specify how 
+# many of the low energy states are thermally populated. In this case 
+# :code:`num_gs=3`. This can be determined by inspecting the function output. 
 xas, xas_poles = edrixs.xas_siam_fort(
     comm, shell_name, nbath, ominc_xas, gamma_c=gamma_c, v_noccu=v_noccu, thin=thin,
     phi=phi, num_gs=3, nkryl=200, pol_type=poltype_xas, temperature=temperature
