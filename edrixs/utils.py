@@ -1,6 +1,6 @@
 __all__ = ['beta_to_kelvin', 'kelvin_to_beta', 'boltz_dist', 'UJ_to_UdJH',
            'UdJH_to_UJ', 'UdJH_to_F0F2F4', 'UdJH_to_F0F2F4F6', 'F0F2F4_to_UdJH',
-           'F0F2F4_to_UJ', 'F0F2F4F6_to_UdJH', 'info_atomic_shell',
+           'F0F2F4_to_UJ', 'F0F2F4F6_to_UdJH', 'CT_imp_bath_ed', 'info_atomic_shell',
            'case_to_shell_name', 'edge_to_shell_name', 'slater_integrals_name',
            'get_atom_data', 'rescale']
 
@@ -273,6 +273,78 @@ def F0F2F4F6_to_UdJH(F0, F2, F4, F6):
     Ud = F0
     JH = (286 * F2 + 195 * F4 + 250 * F6) / 6435.0
     return Ud, JH
+
+
+def CT_imp_bath_ed(U_dd, Delta, nd):
+    """
+    Compute energies of the impurity and bath for an
+    Anderson impurity or charge-transfer model
+    appropriate for a :math:`d`-shell transition compound.
+    Given Coulomb monopole interaction :math:`U_{dd}`, :math:`d`-shell 
+    occupation :math:`nd`, and charge transfer energy :math:`\Delta`
+    compute the impurity and bath energies :math:`E_\textrm{imp}` and 
+    :math:`E_\textrm{bath}`.
+
+    Parameters
+    ----------
+    U_dd: float
+        Coulomb interaction :math:`U_{dd}`
+    Delta: float
+        Charge-transfer energy :math:`\Delta`
+    nd : integer
+        Number of electrons in the :math:`d`-shell
+
+    Returns
+    -------
+    E_imp : float
+        Energy of the impurity states :math:`E_\textrm{imp}`
+    E_bath : float
+        Energy of the bath states :math:`E_\textrm{imp}`
+
+    We define the state with a full set of bath orbitals to be zero
+    energy and write the energy levels using the same definitions as the famous
+    J. Zaanen, G. A. Sawatzky, and J. W. Allen paper
+    `Phys. Rev. Lett. 55, 418 (1985) <https://doi.org/10.1103/PhysRevLett.55.418>`_
+    . Papers by Maurits Haverkort et al., 
+    `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_
+    and A. E. Bocquet et al., 
+    `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
+    were also used in preparing this section. 
+      
+    * :math:`d^{nd}L^{10}` has energy :math:`0`
+    
+    * :math:`d^{nd+1}L^9` has energy :math:`\Delta`
+    
+    * :math:`d^{nd+2}L^8` has energy :math:`2\Delta + U_{dd}`
+    
+    Using this we can write and solve three linear equations to get
+    :math:`E_d` and :math:`E_p` the energies of the impurity and bath.
+    The exercise of  doing this by hand is not so hard, but if you are
+    familiar with the python package `sympy <http://www.sympy.org>`_ you 
+    can make the computer do it for you. 
+    
+       .. math::
+           \begin{aligned}
+           n E_{d}  + 10 E_{p} + \frac{U_d n \left(n - 1\right)}{2} &= 0\\
+           E_{d} \left(n + 1\right) + 9 E_{p} 
+           + \frac{U_d n \left(n + 1\right)}{2} &= \Delta \\
+           E_{d} \left(n + 2\right) + 8 E_{p} 
+           + \frac{U_d \left(n + 1\right) \left(n + 2\right)}{2} 
+           &= U_d + 2 \Delta
+           \end{aligned}
+    
+    and
+       .. math::
+           \begin{aligned}
+           E_p &= - \frac{U n^{2} + 19 U n 
+           - 20 \Delta}{2 n + 20} \\
+           E_d &= 
+           \frac{n \left(U n + U - 2 \Delta\right)}{\left(2 n + 20\right)}
+           \end{aligned}
+    """
+    E_imp = n*(U_dd*n + U_dd -2*Delta)/(2*n+20)
+    E_bath = -(U_dd*nd**2 + 19*U_dd*nd - 20*Delta)/(2*n + 20)
+    return E_imp, E_bath
 
 
 def info_atomic_shell():
