@@ -1803,7 +1803,8 @@ def _rixs_1or2_valence_1core(
 
 
 def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core_pot=0, c_level=0,
-                 c_soc=0, trans_c2n=None, imp_mat=None, bath_level=None, hyb=None, hopping=None,
+                 c_soc=0, trans_c2n=None, imp_mat=None, imp_mat_n=None, bath_level=None,
+                 bath_level_n=None, hyb=None, hyb_n=None, hopping=None, hopping_n=None,
                  slater=None, ext_B=None, on_which='spin', do_ed=0, ed_solver=2, neval=1,
                  nvector=1, ncv=3, idump=False, maxiter=1000, eigval_tol=1e-8, min_ndim=1000):
     """
@@ -1849,14 +1850,28 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
         The transformation matrix from the spherical harmonics basis to the basis on which
         the `imp_mat` and hybridization function (`bath_level`, `hyb`, `hopping`) are defined.
     imp_mat: 2d complex array
-        Impurity matrix for the impurity site, including CF or SOC
+        Impurity matrix for the impurity site, including CF or SOC, for siam_type=0
+    imp_mat_n: 2d complex array
+        Impurity matrix for the impurity site, including CF or SOC, for siam_type=0
+        and the intermediate configurations.
     bath_level: 2d complex array
-        Energy level of bath sites, 1st (2nd) dimension is for different bath sites (orbitals).
+        Energy level of bath sites, 1st (2nd) dimension is for different bath sites (orbitals),
+        for siam_type=0.
+    bath_level_n: 2d complex array
+        Energy level of bath sites, 1st (2nd) dimension is for different bath sites (orbitals),
+        for siam_type=0 and the intermediate configurations.
     hyb: 2d complex array
         Hybridization strength of bath sites, 1st (2nd) dimension is for different bath
-        sites (orbitals)
+        sites (orbitals), for siam_type=0.
+    hyb_n: 2d complex array
+        Hybridization strength of bath sites, 1st (2nd) dimension is for different bath
+        sites (orbitals), for siam_type=0 and the intermediate configurations.
     hopping: 2d complex array
-        General hopping matrix when siam_type=1, including imp_mat and hybridization functions.
+        General hopping matrix when siam_type=1, including imp_mat and hybridization functions,
+        for siam_type=1.
+    hopping_n: 2d complex array
+        General hopping matrix when siam_type=1, including imp_mat and hybridization functions,
+        for siam_type=1 and the intermediate configurations.
     slater: tuple of two lists
         Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
         The order of the elements in each list should be like this:
@@ -1996,14 +2011,21 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     emat_i = np.zeros((ntot, ntot), dtype=np.complex)
     emat_n = np.zeros((ntot, ntot), dtype=np.complex)
     # General hybridization function, including off-diagonal terms
-    if siam_type == 1 and hopping is not None:
-        emat_i[0:ntot_v, 0:ntot_v] += hopping
-        emat_n[0:ntot_v, 0:ntot_v] += hopping
+    if siam_type == 1:
+        if hopping is not None:
+            emat_i[0:ntot_v, 0:ntot_v] += hopping
+        if hopping_n is not None:
+            emat_n[0:ntot_v, 0:ntot_v] += hopping_n
+        elif hopping is not None:
+            emat_n[0:ntot_v, 0:ntot_v] += hopping
     # Diagonal hybridization function
     elif siam_type == 0:
         # matrix (CF or SOC) for impuirty site
         if imp_mat is not None:
             emat_i[0:v_norb, 0:v_norb] += imp_mat
+        if imp_mat_n is not None:
+            emat_n[0:v_norb, 0:v_norb] += imp_mat_n
+        elif imp_mat is not None:
             emat_n[0:v_norb, 0:v_norb] += imp_mat
         # bath levels
         if bath_level is not None:
@@ -2011,14 +2033,33 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
                 for j in range(v_norb):
                     indx = (i + 1) * v_norb + j
                     emat_i[indx, indx] += bath_level[i, j]
+        if bath_level_n is not None:
+            for i in range(nbath):
+                for j in range(v_norb):
+                    indx = (i + 1) * v_norb + j
+                    emat_n[indx, indx] += bath_level_n[i, j]
+        elif bath_level is not None:
+            for i in range(nbath):
+                for j in range(v_norb):
+                    indx = (i + 1) * v_norb + j
                     emat_n[indx, indx] += bath_level[i, j]
         if hyb is not None:
             for i in range(nbath):
                 for j in range(v_norb):
                     indx1, indx2 = j, (i + 1) * v_norb + j
                     emat_i[indx1, indx2] += hyb[i, j]
-                    emat_n[indx1, indx2] += hyb[i, j]
                     emat_i[indx2, indx1] += np.conj(hyb[i, j])
+        if hyb_n is not None:
+            for i in range(nbath):
+                for j in range(v_norb):
+                    indx1, indx2 = j, (i + 1) * v_norb + j
+                    emat_n[indx1, indx2] += hyb_n[i, j]
+                    emat_n[indx2, indx1] += np.conj(hyb_n[i, j])
+        elif hyb is not None:
+            for i in range(nbath):
+                for j in range(v_norb):
+                    indx1, indx2 = j, (i + 1) * v_norb + j
+                    emat_n[indx1, indx2] += hyb[i, j]
                     emat_n[indx2, indx1] += np.conj(hyb[i, j])
     else:
         raise Exception("Unknown siam_type: ", siam_type)
