@@ -1,6 +1,7 @@
 __all__ = ['beta_to_kelvin', 'kelvin_to_beta', 'boltz_dist', 'UJ_to_UdJH',
            'UdJH_to_UJ', 'UdJH_to_F0F2F4', 'UdJH_to_F0F2F4F6', 'F0F2F4_to_UdJH',
-           'F0F2F4_to_UJ', 'F0F2F4F6_to_UdJH', 'CT_imp_bath_ed', 'info_atomic_shell',
+           'F0F2F4_to_UJ', 'F0F2F4F6_to_UdJH', 'CT_imp_bath',
+           'CT_imp_bath_core_hole', 'info_atomic_shell',
            'case_to_shell_name', 'edge_to_shell_name', 'slater_integrals_name',
            'get_atom_data', 'rescale']
 
@@ -275,76 +276,165 @@ def F0F2F4F6_to_UdJH(F0, F2, F4, F6):
     return Ud, JH
 
 
-def CT_imp_bath_ed(U_dd, Delta, nd):
+def CT_imp_bath(U_dd, Delta, n):
     """
     Compute energies of the impurity and bath for an
     Anderson impurity or charge-transfer model
-    appropriate for a :math:`d`-shell transition compound.
-    Given Coulomb monopole interaction :math:`U_{dd}`, :math:`d`-shell 
-    occupation :math:`nd`, and charge transfer energy :math:`\Delta`
-    compute the impurity and bath energies :math:`E_\textrm{imp}` and 
-    :math:`E_\textrm{bath}`.
+    appropriate for a :math:`d`-shell transition metal compound.
 
     Parameters
     ----------
     U_dd: float
         Coulomb interaction :math:`U_{dd}`
     Delta: float
-        Charge-transfer energy :math:`\Delta`
-    nd : integer
+        Charge-transfer energy :math:`\\Delta`
+    n : integer
         Number of electrons in the :math:`d`-shell
 
     Returns
     -------
-    E_imp : float
-        Energy of the impurity states :math:`E_\textrm{imp}`
-    E_bath : float
-        Energy of the bath states :math:`E_\textrm{imp}`
+    E_d : float
+        Energy of the impurity states :math:`E_d`
+    E_L : float
+        Energy of the bath states :math:`E_L`
 
+    Notes
+    ------
+    We credit our approach to Maurits Hakverkort,
+    Heidelberg University.
     We define the state with a full set of bath orbitals to be zero
-    energy and write the energy levels using the same definitions as the famous
-    J. Zaanen, G. A. Sawatzky, and J. W. Allen paper
-    `Phys. Rev. Lett. 55, 418 (1985) <https://doi.org/10.1103/PhysRevLett.55.418>`_
-    . Papers by Maurits Haverkort et al., 
-    `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_
-    and A. E. Bocquet et al., 
-    `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
-    were also used in preparing this section. 
-      
-    * :math:`d^{nd}L^{10}` has energy :math:`0`
-    
-    * :math:`d^{nd+1}L^9` has energy :math:`\Delta`
-    
-    * :math:`d^{nd+2}L^8` has energy :math:`2\Delta + U_{dd}`
-    
+    energy and write the energy levels using the same definitions
+    as [1]_ [2]_ [3]_.
+
+    * :math:`d^{n}L^{10}` has energy :math:`0`
+
+    * :math:`d^{n+1}L^9` has energy :math:`\\Delta`
+
+    * :math:`d^{n+2}L^8` has energy :math:`2\\Delta + U_{dd}`
+
     Using this we can write and solve three linear equations to get
-    :math:`E_d` and :math:`E_p` the energies of the impurity and bath.
-    The exercise of  doing this by hand is not so hard, but if you are
-    familiar with the python package `sympy <http://www.sympy.org>`_ you 
-    can make the computer do it for you. 
-    
+    :math:`E_d` and :math:`E_L` the energies of the impurity and bath.
+
        .. math::
-           \begin{aligned}
-           n E_{d}  + 10 E_{p} + \frac{U_d n \left(n - 1\right)}{2} &= 0\\
-           E_{d} \left(n + 1\right) + 9 E_{p} 
-           + \frac{U_d n \left(n + 1\right)}{2} &= \Delta \\
-           E_{d} \left(n + 2\right) + 8 E_{p} 
-           + \frac{U_d \left(n + 1\right) \left(n + 2\right)}{2} 
-           &= U_d + 2 \Delta
-           \end{aligned}
-    
-    and
+           \\begin{aligned}
+           n E_d  + 10 E_L + \\frac{U_{dd} n \\left(n - 1\\right)}{2} &= 0\\\\
+           E_d \\left(n + 1\\right) + 9 E_L
+           + \\frac{U_{dd} n \\left(n + 1\\right)}{2} &= \\Delta \\\\
+           E_d \\left(n + 2\\right) + 8 E_L
+           + \\frac{U_{dd} \\left(n + 1\\right) \\left(n + 2\\right)}{2}
+           &= U_{dd} + 2 \\Delta.
+           \\end{aligned}
+
+    The solutions are:
+
        .. math::
-           \begin{aligned}
-           E_p &= - \frac{U n^{2} + 19 U n 
-           - 20 \Delta}{2 n + 20} \\
-           E_d &= 
-           \frac{n \left(U n + U - 2 \Delta\right)}{\left(2 n + 20\right)}
-           \end{aligned}
+           \\begin{aligned}
+           E_d &=
+           \\frac{n \\left(U_{dd} n + U_{dd}
+           - 2 \\Delta\\right)}{\\left(2 n + 20\\right)}  \\\\
+           E_L &= - \\frac{U_{dd} n^{2} + 19 U_{dd} n
+           - 20 \\Delta}{2 n + 20}
+           \\end{aligned}.
+
+    References
+    ----------
+    .. [1] J. Zaanen, G. A. Sawatzky, and J. W. Allen
+           `Phys. Rev. Lett. 55, 418 (1985) <https://doi.org/10.1103/PhysRevLett.55.418>`_
+    .. [2] Maurits Haverkort et al.,
+           `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_
+    .. [3] A. E. Bocquet et al.,
+           `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
     """
-    E_imp = n*(U_dd*n + U_dd -2*Delta)/(2*n+20)
-    E_bath = -(U_dd*nd**2 + 19*U_dd*nd - 20*Delta)/(2*n + 20)
+    E_imp = n*(U_dd*n + U_dd - 2*Delta)/(2*n + 20)
+    E_bath = -(U_dd*n**2 + 19*U_dd*n - 20*Delta)/(2*n + 20)
     return E_imp, E_bath
+
+
+def CT_imp_bath_core_hole(U_dd, U_pd, Delta, n):
+    """
+    Compute energies of the impurity and bath for an
+    Anderson impurity or charge-transfer model
+    appropriate for a :math:`d`-shell transition metal compound
+    with a core hole.
+
+    Parameters
+    ----------
+    U_dd: float
+        Coulomb interaction :math:`U_{dd}`
+    U_pd: float
+        Coulomb interaction :math:`U_{pd}`
+    Delta: float
+        Charge-transfer energy :math:`\\Delta`
+    n : integer
+        Number of electrons in the :math:`d`-shell :math:`n`
+
+    Returns
+    -------
+    E_dc : float
+        Energy of the impurity states :math:`E_{dc}` with
+        a core hole
+    E_Lc : float
+        Energy of the bath states :math:`E_{Lc}` with a core
+        hole
+    E_p : float
+        Energy of the core hole state :math:`E_\\textrm{E_p}`
+
+    Notes
+    -----
+    We credit our approach to Maurits Hakverkort,
+    Heidelberg University.
+    We define the state with a full set of bath orbitals to be zero
+    energy and write the energy levels using the same definitions as
+    [1]_ [2]_ [3]_.
+
+    * :math:`2p^5 d^{n}L^{10}` has energy :math:`0`
+
+    * :math:`2p^5 d^{n+1}L^9` has energy :math:`\\Delta + U_{dd} - U_{pd}`
+
+    * :math:`2p^5 d^{n+2}L^8` has energy :math:`2\\Delta + 3 U_{dd} - 2 U_{pd}`
+
+    Using this we can write and solve linear equations to get
+    :math:`E_{dc}`, :math:`E_{Lc}` and :math:`E_p` the energies of the
+    impurity and bath with a core hole and the energy of the core hole.
+
+       .. math::
+           \\begin{aligned}
+               6 E_p + 10 E_{Lc} +  n    E_{dc} + n(n-1) \\frac{U_{dd}}{2}
+               + 6 n     U_{pd} &= 0    \\\\
+               6 E_{pc} +  9 E_{Lc} + (n+1) E_{Lc} + (n+1)n \\frac{U_{dd}}{2}
+               + 6 (n+1) U_{pd} &= \\Delta  \\\\
+               6 E_p +  8 E_{Lc} + (n+2) E_{Lc} + (n+1)(n+2) \\frac{U_{dd}}{2}
+               + 6 (n+2) U_{pd} &= 2 \\Delta+U_{dd} \\\\
+               5 E_p + 10 E_{Lc} + (n+1) E_{Lc} + (n+1) n \\frac{U_{dd}}{2}
+               + 5 (n+1) U_{pd} &= 0 \\\\
+               5 E_p +  9 E_{Lc} + (n+2) E_{dc} + (n+2)(n+1) \\frac{U_{dd}}{2}
+               + 5 (n+2) U_{pd} &= \\Delta+U_{dd}-U_{pd} \\\\
+               5 E_p +  8 E_{Lc} + (n+3) E_{dc} + (n+3)(n+2) \\frac{U_{dd}}{2}
+               + 5 (n+3) U_{pd} &= 2 \\Delta+3 U_{dd}-2 U_{pd}
+           \\end{aligned}
+
+    The solutions are:
+
+       .. math::
+           \\begin{aligned}
+              E_{dc} &= \\frac{10 \\Delta - n (31+n) \\frac{U_{dd}}{2}-90 U_{pd}}{16+n} \\\\
+              E_{Lc} &= \\frac{10 \\Delta + (1+n) (n \\frac{U_{dd}}{2}-(10+n) U_{pd}}{16+n} \\\\
+              E_p    &= \\frac{(1+n) (n \\frac{U_{dd}}{2}+6 U_{pd})-(6+n) \\Delta}{16+n}
+           \\end{aligned}
+
+    References
+    ----------
+    .. [1] J. Zaanen, G. A. Sawatzky, and J. W. Allen
+           `Phys. Rev. Lett. 55, 418 (1985) <https://doi.org/10.1103/PhysRevLett.55.418>`_
+    .. [2] Maurits Haverkort et al.,
+           `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_
+    .. [3] A. E. Bocquet et al.,
+           `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
+    """
+    E_dc = (10*Delta - n*(31 + n)*U_dd/2 - 90*U_pd) / (16 + n)
+    E_Lc = (10*Delta + (1 + n)*(n*U_dd/2 - (10 + n)*U_pd)) / (16 + n)
+    E_p = ((1 + n)*(n*U_dd/2 + 6*U_pd) - (6 + n)*Delta) / (16 + n)
+    return E_dc, E_Lc, E_p
 
 
 def info_atomic_shell():
