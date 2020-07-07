@@ -2098,7 +2098,7 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     tmat = np.eye(ntot, dtype=np.complex)
     for i in range(nbath+1):
         off = i * v_norb
-        tmat[off:off+v_norb, off:off+v_norb] = np.transpose(trans_c2n)
+        tmat[off:off+v_norb, off:off+v_norb] = np.conj(np.transpose(trans_c2n))
     emat_i[:, :] = cb_op(emat_i, tmat)
     emat_n[:, :] = cb_op(emat_n, tmat)
 
