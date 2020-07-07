@@ -1851,27 +1851,31 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
         the `imp_mat` and hybridization function (`bath_level`, `hyb`, `hopping`) are defined.
     imp_mat: 2d complex array
         Impurity matrix for the impurity site, including CF or SOC, for siam_type=0
+        and the initial configurations.
     imp_mat_n: 2d complex array
         Impurity matrix for the impurity site, including CF or SOC, for siam_type=0
-        and the intermediate configurations.
+        and the intermediate configurations. If imp_mat_n=None, imp_mat will be used.
     bath_level: 2d complex array
         Energy level of bath sites, 1st (2nd) dimension is for different bath sites (orbitals),
-        for siam_type=0.
+        for siam_type=0 and the initial configurations.
     bath_level_n: 2d complex array
         Energy level of bath sites, 1st (2nd) dimension is for different bath sites (orbitals),
-        for siam_type=0 and the intermediate configurations.
+        for siam_type=0 and the intermediate configurations. If bath_level_n=None,
+        bath_level will be used.
     hyb: 2d complex array
         Hybridization strength of bath sites, 1st (2nd) dimension is for different bath
-        sites (orbitals), for siam_type=0.
+        sites (orbitals), for siam_type=0 and the initial configurations.
     hyb_n: 2d complex array
         Hybridization strength of bath sites, 1st (2nd) dimension is for different bath
         sites (orbitals), for siam_type=0 and the intermediate configurations.
+        If hyb_n=None, hyb will be used.
     hopping: 2d complex array
         General hopping matrix when siam_type=1, including imp_mat and hybridization functions,
-        for siam_type=1.
+        for siam_type=1 and the initial configurations.
     hopping_n: 2d complex array
         General hopping matrix when siam_type=1, including imp_mat and hybridization functions,
-        for siam_type=1 and the intermediate configurations.
+        for siam_type=1 and the intermediate configurations. If hopping_n=None,
+        hopping will be used.
     slater: tuple of two lists
         Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
         The order of the elements in each list should be like this:
