@@ -317,12 +317,10 @@ def CT_imp_bath(U_dd, Delta, n):
 
        .. math::
            \\begin{aligned}
-           n E_d  + 10 E_L + \\frac{U_{dd} n \\left(n - 1\\right)}{2} &= 0\\\\
-           E_d \\left(n + 1\\right) + 9 E_L
-           + \\frac{U_{dd} n \\left(n + 1\\right)}{2} &= \\Delta \\\\
-           E_d \\left(n + 2\\right) + 8 E_L
-           + \\frac{U_{dd} \\left(n + 1\\right) \\left(n + 2\\right)}{2}
-           &= U_{dd} + 2 \\Delta.
+           10 E_L + n     E_d + n(n-1) \\frac{U_{dd}}{2} &= 0 \\\\
+            9 E_L + (n+1) E_d + (n+1)n \\frac{U_{dd}}{2} &= \\Delta \\\\
+            8 E_L + (n+2) E_d + (n+1)(n+2) \\frac{U_{dd}}{2}
+            &= 2\\Delta + \\frac{U_{dd}}
            \\end{aligned}
 
     The solutions are:
@@ -330,10 +328,9 @@ def CT_imp_bath(U_dd, Delta, n):
        .. math::
            \\begin{aligned}
            E_d &=
-           \\frac{n \\left(U_{dd} n + U_{dd}
-           - 2 \\Delta\\right)}{\\left(2 n + 20\\right)}  \\\\
-           E_L &= - \\frac{U_{dd} n^{2} + 19 U_{dd} n
-           - 20 \\Delta}{2 n + 20}
+           \\frac{10 \\Delta - n (19 +  n) U_{dd}{2}}{10 + n}  \\\\
+           E_L &=
+           \\frac{n ((1+n) U_{dd}/2-\\Delta}{10 + n}
            \\end{aligned}.
 
     References
@@ -345,9 +342,9 @@ def CT_imp_bath(U_dd, Delta, n):
     .. [3] A. E. Bocquet et al.,
            `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
     """
-    E_imp = n*(U_dd*n + U_dd - 2*Delta)/(2*n + 20)
-    E_bath = -(U_dd*n**2 + 19*U_dd*n - 20*Delta)/(2*n + 20)
-    return E_imp, E_bath
+    E_d = (10*Delta - n*(19 + n)*U_dd/2)/(10 + n)
+    E_L = n*((1 + n)*U_dd/2-Delta)/(10 + n)
+    return E_d, E_L
 
 
 def CT_imp_bath_core_hole(U_dd, U_pd, Delta, n):
@@ -401,11 +398,11 @@ def CT_imp_bath_core_hole(U_dd, U_pd, Delta, n):
            \\begin{aligned}
                6 E_p + 10 E_{Lc} +  n    E_{dc} + n(n-1) \\frac{U_{dd}}{2}
                + 6 n     U_{pd} &= 0    \\\\
-               6 E_{pc} +  9 E_{Lc} + (n+1) E_{Lc} + (n+1)n \\frac{U_{dd}}{2}
+               6 E_p +  9 E_{Lc} + (n+1) E_{dc} + (n+1)n \\frac{U_{dd}}{2}
                + 6 (n+1) U_{pd} &= \\Delta  \\\\
-               6 E_p +  8 E_{Lc} + (n+2) E_{Lc} + (n+1)(n+2) \\frac{U_{dd}}{2}
+               6 E_p +  8 E_{Lc} + (n+2) E_{d} + (n+1)(n+2) \\frac{U_{dd}}{2}
                + 6 (n+2) U_{pd} &= 2 \\Delta+U_{dd} \\\\
-               5 E_p + 10 E_{Lc} + (n+1) E_{Lc} + (n+1) n \\frac{U_{dd}}{2}
+               5 E_p + 10 E_{Lc} + (n+1) E_{d} + (n+1) n \\frac{U_{dd}}{2}
                + 5 (n+1) U_{pd} &= 0 \\\\
                5 E_p +  9 E_{Lc} + (n+2) E_{dc} + (n+2)(n+1) \\frac{U_{dd}}{2}
                + 5 (n+2) U_{pd} &= \\Delta+U_{dd}-U_{pd} \\\\
@@ -418,8 +415,8 @@ def CT_imp_bath_core_hole(U_dd, U_pd, Delta, n):
        .. math::
            \\begin{aligned}
               E_{dc} &= \\frac{10 \\Delta - n (31+n) \\frac{U_{dd}}{2}-90 U_{pd}}{16+n} \\\\
-              E_{Lc} &= \\frac{10 \\Delta + (1+n) (n \\frac{U_{dd}}{2}-(10+n) U_{pd}}{16+n} \\\\
-              E_p    &= \\frac{(1+n) (n \\frac{U_{dd}}{2}+6 U_{pd})-(6+n) \\Delta}{16+n}
+              E_{Lc} &= \\frac{(1+n) (n \\frac{U_{dd}}{2}+6*U_{pd})-(6+n) \\Delta}{16+n} \\\\
+              E_p    &= \\frac{10 \\Delta + (1+n)(n\\frac{U_{dd}}{2}-(10+n)*U_{pd}}{16+n}
            \\end{aligned}
 
     References
@@ -432,8 +429,8 @@ def CT_imp_bath_core_hole(U_dd, U_pd, Delta, n):
            `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
     """
     E_dc = (10*Delta - n*(31 + n)*U_dd/2 - 90*U_pd) / (16 + n)
-    E_Lc = (10*Delta + (1 + n)*(n*U_dd/2 - (10 + n)*U_pd)) / (16 + n)
-    E_p = ((1 + n)*(n*U_dd/2 + 6*U_pd) - (6 + n)*Delta) / (16 + n)
+    E_Lc = ((1 + n)*(n*U_dd/2 + 6*U_pd) - (6 + n)*Delta) / (16 + n)
+    E_p = (10*Delta + (1 + n)*(n*U_dd/2 - (10 + n)*U_pd)) / (16 + n)
     return E_dc, E_Lc, E_p
 
 
