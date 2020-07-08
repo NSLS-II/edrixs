@@ -245,7 +245,7 @@ gamma_c = np.full(ominc_xas.shape, 0.48/2)
 # magnetic order in the sample. The value of the Bohr Magneton can
 # be useful for converting here :math:`\mu_B = 5.7883818012\times 10^{−5}` 
 # eV/T. Confirm this is correct 
-#ext_B = np.array([0.01, 0.01, 0.01])/np.sqrt(3)
+# ext_B = np.array([0.01, 0.01, 0.01])/np.sqrt(3)
 ext_B = np.array([0.00, 0.00, 0.12])
 on_which = 'spin'
     
