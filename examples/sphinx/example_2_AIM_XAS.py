@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Anderson impurity model for NiO XAS (Under contruction)
+Anderson impurity model for NiO XAS
 ================================================================================
 Here we calculate the :math:`L`-edge XAS spectrum of an Anderson impurity model.
 This is sometimes also called a charge-transfer multiplet model.
@@ -19,7 +19,7 @@ spin-orbitals is far faster. For more general calculations of this type you
 may see the Ni states being referred to as the impurity or metal and the
 O states being called the bath or ligand.
 
-We consider on-site crystal field, spin-orbit coupling, magnetic field and
+We consider on-site crystal field, spin-orbit coupling, magnetic exchange, and
 Coulomb interactions for the impurity, which is hybridized with the bath by
 defining hopping parameters and an energy difference between the impurity 
 and bath. In this way, our spectrum can include processes where
@@ -27,14 +27,13 @@ electrons transition from the bath to the impurity.
 
 The crystal field and hopping parameters for such a calculation can be
 obtained from DFT. We will use values for NiO from
-[1]_. 
+[1]_. If you use values from a paper the relevant references should,
+of course, be cited.
 """
 import edrixs
 import numpy as np
-import sys
 import matplotlib.pyplot as plt
 from mpi4py import MPI
-import sympy
 
 ################################################################################
 # Number of electrons
@@ -59,14 +58,14 @@ shell_name = ('d', 'p') # valence and core shells for XAS calculation
 # The atomic Coulomb interactions are usually initialized based on Hartree-Fock
 # calculations from, for example,  
 # `Cowan's code <https://www.tcd.ie/Physics/people/Cormac.McGuinness/Cowan/>`_.
-# edrixs has a database of these. We get our desired values for Ni via
+# edrixs has a database of these.
 info  = edrixs.utils.get_atom_data('Ni', '3d', nd, edge='L3')
 
 ################################################################################
 # The atomic values are typically scaled to account for screening in the solid. 
 # Here we use 80% scaling. Let's write these out in full, so that nothing is 
-# hidden. Values for :math:`U_{dd}` and :math:`U_{dp}` are from comparing theory 
-# and experiment from .
+# hidden. Values for :math:`U_{dd}` and :math:`U_{dp}` are those of Ref. [1]_
+# obtained by comparing theory and experiment [2]_ [3]_.
 scale_dd = 0.8
 F2_dd = info['slater_i'][1][1] * scale_dd
 F4_dd = info['slater_i'][2][1] * scale_dd
@@ -87,7 +86,7 @@ slater = ([F0_dd, F2_dd, F4_dd],  # initial
 # Charge-transfer energy scales
 # ------------------------------------------------------------------------------
 # The charge-transfer :math:`\Delta` and Coulomb :math:`U_{dd}` :math:`U_{dp}`
-# parameters determine the centers of the different electonic configurations 
+# parameters determine the centers of the different electronic configurations 
 # before they are split. Note that as electrons are moved one has to pay energy
 # costs associated with both charge-transfer and Coulomb interactions. The
 # energy splitting between the bath and impurity is consequently not simply 
@@ -97,7 +96,6 @@ slater = ([F0_dd, F2_dd, F4_dd],  # initial
 # :math:`E_d`, bath energy :math:`E_L`, impurity energy with a core hole
 # :math:`E_{dc}`, bath energy with a core hole :math:`E_{Lc}` and the 
 # core hole energy :math:`E_p`.
-# Is there another energy definition that works better?
 Delta = 4.7
 E_d, E_L = edrixs.CT_imp_bath(U_dd, Delta, nd)
 E_dc, E_Lc, E_p = edrixs.CT_imp_bath_core_hole(U_dd, U_dp, Delta, nd)
@@ -123,10 +121,10 @@ c_soc = info['c_soc']
 # edrixs uses complex spherical harmonics as its default basis set. If we want to
 # use another basis set, we need to pass a matrix to the solver, which transforms
 # from complex spherical harmonics into the basis we use. 
-# The solver will use this matrix when implementing the Coulomb intereactions 
+# The solver will use this matrix when implementing the Coulomb interactions 
 # using the :code:`slater` list of Coulomb parameters.
 # Here it is easiest to 
-# use real harmoics. We make the complex harmoics to real harmonics transformation
+# use real harmonics. We make the complex harmonics to real harmonics transformation
 # matrix via
 trans_c2n = edrixs.tmat_c2r('d',True)
 
@@ -139,11 +137,10 @@ trans_c2n = edrixs.tmat_c2r('d',True)
 # `list comprehension <https://realpython.com/list-comprehension-python/>`_
 # and
 # `numpy indexing <https://numpy.org/doc/stable/reference/arrays.indexing.html>`_
-# are used here. All these energy are shifted by :code:`d_energy`. Need to put a
-# larger number for ten_dq otherwise spectrum looking wrong. I assume the bath levels
-# below are implemented wrongly? Or is the issue with Hz =  0.120?
+# are used here. See :ref:`sphx_glr_auto_examples_example_1_crystal_field.py`
+# for more details if needed.
 ten_dq = 0.56
-CF = np.zeros((10, 10), dtype=np.complex)
+CF = np.zeros((norb_d, norb_d), dtype=np.complex)
 diagonal_indices = np.arange(norb_d)
 
 orbital_energies = np.array([e for orbital_energy in
@@ -163,16 +160,20 @@ CF[diagonal_indices, diagonal_indices] = orbital_energies
 soc = edrixs.cb_op(edrixs.atom_hsoc('d', zeta_d_i), edrixs.tmat_c2r('d', True))
 
 ################################################################################
-# The total impurity matrices for the ground and core-hole statest are then
-# the sum of crystal field and spin-orbit coupling with an energy adjustment
-# as above.
-imp_mat = CF + soc + E_d * np.eye(10)
-imp_mat_n = CF + soc + E_dc * np.eye(10)
+# The total impurity matrices for the ground and core-hole states are then
+# the sum of crystal field and spin-orbit coupling. We further needed to apply
+# an energy shift along the matrix diagonal, which we do using the
+# :code:`np.eye` function which creates a diagonal matrix of ones.
+E_d_mat = E_d*np.eye(norb_d)
+E_dc_mat = E_dc*np.eye(norb_d)
+imp_mat = CF + soc + E_d_mat
+imp_mat_n = CF + soc + E_dc_mat
 
 ################################################################################
 # The energy level of the bath(s) is described by a matrix where the row index 
 # denotes which bath and the column index denotes which orbital. Here we have
-# only one bath, with 10 spin-orbitals all of same energy set as above.
+# only one bath, with 10 spin-orbitals. We initialize the matrix to
+# :code:`norb_d` and then split the energies according to :code:`ten_dq_bath`.
 ten_dq_bath = 1.44
 bath_level = np.full((nbath, norb_d), E_L, dtype=np.complex)
 bath_level[0, :2] += ten_dq_bath*.6  # 3z2-r2
@@ -187,10 +188,10 @@ bath_level_n[0, 8:] -= ten_dq_bath*.4  # xy
 
 ################################################################################
 # The hybridization matrix describes the hopping between the bath
-# to the impuirty. This is the same shape as the bath matrix. We take our
-# values from Maurits Haverkort et al.'s DFT calculations
-# `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_ 
-# More explanation about this and the T notation used elsewhere.
+# and the impurity. This is called either :math:`V` or :math:`T` in the
+# literature and matrix sign can either be positive or negative based.
+# This is the same shape as the bath matrix. We take our
+# values from Maurits Haverkort et al.'s DFT calculations [1]_. 
 Veg = 2.06
 Vt2g = 1.21
     
@@ -201,8 +202,8 @@ hyb[0, 6:8] = Veg  # x2-y2
 hyb[0, 8:] = Vt2g  # xy
 
 ################################################################################
-# We now need to define the parameters describing the XAS. X-ray polariztion
-# can be linear, circular, isotropic (appropriate for a powder).
+# We now need to define the parameters describing the XAS. X-ray polarization
+# can be linear, circular or isotropic (appropriate for a powder).
 poltype_xas = [('isotropic', 0)]
 ################################################################################
 # edrixs uses the temperature in Kelvin to work out the population of the low-lying
@@ -215,12 +216,12 @@ phi = 0.0
 ################################################################################
 # these are with respect to the crystal field :math:`z` and :math:`x` axes 
 # written above. (That is, unless you specify the :code:`loc_axis` parameter
-# described in the :code:`edrixs.xas_siam_fort` function documenation.)
+# described in the :code:`edrixs.xas_siam_fort` function documentation.)
 
 ################################################################################
 # The spectrum in the raw calculation is offset by the energy involved with the
 # core hole state, which is roughly :math:`5 E_p`, so we offset the spectrum by
-# this and use :code:`om_shift` as an a adjustable parameters for comparing 
+# this and use :code:`om_shift` as an adjustable parameters for comparing 
 # theory to experiment. We also use this to specify :code:`ominc_xas`
 # the range we want to compute the spectrum over. The core hole lifetime
 # broadening also needs to be set via :code:`gamma_c_stat`.
@@ -229,7 +230,7 @@ c_level = -om_shift - 5*E_p
 ominc_xas = om_shift + np.linspace(-15, 25, 1000)
 
 ################################################################################
-# The final state broadening is specified in terms of half width at half maxium
+# The final state broadening is specified in terms of half-width at half-maximum
 # You can either pass a constant value or an array the same size as
 # :code:`om_shift` with varying values to simulate, for example, different state
 # lifetimes for higher energy states.
@@ -243,9 +244,8 @@ gamma_c = np.full(ominc_xas.shape, 0.48/2)
 # appropriate for a physical external magnetic field. You can use 
 # :code:`on_which = 'spin'` to apply the operator to spin in order to simulate
 # magnetic order in the sample. The value of the Bohr Magneton can
-# be useful for converting here :math:`\mu_B = 5.7883818012\times 10^{−5}` 
-# eV/T. Confirm this is correct 
-# ext_B = np.array([0.01, 0.01, 0.01])/np.sqrt(3)
+# be useful for converting here :math:`\mu_B = 5.7883818012\times 10^{−5}`.
+# For this example, we will account for magnetic order in the sample by
 ext_B = np.array([0.00, 0.00, 0.12])
 on_which = 'spin'
     
@@ -259,7 +259,7 @@ on_which = 'spin'
 #
 #        mpirun -n <number of processors> python example_AIM_XAS.py
 #
-# where :code:`<number of processors>` is the number of processsors
+# where :code:`<number of processors>` is the number of processors
 # you'd like to us. Running it as normal will work, it will just be slower.
 
 comm = MPI.COMM_WORLD
@@ -271,8 +271,10 @@ size = comm.Get_size()
 # write input files, *hopping_i.in*, *hopping_n.in*, *coulomb_i.in*, *coulomb_n.in*
 # for following XAS (or RIXS) calculation. We need to specify :code:`siam_type=0`
 # which says that we will pass *imp_mat*, *bath_level* and *hyb*.
-# We need to specify :code:`do_ed = 1`. More details of why will be included
-# later. 
+# We need to specify :code:`do_ed = 1`. For this example, we cannot use 
+# :code:`do_ed = 0` for a ground state search as we have set the impurity and
+# bath energy levels artificially, which means edrixs will have trouble to know
+# which subspace to search to find the ground state.
 
 do_ed = 1
 eval_i, denmat, noccu_gs = edrixs.ed_siam_fort(
@@ -292,10 +294,10 @@ print('Impurity occupation = {:.6f}\n'.format(impurity_occupation))
 print('Bath occupation = {:.6f}\n'.format(bath_occupation))
 
 ################################################################################
-# We see that 0.36 electrons move from the O to the Ni in the ground state. 
+# We see that 0.18 electrons move from the O to the Ni in the ground state. 
 # 
 # We can now construct the XAS spectrum edrixs by applying a transition
-# operator to create the excitated state. We need to be careful to specify how 
+# operator to create the excited state. We need to be careful to specify how 
 # many of the low energy states are thermally populated. In this case 
 # :code:`num_gs=3`. This can be determined by inspecting the function output. 
 xas, xas_poles = edrixs.xas_siam_fort(
@@ -315,14 +317,13 @@ ax.set_title('Anderson impurity model for NiO')
 
 np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
 
-################################################################################
-# We often want to represent the ground state in terms of
-# :math:`\\alpha|d^8> + \\beta|d^9 L> + \\gamma|d^10 L^2>`.
-
-################################################################################
+##############################################################################
 #
 # .. rubric:: Footnotes
 # 
-# .. [1] Maurits Haverkort et al `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_. If you use these values in a paper you should, of course, cite it.
-#
-# 
+# .. [1] Maurits Haverkort et al
+#        `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_. 
+# .. [2] A. E. Bocquet et al.,
+#        `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
+# .. [3] Arata Tanaka, and Takeo Jo,
+#        `J. Phys. Soc. Jpn. 63, 2788-2807(1994) <https://doi.org/10.1143/JPSJ.63.2788>`_
