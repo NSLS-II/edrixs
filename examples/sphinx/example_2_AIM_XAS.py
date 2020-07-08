@@ -166,8 +166,8 @@ soc = edrixs.cb_op(edrixs.atom_hsoc('d', zeta_d_i), edrixs.tmat_c2r('d', True))
 # The total impurity matrices for the ground and core-hole statest are then
 # the sum of crystal field and spin-orbit coupling with an energy adjustment
 # as above.
-imp_mat = CF + soc + E_d
-imp_mat_n = CF + soc + E_dc
+imp_mat = CF + soc + E_d * np.eye(10)
+imp_mat_n = CF + soc + E_dc * np.eye(10)
 
 ################################################################################
 # The energy level of the bath(s) is described by a matrix where the row index 
