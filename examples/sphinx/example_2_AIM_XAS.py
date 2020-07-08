@@ -142,7 +142,7 @@ trans_c2n = edrixs.tmat_c2r('d',True)
 # are used here. All these energy are shifted by :code:`d_energy`. Need to put a
 # larger number for ten_dq otherwise spectrum looking wrong. I assume the bath levels
 # below are implemented wrongly? Or is the issue with Hz =  0.120?
-ten_dq = 2 #0.56
+ten_dq = 0.56
 CF = np.zeros((10, 10), dtype=np.complex)
 diagonal_indices = np.arange(norb_d)
 
@@ -224,10 +224,9 @@ phi = 0.0
 # theory to experiment. We also use this to specify :code:`ominc_xas`
 # the range we want to compute the spectrum over. The core hole lifetime
 # broadening also needs to be set via :code:`gamma_c_stat`.
-om_shift = 855
+om_shift = 857.6
 c_level = -om_shift - 5*E_p
 ominc_xas = om_shift + np.linspace(-15, 25, 1000)
-gamma_c_stat = 0.48/2
 
 ################################################################################
 # The final state broadening is specified in terms of half width at half maxium
@@ -247,7 +246,7 @@ gamma_c = np.full(ominc_xas.shape, 0.48/2)
 # be useful for converting here :math:`\mu_B = 5.7883818012\times 10^{−5}` 
 # eV/T. Confirm this is correct 
 ext_B = np.array([0.01, 0.01, 0.01])/np.sqrt(3)
-on_which = 'both'
+on_which = 'spin'
     
 ################################################################################
 # The number crunching uses
@@ -278,7 +277,7 @@ do_ed = 1
 eval_i, denmat, noccu_gs = edrixs.ed_siam_fort(
     comm, shell_name, nbath, siam_type=0, imp_mat=imp_mat, imp_mat_n=imp_mat_n,
     bath_level=bath_level, bath_level_n=bath_level_n, hyb=hyb, c_level=c_level,
-    c_soc=c_soc, static_core_pot=gamma_c_stat, slater=slater, ext_B=ext_B,
+    c_soc=c_soc, slater=slater, ext_B=ext_B,
     on_which=on_which, trans_c2n=trans_c2n, v_noccu=v_noccu, do_ed=do_ed,
     ed_solver=2, neval=50, nvector=3, ncv=100, idump=True)
 
