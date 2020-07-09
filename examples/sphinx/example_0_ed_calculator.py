@@ -20,7 +20,7 @@ from scipy.special import comb
 # Parameters
 # ------------------------------------------------------------------------------
 # Define the orbital angular momentum number :math:`l=1` (i.e. a `p` shell),
-# the number of orbitals, the orbital occupancy and the Slater integrals.
+# the number of spin-orbitals, the occupancy and the Slater integrals.
 # :math:`F^{k}` with :math:`k=0,2`:
 l = 1
 norb = 6
@@ -33,11 +33,11 @@ F0, F2 = 4.0, 1.0
 # The Coulomb interactions enter the Hamiltonain as
 #
 #    .. math::
-#        \begin{equation*}
-#        \hat{H} = \sum_{i, j, t, u}
-#        U_{m_{l_i}m_{s_i}, m_{l_j}m_{s_j}, m_{l_t}m_{s_t},
-#        m_{l_u}m_{s_u}}^{i,j,t,u}
-#        \end{equation*}
+#      \begin{equation}
+#      \hat{H} = \sum_{\alpha,\beta,\gamma,\delta} U_{\alpha,\beta,\gamma,\delta}
+#      \hat{f}^{\dagger}_{\alpha}\hat{f}^{\dagger}_{\beta}\hat{f}_{\gamma}\hat{f}_{\delta},
+#      \end{equation} 
+#
 #
 # which is parameterized by tensor
 #
@@ -71,7 +71,7 @@ basis = edrixs.get_fock_bin_by_N(norb, noccu)
 print(np.array(basis))
 ################################################################################
 # We expect the number of these states to be given by the mathematical
-# combination of two electrons distributed among six states (three orbitals
+# combination of two electrons distributed among six states (three spin-orbitals
 # with two spins per orbital).
 message = ("We predict C(norb={}, noccu={})={:.0f} states and we got {:d}, "
            "which is reassuring!")
@@ -165,8 +165,12 @@ for i, eigenvalue in enumerate(e):
 # We see :math:`S=0` and :math:`S=1` states coming from the
 # two combinations of the spin 1/2 particles. :math:`L` can take values of
 # 0, 1, 2. Remember that spin states have degeneracy of :math:`2S+1` and the
-# same is true for orbital states. We must multiply these :math:`S` and
+# same is true for orbital states.
+# We must multiply these :math:`S` and
 # :math:`L` degeneracies to get the total degeneracy.
+# Since these particles are fermions, the
+# overall state must be antisymmetric, which dictates the allowed combinations
+# of :math:`S` and :math:`L`.
 
 ################################################################################
 # Energy level diagram
@@ -191,7 +195,7 @@ _ = ax.set_xticks([])
 
 ################################################################################
 # We see Hund's rules in action! Rule 1 says that the highest spin :math:`S=1`
-# state has the lowest energy. Of the two :math:`S=1` states, the state with
+# state has the lowest energy. Of the two :math:`S=0` states, the state with
 # larger :math:`L=1` is lower energy following rule 2.
 
 ################################################################################
@@ -243,6 +247,6 @@ _ = ax.set_xticks([])
 
 ################################################################################
 # It is clear that we have split the :math:`S=1` state, which branches into
-# three states from :math:`J=S-L` to :math:`J=S+L`. Since the shell is less than
-# half full, Hund's third rule dictates that the smaller :math:`J` states
-# have the lower energies.
+# three states from :math:`J=|L-S|, |L-S|+1, ..., |L+S|`. Since the shell is
+# less than half full, Hund's third rule dictates that the smaller :math:`J` 
+# states have the lower energies.
