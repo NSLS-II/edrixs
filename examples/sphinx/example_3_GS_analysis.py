@@ -3,11 +3,12 @@
 Ground state analysis for NiO 
 ================================================================================
 This example follows the :ref:`sphx_glr_auto_examples_example_2_AIM_XAS.py` 
-example and considers the same model for NiO. This time we show how to
-determmine the groundstate wavevector in terms of
+example and considers the same model. This time we show how to analyze
+the wavevectors in terms of a
 :math:`\\alpha |d^8L^{10}> + \\beta |d^9L^9> \\gamma |d^{10}L^8>`
+representation.
 
-In doing this we will go through the exercise in building and diagonalizing
+In doing this we will go through the exercise of building and diagonalizing
 the Hamiltonian in a way that hopefully clarifies how to analyze other
 properties of the model.
 """
@@ -20,9 +21,9 @@ import scipy
 # Hamiltonian
 # ------------------------------------------------------------------------------
 # edrixs builds model Hamiltonians based on two fermion and four fermion terms. 
-# The four fermion terms come from Coulomb interations and will be 
+# The four fermion terms come from Coulomb interactions and will be 
 # assigned to :code:`umat`. All other interactions contribute to two fermion
-# terms :code:`emat`. 
+# terms in :code:`emat`. 
 #
 #    .. math::
 #     \begin{equation}
@@ -39,7 +40,7 @@ import scipy
 # ------------------------------------------------------------------------------
 # Let's get the parammeters we need from the
 # :ref:`sphx_glr_auto_examples_example_2_AIM_XAS.py` example. We need to 
-# consider :code:`ntot=20` spin orbitals
+# consider :code:`ntot=20` spin-orbitals
 # for this problem.
 
 from example_2_AIM_XAS import (F0_dd, F2_dd, F4_dd,
@@ -55,7 +56,7 @@ ntot = 20
 # by a :math:`10\times10\times10\times10` matrix. We
 # need to specify a :math:`20\times20\times20\times 20` matrix since we need to
 # include the full problem with :code:`ntot=20` spin-orbitals. The edrixs
-# convention is to put the :math:`d` orbitals first, so we assigned them to the
+# convention is to put the :math:`d` orbitals first, so we assign them to the
 # first :math:`10\times10\times10\times 10` indices of the matrix. edrixs
 # creates this matrix in the complex harmmonic basis by default.
 umat_delectrons = edrixs.get_umat_slater('d', F0_dd, F2_dd, F4_dd)
@@ -69,8 +70,7 @@ umat[:norb_d, :norb_d, :norb_d, :norb_d] += umat_delectrons
 # Previously we made a :math:`10\times10` two-fermion matrix describing the 
 # :math:`d`-shell interactions. Keep in mind we did this in the real harmonic
 # basis. We need to specify the two-fermion matrix for
-# the full problem :math:`20\times20` spin-orbitals in size. Keep in mind that
-# we created the impurity matrix in the real harmonic basis.
+# the full problem :math:`20\times20` spin-orbitals in size.
 emat_rhb = np.zeros((ntot, ntot), dtype='complex')
 emat_rhb[0:norb_d, 0:norb_d] += imp_mat
 
@@ -101,8 +101,7 @@ emat_chb = edrixs.cb_op(emat_rhb, tmat)
 
 ################################################################################
 # The spin exchange is built from the spin operators and the effective field
-# and is applied to the same region of the matrix. The zero indices below are
-# indexing the first and only bath level considered is this model.
+# is applied to the :math:`d`-shell region of the matrix. 
 v_orbl = 2
 sx = edrixs.get_sx(v_orbl)
 sy = edrixs.get_sy(v_orbl)
