@@ -95,7 +95,7 @@ slater = ([F0_dd, F2_dd, F4_dd],  # initial
 # for details. We can call these functions to get the impurity energy
 # :math:`E_d`, bath energy :math:`E_L`, impurity energy with a core hole
 # :math:`E_{dc}`, bath energy with a core hole :math:`E_{Lc}` and the 
-# core hole energy :math:`E_p`. # The 
+# core hole energy :math:`E_p`. The 
 # :code:`if __name__ == '__main__'` code specifies that this command
 # should only be executed if the file is explicitly run.
 Delta = 4.7
