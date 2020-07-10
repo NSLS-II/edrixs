@@ -95,7 +95,9 @@ slater = ([F0_dd, F2_dd, F4_dd],  # initial
 # for details. We can call these functions to get the impurity energy
 # :math:`E_d`, bath energy :math:`E_L`, impurity energy with a core hole
 # :math:`E_{dc}`, bath energy with a core hole :math:`E_{Lc}` and the 
-# core hole energy :math:`E_p`.
+# core hole energy :math:`E_p`. The 
+# :code:`if __name__ == '__main__'` code specifies that this command
+# should only be executed if the file is explicitly run.
 Delta = 4.7
 E_d, E_L = edrixs.CT_imp_bath(U_dd, Delta, nd)
 E_dc, E_Lc, E_p = edrixs.CT_imp_bath_core_hole(U_dd, U_dp, Delta, nd)
@@ -104,7 +106,8 @@ message = ("E_d = {:.3f} eV\n"
            "E_dc = {:.3f} eV\n"
            "E_Lc = {:.3f} eV\n"
            "E_p = {:.3f} eV\n")
-print(message.format(E_d, E_L, E_dc, E_Lc, E_p))
+if __name__ == '__main__':
+    print(message.format(E_d, E_L, E_dc, E_Lc, E_p))
 
 
 ################################################################################
@@ -261,10 +264,10 @@ on_which = 'spin'
 #
 # where :code:`<number of processors>` is the number of processors
 # you'd like to us. Running it as normal will work, it will just be slower.
-
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
-size = comm.Get_size() 
+if __name__ == '__main__':
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size() 
 
 ################################################################################
 # Calling the :code:`edrixs.ed_siam_fort` solver will find the ground state and
@@ -274,25 +277,24 @@ size = comm.Get_size()
 # We need to specify :code:`do_ed = 1`. For this example, we cannot use 
 # :code:`do_ed = 0` for a ground state search as we have set the impurity and
 # bath energy levels artificially, which means edrixs will have trouble to know
-# which subspace to search to find the ground state.
-
-do_ed = 1
-eval_i, denmat, noccu_gs = edrixs.ed_siam_fort(
-    comm, shell_name, nbath, siam_type=0, imp_mat=imp_mat, imp_mat_n=imp_mat_n,
-    bath_level=bath_level, bath_level_n=bath_level_n, hyb=hyb, c_level=c_level,
-    c_soc=c_soc, slater=slater, ext_B=ext_B,
-    on_which=on_which, trans_c2n=trans_c2n, v_noccu=v_noccu, do_ed=do_ed,
-    ed_solver=2, neval=50, nvector=3, ncv=100, idump=True)
-
+# which subspace to search to find the ground state. 
+if __name__ == '__main__':
+    do_ed = 1
+    eval_i, denmat, noccu_gs = edrixs.ed_siam_fort(
+        comm, shell_name, nbath, siam_type=0, imp_mat=imp_mat, imp_mat_n=imp_mat_n,
+        bath_level=bath_level, bath_level_n=bath_level_n, hyb=hyb, c_level=c_level,
+        c_soc=c_soc, slater=slater, ext_B=ext_B,
+        on_which=on_which, trans_c2n=trans_c2n, v_noccu=v_noccu, do_ed=do_ed,
+        ed_solver=2, neval=50, nvector=3, ncv=100, idump=True)
 ################################################################################
 # Let's check that we have all the electrons we think we have and print how 
 # the electron are distributed between the Ni (impurity) and O (bath).
-assert np.abs(noccu_gs - v_noccu) < 1e-6
-impurity_occupation = np.sum(denmat[0].diagonal()[0:norb_d]).real
-bath_occupation = np.sum(denmat[0].diagonal()[norb_d:]).real
-print('Impurity occupation = {:.6f}\n'.format(impurity_occupation))
-print('Bath occupation = {:.6f}\n'.format(bath_occupation))
-
+if __name__ == '__main__':
+    assert np.abs(noccu_gs - v_noccu) < 1e-6
+    impurity_occupation = np.sum(denmat[0].diagonal()[0:norb_d]).real
+    bath_occupation = np.sum(denmat[0].diagonal()[norb_d:]).real
+    print('Impurity occupation = {:.6f}\n'.format(impurity_occupation))
+    print('Bath occupation = {:.6f}\n'.format(bath_occupation))
 ################################################################################
 # We see that 0.18 electrons move from the O to the Ni in the ground state. 
 # 
@@ -300,22 +302,22 @@ print('Bath occupation = {:.6f}\n'.format(bath_occupation))
 # operator to create the excited state. We need to be careful to specify how 
 # many of the low energy states are thermally populated. In this case 
 # :code:`num_gs=3`. This can be determined by inspecting the function output. 
-xas, xas_poles = edrixs.xas_siam_fort(
-    comm, shell_name, nbath, ominc_xas, gamma_c=gamma_c, v_noccu=v_noccu, thin=thin,
-    phi=phi, num_gs=3, nkryl=200, pol_type=poltype_xas, temperature=temperature
-)
-
-
+if __name__ == '__main__':
+    xas, xas_poles = edrixs.xas_siam_fort(
+        comm, shell_name, nbath, ominc_xas, gamma_c=gamma_c, v_noccu=v_noccu, thin=thin,
+        phi=phi, num_gs=3, nkryl=200, pol_type=poltype_xas, temperature=temperature
+    )
 ################################################################################
 # Let's plot the data and save it just in case
-fig, ax = plt.subplots()
+if __name__ == '__main__':
+    fig, ax = plt.subplots()
 
-ax.plot(ominc_xas, xas)
-ax.set_xlabel('Energy (eV)')
-ax.set_ylabel('XAS intensity')
-ax.set_title('Anderson impurity model for NiO')
+    ax.plot(ominc_xas, xas)
+    ax.set_xlabel('Energy (eV)')
+    ax.set_ylabel('XAS intensity')
+    ax.set_title('Anderson impurity model for NiO')
 
-np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
+    np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
 
 ##############################################################################
 #
