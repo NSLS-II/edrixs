@@ -8,10 +8,11 @@ python -c "import matplotlib as mpl; mpl.use('Agg'); import pylab as plt; fig, a
 
 test -e test.png && rm test.png
 
+mkdir source_code
+mv * source_code/.
+cp source_code/examples .
+
 wget https://nsls-ii.github.io/edrixs/_downloads/7fdbd8c6d7eb529642f9d6214b5c2159/auto_examples_jupyter.zip
 unzip *.zip
 grep -RiIl 'matplotlib inline' | xargs sed -i 's/matplotlib inline/matplotlib widget/g'
 
-git clone https://github.com/NSLS-II/edrixs.git
-cp -r edrixs/examples .
-rm -r edrixs
