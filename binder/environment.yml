@@ -3,6 +3,12 @@ channels:
   - nsls2forge                     # We added a third party channel
 dependencies:
   - edrixs
-  - ipympl
+  - ipympl=0.5.*
+  - ipywidgets=7.5.*
   - nodejs
   - unzip
+  - bokeh=2.0.*
+  - h5py
+  - h5f5
+  - seaborn 
+
