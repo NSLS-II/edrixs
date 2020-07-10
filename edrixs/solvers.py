@@ -2071,6 +2071,22 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     if c_name in ['p', 'd', 'f']:
         emat_n[ntot_v:ntot, ntot_v:ntot] += atom_hsoc(c_name, c_soc)
 
+    # static core potential
+    emat_n[0:v_norb, 0:v_norb] -= np.eye(v_norb) * static_core_pot
+
+    if trans_c2n is None:
+        trans_c2n = np.eye(v_norb, dtype=np.complex)
+    else:
+        trans_c2n = np.array(trans_c2n)
+
+    tmat = np.eye(ntot, dtype=np.complex)
+    for i in range(nbath+1):
+        off = i * v_norb
+        tmat[off:off+v_norb, off:off+v_norb] = np.conj(np.transpose(trans_c2n))
+    emat_i[:, :] = cb_op(emat_i, tmat)
+    emat_n[:, :] = cb_op(emat_n, tmat)
+
+    # zeeman field
     if v_name == 't2g':
         lx, ly, lz = get_lx(1, True), get_ly(1, True), get_lz(1, True)
         sx, sy, sz = get_sx(1), get_sy(1), get_sz(1)
@@ -2090,21 +2106,6 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
             raise Exception("Unknown value of on_which", on_which)
         emat_i[0:v_norb, 0:v_norb] += zeeman
         emat_n[0:v_norb, 0:v_norb] += zeeman
-
-    # static core potential
-    emat_n[0:v_norb, 0:v_norb] -= np.eye(v_norb) * static_core_pot
-
-    if trans_c2n is None:
-        trans_c2n = np.eye(v_norb, dtype=np.complex)
-    else:
-        trans_c2n = np.array(trans_c2n)
-
-    tmat = np.eye(ntot, dtype=np.complex)
-    for i in range(nbath+1):
-        off = i * v_norb
-        tmat[off:off+v_norb, off:off+v_norb] = np.conj(np.transpose(trans_c2n))
-    emat_i[:, :] = cb_op(emat_i, tmat)
-    emat_n[:, :] = cb_op(emat_n, tmat)
 
     # Perform ED if necessary
     if do_ed == 1 or do_ed == 2:
