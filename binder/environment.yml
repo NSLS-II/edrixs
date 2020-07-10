@@ -9,6 +9,6 @@ dependencies:
   - unzip
   - bokeh=2.0.*
   - h5py
-  - h5f5
+  - hdf5
   - seaborn 
 
