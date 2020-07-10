@@ -34,7 +34,9 @@ Install via Anaconda (only Linux now)
 
   .. code-block:: bash
   
-     $ conda install -c lightsource2-tag edrixs
+     $ conda create --name edrixs_env python=3.7
+     $ conda activate edrixs_env
+     $ conda install -c nsls2forge edrixs
      
 
 Run edrixs in docker
