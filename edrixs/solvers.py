@@ -2107,7 +2107,6 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
         emat_i[0:v_norb, 0:v_norb] += zeeman
         emat_n[0:v_norb, 0:v_norb] += zeeman
 
-
     # Perform ED if necessary
     if do_ed == 1 or do_ed == 2:
         eval_shift = c_level * c_norb / v_noccu
