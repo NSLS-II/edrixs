@@ -1,0 +1,17 @@
+#!/bin/bash
+
+jupyter labextension install @jupyter-widgets/jupyterlab-manager
+jupyter labextension install jupyter-matplotlib
+
+# run matplotlib once to generate the font cache
+python -c "import matplotlib as mpl; mpl.use('Agg'); import pylab as plt; fig, ax = plt.subplots(); fig.savefig('test.png')"
+
+test -e test.png && rm test.png
+
+wget https://nsls-ii.github.io/edrixs/_downloads/7fdbd8c6d7eb529642f9d6214b5c2159/auto_examples_jupyter.zip
+unzip *.zip
+grep -RiIl 'matplotlib inline' | xargs sed -i 's/matplotlib inline/matplotlib widget/g'
+
+git clone https://github.com/NSLS-II/edrixs.git
+cp -r edrixs/examples .
+rm -r edrixs

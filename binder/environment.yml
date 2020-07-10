@@ -1,0 +1,8 @@
+name: edrixs_tutorial
+channels:
+  - nsls2forge                     # We added a third party channel
+dependencies:
+  - edrixs
+  - ipympl
+  - nodejs
+  - unzip
