@@ -16,6 +16,9 @@ import edrixs
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
+import example_2_AIM_XAS
+import importlib
+importlib.reload(example_2_AIM_XAS)
 
 ################################################################################
 # Hamiltonian
