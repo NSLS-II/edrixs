@@ -15,6 +15,7 @@ test -e test.png && rm test.png
 mkdir source_code
 mv * source_code/.
 cp source_code/examples .
+cp source_code/examples/sphinx/*.py .
 
 wget https://nsls-ii.github.io/edrixs/_downloads/7fdbd8c6d7eb529642f9d6214b5c2159/auto_examples_jupyter.zip
 unzip *.zip
