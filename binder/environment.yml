@@ -3,7 +3,7 @@ channels:
   - nsls2forge                     # We added a third party channel
 dependencies:
   - jupyterlab=2.1.4
-  - edrixs
+  - edrixs>=0.0.6
   - ipympl=0.5.*
   - ipywidgets=7.5.*
   - nodejs
@@ -12,4 +12,3 @@ dependencies:
   - h5py
   - hdf5
   - seaborn 
-
