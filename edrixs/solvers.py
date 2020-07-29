@@ -67,7 +67,7 @@ def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
     v_noccu: int number
         Number of electrons in valence shell.
     slater: tuple of two lists
-        Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
+        Slater integrals for initial (1st list) and intermediate (2nd list) Hamiltonians.
         The order of the elements in each list should be like this:
 
         [FX_vv, FX_vc, GX_vc, FX_cc],
@@ -606,7 +606,7 @@ def ed_1v1c_fort(comm, shell_name, *, shell_level=None,
     v_noccu: int number
         Total number of electrons in valence shells.
     slater: tuple of two lists
-        Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
+        Slater integrals for initial (1st list) and intermediate (2nd list) Hamiltonians.
         The order of the elements in each list should be like this:
 
         [FX_vv, FX_vc, GX_vc, FX_cc],
@@ -761,7 +761,7 @@ def ed_2v1c_fort(comm, shell_name, *, shell_level=None,
     v_tot_noccu: int number
         Total number of electrons in valence shells.
     slater: tuple of two lists
-        Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
+        Slater integrals for initial (1st list) and intermediate (2nd list) Hamiltonians.
         The order of the elements in each list should be like this:
 
         [FX_v1v1, FX_v1v2, GX_v1v2, FX_v2v2, FX_v1c, GX_v1c, FX_v2c, GX_v2c],
@@ -1877,7 +1877,7 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
         for siam_type=1 and the intermediate configurations. If hopping_n=None,
         hopping will be used.
     slater: tuple of two lists
-        Slater integrals for initinal (1st list) and intermediate (2nd list) Hamiltonians.
+        Slater integrals for initial (1st list) and intermediate (2nd list) Hamiltonians.
         The order of the elements in each list should be like this:
 
         [FX_vv, FX_vc, GX_vc, FX_cc],

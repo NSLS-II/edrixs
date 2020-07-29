@@ -30,7 +30,7 @@ cfmat = edrixs.angular_momentum.cf_cubic_d(ten_dq)
 # harmonic basis, but it would be diagonal in the real harmonic basis
 # :math:`d_{3z^2-r^2}, d_{xz}, d_{yz}, d_{x^2-y^2}, d_{xy}`.
 # Let us diagonalize this matrix as a check and print out the energies
-# and their degenergies.
+# and their degeneracies.
 
 e, v = scipy.linalg.eigh(cfmat)
 e = e.round(decimals=6)
@@ -40,7 +40,7 @@ degeneracies = [sum(evalue == e) for evalue in unique_e]
 print("E  \tDegeneracy")
 for evalue, degenvalue in zip(unique_e, degeneracies):
     print("{:.1f}\t{:.0f}".format(evalue, degenvalue))
-print("{} distict energies".format(len(unique_e)))
+print("{} distinct energies".format(len(unique_e)))
 
 ################################################################################
 # This makes sense! We see two different energies split by :math:`10D_q=10`. Let
@@ -57,7 +57,7 @@ print(v[:, 6:].real)
 ################################################################################
 # These are the set of so-called :math:`e_{g}` orbitals, composed of
 # :math:`Y^2_2, Y^{-2}_2, Y^{0}_2`. We can use edrixs to prove that
-# :code:`cfmat` woud be diagonal in the real
+# :code:`cfmat` would be diagonal in the real
 # harmonic basis. An operator :math:`\hat{O}` can be transformed into an
 # operator in another basis :math:`\hat{O}^{\prime}` using a unitary
 # transformation matrix :math:`T` as
@@ -127,7 +127,7 @@ degeneracies = [sum(evalue == e) for evalue in unique_e]
 print("E  \tDegeneracy")
 for evalue, degenvalue in zip(unique_e, degeneracies):
     print("{:.1f}\t{:.0f}".format(evalue, degenvalue))
-print("{} distict energies".format(len(unique_e)))
+print("{} distinct energies".format(len(unique_e)))
 
 ################################################################################
 # We see 10 distinct energies, which is the number of ways one can arrange
@@ -140,7 +140,7 @@ print("{} distict energies".format(len(unique_e)))
 # :math:`|3z^2-r^2,\uparrow>`, :math:`|3z^2-r^2,\downarrow>`,
 # :math:`|zx,\uparrow>`, :math:`|zx,\downarrow>`, etc.
 # In this basis, they take a simple form: only the diagonal terms have element
-# 1. We therefore make a 3D empty array and assign the diagaonal as 1. Check
+# 1. We therefore make a 3D empty array and assign the diagonal as 1. Check
 # out the
 # `numpy indexing notes <https://numpy.org/doc/stable/reference/arrays.indexing.html>`_
 # if needed.
