@@ -320,7 +320,7 @@ def CT_imp_bath(U_dd, Delta, n):
            10 E_L + n     E_d + n(n-1) \\frac{U_{dd}}{2} &= 0 \\\\
             9 E_L + (n+1) E_d + (n+1)n \\frac{U_{dd}}{2} &= \\Delta \\\\
             8 E_L + (n+2) E_d + (n+1)(n+2) \\frac{U_{dd}}{2}
-            &= 2\\Delta + \\frac{U_{dd}}
+            &= 2\\Delta + U_{dd}
            \\end{aligned}
 
     The solutions are:
