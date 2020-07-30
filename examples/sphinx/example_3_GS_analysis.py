@@ -93,7 +93,7 @@ emat_rhb[indx2, indx1] += np.conj(hyb[0])
 
 ################################################################################
 # We now need to transform into the complex harmonic basis. We assign
-# the two diagaonal blocks of a :math:`20\times20` matrix to the
+# the two diagonal blocks of a :math:`20\times20` matrix to the
 # conjugate transpose of the transition matrix.
 tmat = np.eye(ntot, dtype=np.complex)
 for i in range(2):

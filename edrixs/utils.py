@@ -328,9 +328,9 @@ def CT_imp_bath(U_dd, Delta, n):
        .. math::
            \\begin{aligned}
            E_d &=
-           \\frac{10 \\Delta - n (19 +  n) U_{dd}{2}}{10 + n}  \\\\
+           \\frac{10 \\Delta - n (19 +  n) U_{dd}/2}{10 + n}  \\\\
            E_L &=
-           \\frac{n ((1+n) U_{dd}/2-\\Delta}{10 + n}
+           \\frac{n (1+n) U_{dd}/2-\\Delta}{10 + n}
            \\end{aligned}.
 
     References
@@ -817,7 +817,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None
                     '5s', '5p', '5d', '5f', '6s', '6p', '6d']
 
     if atom not in avail_atoms:
-        raise Exception("Atom data is Not avaiable for this atom: ", atom)
+        raise Exception("Atom data is Not available for this atom: ", atom)
 
     if not isinstance(v_name, (list, tuple)):
         v_name = (v_name,)
@@ -833,7 +833,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None
 
     for ishell in v_name:
         if ishell not in avail_shells:
-            raise Exception("Not avaiable for this shell: ", ishell)
+            raise Exception("Not available for this shell: ", ishell)
 
     fname = pkg_resources.resource_filename('edrixs', 'atom_data/'+atom+'.json')
     with open(fname, 'r') as f:
@@ -854,7 +854,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None
     else:
         case = v_name[0] + str(v_noccu[0]) + '_' + v_name[1] + str(v_noccu[1])
     if case not in atom_dict:
-        raise Exception("This configuration is not avaiable in atom_data", case)
+        raise Exception("This configuration is not available in atom_data", case)
 
     nslat = len(slater_name)
     slater_i = [0.0] * nslat
@@ -889,7 +889,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None
                         v_name[1] + str(v_noccu[1]+1) + '_' +
                         edge_name[0:2] + str(c_norb[edge_name[1]]-1))
         if case not in atom_dict:
-            raise Exception("This configuration is currently not avaiable in atom_data", case)
+            raise Exception("This configuration is currently not available in atom_data", case)
 
         nslat = len(slater_name)
         slater_n = [0.0] * nslat

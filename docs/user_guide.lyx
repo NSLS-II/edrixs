@@ -179,7 +179,7 @@ We test the code using Intel's ifort and GNU's gfortran compiler.
 -ng).
  Python3, Numpy, Scipy, Sympy, Matplotlib, Sphinx and Numpydoc are required.
  We recommend to install the latest Anacona package (https://www.anaconda.com/)
- for the Python3 enviroment and the libraries.
+ for the Python3 environment and the libraries.
 \end_layout
 
 \begin_layout Section

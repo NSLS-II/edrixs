@@ -200,7 +200,7 @@ Install Python, pip, numpy, scipy, sympy, matplotlib::
 
 * DO NOT use pip to install numpy because it will use ``clang`` as default compiler, which has a strange bug when using ``f2py`` with ``mpif90`` compiler. If you cannot solve this issue by ``sudo port install py37-numpy +gcc8``, you can compile numpy from its source with ``gcc`` compiler. Always use gcc to compile numpy if you want to build it from source.
 
-* You can also try ``gcc9`` if it is already avaiable, but be sure to change all ``gcc8`` to ``gcc9`` in the above commands.
+* You can also try ``gcc9`` if it is already available, but be sure to change all ``gcc8`` to ``gcc9`` in the above commands.
 
 We will assume ``python`` pointing to ``python3.7`` and ``pip`` pointing to ``pip3.7`` from now on. If this is not the case, you can make links explicitly.
 Check we are using the expected python and pip::
@@ -238,7 +238,7 @@ Now, we are ready to build edrixs::
     python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/opt/local/lib
     sudo pip install .
 
-You can add ``edrixs/bin`` to the enviroment variable ``PATH`` in ~/.bash_profile.
+You can add ``edrixs/bin`` to the environment variable ``PATH`` in ~/.bash_profile.
 
 Go to ``examples`` directory to run some examples::
 
@@ -335,7 +335,7 @@ Now, we are ready to build edrixs::
     python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/usr/local/lib:/usr/local/opt/openblas/lib
     pip install .
 
-You can add ``edrixs/bin`` to the enviroment variable ``PATH`` in ``~/.bash_profile``.
+You can add ``edrixs/bin`` to the environment variable ``PATH`` in ``~/.bash_profile``.
 
 Go to ``examples`` directory to run some examples::
 

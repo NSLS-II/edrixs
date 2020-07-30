@@ -117,7 +117,7 @@ print("{} eignvalues and {} eigvenvectors {} elements long.".format(len(e),
 # To interpret the results, it is informative to compute the expectations values
 # related to the spin :math:`\mathbf{S}`, orbital :math:`\mathbf{L}`,
 # and total :math:`\mathbf{J}`, angular momentum. We first load the relevant
-# matrices for these quantities for a `p` atomic shell.  We need to specifiy
+# matrices for these quantities for a `p` atomic shell.  We need to specify
 # that we would like to include spin when loading the orbital operator.
 orb_mom = edrixs.get_orb_momentum(l, ispin=True)
 spin_mom = edrixs.get_spin_momentum(l)
