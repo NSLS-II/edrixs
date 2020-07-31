@@ -28,9 +28,9 @@ Then, create and activate a conda env, for example, called ``edrixs_env``::
 
 Install edrixs by::
 
-    conda install -c lightsource2-tag edrixs
+    conda install -c nsls2forge edrixs
 
-where, `lightsource2-tag <https://anaconda.org/lightsource2-tag/>`_ is an Anaconda package repository maintained by `DAMA <https://github.com/NSLS-II/lightsource2-recipes/>`_ at NSLS-II at  Brookhaven National Laboratory. We endeavor to keep these up-to-date with our `tagged releases <https://github.com/NSLS-II/edrixs/releases>`_, but note that these builds will usually not correspond to the latest version of edrixs, which is available in the `master branch of edrixs <https://github.com/NSLS-II/edrixs>`_.
+where, `nsls2forge <https://anaconda.org/nsls2forge/>`_ is an Anaconda package repository maintained by `DAMA <https://github.com/nsls-ii-forge/edrixs-feedstock>`_ at NSLS-II at  Brookhaven National Laboratory. We endeavor to keep these up-to-date with our `tagged releases <https://github.com/NSLS-II/edrixs/releases>`_, but note that these builds will usually not correspond to the latest version of edrixs, which is available in the `master branch of edrixs <https://github.com/NSLS-II/edrixs>`_.
 
 Build from source
 =================
