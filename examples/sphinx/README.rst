@@ -1,4 +1,4 @@
-EDRIXS examples
-================
+Pedagogical examples
+====================
 
-Below are examples illustrating how to use EDRIXS:
+Below are some examples illustrating the concepts behind and usage of EDRIXS.

@@ -16,3 +16,4 @@ edrixs User Guide
    quickstart
    basics
    pythontips
+   examples

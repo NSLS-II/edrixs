@@ -2,6 +2,11 @@
 Quickstart tutorial
 ===================
 
+If you are already familiar with multiplet calculations this page and our
+:ref:`examples page <examples>` are a good part to start. Otherwise, checkout
+our :ref:`Pedagogical examples <sphx_glr_auto_examples>` to learn the concepts
+behind how edrixs works.
+
 Use edrixs as an ED calculator
 ------------------------------
 edrixs can be used as a simple ED calculator to get eigenvalues (eigenvectors) of a many-body Hamiltonian with small size dimension (:math:`< 1,000`).
