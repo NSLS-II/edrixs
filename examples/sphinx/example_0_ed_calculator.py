@@ -14,7 +14,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 import edrixs
-from scipy.special import comb
 
 ################################################################################
 # Parameters
@@ -75,7 +74,7 @@ print(np.array(basis))
 # with two spins per orbital).
 message = ("We predict C(norb={}, noccu={})={:.0f} states and we got {:d}, "
            "which is reassuring!")
-print(message.format(norb, noccu, comb(norb, noccu), len(basis)))
+print(message.format(norb, noccu, edrixs.combination(norb, noccu), len(basis)))
 ################################################################################
 # Note that in more complicated problems with both valence and core
 # electrons, the edrixs convention is to list the valence electrons first.
