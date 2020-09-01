@@ -56,7 +56,7 @@ Thus far we have addressed.
 .. rubric:: Footnotes
 
 .. [1] Y. Wang et al.,
-       `Comput. Phys. Commun 243, 151-165 (2019) <https://doi.org/10.1016/j.cpc.2019.04.01>`_
+       `Comput. Phys. Commun 243, 151-165 (2019) <https://doi.org/10.1016/j.cpc.2019.04.018>`_
 .. [2] Y. Wang et al., 
        `Phys. Rev. Lett. 122, 106401 (2019) <https://doi.org/10.1103/PhysRevLett.122.106401>`_. 
 .. [3] G. Fabbris et al.,
