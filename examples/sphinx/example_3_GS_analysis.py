@@ -154,14 +154,15 @@ print(message.format(alphas[0], betas[0], gammas[0]))
 
 fig, ax = plt.subplots()
 
-_ = ax.plot(e, alphas, label=r'$\alpha$ $d^8L^{10}$')
-_ = ax.plot(e, betas, label=r'$\beta$ $d^9L^{9}$')
-_ = ax.plot(e, gammas, label=r'$\gamma$ $d^{10}L^{8}$')
+ax.plot(e, alphas, label=r'$\alpha$ $d^8L^{10}$')
+ax.plot(e, betas, label=r'$\beta$ $d^9L^{9}$')
+ax.plot(e, gammas, label=r'$\gamma$ $d^{10}L^{8}$')
 
-_ = ax.set_xlabel('Energy (eV)')
-_ = ax.set_ylabel('Population')
-_ = ax.set_title('NiO')
-_ = ax.legend()
+ax.set_xlabel('Energy (eV)')
+ax.set_ylabel('Population')
+ax.set_title('NiO')
+ax.legend()
+plt.show()
 
 ################################################################################
 # We see that the ligand states are mixed into the ground state, but the
