@@ -33,7 +33,6 @@ of course, be cited.
 import edrixs
 import numpy as np
 import matplotlib.pyplot as plt
-from mpi4py import MPI
 
 ################################################################################
 # Number of electrons
@@ -265,6 +264,7 @@ on_which = 'spin'
 # where :code:`<number of processors>` is the number of processors
 # you'd like to us. Running it as normal will work, it will just be slower.
 if __name__ == '__main__':
+    from mpi4py import MPI
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size() 
@@ -316,6 +316,7 @@ if __name__ == '__main__':
     ax.set_xlabel('Energy (eV)')
     ax.set_ylabel('XAS intensity')
     ax.set_title('Anderson impurity model for NiO')
+    plt.show()
 
     np.savetxt('xas.dat', np.concatenate((np.array([ominc_xas]).T, xas), axis=1))
 

@@ -8,7 +8,6 @@ This example explains how to implement crystal fields in edrixs.
 # We need to import these modules.
 import edrixs
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy
 
 np.set_printoptions(precision=2, suppress=True, linewidth=90)

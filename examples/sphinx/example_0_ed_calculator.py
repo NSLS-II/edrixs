@@ -187,10 +187,13 @@ for i, eigenvalue in enumerate(np.unique(e)):
             verticalalignment='bottom',
             color='C{}'.format(i))
 
-_ = ax.set_ylabel('Energy')
-_ = [ax.spines[loc].set_visible(False) for loc in ['right', 'top', 'bottom']]
-_ = ax.yaxis.set_ticks_position('left')
-_ = ax.set_xticks([])
+ax.set_ylabel('Energy')
+for loc in ['right', 'top', 'bottom']:
+    ax.spines[loc].set_visible(False)
+
+ax.yaxis.set_ticks_position('left')
+ax.set_xticks([])
+plt.show()
 
 ################################################################################
 # We see Hund's rules in action! Rule 1 says that the highest spin :math:`S=1`
@@ -239,10 +242,13 @@ for i, eigenvalue in enumerate(np.unique(e2)):
             verticalalignment='bottom',
             color='C{}'.format(i))
 
-_ = ax.set_ylabel('Energy')
-_ = [ax.spines[loc].set_visible(False) for loc in ['right', 'top', 'bottom']]
-_ = ax.yaxis.set_ticks_position('left')
-_ = ax.set_xticks([])
+ax.set_ylabel('Energy')
+for loc in ['right', 'top', 'bottom']:
+    ax.spines[loc].set_visible(False)
+
+ax.yaxis.set_ticks_position('left')
+ax.set_xticks([])
+plt.show()
 
 ################################################################################
 # It is clear that we have split the :math:`S=1` state, which branches into
