@@ -56,6 +56,17 @@ Connect to docker python session with Jupyter
     jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 
   and will return a URL that you can enter in a browser on your host machine. The larger ``edrixs/edrixs_interactive`` container includes `ipywidgets <https://ipywidgets.readthedocs.io/en/latest/>`_ and `ipympl <https://github.com/matplotlib/jupyter-matplotlib>`_ for interactive computing.
-  
+
   Jupyterlab provides access to a unix terminal, which you can create via File > New > Terminal. We suggest changing the terminal shell type by issuing the command ``bash`` in the terminal.
-  
+
+
+Sharing your code
+-----------------
+
+Using Docker is a nice way to straightforwardly share your code with others. The standard way to specify which docker image is needed to run your code is to include a file named ``Dockerfile`` with the following contents ::
+
+    FROM edrixs/edrixs_interactive
+    USER rixs
+
+You might like to checkout the `jupyter-repo2docker
+<https://repo2docker.readthedocs.io/en/latest/>`_ project, which helps automate the process of building and connecting to docker images. The `mybinder <https://mybinder.org/>`_ project might also be helpful as this will open a github respository of notebooks in an executable environment, making your code immediately reproducible by anyone, anywhere.
