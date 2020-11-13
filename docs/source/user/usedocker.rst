@@ -63,7 +63,7 @@ Connect to docker python session with Jupyter
 Sharing your code
 -----------------
 
-Using Docker is a nice way to straightforwardly share your code with others. The standard way to specify which docker image is needed to run your code is to include a file named Dockerfile with the following contents ::
+Using Docker is a nice way to straightforwardly share your code with others. The standard way to specify which docker image is needed to run your code is to include a file named ``Dockerfile`` with the following contents ::
 
     FROM edrixs/edrixs_interactive
     USER rixs
