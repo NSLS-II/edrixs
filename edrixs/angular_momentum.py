@@ -711,7 +711,7 @@ def cf_square_planar_d(ten_dq, ds):
 
     Returns
     -------
-    cf: 2d complex array, shape=(6, 6)
+    cf: 2d complex array, shape=(10, 10)
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
     tmp = np.zeros((5, 5), dtype=np.complex)
