@@ -1,7 +1,7 @@
 __all__ = ['get_ladd', 'get_lminus', 'get_lx', 'get_ly', 'get_lz', 'get_orb_momentum',
            'get_pauli', 'get_sx', 'get_sy', 'get_sz', 'get_spin_momentum', 'euler_to_rmat',
            'rmat_to_euler', 'where_is_angle', 'dmat_spinor', 'zx_to_rmat', 'get_wigner_dmat',
-           'cf_cubic_d', 'cf_tetragonal_d', 'cf_trigonal_t2g']
+           'cf_cubic_d', 'cf_tetragonal_d', 'cf_square_planar_d', 'cf_trigonal_t2g']
 
 import numpy as np
 from .basis_transform import cb_op, tmat_r2c
@@ -688,6 +688,44 @@ def cf_trigonal_t2g(delta):
     cf[0:6:2, 0:6:2] += tmp
     cf[1:6:2, 1:6:2] += tmp
     cf[:, :] = cb_op(cf, tmat_r2c('t2g', True))
+
+    return cf
+
+
+def cf_square_planar_d(ten_dq, ds):
+    """
+    Given 10Dq, ds, return square planar crystal field matrix for d orbitals
+    in the complex harmonics basis. This is the limit of strong tetragonal
+    distortion with two axial ligands at infinity. Note that in this case the
+    three parameters, ten_dq, ds, and dt, are no longer independent:
+    dt = 2/35*ten_dq and the levels depend on only two parameters
+    ten_dq and ds.
+
+    Parameters
+    ----------
+    ten_dq: float scalar
+        Parameter associated with eg-t2g splitting.
+    ds: float scalar
+        Paramter associated with splitting orbitals with
+        z-components.
+
+    Returns
+    -------
+    cf: 2d complex array, shape=(10, 10)
+        The matrix form of crystal field Hamiltonian in complex harmonics basis.
+    """
+    tmp = np.zeros((5, 5), dtype=np.complex)
+    tmp[0, 0] = 9/35*ten_dq - 2*ds  # d3z2-r2
+    tmp[1, 1] = -6/35*ten_dq - ds  # dzx
+    tmp[2, 2] = -6/35*ten_dq - ds  # dzy
+    tmp[3, 3] = 19/35*ten_dq + 2*ds  # dx2-y2
+    tmp[4, 4] = -16/35*ten_dq + 2*ds  # dxy
+
+    cf = np.zeros((10, 10), dtype=np.complex)
+    cf[0:10:2, 0:10:2] = tmp
+    cf[1:10:2, 1:10:2] = tmp
+
+    cf[:, :] = cb_op(cf, tmat_r2c('d', True))
 
     return cf
 
