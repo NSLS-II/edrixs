@@ -21,9 +21,9 @@ take into account the symmetry relationships between the different bath atom
 orbitals and the fact that there are bath orbital combinations that do not
 interact with the impurity by symmetry. By doing this the problem can be
 represented with fewer orbitals, which makes the calculation far more efficient.
-The standard EDRIXS solver that we will use, assumes that the bath states are
+The standard EDRIXS solver that we will use assumes that the bath states are
 represented by an integer number of bath sites set by :code:`nbath`, each of
-which hosts a the same number of spin-orbits as the impurity e.g. 10 for a
+which hosts the same number of spin-orbits as the impurity e.g. 10 for a
 :math:`d`-electron material.
 
 NiO has a rocksalt structure in which all Ni atoms are surrounded by six O
