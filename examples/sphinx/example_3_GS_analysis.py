@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
-Ground state analysis for NiO 
+Ground state analysis for NiO
 ================================================================================
-This example follows the :ref:`sphx_glr_auto_examples_example_2_AIM_XAS.py` 
+This example follows the :ref:`sphx_glr_auto_examples_example_2_AIM_XAS.py`
 example and considers the same model. This time we show how to analyze
 the wavevectors in terms of a
 :math:`\\alpha |d^8L^{10}> + \\beta |d^9L^9> \\gamma |d^{10}L^8>`
@@ -18,31 +18,31 @@ import matplotlib.pyplot as plt
 import scipy
 import example_2_AIM_XAS
 import importlib
-importlib.reload(example_2_AIM_XAS)
+_ = importlib.reload(example_2_AIM_XAS)
 
 ################################################################################
 # Hamiltonian
 # ------------------------------------------------------------------------------
-# edrixs builds model Hamiltonians based on two fermion and four fermion terms. 
-# The four fermion terms come from Coulomb interactions and will be 
+# edrixs builds model Hamiltonians based on two fermion and four fermion terms.
+# The four fermion terms come from Coulomb interactions and will be
 # assigned to :code:`umat`. All other interactions contribute to two fermion
-# terms in :code:`emat`. 
+# terms in :code:`emat`.
 #
 #    .. math::
 #     \begin{equation}
 #     \hat{H}_{i} = \sum_{\alpha,\beta} t_{\alpha,\beta}
-#     \hat{f}^{\dagger}_{\alpha} \hat{f}_{\beta} 
-#     + \sum_{\alpha,\beta,\gamma,\delta} U_{\alpha,\beta,\gamma,\delta} 
+#     \hat{f}^{\dagger}_{\alpha} \hat{f}_{\beta}
+#     + \sum_{\alpha,\beta,\gamma,\delta} U_{\alpha,\beta,\gamma,\delta}
 #     \hat{f}^{\dagger}_{\alpha}\hat{f}^{\dagger}_{\beta}
 #     \hat{f}_{\gamma}\hat{f}_{\delta},
-#     \end{equation} 
+#     \end{equation}
 #
 
 ################################################################################
 # Import parameters
 # ------------------------------------------------------------------------------
 # Let's get the parammeters we need from the
-# :ref:`sphx_glr_auto_examples_example_2_AIM_XAS.py` example. We need to 
+# :ref:`sphx_glr_auto_examples_example_2_AIM_XAS.py` example. We need to
 # consider :code:`ntot=20` spin-orbitals
 # for this problem.
 
@@ -51,9 +51,8 @@ from example_2_AIM_XAS import (F0_dd, F2_dd, F4_dd,
                                imp_mat, CF, bath_level,
                                hyb, ext_B, trans_c2n)
 ntot = 20
-                               
 ################################################################################
-# Four fermion matrix 
+# Four fermion matrix
 # ------------------------------------------------------------------------------
 # The Coulomb interactions in the :math:`d` shell of this problem are described
 # by a :math:`10\times10\times10\times10` matrix. We
@@ -70,7 +69,7 @@ umat[:norb_d, :norb_d, :norb_d, :norb_d] += umat_delectrons
 ################################################################################
 # Two fermion matrix
 # ------------------------------------------------------------------------------
-# Previously we made a :math:`10\times10` two-fermion matrix describing the 
+# Previously we made a :math:`10\times10` two-fermion matrix describing the
 # :math:`d`-shell interactions. Keep in mind we did this in the real harmonic
 # basis. We need to specify the two-fermion matrix for
 # the full problem :math:`20\times20` spin-orbitals in size.
@@ -79,10 +78,10 @@ emat_rhb[0:norb_d, 0:norb_d] += imp_mat
 
 ################################################################################
 # The :code:`bath_level` energies need to be applied to the diagonal of the
-# last :math:`10\times10` region of the matrix. 
+# last :math:`10\times10` region of the matrix.
 indx = np.arange(norb_d, norb_d*2)
 emat_rhb[indx, indx] += bath_level[0]
-   
+
 ################################################################################
 # The :code:`hyb` terms mix the impurity and bath states and are therefore
 # applied to the off-diagonal terms of :code:`emat`.
@@ -104,7 +103,7 @@ emat_chb = edrixs.cb_op(emat_rhb, tmat)
 
 ################################################################################
 # The spin exchange is built from the spin operators and the effective field
-# is applied to the :math:`d`-shell region of the matrix. 
+# is applied to the :math:`d`-shell region of the matrix.
 v_orbl = 2
 sx = edrixs.get_sx(v_orbl)
 sy = edrixs.get_sy(v_orbl)
@@ -115,8 +114,8 @@ emat_chb[0:norb_d, 0:norb_d] += zeeman
 ################################################################################
 # Build the Fock basis and Hamiltonain and Diagonalize
 # ------------------------------------------------------------------------------
-# We create the fock basis and build the Hamiltonian using the full set of 
-# :math:`20` spin orbitals,  specifying that they are occuplied by :math:`18` 
+# We create the fock basis and build the Hamiltonian using the full set of
+# :math:`20` spin orbitals,  specifying that they are occuplied by :math:`18`
 # electrons. See the :ref:`sphx_glr_auto_examples_example_0_ed_calculator.py`
 # example for more details if needed. We also set the ground state to zero
 # energy.
@@ -149,8 +148,8 @@ print(message.format(alphas[0], betas[0], gammas[0]))
 ################################################################################
 # Plot
 # ------------------------------------------------------------------------------
-# Let's look how :math:`\alpha`, :math:`\beta`, and :math:`\gamma` vary with 
-# energy. 
+# Let's look how :math:`\alpha`, :math:`\beta`, and :math:`\gamma` vary with
+# energy.
 
 fig, ax = plt.subplots()
 
@@ -167,5 +166,5 @@ plt.show()
 ################################################################################
 # We see that the ligand states are mixed into the ground state, but the
 # majority of the weight for the :math:`L^9` and :math:`L^8` states
-# live at :math:`\Delta` and :math:`2\Delta`. With a lot of additional 
+# live at :math:`\Delta` and :math:`2\Delta`. With a lot of additional
 # structure from the other interactions.
