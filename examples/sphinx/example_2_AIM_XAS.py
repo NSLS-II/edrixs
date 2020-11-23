@@ -55,6 +55,7 @@ import matplotlib.pyplot as plt
 # :code:`v_noccu` will be conserved.
 nd = 8
 norb_d = 10
+norb_bath = 10
 nbath = 1
 v_noccu  = nd + nbath*norb_d
 shell_name = ('d', 'p') # valence and core shells for XAS calculation
