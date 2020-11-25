@@ -5,8 +5,9 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
     && apt-get update \
     && apt-get install -y -q --no-install-recommends curl ffmpeg \
     && curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - \
-    && apt install -y git \
-    && apt install -y nodejs \
+    && apt install -y git nodejs \
+       texlive-xetex  texlive-fonts-recommended texlive-plain-generic \
+       ffmpeg dvipng cm-super pandoc\
     && pip install ipympl==0.5.* \
     # Also activate ipywidgets extension for JupyterLab
     && jupyter nbextension enable --py widgetsnbextension --sys-prefix \
