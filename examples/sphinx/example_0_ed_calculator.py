@@ -235,7 +235,7 @@ fig, ax = plt.subplots()
 for i, eigenvalue in enumerate(np.unique(e2)):
     art = ax.plot([0, 1], [eigenvalue, eigenvalue], '-',  color='C{}'.format(i))
     ind = np.where(eigenvalue == e2)[0][0]
-    J = np.sqrt(1+4*J2_val_soc[ind])/2
+    J = (-1 + np.sqrt(1+4*J2_val_soc[ind]))/2
     message = "J={:.0f} ({:.0f})"
     ax.text(1, eigenvalue, message.format(J, degeneracy2[ind]),
             horizontalalignment='right',
