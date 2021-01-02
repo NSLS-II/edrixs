@@ -24,7 +24,7 @@ def get_ladd(ll, ispin=False):
         Whether including spin or not (default: False).
 
     Returns
-    ----------
+    -------
     ladd: 2d complex array
         The matrix form of :math:`l^+`.
 
@@ -64,7 +64,7 @@ def get_lminus(ll, ispin=False):
         Whether including spin or not (default: False).
 
     Returns
-    ----------
+    --------
     lminus: 2d complex array
         The matrix form of :math:`l^-`.
 
@@ -104,7 +104,7 @@ def get_lx(ll, ispin=False):
         Whether including spin or not (default: False).
 
     Returns
-    ----------
+    -------
     lx: 2d complex array
         The matrix form of :math:`l_x`.
 
@@ -136,7 +136,7 @@ def get_ly(ll, ispin=False):
         Whether including spin or not (default: False).
 
     Returns
-    ----------
+    -------
     ly: 2d complex array
         The matrix form of :math:`l_y`.
 
@@ -387,7 +387,7 @@ def euler_to_rmat(alpha, beta, gamma):
         Euler angle, in radian, [0, :math:`2\\pi`]
 
     Returns
-    ----------
+    -------
     rmat: 2d float array
         The :math:`3 \\times 3` rotational matrix.
     """
@@ -416,7 +416,7 @@ def rmat_to_euler(rmat):
         The :math:`3 \\times 3` rotational matrix :math:`R`.
 
     Returns
-    ---------
+    -------
     alpha: float
         Euler angle :math:`\\alpha` in radian, [0, :math:`2\\pi`].
     beta: float
@@ -459,7 +459,7 @@ def where_is_angle(sina, cosa):
         :math:`\\cos(\\alpha)`.
 
     Returns
-    ----------
+    -------
     alpha: float
         The angle :math:`\\alpha` in radian [0, :math:`2\\pi`].
     """
@@ -518,7 +518,7 @@ def zx_to_rmat(z, x):
         The :math:`x` vector.
 
     Returns
-    ---------
+    -------
     rmat: 2d float array
         The :math:`3 \\times 3` rotational matrix :math:`R`.
     """
