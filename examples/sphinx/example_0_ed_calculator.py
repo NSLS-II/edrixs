@@ -82,8 +82,10 @@ print(message.format(norb, noccu, edrixs.combination(norb, noccu), len(basis)))
 ################################################################################
 # Transform interactions into Fock basis
 # ------------------------------------------------------------------------------
-# edrixs works by creating a Hamiltonian matrix :math:`\hat{H}` transformed into
-# this Fock basis. These are four fermion interactions with this form
+# edrixs works by initiailly creating a Hamiltonian matrix
+# :math:`\hat{H}` in the single particle basis and then transforming into
+# our chosen Fock basis. In the single particle basis, we have four fermion
+# interactions with this form
 #
 #     .. math::
 #        \hat{H} = <F_l|\sum_{ij}U_{ijkl}\hat{f}_{i}^{\dagger}
