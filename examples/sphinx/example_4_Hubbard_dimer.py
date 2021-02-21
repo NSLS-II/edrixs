@@ -144,21 +144,21 @@ plt.show()
 # To help interpret this, we can represent the eigenvectors in terms of a sum
 # of the single particle states.
 
-def get_fock_repesentations(v):
-    fock_reps = []
+def get_single_particle_repesentations(v):
+    reps = []
     for i in range(6):
-        fock_rep = sum([vec*weight for weight, vec
+        rep = sum([vec*weight for weight, vec
                         in zip(v[:, i], np.array(basis))])
-        fock_reps.append(fock_rep)
+        reps.append(rep)
     
-    return np.array(fock_reps)
+    return np.array(reps)
 
 t = 1
 for U in [10000, 0.0001]:
     e, v = diagonalize(U, t, extra_emat=zeeman)
-    fock_repesentations = get_fock_repesentations(v)
+    repesentations = get_single_particle_repesentations(v)
     print("For U={} t={} states  are".format(U,  t))
-    print(fock_repesentations.round(3).real)
+    print(repesentations.round(3).real)
     print("\n")
 
 ################################################################################
