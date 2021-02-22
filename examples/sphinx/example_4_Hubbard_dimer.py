@@ -63,7 +63,7 @@ basis = edrixs.get_fock_bin_by_N(norb, noccu)
 # diagonal structures of the matrices will contain the on-site interactions. 
 # The converse is true for the hopping between the sites.
 # From here let us generate a function to build and diagonalize the Hamiltonian.
-# We need to generate the Coloumb matrix for the on-site interactions and
+# We need to generate the Coulomb matrix for the on-site interactions and
 # apply it to the  block diagonal. The hopping connects off-site indices with
 # the same spin.
 def diagonalize(U, t, extra_emat=None):
