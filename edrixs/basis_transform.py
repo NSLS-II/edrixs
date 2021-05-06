@@ -226,8 +226,8 @@ def tmat_c2r(case, ispin=False):
 
 def tmat_r2c(case, ispin=False):
     """
-    Get the unitary transformation matrix from the basis of complex
-    spherical harmonics to real spherical harmonics.
+    Get the unitary transformation matrix from the basis of real
+    spherical harmonics to complex spherical harmonics.
 
     Parameters
     ----------
