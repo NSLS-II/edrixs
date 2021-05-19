@@ -42,6 +42,10 @@ gamma_c = res['gamma_c'][1]  # core hole
 gamma_f = 0.1  # final states
 
 # Incident, scattered, azimuthal angles
+# See Figure 1 of Y. Wang et al.,
+# `Computer Physics Communications 243, 151-165 (2019)
+# <https://doi.org/10.1016/j.cpc.2019.04.018>`_
+# for the defintion of the scattering angles.
 thin, thout, phi = 15 / 180.0 * np.pi, 75 / 180.0 * np.pi, 0.0
 
 # Polarization types
