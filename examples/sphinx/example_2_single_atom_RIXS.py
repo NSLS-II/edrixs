@@ -4,11 +4,11 @@ RIXS calculations for an atomic model
 =====================================
 Here we show how to compute RIXS for a single site atomic model with crystal 
 field and electron-electron interactions. We take the case of 
-Sr\ :sub:`2`\ YIrO\ :sub:`6`\ from
-Ref. [1]_ as the material in question. The aim of this example is to illustrate
-the proceedure and to provide what we hope is useful advice. What is written
-is not meant to be a replacement for reading the docstrings of the functions,
-which can always be accessed on the 
+Sr\ :sub:`2`\ YIrO\ :sub:`6`
+from Ref. [1]_ as the material in question. The aim of this example is to 
+illustrate the proceedure and to provide what we hope is useful advice. What is
+written is not meant to be a replacement for reading the docstrings of the
+functions, which can always be accessed on the 
 `edrixs website <https://nsls-ii.github.io/edrixs/reference/index.html>`_ or
 by executing functions with ?? in IPython.
 """
@@ -31,7 +31,7 @@ v_noccu = 4
 # ------------------------------------------------------------------------------
 # Here we want to use Hund's interaction 
 # :math:`J_H` and spin orbit coupling :math:`\lambda` as adjustable parameters
-# to match experiment. We will use take
+# to match experiment. We will take
 # the core hole interaction parameter from the Hartree Fock numbers EDRIXS has
 # in its database. These need to be converted and arranged into the order
 # required by EDRIXS.
@@ -65,7 +65,8 @@ v_soc = (lam, lam)
 # and that putting four electrons into the valance band costs about 
 # :math:`4 F^0_d\approx6` eV. In this case 
 # we are assuming a perfectly cubic crystal field, which we have already
-# implemented so we do not need to pass an additional :code:`v_cfmat` matrix.
+# implemented when we specified the use of the :math:`t_{2g}` subshell only
+# so we do not need to pass an additional :code:`v_cfmat` matrix.
 
 off = 11215 - 6
 out = edrixs.ed_1v1c_py(shell_name, shell_level=(0, -off), v_soc=v_soc,
@@ -83,16 +84,21 @@ eval_i, eval_n, trans_op = out
 # shown in Figure 1 of Y. Wang et al.,
 # `Computer Physics Communications 243, 151-165 (2019)
 # <https://doi.org/10.1016/j.cpc.2019.04.018>`_. The default 
-# setting has x-rays along :math:`z` for :math:`\theta=\phi=\pi` rad
+# setting has x-rays along :math:`z` for :math:`\theta=\pi` rad
 # and the x-ray beam along :math:`-x` for 
 # :math:`\theta=\phi=0`. Parameter :code:`scatter_axis` can be passed to
 # :code:`xas_1v1c_py` to specify a different geometry if desired.
-# 
+#
+# Variable :code:`pol_type` specifies a list of different x-ray
+# polarizations to calculate. Here we will use so-called :math:`\pi`-polarization
+# where the x-rays are parallel to the plane spanned by the incident
+# beam and the sample :math:`z`-axis.
+#
 # We need to specify the temperature and how many eigenstates
 # we use to represent the ground state. In this example, we
 # calculate these states as those that have non-negligable thermal
-# population. The function used assumes that the spectral broadening
-# is domainted by the inverse core hole lifetime :code:`gamma_c`,
+# population. The function :code:`xas_1v1c_py` assumes that the spectral
+# broadening is domainted by the inverse core hole lifetime :code:`gamma_c`,
 # which is the Lorentzian half width at half maximum.
 
 ominc = np.linspace(11200, 11230, 50)
