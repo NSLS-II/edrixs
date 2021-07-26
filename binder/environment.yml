@@ -7,8 +7,9 @@ dependencies:
   - ipympl=0.5.*
   - ipywidgets=7.5.*
   - nodejs
+  - openmpi
   - unzip
   - bokeh=2.0.*
   - h5py
   - hdf5
-  - seaborn 
+  - seaborn
