@@ -13,3 +13,5 @@ dependencies:
   - h5py
   - hdf5
   - seaborn
+  - sphinx-gallery
+
