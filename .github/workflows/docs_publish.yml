@@ -1,0 +1,80 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    if: github.repository_owner == 'NSLS-II'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+      fail-fast: false
+
+    steps:
+      - name: Set env.REPOSITORY_NAME  # just the repo, as opposed to org/repo
+        run: |
+          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}
+          echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
+
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          set -vxeuo pipefail
+          sudo apt-get install -y \
+            gfortran \
+            openmpi-bin \
+            openmpi-doc \
+            libopenmpi-dev \
+            libopenblas-dev \
+            libarpack2-dev \
+            libparpack2-dev
+
+          # These packages are installed in the base environment but may be older
+          # versions. Explicitly upgrade them because they often create
+          # installation problems if out of date.
+          python -m pip install --upgrade pip setuptools numpy
+
+          # Compile Fortran code
+          make -C src
+          
+          # Build Python interface
+          python setup.py build_ext --inplace
+          python setup.py build_ext
+          
+          # Install this package and the packages listed in requirements.txt.
+          pip install .
+          
+          # Install extra requirements for running tests and building docs.
+          pip install -r requirements-dev.txt
+          
+          # List the depencencies
+          pip list
+
+      - name: Build Docs
+        run: |
+          set -vxeuo pipefail
+          make -C docs/ html
+
+      - name: Deploy documentation to nsls-ii.github.io
+        # We pin to the SHA, not the tag, for security reasons.
+        # https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/security-hardening-for-github-actions#using-third-party-actions
+        uses: peaceiris/actions-gh-pages@bbdfb200618d235585ad98e965f4aafc39b4c501  # v3.7.3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DOCUMENTATION_DEPLOY_KEY }}
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          external_repository: NSLS-II/nsls-ii.github.io
+          destination_dir: ${{ env.REPOSITORY_NAME }}  # just the repo name, without the "NSLS-II/"
+          keep_files: true  # Keep old files.
+          force_orphan: false  # Keep git history.

@@ -1,0 +1,58 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+      fail-fast: false
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          set -vxeuo pipefail
+          sudo apt-get install -y \
+            gfortran \
+            openmpi-bin \
+            openmpi-doc \
+            libopenmpi-dev \
+            libopenblas-dev \
+            libarpack2-dev \
+            libparpack2-dev
+
+          # These packages are installed in the base environment but may be older
+          # versions. Explicitly upgrade them because they often create
+          # installation problems if out of date.
+          python -m pip install --upgrade pip setuptools numpy
+
+          # Compile Fortran code
+          make -C src
+          
+          # Build Python interface
+          python setup.py build_ext --inplace
+          python setup.py build_ext
+          
+          # Install this package and the packages listed in requirements.txt.
+          pip install .
+          
+          # Install extra requirements for running tests and building docs.
+          pip install -r requirements-dev.txt
+          
+          # List the depencencies
+          pip list
+
+      - name: Test with pytest
+        run: |
+          set -vxeuo pipefail
+          pytest -s -vv
