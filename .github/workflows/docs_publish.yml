@@ -74,7 +74,7 @@ jobs:
           deploy_key: ${{ secrets.ACTIONS_DOCUMENTATION_DEPLOY_KEY }}
           publish_branch: master
           publish_dir: ./docs/build/html
-          external_repository: NSLS-II/nsls-ii.github.io
+          external_repository: NSLS-II/NSLS-II.github.io
           destination_dir: ${{ env.REPOSITORY_NAME }}  # just the repo name, without the "NSLS-II/"
           keep_files: true  # Keep old files.
           force_orphan: false  # Keep git history.
