@@ -75,9 +75,9 @@ setup(
         ]
     },
     install_requires=requirements,
-    license="GNU General Public License (GPL)",
+    license="GPL-3.0-or-later",
     classifiers=[
-        "License :: OSI Approved :: GNU General Public License (GPL)",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Development Status :: 2 - Pre-Alpha",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
