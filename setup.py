@@ -2,6 +2,7 @@ from os import path
 from setuptools import find_packages
 import sys
 import versioneer
+
 # It needs f2py, https://www.numpy.org/devdocs/f2py/distutils.html
 from numpy.distutils.core import Extension
 from numpy.distutils.core import setup
@@ -21,59 +22,65 @@ This may be due to an out-of-date pip. Make sure you have pip >= 9.0.1.
 Upgrade pip like so:
 
 pip install --upgrade pip
-""".format(*sys.version_info[:2], *min_version)
+""".format(
+        *sys.version_info[:2], *min_version
+    )
     sys.exit(error)
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
+with open(path.join(here, "README.rst"), encoding="utf-8") as readme_file:
     readme = readme_file.read()
 
-with open(path.join(here, 'requirements.txt')) as requirements_file:
+with open(path.join(here, "requirements.txt")) as requirements_file:
     # Parse requirements.txt, ignoring any commented-out lines.
-    requirements = [line for line in requirements_file.read().splitlines()
-                    if not line.startswith('#')]
+    requirements = [
+        line
+        for line in requirements_file.read().splitlines()
+        if not line.startswith("#")
+    ]
 
 # Python interface to call fortran subroutines
-if 'linux' in sys.platform:
-    extra_link_args = ['-shared']
+if "linux" in sys.platform:
+    extra_link_args = ["-shared"]
 else:
     extra_link_args = []
-ext_fortran = Extension(name='edrixs.fedrixs',
-                        sources=['src/pyapi.f90'],
-                        extra_link_args=extra_link_args)
+ext_fortran = Extension(
+    name="edrixs.fedrixs", sources=["src/pyapi.f90"], extra_link_args=extra_link_args
+)
 
 setup(
-    name='edrixs',
+    name="edrixs",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="An open source toolkit for simulating RIXS spectra based on ED",
     long_description=readme,
     author="Brookhaven National Lab",
-    author_email='yilinwang@bnl.gov',
-    url='https://github.com/NSLS-II/edrixs',
-    packages=find_packages(exclude=['docs', 'tests', 'bin', 'examples', 'src']),
+    author_email="yilinwang@bnl.gov",
+    url="https://github.com/NSLS-II/edrixs",
+    packages=find_packages(exclude=["docs", "tests", "bin", "examples", "src"]),
     entry_points={
-        'console_scripts': [
+        "console_scripts": [
             # 'some.module:some_function',
-            ],
-        },
+        ],
+    },
     include_package_data=True,
     package_data={
-        'edrixs': [
+        "edrixs": [
             # When adding files here, remember to update MANIFEST.in as well,
             # or else they will not be included in the distribution on PyPI!
             # 'path/to/data_file',
             "edrixs/*",
             "edrixs/atom_data/*",
-            ]
-        },
+        ]
+    },
     install_requires=requirements,
-    license="BSD (3-clause)",
+    license="GPL-3.0-or-later",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 3',
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Development Status :: 2 - Pre-Alpha",
+        "Natural Language :: English",
+        "Programming Language :: Python :: 3",
     ],
-    ext_modules=[ext_fortran]
+    ext_modules=[ext_fortran],
 )
