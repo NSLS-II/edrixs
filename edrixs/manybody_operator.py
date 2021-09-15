@@ -249,7 +249,7 @@ def build_opers(nfermion, coeff, lb, rb=None, tol=1E-10):
             hmat = two_fermion(coeff, lb, rb, tol)
         else:
             tot = np.prod(dim[0:-2])
-            hmat_tmp = np.zeros((tot, nl, nr), dtype=np.complex)
+            hmat_tmp = np.zeros((tot, nl, nr), dtype=complex)
             coeff_tmp = coeff.reshape((tot, dim[-2], dim[-1]))
             for i in range(tot):
                 hmat_tmp[i] = two_fermion(coeff_tmp[i], lb, rb, tol)
@@ -262,7 +262,7 @@ def build_opers(nfermion, coeff, lb, rb=None, tol=1E-10):
             hmat = four_fermion(coeff, lb, rb, tol)
         else:
             tot = np.prod(dim[0:-4])
-            hmat_tmp = np.zeros((tot, nl, nr), dtype=np.complex)
+            hmat_tmp = np.zeros((tot, nl, nr), dtype=complex)
             coeff_tmp = coeff.reshape((tot, dim[-4], dim[-3], dim[-2], dim[-1]))
             for i in range(tot):
                 hmat_tmp[i] = four_fermion(coeff_tmp[i], lb, rb, tol)

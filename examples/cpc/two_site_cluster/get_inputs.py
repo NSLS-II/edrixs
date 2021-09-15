@@ -114,7 +114,7 @@ def get_hopping_coulomb(locaxis):
          [t1, t2, t1, 0, delta, delta],
          [t2, t1, t1, delta, 0, delta],
          [t1, t1, t2, delta, delta, 0]
-         ], dtype=np.complex)
+         ], dtype=complex)
 
     # transform spin to local axis
     dmat = np.zeros((2, 2, 2), dtype=np.complex128)
@@ -177,7 +177,7 @@ def get_fock_basis():
 
 def get_transop(loc, pos):
     dop = edrixs.get_trans_oper('t2gp')
-    dop_g = np.zeros((2, 3, 6, 6), dtype=np.complex)
+    dop_g = np.zeros((2, 3, 6, 6), dtype=complex)
     for i in range(2):
         dop_g[i, 0] = loc[i, 0, 0] * dop[0] + loc[i, 0, 1] * dop[1] + loc[i, 0, 2] * dop[2]
         dop_g[i, 1] = loc[i, 1, 0] * dop[0] + loc[i, 1, 1] * dop[1] + loc[i, 1, 2] * dop[2]
@@ -190,15 +190,15 @@ def get_transop(loc, pos):
     # polarization pi-pi and pi-sigma
     for key, alpha, beta in [('pp', 0, 0), ('ps', 0, np.pi)]:
         ei, ef = edrixs.dipole_polvec_rixs(thin, thout, phi, alpha, beta)
-        T_i = np.zeros((2, 6, 6), dtype=np.complex)
-        T_o = np.zeros((2, 6, 6), dtype=np.complex)
+        T_i = np.zeros((2, 6, 6), dtype=complex)
+        T_o = np.zeros((2, 6, 6), dtype=complex)
         for i in range(2):
             T_i[i] = (dop_g[i, 0] * ei[0] + dop_g[i, 1] * ei[1] +
                       dop_g[i, 2] * ei[2]) * np.exp(1j * np.dot(pos[i], kin))
             T_o[i] = np.exp(-1j * np.dot(pos[i], kout)) * np.conj(
                 np.transpose(dop_g[i, 0] * ef[0] + dop_g[i, 1] * ef[1] + dop_g[i, 2] * ef[2]))
-        transop_rixs_i = np.zeros((24, 24), dtype=np.complex)
-        transop_rixs_f = np.zeros((24, 24), dtype=np.complex)
+        transop_rixs_i = np.zeros((24, 24), dtype=complex)
+        transop_rixs_f = np.zeros((24, 24), dtype=complex)
         for i in range(2):
             off1, off2 = i * 6, 12 + i * 6
             transop_rixs_i[off1:off1 + 6, off2:off2 + 6] = T_i[i]
@@ -208,7 +208,7 @@ def get_transop(loc, pos):
 
     # For XAS
     ei = np.array([1, 1, 1]) / np.sqrt(3.0)
-    T_i = np.zeros((2, 6, 6), dtype=np.complex)
+    T_i = np.zeros((2, 6, 6), dtype=complex)
     for i in range(2):
         T_i[i] = dop_g[i, 0] * ei[0] + dop_g[i, 1] * ei[1] + dop_g[i, 2] * ei[2]
     transop_xas = np.zeros((24, 24), dtype=np.complex128)

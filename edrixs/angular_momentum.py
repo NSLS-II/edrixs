@@ -577,7 +577,7 @@ def get_wigner_dmat(quant_2j, alpha, beta, gamma):
     from sympy.physics.quantum.spin import Rotation
     from sympy import N, S
     ndim = quant_2j + 1
-    result = np.zeros((ndim, ndim), dtype=np.complex)
+    result = np.zeros((ndim, ndim), dtype=complex)
     # For j=1/2, we use different orbital order: first +1/2, then -1/2
     if quant_2j == 1:
         for i, mi in enumerate(range(quant_2j, -quant_2j-1, -2)):
@@ -610,13 +610,13 @@ def cf_cubic_d(ten_dq):
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
 
-    tmp = np.zeros((5, 5), dtype=np.complex)
+    tmp = np.zeros((5, 5), dtype=complex)
     tmp[0, 0] = 0.6 * ten_dq  # dz2
     tmp[1, 1] = -0.4 * ten_dq  # dzx
     tmp[2, 2] = -0.4 * ten_dq  # dzy
     tmp[3, 3] = 0.6 * ten_dq  # dx2-y2
     tmp[4, 4] = -0.4 * ten_dq  # dxy
-    cf = np.zeros((10, 10), dtype=np.complex)
+    cf = np.zeros((10, 10), dtype=complex)
     cf[0:10:2, 0:10:2] = tmp
     cf[1:10:2, 1:10:2] = tmp
 
@@ -649,14 +649,14 @@ def cf_tetragonal_d(ten_dq, d1, d3):
     ds = (d3 + d1) / 7.0
     dq = ten_dq / 10.0
 
-    tmp = np.zeros((5, 5), dtype=np.complex)
+    tmp = np.zeros((5, 5), dtype=complex)
     tmp[0, 0] = 6 * dq - 2 * ds - 6 * dt  # d3z2-r2
     tmp[1, 1] = -4 * dq - 1 * ds + 4 * dt  # dzx
     tmp[2, 2] = -4 * dq - 1 * ds + 4 * dt  # dzy
     tmp[3, 3] = 6 * dq + 2 * ds - 1 * dt  # dx2-y2
     tmp[4, 4] = -4 * dq + 2 * ds - 1 * dt  # dxy
 
-    cf = np.zeros((10, 10), dtype=np.complex)
+    cf = np.zeros((10, 10), dtype=complex)
     cf[0:10:2, 0:10:2] = tmp
     cf[1:10:2, 1:10:2] = tmp
 
@@ -684,7 +684,7 @@ def cf_trigonal_t2g(delta):
     tmp = np.array([[0, delta, delta],
                     [delta, 0, delta],
                     [delta, delta, 0]])
-    cf = np.zeros((6, 6), dtype=np.complex)
+    cf = np.zeros((6, 6), dtype=complex)
     cf[0:6:2, 0:6:2] += tmp
     cf[1:6:2, 1:6:2] += tmp
     cf[:, :] = cb_op(cf, tmat_r2c('t2g', True))
@@ -714,14 +714,14 @@ def cf_square_planar_d(ten_dq, ds):
     cf: 2d complex array, shape=(10, 10)
         The matrix form of crystal field Hamiltonian in complex harmonics basis.
     """
-    tmp = np.zeros((5, 5), dtype=np.complex)
+    tmp = np.zeros((5, 5), dtype=complex)
     tmp[0, 0] = 9/35*ten_dq - 2*ds  # d3z2-r2
     tmp[1, 1] = -6/35*ten_dq - ds  # dzx
     tmp[2, 2] = -6/35*ten_dq - ds  # dzy
     tmp[3, 3] = 19/35*ten_dq + 2*ds  # dx2-y2
     tmp[4, 4] = -16/35*ten_dq + 2*ds  # dxy
 
-    cf = np.zeros((10, 10), dtype=np.complex)
+    cf = np.zeros((10, 10), dtype=complex)
     cf[0:10:2, 0:10:2] = tmp
     cf[1:10:2, 1:10:2] = tmp
 
@@ -753,12 +753,12 @@ def cf_tetragonal_t2g(ten_dq, d1, d3):
     ds = (d3 + d1) / 7.0
     dq = ten_dq / 10.0
 
-    tmp = np.zeros((3, 3), dtype=np.complex)
+    tmp = np.zeros((3, 3), dtype=complex)
     tmp[0, 0] = -4 * dq - 1 * ds + 4 * dt  # dxz
     tmp[1, 1] = -4 * dq - 1 * ds + 4 * dt  # dyz
     tmp[2, 2] = -4 * dq + 2 * ds - 1 * dt  # dxy
 
-    cf = np.zeros((6, 6), dtype=np.complex)
+    cf = np.zeros((6, 6), dtype=complex)
     cf[0:6:2, 0:6:2] += tmp
     cf[1:6:2, 1:6:2] += tmp
     cf[:, :] = cb_op(cf, tmat_r2c('t2g', True))

@@ -43,7 +43,7 @@ def get_spectra_from_poles(poles_dict, omega_mesh, gamma_mesh, temperature):
     gs_dist = boltz_dist(poles_dict['eigval'], temperature)
     ngs = len(poles_dict['eigval'])
     for i in range(ngs):
-        tmp_vec = np.zeros(nom, dtype=np.complex)
+        tmp_vec = np.zeros(nom, dtype=complex)
         neff = poles_dict['npoles'][i]
         alpha = poles_dict['alpha'][i]
         beta = poles_dict['beta'][i]

@@ -58,9 +58,9 @@ class HR():
             for i in range(nline):
                 tmp.extend(f.readline().strip().split())
             tmp = [np.int(item) for item in tmp]
-            deg_rpt = np.array(tmp, dtype=np.int)
+            deg_rpt = np.array(tmp, dtype=int)
             # read hr for each r-point
-            rpts = np.zeros((nrpt, 3), dtype=np.int)
+            rpts = np.zeros((nrpt, 3), dtype=int)
             hr = np.zeros((nrpt, nwann, nwann), dtype=np.complex128)
             for i in range(nrpt):
                 for j in range(nwann):

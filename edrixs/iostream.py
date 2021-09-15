@@ -9,7 +9,7 @@ def write_tensor_1(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
                    fmt_float='{:.15f}'):
     (n1, ) = tensor.shape
     is_cmplx = False
-    if tensor.dtype == np.complex or tensor.dtype == np.complex128:
+    if tensor.dtype == complex or tensor.dtype == np.complex128:
         is_cmplx = True
     space = "    "
     f = open(fname, 'w')
@@ -29,7 +29,7 @@ def write_tensor_2(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
                    fmt_float='{:.15f}'):
     (n1, n2) = tensor.shape
     is_cmplx = False
-    if tensor.dtype == np.complex or tensor.dtype == np.complex128:
+    if tensor.dtype == complex or tensor.dtype == np.complex128:
         is_cmplx = True
     space = "    "
     f = open(fname, 'w')
@@ -50,7 +50,7 @@ def write_tensor_3(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
                    fmt_float='{:.15f}'):
     (n1, n2, n3) = tensor.shape
     is_cmplx = False
-    if tensor.dtype == np.complex or tensor.dtype == np.complex128:
+    if tensor.dtype == complex or tensor.dtype == np.complex128:
         is_cmplx = True
     space = "    "
     f = open(fname, 'w')
@@ -73,7 +73,7 @@ def write_tensor_4(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
                    fmt_float='{:.15f}'):
     (n1, n2, n3, n4) = tensor.shape
     is_cmplx = False
-    if tensor.dtype == np.complex or tensor.dtype == np.complex128:
+    if tensor.dtype == complex or tensor.dtype == np.complex128:
         is_cmplx = True
     space = "    "
     f = open(fname, 'w')
@@ -97,7 +97,7 @@ def write_tensor_5(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
                    fmt_float='{:.15f}'):
     (n1, n2, n3, n4, n5) = tensor.shape
     is_cmplx = False
-    if tensor.dtype == np.complex or tensor.dtype == np.complex128:
+    if tensor.dtype == complex or tensor.dtype == np.complex128:
         is_cmplx = True
     space = "    "
     f = open(fname, 'w')

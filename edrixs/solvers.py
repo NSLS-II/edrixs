@@ -141,16 +141,16 @@ def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
     # total number of orbitals
     ntot = v_norb + c_norb
 
-    emat_i = np.zeros((ntot, ntot), dtype=np.complex)
-    emat_n = np.zeros((ntot, ntot), dtype=np.complex)
+    emat_i = np.zeros((ntot, ntot), dtype=complex)
+    emat_n = np.zeros((ntot, ntot), dtype=complex)
 
     # Coulomb interaction
     # Get the names of all the required slater integrals
     slater_name = slater_integrals_name((v_name, c_name), ('v', 'c'))
     nslat = len(slater_name)
 
-    slater_i = np.zeros(nslat, dtype=np.float)
-    slater_n = np.zeros(nslat, dtype=np.float)
+    slater_i = np.zeros(nslat, dtype=float)
+    slater_n = np.zeros(nslat, dtype=float)
 
     if slater is not None:
         if nslat > len(slater[0]):
@@ -239,8 +239,8 @@ def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
 
     # Build many-body Hamiltonian in Fock basis
     print("edrixs >>> Building Many-body Hamiltonians ...")
-    hmat_i = np.zeros((ncfg_i, ncfg_i), dtype=np.complex)
-    hmat_n = np.zeros((ncfg_n, ncfg_n), dtype=np.complex)
+    hmat_i = np.zeros((ncfg_i, ncfg_i), dtype=complex)
+    hmat_n = np.zeros((ncfg_n, ncfg_n), dtype=complex)
     hmat_i[:, :] += two_fermion(emat_i, basis_i, basis_i)
     hmat_i[:, :] += four_fermion(umat_i, basis_i)
     hmat_n[:, :] += two_fermion(emat_n, basis_n, basis_n)
@@ -264,7 +264,7 @@ def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
         local_axis = np.eye(3)
     tmp = get_trans_oper(case)
     npol, n, m = tmp.shape
-    tmp_g = np.zeros((npol, n, m), dtype=np.complex)
+    tmp_g = np.zeros((npol, n, m), dtype=complex)
     # Transform the transition operators to global-xyz axis
     # dipolar transition
     if npol == 3:
@@ -283,8 +283,8 @@ def ed_1v1c_py(shell_name, *, shell_level=None, v_soc=None, c_soc=0,
     else:
         raise Exception("Have NOT implemented this case: ", npol)
 
-    tmp2 = np.zeros((npol, ntot, ntot), dtype=np.complex)
-    trans_op = np.zeros((npol, ncfg_n, ncfg_i), dtype=np.complex)
+    tmp2 = np.zeros((npol, ntot, ntot), dtype=complex)
+    trans_op = np.zeros((npol, ncfg_n, ncfg_i), dtype=complex)
     for i in range(npol):
         tmp2[i, 0:v_norb, v_norb:ntot] = tmp_g[i]
         trans_op[i] = two_fermion(tmp2[i], basis_n, basis_i)
@@ -372,8 +372,8 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
     else:
         scatter_axis = np.array(scatter_axis)
 
-    xas = np.zeros((n_om, len(pol_type)), dtype=np.float)
-    gamma_core = np.zeros(n_om, dtype=np.float)
+    xas = np.zeros((n_om, len(pol_type)), dtype=float)
+    gamma_core = np.zeros(n_om, dtype=float)
     prob = boltz_dist([eval_i[i] for i in gs_list], temperature)
     if np.isscalar(gamma_c):
         gamma_core[:] = np.ones(n_om) * gamma_c
@@ -385,7 +385,7 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
         for it, (pt, alpha) in enumerate(pol_type):
             if pt.strip() not in ['left', 'right', 'linear', 'isotropic']:
                 raise Exception("Unknown polarization type: ", pt)
-            polvec = np.zeros(npol, dtype=np.complex)
+            polvec = np.zeros(npol, dtype=complex)
             if pt.strip() == 'left' or pt.strip() == 'right' or pt.strip() == 'linear':
                 pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
                 if npol == 3:  # dipolar transition
@@ -404,7 +404,7 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
                         )
                     xas[i, it] = xas[i, it] / npol
                 else:
-                    F_mag = np.zeros(ncfg_n, dtype=np.complex)
+                    F_mag = np.zeros(ncfg_n, dtype=complex)
                     for k in range(npol):
                         F_mag += trans_op[k, :, igs] * polvec[k]
                     xas[i, it] += (
@@ -489,8 +489,8 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
     print("edrixs >>> Running RIXS ... ")
     n_ominc = len(ominc)
     n_eloss = len(eloss)
-    gamma_core = np.zeros(n_ominc, dtype=np.float)
-    gamma_final = np.zeros(n_eloss, dtype=np.float)
+    gamma_core = np.zeros(n_ominc, dtype=float)
+    gamma_final = np.zeros(n_eloss, dtype=float)
     if np.isscalar(gamma_c):
         gamma_core[:] = np.ones(n_ominc) * gamma_c
     else:
@@ -511,13 +511,13 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         scatter_axis = np.array(scatter_axis)
 
     prob = boltz_dist([eval_i[i] for i in gs_list], temperature)
-    rixs = np.zeros((len(ominc), len(eloss), len(pol_type)), dtype=np.float)
+    rixs = np.zeros((len(ominc), len(eloss), len(pol_type)), dtype=float)
     npol, n, m = trans_op.shape
     trans_emi = np.zeros((npol, m, n), dtype=np.complex128)
     for i in range(npol):
         trans_emi[i] = np.conj(np.transpose(trans_op[i]))
-    polvec_i = np.zeros(npol, dtype=np.complex)
-    polvec_f = np.zeros(npol, dtype=np.complex)
+    polvec_i = np.zeros(npol, dtype=complex)
+    polvec_f = np.zeros(npol, dtype=complex)
 
     # Calculate RIXS
     for i, om in enumerate(ominc):
@@ -539,7 +539,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
             else:
                 raise Exception("Have NOT implemented this type of transition operators")
             # scattering magnitude with polarization vectors
-            F_mag = np.zeros((len(eval_i), len(gs_list)), dtype=np.complex)
+            F_mag = np.zeros((len(eval_i), len(gs_list)), dtype=complex)
             for m in range(npol):
                 for n in range(npol):
                     F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
@@ -922,8 +922,8 @@ def _ed_1or2_valence_1core(
     else:
         slater_name = slater_integrals_name((v1_name, v2_name, c_name), ('v1', 'v2', 'c1'))
     nslat = len(slater_name)
-    slater_i = np.zeros(nslat, dtype=np.float)
-    slater_n = np.zeros(nslat, dtype=np.float)
+    slater_i = np.zeros(nslat, dtype=float)
+    slater_n = np.zeros(nslat, dtype=float)
 
     if slater is not None:
         if nslat > len(slater[0]):
@@ -959,8 +959,8 @@ def _ed_1or2_valence_1core(
         write_umat(umat_i, 'coulomb_i.in')
         write_umat(umat_n, 'coulomb_n.in')
 
-    emat_i = np.zeros((ntot, ntot), dtype=np.complex)
-    emat_n = np.zeros((ntot, ntot), dtype=np.complex)
+    emat_i = np.zeros((ntot, ntot), dtype=complex)
+    emat_n = np.zeros((ntot, ntot), dtype=complex)
     # SOC
     if v1_soc is not None and v1_name in ['p', 'd', 't2g', 'f']:
         emat_i[0:v1_norb, 0:v1_norb] += atom_hsoc(v1_name, v1_soc[0])
@@ -1055,7 +1055,7 @@ def _ed_1or2_valence_1core(
 
         # read eigvals.dat and denmat.dat
         data = np.loadtxt('eigvals.dat', ndmin=2)
-        eval_i = np.zeros(neval, dtype=np.float)
+        eval_i = np.zeros(neval, dtype=float)
         eval_i[0:neval] = data[0:neval, 1]
         data = np.loadtxt('denmat.dat', ndmin=2)
         tmp = (nvector, v1v2_norb, v1v2_norb)
@@ -1336,8 +1336,8 @@ def _xas_1or2_valence_1core(
         raise Exception('Unkonwn trans_to_which: ', trans_to_which)
     tmp = get_trans_oper(case)
     npol, n, m = tmp.shape
-    tmp_g = np.zeros((npol, n, m), dtype=np.complex)
-    trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+    tmp_g = np.zeros((npol, n, m), dtype=complex)
+    trans_mat = np.zeros((npol, ntot, ntot), dtype=complex)
     # Transform the transition operators to global-xyz axis
     # dipolar transition
     if npol == 3:
@@ -1360,14 +1360,14 @@ def _xas_1or2_valence_1core(
         trans_mat[:, v1_norb:v1v2_norb, v1v2_norb:ntot] = tmp_g
 
     n_om = len(ominc)
-    gamma_core = np.zeros(n_om, dtype=np.float)
+    gamma_core = np.zeros(n_om, dtype=float)
     if np.isscalar(gamma_c):
         gamma_core[:] = np.ones(n_om) * gamma_c
     else:
         gamma_core[:] = gamma_c
 
     # loop over different polarization
-    xas = np.zeros((n_om, len(pol_type)), dtype=np.float)
+    xas = np.zeros((n_om, len(pol_type)), dtype=float)
     poles = []
     comm.Barrier()
     for it, (pt, alpha) in enumerate(pol_type):
@@ -1375,13 +1375,13 @@ def _xas_1or2_valence_1core(
             if rank == 0:
                 print("edrixs >>> Loop over for polarization: ", it, pt, flush=True)
                 kvec = unit_wavevector(thin, phi, scatter_axis, 'in')
-                polvec = np.zeros(npol, dtype=np.complex)
+                polvec = np.zeros(npol, dtype=complex)
                 pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
                 if npol == 3:  # Dipolar transition
                     polvec[:] = pol
                 if npol == 5:  # Quadrupolar transition
                     polvec[:] = quadrupole_polvec(pol, kvec)
-                trans = np.zeros((ntot, ntot), dtype=np.complex)
+                trans = np.zeros((ntot, ntot), dtype=complex)
                 for i in range(npol):
                     trans[:, :] += trans_mat[i] * polvec[i]
                 write_emat(trans, 'transop_xas.in')
@@ -1705,8 +1705,8 @@ def _rixs_1or2_valence_1core(
             raise Exception('Unkonwn trans_to_which: ', trans_to_which)
         tmp = get_trans_oper(case)
         npol, n, m = tmp.shape
-        tmp_g = np.zeros((npol, n, m), dtype=np.complex)
-        trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+        tmp_g = np.zeros((npol, n, m), dtype=complex)
+        trans_mat = np.zeros((npol, ntot, ntot), dtype=complex)
         # Transform the transition operators to global-xyz axis
         # dipolar transition
         if npol == 3:
@@ -1730,19 +1730,19 @@ def _rixs_1or2_valence_1core(
 
     n_om = len(ominc)
     neloss = len(eloss)
-    gamma_core = np.zeros(n_om, dtype=np.float)
+    gamma_core = np.zeros(n_om, dtype=float)
     if np.isscalar(gamma_c):
         gamma_core[:] = np.ones(n_om) * gamma_c
     else:
         gamma_core[:] = gamma_c
-    gamma_final = np.zeros(neloss, dtype=np.float)
+    gamma_final = np.zeros(neloss, dtype=float)
     if np.isscalar(gamma_f):
         gamma_final[:] = np.ones(neloss) * gamma_f
     else:
         gamma_final[:] = gamma_f
 
     # loop over different polarization
-    rixs = np.zeros((n_om, neloss, len(pol_type)), dtype=np.float)
+    rixs = np.zeros((n_om, neloss, len(pol_type)), dtype=float)
     poles = []
     comm.Barrier()
     # loop over different polarization
@@ -1761,8 +1761,8 @@ def _rixs_1or2_valence_1core(
                 print(flush=True)
                 print("edrixs >>> Calculate RIXS for incident energy: ", omega, flush=True)
                 print("edrixs >>> Polarization: ", ip, flush=True)
-                polvec_i = np.zeros(npol, dtype=np.complex)
-                polvec_f = np.zeros(npol, dtype=np.complex)
+                polvec_i = np.zeros(npol, dtype=complex)
+                polvec_f = np.zeros(npol, dtype=complex)
                 ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
                                             scatter_axis, (it, jt))
                 # dipolar transition
@@ -1777,8 +1777,8 @@ def _rixs_1or2_valence_1core(
                     polvec_f[:] = quadrupole_polvec(ef, kf)
                 else:
                     raise Exception("Have NOT implemented this type of transition operators")
-                trans_i = np.zeros((ntot, ntot), dtype=np.complex)
-                trans_f = np.zeros((ntot, ntot), dtype=np.complex)
+                trans_i = np.zeros((ntot, ntot), dtype=complex)
+                trans_f = np.zeros((ntot, ntot), dtype=complex)
                 for i in range(npol):
                     trans_i[:, :] += trans_mat[i] * polvec_i[i]
                 write_emat(trans_i, 'transop_rixs_i.in')
@@ -1969,8 +1969,8 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
 
     slater_name = slater_integrals_name((v_name, c_name), ('v', 'c'))
     nslat = len(slater_name)
-    slater_i = np.zeros(nslat, dtype=np.float)
-    slater_n = np.zeros(nslat, dtype=np.float)
+    slater_i = np.zeros(nslat, dtype=float)
+    slater_n = np.zeros(nslat, dtype=float)
 
     if slater is not None:
         if nslat > len(slater[0]):
@@ -1998,8 +1998,8 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     umat_tmp_i = get_umat_slater(v_name + c_name, *slater_i)
     umat_tmp_n = get_umat_slater(v_name + c_name, *slater_n)
 
-    umat_i = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
-    umat_n = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+    umat_i = np.zeros((ntot, ntot, ntot, ntot), dtype=complex)
+    umat_n = np.zeros((ntot, ntot, ntot, ntot), dtype=complex)
 
     indx = list(range(0, v_norb)) + [ntot_v + i for i in range(0, c_norb)]
     for i in range(v_norb+c_norb):
@@ -2012,8 +2012,8 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
         write_umat(umat_i, 'coulomb_i.in')
         write_umat(umat_n, 'coulomb_n.in')
 
-    emat_i = np.zeros((ntot, ntot), dtype=np.complex)
-    emat_n = np.zeros((ntot, ntot), dtype=np.complex)
+    emat_i = np.zeros((ntot, ntot), dtype=complex)
+    emat_n = np.zeros((ntot, ntot), dtype=complex)
     # General hybridization function, including off-diagonal terms
     if siam_type == 1:
         if hopping is not None:
@@ -2075,11 +2075,11 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
     emat_n[0:v_norb, 0:v_norb] -= np.eye(v_norb) * static_core_pot
 
     if trans_c2n is None:
-        trans_c2n = np.eye(v_norb, dtype=np.complex)
+        trans_c2n = np.eye(v_norb, dtype=complex)
     else:
         trans_c2n = np.array(trans_c2n)
 
-    tmat = np.eye(ntot, dtype=np.complex)
+    tmat = np.eye(ntot, dtype=complex)
     for i in range(nbath+1):
         off = i * v_norb
         tmat[off:off+v_norb, off:off+v_norb] = np.conj(np.transpose(trans_c2n))
@@ -2127,7 +2127,7 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
             ed_fsolver(fcomm, rank, size)
             comm.Barrier()
             data = np.loadtxt('eigvals.dat', ndmin=2)
-            eval_i = np.zeros(neval, dtype=np.float)
+            eval_i = np.zeros(neval, dtype=float)
             eval_i[0:neval] = data[0:neval, 1]
             data = np.loadtxt('denmat.dat', ndmin=2)
             tmp = (nvector, ntot_v, ntot_v)
@@ -2241,7 +2241,7 @@ def ed_siam_fort(comm, shell_name, nbath, *, siam_type=0, v_noccu=1, static_core
         ed_fsolver(fcomm, rank, size)
         comm.Barrier()
         data = np.loadtxt('eigvals.dat', ndmin=2)
-        eval_i = np.zeros(neval, dtype=np.float)
+        eval_i = np.zeros(neval, dtype=float)
         eval_i[0:neval] = data[0:neval, 1]
         data = np.loadtxt('denmat.dat', ndmin=2)
         tmp = (nvector, ntot_v, ntot_v)
@@ -2379,8 +2379,8 @@ def xas_siam_fort(comm, shell_name, nbath, ominc, *, gamma_c=0.1,
     case = v_name + c_name
     tmp = get_trans_oper(case)
     npol, n, m = tmp.shape
-    tmp_g = np.zeros((npol, n, m), dtype=np.complex)
-    trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+    tmp_g = np.zeros((npol, n, m), dtype=complex)
+    trans_mat = np.zeros((npol, ntot, ntot), dtype=complex)
     # Transform the transition operators to global-xyz axis
     # dipolar transition
     if npol == 3:
@@ -2400,14 +2400,14 @@ def xas_siam_fort(comm, shell_name, nbath, ominc, *, gamma_c=0.1,
     trans_mat[:, 0:v_norb, ntot_v:ntot] = tmp_g
 
     n_om = len(ominc)
-    gamma_core = np.zeros(n_om, dtype=np.float)
+    gamma_core = np.zeros(n_om, dtype=float)
     if np.isscalar(gamma_c):
         gamma_core[:] = np.ones(n_om) * gamma_c
     else:
         gamma_core[:] = gamma_c
 
     # loop over different polarization
-    xas = np.zeros((n_om, len(pol_type)), dtype=np.float)
+    xas = np.zeros((n_om, len(pol_type)), dtype=float)
     poles = []
     comm.Barrier()
     for it, (pt, alpha) in enumerate(pol_type):
@@ -2415,14 +2415,14 @@ def xas_siam_fort(comm, shell_name, nbath, ominc, *, gamma_c=0.1,
             if rank == 0:
                 print("edrixs >>> Loop over for polarization: ", it, pt, flush=True)
                 kvec = unit_wavevector(thin, phi, scatter_axis, 'in')
-                polvec = np.zeros(npol, dtype=np.complex)
+                polvec = np.zeros(npol, dtype=complex)
                 pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
                 if npol == 3:  # Dipolar transition
                     polvec[:] = pol
                 if npol == 5:  # Quadrupolar transition
                     polvec[:] = quadrupole_polvec(pol, kvec)
 
-                trans = np.zeros((ntot, ntot), dtype=np.complex)
+                trans = np.zeros((ntot, ntot), dtype=complex)
                 for i in range(npol):
                     trans[:, :] += trans_mat[i] * polvec[i]
                 write_emat(trans, 'transop_xas.in')
@@ -2596,8 +2596,8 @@ def rixs_siam_fort(comm, shell_name, nbath, ominc, eloss, *, gamma_c=0.1, gamma_
         case = v_name + c_name
         tmp = get_trans_oper(case)
         npol, n, m = tmp.shape
-        tmp_g = np.zeros((npol, n, m), dtype=np.complex)
-        trans_mat = np.zeros((npol, ntot, ntot), dtype=np.complex)
+        tmp_g = np.zeros((npol, n, m), dtype=complex)
+        trans_mat = np.zeros((npol, ntot, ntot), dtype=complex)
         # Transform the transition operators to global-xyz axis
         # dipolar transition
         if npol == 3:
@@ -2618,19 +2618,19 @@ def rixs_siam_fort(comm, shell_name, nbath, ominc, eloss, *, gamma_c=0.1, gamma_
 
     n_om = len(ominc)
     neloss = len(eloss)
-    gamma_core = np.zeros(n_om, dtype=np.float)
+    gamma_core = np.zeros(n_om, dtype=float)
     if np.isscalar(gamma_c):
         gamma_core[:] = np.ones(n_om) * gamma_c
     else:
         gamma_core[:] = gamma_c
-    gamma_final = np.zeros(neloss, dtype=np.float)
+    gamma_final = np.zeros(neloss, dtype=float)
     if np.isscalar(gamma_f):
         gamma_final[:] = np.ones(neloss) * gamma_f
     else:
         gamma_final[:] = gamma_f
 
     # loop over different polarization
-    rixs = np.zeros((n_om, neloss, len(pol_type)), dtype=np.float)
+    rixs = np.zeros((n_om, neloss, len(pol_type)), dtype=float)
     poles = []
     comm.Barrier()
     # loop over different polarization
@@ -2649,8 +2649,8 @@ def rixs_siam_fort(comm, shell_name, nbath, ominc, eloss, *, gamma_c=0.1, gamma_
                 print(flush=True)
                 print("edrixs >>> Calculate RIXS for incident energy: ", omega, flush=True)
                 print("edrixs >>> Polarization: ", ip, flush=True)
-                polvec_i = np.zeros(npol, dtype=np.complex)
-                polvec_f = np.zeros(npol, dtype=np.complex)
+                polvec_i = np.zeros(npol, dtype=complex)
+                polvec_f = np.zeros(npol, dtype=complex)
                 ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
                                             scatter_axis, (it, jt))
                 # dipolar transition
@@ -2665,8 +2665,8 @@ def rixs_siam_fort(comm, shell_name, nbath, ominc, eloss, *, gamma_c=0.1, gamma_
                     polvec_f[:] = quadrupole_polvec(ef, kf)
                 else:
                     raise Exception("Have NOT implemented this type of transition operators")
-                trans_i = np.zeros((ntot, ntot), dtype=np.complex)
-                trans_f = np.zeros((ntot, ntot), dtype=np.complex)
+                trans_i = np.zeros((ntot, ntot), dtype=complex)
+                trans_f = np.zeros((ntot, ntot), dtype=complex)
                 for i in range(npol):
                     trans_i[:, :] += trans_mat[i] * polvec_i[i]
                 write_emat(trans_i, 'transop_rixs_i.in')

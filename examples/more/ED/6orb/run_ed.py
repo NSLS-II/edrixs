@@ -83,7 +83,7 @@ Jz = Jxyz[2]
 # First, write their matrice in the real harmonics basis
 # |dxz,up>, |dxz,dn>, |dyz,up>, |dyz,dn>, |dxy,up>, |dxy,dn>
 # In this basis, they take simple form, only the diagonal terms have element 1
-nd_oper = np.zeros((norb, norb, norb), dtype=np.complex)
+nd_oper = np.zeros((norb, norb, norb), dtype=complex)
 nd_oper[0, 0, 0] = 1
 nd_oper[1, 1, 1] = 1
 nd_oper[2, 2, 2] = 1

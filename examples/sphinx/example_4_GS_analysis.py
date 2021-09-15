@@ -62,7 +62,7 @@ ntot = 20
 # first :math:`10\times10\times10\times 10` indices of the matrix. edrixs
 # creates this matrix in the complex harmmonic basis by default.
 umat_delectrons = edrixs.get_umat_slater('d', F0_dd, F2_dd, F4_dd)
-umat = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+umat = np.zeros((ntot, ntot, ntot, ntot), dtype=complex)
 umat[:norb_d, :norb_d, :norb_d, :norb_d] += umat_delectrons
 
 
@@ -94,7 +94,7 @@ emat_rhb[indx2, indx1] += np.conj(hyb[0])
 # We now need to transform into the complex harmonic basis. We assign
 # the two diagonal blocks of a :math:`20\times20` matrix to the
 # conjugate transpose of the transition matrix.
-tmat = np.eye(ntot, dtype=np.complex)
+tmat = np.eye(ntot, dtype=complex)
 for i in range(2):
     off = i * norb_d
     tmat[off:off+norb_d, off:off+norb_d] = np.conj(np.transpose(trans_c2n))

@@ -67,7 +67,7 @@ if __name__ == "__main__":
                     ('linear', np.pi / 2.0, 'linear', 0.0),
                     ('linear', np.pi / 2.0, 'linear', np.pi / 2.0)]
 
-    rixs = np.zeros((len(ominc), len(eloss), len(poltype_rixs), natom), dtype=np.float)
+    rixs = np.zeros((len(ominc), len(eloss), len(poltype_rixs), natom), dtype=float)
     # Loop over all the atoms
     for iatom in range(natom):
         print()
