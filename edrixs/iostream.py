@@ -9,7 +9,7 @@ def write_tensor_1(tensor, fname, only_nonzeros=False, tol=1E-10, fmt_int='{:10d
                    fmt_float='{:.15f}'):
     (n1, ) = tensor.shape
     is_cmplx = False
-    if tensor.dtype == complex or tensor.dtype == np.complex128:
+    if tensor.dtype in (complex, np.complex128):
         is_cmplx = True
     space = "    "
     f = open(fname, 'w')
