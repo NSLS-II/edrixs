@@ -79,7 +79,7 @@ umat_chb = edrixs.get_umat_slater('d', F0, F2, F4)
 #     C &=& \frac{35}{441}F^4.
 #     \end{eqnarray}
 # 
-# or the an alternative form for the Slater integrals 
+# or an alternative form for the Slater integrals 
 # 
 #   .. math::
 #     \begin{eqnarray}
