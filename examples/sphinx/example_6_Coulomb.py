@@ -137,9 +137,12 @@ orbitals = ['3z^2-r^2', 'xz', 'yz', 'x^2-y^2', 'xy']
 #
 # 1. Intra orbital
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# The direct Coulomb energy cost to double-occupy an orbital comes from terms like
-# :math:`U_{\alpha\sigma,\alpha\bar\sigma,\alpha\bar\sigma,\alpha\sigma}`. It
-# is the same for every orbital and written as 
+# The direct Coulomb energy cost to double-occupy an orbital comes from terms
+# like :math:`U_{\alpha\sigma,\alpha\bar\sigma,\alpha\bar\sigma,\alpha\sigma}`.
+# In this notation, we uses :math:`\sigma^\prime` to denote that the matrix 
+# element is summed over all pairs and :math:`\bar{\sigma}` to denote sums
+# over all opposite spin pairs. Due to rotational symmetry, all these
+# elements are the same and equal to
 # 
 #   .. math::
 #     \begin{eqnarray}
