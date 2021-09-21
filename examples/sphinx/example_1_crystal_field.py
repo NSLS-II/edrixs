@@ -143,7 +143,7 @@ print("{} distinct energies".format(len(unique_e)))
 # out the
 # `numpy indexing notes <https://numpy.org/doc/stable/reference/arrays.indexing.html>`_
 # if needed.
-nd_real_harmoic_basis = np.zeros((norb, norb, norb), dtype=np.complex)
+nd_real_harmoic_basis = np.zeros((norb, norb, norb), dtype=complex)
 indx = np.arange(norb)
 nd_real_harmoic_basis[indx, indx, indx] = 1
 

@@ -34,8 +34,8 @@ if __name__ == "__main__":
     norb = 6   # number of orbitals for each site
 
     # bath energy level & hybridization strength
-    bath_level = np.zeros((nbath, norb), dtype=np.complex)
-    hyb = np.zeros((nbath, norb), dtype=np.complex)
+    bath_level = np.zeros((nbath, norb), dtype=complex)
+    hyb = np.zeros((nbath, norb), dtype=complex)
     e1 = [-3.528372861516216, -1.207615555008166, 6.183392524170465]
     e2 = [-3.538890277572901, -1.308137924011529, 5.578400781316763]
     v1 = [2.131943931119928, 0.481470627582356, 1.618130554107574]
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     hyb[:, 2] = hyb[:, 3] = hyb[:, 4] = hyb[:, 5] = v2  # j=3/2
 
     # impurity matrix
-    imp_mat = np.zeros((6, 6), dtype=np.complex)
+    imp_mat = np.zeros((6, 6), dtype=complex)
     imp_mat[0, 0] = imp_mat[1, 1] = -14.7627972353
     imp_mat[2, 2] = imp_mat[3, 3] = imp_mat[4, 4] = imp_mat[5, 5] = -15.4689430453
 

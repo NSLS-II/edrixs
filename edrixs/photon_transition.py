@@ -154,8 +154,8 @@ def get_trans_oper(case):
         special_shell[5]: [0, 1, 2, 3, 4, 5],
         special_shell[6]: [6, 7, 8, 9, 10, 11, 12, 13]
     }
-    left_tmat = np.eye(v_norb, dtype=np.complex)
-    right_tmat = np.eye(c_norb, dtype=np.complex)
+    left_tmat = np.eye(v_norb, dtype=complex)
+    right_tmat = np.eye(c_norb, dtype=complex)
     indx1 = list(range(0, v_norb))
     indx2 = list(range(0, c_norb))
     if v_name in special_shell:
@@ -173,7 +173,7 @@ def get_trans_oper(case):
     else:
         npol = 3
 
-    op_tmp = np.zeros((npol, len(indx1), len(indx2)), dtype=np.complex)
+    op_tmp = np.zeros((npol, len(indx1), len(indx2)), dtype=complex)
     for i in range(npol):
         op[i] = cb_op2(op[i], left_tmat, right_tmat)
         op_tmp[i] = op[i, indx1][:, indx2]
@@ -544,7 +544,7 @@ def quadrupole_polvec(polvec, wavevec):
         Quadrupolar polarization vector.
     """
 
-    quad_vec = np.zeros(5, dtype=np.complex)
+    quad_vec = np.zeros(5, dtype=complex)
     kvec = wavevec / np.sqrt(np.dot(wavevec, wavevec))
 
     quad_vec[0] = 0.5 * (2 * polvec[2] * kvec[2] - polvec[0] * kvec[0] - polvec[1] * kvec[1])

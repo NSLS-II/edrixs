@@ -548,7 +548,7 @@ def get_umat_slater(case, *args):
                 tmat = tmat_c2j(orbl)
             umat = transform_utensor(umat, tmat)
             indx = orb_indx[shells[0]]
-            umat_tmp = np.zeros((len(indx), len(indx), len(indx), len(indx)), dtype=np.complex)
+            umat_tmp = np.zeros((len(indx), len(indx), len(indx), len(indx)), dtype=complex)
             umat_tmp[:, :, :, :] = umat[indx][:, indx][:, :, indx][:, :, :, indx]
             if shells[0] == 't2g':
                 umat_tmp[:, :, :, :] = transform_utensor(umat_tmp, tmat_r2c('t2g', True))
@@ -579,7 +579,7 @@ def get_umat_slater(case, *args):
         umat = umat_slater(l_list, fk)
         # truncate to a sub-shell if necessary
         if (name1 in special_shell) or (name2 in special_shell):
-            tmat = np.eye(ntot, dtype=np.complex)
+            tmat = np.eye(ntot, dtype=complex)
             indx1 = list(range(0, n1))
             if name1 in special_shell:
                 if name1 == 't2g':
@@ -598,7 +598,7 @@ def get_umat_slater(case, *args):
 
             indx = indx1 + indx2
             umat = transform_utensor(umat, tmat)
-            umat_tmp = np.zeros((len(indx), len(indx), len(indx), len(indx)), dtype=np.complex)
+            umat_tmp = np.zeros((len(indx), len(indx), len(indx), len(indx)), dtype=complex)
             umat_tmp[:, :, :, :] = umat[indx][:, indx][:, :, indx][:, :, :, indx]
             if name1 == 't2g' or name2 == 't2g':
                 tmat = np.eye(len(indx), dtype=np.complex128)
@@ -675,7 +675,7 @@ def get_umat_slater_3shells(shell_name, *args):
     if it != len(args):
         raise Exception("Number of Slater integrals", len(args), " is not equal to ", it)
 
-    umat = np.zeros((ntot, ntot, ntot, ntot), dtype=np.complex)
+    umat = np.zeros((ntot, ntot, ntot, ntot), dtype=complex)
 
     # v1-v2
     case = v1_name + v2_name

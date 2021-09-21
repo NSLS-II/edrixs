@@ -77,7 +77,7 @@ def get_hopping_coulomb():
     umat_tmp[:, :, :, :] = edrixs.transform_utensor(umat_tmp, tmat)
     id1 = [0, 1, 2, 3, 4, 5, 8, 9, 10, 11]
     id2 = [0, 1, 2, 3, 4, 5, 24, 25, 26, 27]
-    umat_n = np.zeros((norbs, norbs, norbs, norbs), dtype=np.complex)
+    umat_n = np.zeros((norbs, norbs, norbs, norbs), dtype=complex)
     for i in range(10):
         for j in range(10):
             for k in range(10):
@@ -93,7 +93,7 @@ def get_hopping_coulomb():
     e1, v1 = data[:, 0], data[:, 1]
     e2, v2 = data[:, 2], data[:, 3]
 
-    h = np.zeros((24, 24), dtype=np.complex)
+    h = np.zeros((24, 24), dtype=complex)
     h[0, 0] = h[1, 1] = -14.7627972353
     h[2, 2] = h[3, 3] = h[4, 4] = h[5, 5] = -15.4689430453
     for i in range(N_site):
@@ -141,7 +141,7 @@ def get_hopping_coulomb():
 
 def get_transop():
     tmp = edrixs.get_trans_oper('t2gp')
-    dipole = np.zeros((3, 28, 28), dtype=np.complex)
+    dipole = np.zeros((3, 28, 28), dtype=complex)
     for i in range(3):
         tmp[i] = edrixs.cb_op2(tmp[i], edrixs.tmat_c2j(1), edrixs.tmat_c2j(1))
         dipole[i, 0:6, 24:28] = tmp[i, 0:6, 2:6]

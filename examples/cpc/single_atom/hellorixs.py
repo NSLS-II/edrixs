@@ -6,8 +6,7 @@ from matplotlib.ticker import MultipleLocator
 
 import edrixs
 
-font = {'family': 'Times New Roman',
-        'weight': 'medium',
+font = {'weight': 'medium',
         'size': '18'}
 plt.rc('font', **font)
 
@@ -16,8 +15,8 @@ def ed():
     # 1-10: Ni-3d valence orbitals, 11-16: Ni-2p core orbitals
     # Single particle basis: complex shperical Harmonics
     ndorb, nporb, ntot = 10, 6, 16
-    emat_i = np.zeros((ntot, ntot), dtype=np.complex)
-    emat_n = np.zeros((ntot, ntot), dtype=np.complex)
+    emat_i = np.zeros((ntot, ntot), dtype=complex)
+    emat_n = np.zeros((ntot, ntot), dtype=complex)
 
     # 4-index Coulomb interaction tensor, parameterized by
     # Slater integrals, which are obtained from Cowan's code
@@ -44,7 +43,7 @@ def ed():
     # which are first defined in the real cubic Harmonics basis,
     # and then transformed to complex shperical Harmonics basis.
     dt, ds, dq = 0.011428, 0.035714, 0.13
-    tmp = np.zeros((5, 5), dtype=np.complex)
+    tmp = np.zeros((5, 5), dtype=complex)
     tmp[0, 0] = 6 * dq - 2 * ds - 6 * dt   # d3z2-r2
     tmp[1, 1] = -4 * dq - 1 * ds + 4 * dt   # dzx
     tmp[2, 2] = -4 * dq - 1 * ds + 4 * dt   # dzy
@@ -62,8 +61,8 @@ def ed():
     ncfg_i, ncfg_n = len(basis_i), len(basis_n)
 
     # Build many-body Hamiltonian in Fock basis
-    hmat_i = np.zeros((ncfg_i, ncfg_i), dtype=np.complex)
-    hmat_n = np.zeros((ncfg_n, ncfg_n), dtype=np.complex)
+    hmat_i = np.zeros((ncfg_i, ncfg_i), dtype=complex)
+    hmat_n = np.zeros((ncfg_n, ncfg_n), dtype=complex)
     hmat_i[:, :] += edrixs.two_fermion(emat_i, basis_i, basis_i)
     hmat_i[:, :] += edrixs.four_fermion(umat_i, basis_i)
     hmat_n[:, :] += edrixs.two_fermion(emat_n, basis_n, basis_n)
@@ -74,9 +73,9 @@ def ed():
     eval_n, evec_n = np.linalg.eigh(hmat_n)
 
     # Build dipolar transition operators
-    dipole = np.zeros((3, ntot, ntot), dtype=np.complex)
-    T_abs = np.zeros((3, ncfg_n, ncfg_i), dtype=np.complex)
-    T_emi = np.zeros((3, ncfg_i, ncfg_n), dtype=np.complex)
+    dipole = np.zeros((3, ntot, ntot), dtype=complex)
+    T_abs = np.zeros((3, ncfg_n, ncfg_i), dtype=complex)
+    T_emi = np.zeros((3, ncfg_i, ncfg_n), dtype=complex)
     tmp = edrixs.get_trans_oper('dp')
     for i in range(3):
         dipole[i, 0:ndorb, ndorb:ntot] = tmp[i]
@@ -96,7 +95,7 @@ def xas(eval_i, eval_n, T_abs):
     Gam_c = 0.2  # core-hole life-time broadening
     pol = np.array([1.0, 1.0, 1.0]) / np.sqrt(3.0)  # isotropic
     omega = np.linspace(-10, 20, 1000)
-    xas = np.zeros(len(omega), dtype=np.float)
+    xas = np.zeros(len(omega), dtype=float)
     # Calculate XAS spectrum
     for i, om in enumerate(omega):
         for j in gs:
@@ -135,14 +134,14 @@ def rixs(eval_i, eval_n, T_abs, T_emi):
     pol = [(0, 0), (0, np.pi / 2.0)]  # pi-pi and pi-sigma polarization
     omega = np.linspace(-5.9, -0.9, 100)
     eloss = np.linspace(-0.5, 5.0, 1000)
-    rixs = np.zeros((len(pol), len(eloss), len(omega)), dtype=np.float)
+    rixs = np.zeros((len(pol), len(eloss), len(omega)), dtype=float)
 
     # Calculate RIXS
     for i, om in enumerate(omega):
         F_fi = edrixs.scattering_mat(eval_i, eval_n, T_abs[:, :, gs], T_emi, om, Gam_c)
         for j, (alpha, beta) in enumerate(pol):
             ei, ef = edrixs.dipole_polvec_rixs(thin, thout, phi, alpha, beta)
-            F_mag = np.zeros((len(eval_i), len(gs)), dtype=np.complex)
+            F_mag = np.zeros((len(eval_i), len(gs)), dtype=complex)
             for m in range(3):
                 for n in range(3):
                     F_mag[:, :] += ef[m] * F_fi[m, n] * ei[n]
