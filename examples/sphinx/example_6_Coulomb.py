@@ -116,7 +116,11 @@ orbitals = ['3z^2-r^2', 'xz', 'yz', 'x^2-y^2', 'xy']
 # 
 # the combination of which defines the energetic cost of pairwise
 # electron-electron interactions between states :math:`\alpha,\sigma`
-# and :math:`\beta,\sigma^\prime` . We can express the interactions in terms of
+# and :math:`\beta,\sigma^\prime`. In EDRIXS we follow the convention of
+# summing over all orbital pairs. Some other texts count each pair of
+# indices only once. The matrix elements here will consequently
+# be half the magnitude of those in other references.
+# We can express the interactions in terms of
 # the orbitals involved. It is common to distinguish "direct Coulomb" and
 # "exchange" interactions. The former come from electrons in the same orbital
 # and the later involve swapping orbital labels for electrons. We will use
