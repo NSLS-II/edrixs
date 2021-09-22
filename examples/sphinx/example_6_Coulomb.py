@@ -44,7 +44,7 @@ that one might not anticipate. Our example is based on a :math:`d` atomic shell.
 # orbital indices and :math:`\hat{f}^{\dagger}` 
 # (:math:`\hat{f}`) are the creation (anihilation) operators.
 # For a :math:`d`-electron system, we have :math:`10` distinct spin-orbitals
-# (:math:`5` orbitals each with :math:`2` spins), which makes matrix
+# (:math:`5` orbitals each with :math:`2` spins), which makes matrix the
 # :math:`10\times10\times10\times10` in total size.
 # In EDRIXS the matrix can be created as follows:
 import edrixs
@@ -57,7 +57,7 @@ F0, F2, F4 = 6.94, 14.7, 4.41
 umat_chb = edrixs.get_umat_slater('d', F0, F2, F4)
 ################################################################################
 # We stored this under variable :code:`umat_chb` where "cbh" stands for
-# comlex harmonic basis, which is the default basis in EDRIXS.
+# complex harmonic basis, which is the default basis in EDRIXS.
 
 ################################################################################
 # Parameterizing interactions
@@ -94,7 +94,7 @@ umat_chb = edrixs.get_umat_slater('d', F0, F2, F4)
 # Basis transform
 # ------------------------------------------------------------------------------
 # If we want to use the real harmonic basis, we can use a tensor
-# tranformation, which imposes the following orbital order 
+# transformation, which imposes the following orbital order 
 # :math:`3z^2-r^2, xz, yz, x^2-y^2, xy`, each of which involves
 # :math:`\uparrow, \downarrow` spin pairs. Let's perform this transformation and
 # store a list of these orbitals.
@@ -111,7 +111,7 @@ orbitals = ['3z^2-r^2', 'xz', 'yz', 'x^2-y^2', 'xy']
 #     \begin{equation}
 #     \langle\psi_{\gamma,\delta}^{\bar{\sigma},\bar{\sigma}^\prime}
 #     |\hat{H}|
-#     \psi_{\alpha,\beta}^{\sigma,\sigma^\prime}\rangle .
+#     \psi_{\alpha,\beta}^{\sigma,\sigma^\prime}\rangle
 #     \end{equation}
 # 
 # the combination of which defines the energetic cost of pairwise
@@ -143,7 +143,7 @@ orbitals = ['3z^2-r^2', 'xz', 'yz', 'x^2-y^2', 'xy']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The direct Coulomb energy cost to double-occupy an orbital comes from terms
 # like :math:`U_{\alpha\sigma,\alpha\bar\sigma,\alpha\bar\sigma,\alpha\sigma}`.
-# In this notation, we uses :math:`\sigma^\prime` to denote that the matrix 
+# In this notation, we use :math:`\sigma^\prime` to denote that the matrix 
 # element is summed over all pairs and :math:`\bar{\sigma}` to denote sums
 # over all opposite spin pairs. Due to rotational symmetry, all these
 # elements are the same and equal to
@@ -209,8 +209,8 @@ for i, j in itertools.combinations(range(5), 2):
 #     \end{equation}
 # 
 # for :math:`\alpha=3z^2-r^2, \beta=x^2-y^2, \gamma=xz/yz`.
-# These are needed to maintain the rotational symmetry of the interations in.
-# See table :ref:`table_3_orbital` for the expressions. We can print some of
+# These are needed to maintain the rotational symmetry of the interations.
+# See :ref:`table_3_orbital` for the expressions. We can print some of
 # these via:
 ijkl = [[0, 1, 3, 1],
         [0, 2, 3, 2],
@@ -284,6 +284,7 @@ for cind, (ax, ten_dq) in enumerate(zip(axs, ten_dqs)):
     ax.legend()
 
 fig.suptitle("Eigenvalues with 3&4-orbital effects on/off")
+fig.subplots_adjust(wspace=.3)
 axs[0].set_ylabel('Eigenvalues (eV)')    
 fig.subplots_adjust(top=.8)
 plt.show()
