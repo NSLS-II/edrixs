@@ -294,7 +294,8 @@ plt.show()
 # substantial mxing between :math:`t_{2g}` and :math:`e_{g}` orbitals in the
 # eigenstates and 3 & 4 orbital orbital terms are crucial for obtaining the
 # the right eigenenergies. As :math:`10D_q` get large, this mixing is switched
-# off and 
+# off and the spectra start to become independent of whether the 3 & 4 orbital
+# orbital terms are included or not.
 # 
 #
 # 
