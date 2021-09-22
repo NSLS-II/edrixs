@@ -29,32 +29,10 @@ F0, F2 = 4.0, 1.0
 ################################################################################
 # Coulomb interactions
 # ------------------------------------------------------------------------------
-# The Coulomb interactions enter the Hamiltonain as
-#
-#    .. math::
-#      \begin{equation}
-#      \hat{H} = \sum_{\alpha,\beta,\gamma,\delta} U_{\alpha,\beta,\gamma,\delta}
-#      \hat{f}^{\dagger}_{\alpha}\hat{f}^{\dagger}_{\beta}\hat{f}_{\gamma}\hat{f}_{\delta},
-#      \end{equation} 
-#
-#
-# which is parameterized by tensor
-#
-#    .. math::
-#        \begin{gather*}
-#        U_{m_{l_i}m_{s_i}, m_{l_j}m_{s_j}, m_{l_t}m_{s_t},
-#        m_{l_u}m_{s_u}}^{i,j,t,u}
-#        = \\ \frac{1}{2} \delta_{m_{s_i},m_{s_t}}\delta_{m_{s_j},m_{s_u}}
-#        \delta_{m_{l_i}+m_{l_j}, m_{l_t}+m_{l_u}}
-#        \sum_{k}C_{l_i,l_t}(k,m_{l_i},m_{l_t})C_{l_u,l_j}
-#        (k,m_{l_u},m_{l_j})F^{k}_{i,j,t,u}
-#        \end{gather*}
-#
-# where :math:`m_s` is the magnetic quantum number for spin
-# and :math:`m_l` is the quantum number for orbitals.
-# :math:`F^{k}_{i,j,t,u}` are Slater integrals.
-# :math:`C_{l_i,l_j}(k,m_{l_i},m_{l_j})` are Gaunt coefficients. We can
-# construct the matrix via
+# The Coulomb interactions in EDRIXS are described by a tensor. Understand this
+# in full is complicated and requires careful consideration of the symmetry of the
+# interactions. See example 6 for more discussion if desired.
+# EDRIXS can construct the matrix via
 umat = edrixs.get_umat_slater('p', F0, F2)
 
 ################################################################################
@@ -62,7 +40,7 @@ umat = edrixs.get_umat_slater('p', F0, F2)
 # ------------------------------------------------------------------------------
 # Now we build the binary form of the Fock basis :math:`|F>` (we consider it
 # preferable to use the standard :math:`F` and trust the reader to avoid
-# confusing it with the Slater parameters.)
+# confusing it with the interaction parameters.)
 # The Fock basis is the simplest legitimate form for the basis and it consists
 # of a series of 1s and 0s where 1 means occupied and
 # 0 means  empty. These are in order up, down, up, down, up, down.
