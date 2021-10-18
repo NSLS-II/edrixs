@@ -159,8 +159,8 @@ fig, ax = plt.subplots()
 for i, eigenvalue in enumerate(np.unique(e)):
     art = ax.plot([0, 1], [eigenvalue, eigenvalue], '-',  color='C{}'.format(i))
     ind = np.where(eigenvalue == e)[0][0]
-    L = np.sqrt(1 + 4*L2_val[ind])/2
-    S = np.sqrt(1 + 4*S2_val[ind])/2
+    L = (-1 + np.sqrt(1 + 4*L2_val[ind]))/2
+    S = (-1 + np.sqrt(1 + 4*S2_val[ind]))/2
     message = "L={:.0f}, S={:.0f} ({:.0f})"
     ax.text(1, eigenvalue, message.format(L, S, degeneracy[ind]),
             horizontalalignment='right',
