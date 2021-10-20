@@ -96,17 +96,15 @@ eval_i, eval_n, trans_op = out
 #
 # We need to specify the temperature and how many eigenstates
 # we use to represent the ground state. In this example, we
-# calculate these states as those that have non-negligable thermal
+# calculate these states as those that have non-negligible thermal
 # population. The function :code:`xas_1v1c_py` assumes that the spectral
-# broadening is domainted by the inverse core hole lifetime :code:`gamma_c`,
+# broadening is dominated by the inverse core hole lifetime :code:`gamma_c`,
 # which is the Lorentzian half width at half maximum.
 
 ominc = np.linspace(11200, 11230, 50)
 temperature = 300  # in K
 prob = edrixs.boltz_dist(eval_i, temperature)
 gs_list = [n for n, prob in enumerate(prob) if prob > 1e-6]
-
-gs_list = [n for n in range(6)]
 
 thin = 30*np.pi/180
 phi = 0
