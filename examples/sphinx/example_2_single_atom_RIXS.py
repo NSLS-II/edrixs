@@ -94,8 +94,10 @@ eval_i, eval_n, trans_op = out
 # where the x-rays are parallel to the plane spanned by the incident
 # beam and the sample :math:`z`-axis.
 #
-# We need to specify the temperature and how many eigenstates
-# we use to represent the ground state. In this example, we
+# EDRIXS represents the system's ground state using a set of
+# low energy eigenstates weighted by Boltzmann thermal factors.
+# These eigenstates are specified by :code:`gs_list`,
+# which is of the form :math:`[0, 1, 2, 3, \dots]`. In this example, we
 # calculate these states as those that have non-negligible thermal
 # population. The function :code:`xas_1v1c_py` assumes that the spectral
 # broadening is dominated by the inverse core hole lifetime :code:`gamma_c`,
@@ -125,8 +127,10 @@ xas = edrixs.xas_1v1c_py(
 # or the experimental resolution and is parameterized by :code:`gamma_f`
 # -- the Lorentzian half width at half maximum.
 #
-# The angle and polarization of the emitted beam must also be specified.
-# If, as is common in experiments, the emitted polarization is not resolved
+# The angle and polarization of the emitted beam must also be specified, so
+# we pass :code:`pol_type_rixs` to the function, which specifies the
+# includes the incoming and outgoing x-ray states. If, as is common in
+# experiments, the emitted polarization is not resolved
 # one needs to add both emitted polarization channels, which is what we will
 # do later on in this example.
 
