@@ -165,4 +165,12 @@ for U in [10000, 0.0001]:
 # For :math:`U \gg t` the ground state maximizes its magnetic exchange 
 # energy saving. In the :math:`U \ll t` condition the ground state maximizes 
 # its kinetic energy saving. Since both states share the same parity, the
-# cross-over between them is smooth.
+# cross-over between them is smooth. This type of physics is at play in current
+# research on quantum materials [1]_ [2]_.
+
+##############################################################################
+#
+# .. rubric:: Footnotes
+#
+# .. [1] Y. Wang et al., `Phys. Rev. Lett. 122, 106401 (2019) <https://www.doi.org/10.1103/PhysRevLett.122.106401>`_.
+# .. [2] A. Revelli et al., `Science Advances 5, eaav4020 (2019) <https://doi.org/10.1126/sciadv.aav4020>`_. 
