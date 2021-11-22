@@ -192,13 +192,11 @@ for evalue, row in zip(e, nd_expt.T):
 # Now the lowest energy state involves splitting the holes between the two
 # highest energy :math:`x^2-y^2` and :math:`3z^2-r^2` orbitals. i.e. we have
 # gone from low-spin to high spin. Working out the balance between these two
-# states if often one of the first things one wants to determine upon the
-# discovery of an interesting new material [1]_ [2]_. 
+# states is often one of the first things one wants to determine upon the
+# discovery of an interesting new material [1]_. 
 
 ##############################################################################
 #
 # .. rubric:: Footnotes
 #
-# .. [1] G. Fabbris et al.,
-#        `Phys. Rev. Lett. 118, (2017) <https://www.doi.org/10.1103/PhysRevLett.118.156402>`_.
-# .. [2] M. Rossi et al., `arXiv:2011.00595  (2021) <https://arxiv.org/abs/2011.00595>`_.
+# .. [1] M. Rossi et al., `arXiv:2011.00595  (2021) <https://arxiv.org/abs/2011.00595>`_.
