@@ -29,7 +29,7 @@ F0, F2 = 4.0, 1.0
 ################################################################################
 # Coulomb interactions
 # ------------------------------------------------------------------------------
-# The Coulomb interactions in EDRIXS are described by a tensor. Understand this
+# The Coulomb interactions in EDRIXS are described by a tensor. Understanding this
 # in full is complicated and requires careful consideration of the symmetry of the
 # interactions. See example 6 for more discussion if desired.
 # EDRIXS can construct the matrix via
