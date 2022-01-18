@@ -233,5 +233,5 @@ plt.show()
 ################################################################################
 # It is clear that we have split the :math:`S=1` state, which branches into
 # three states from :math:`J=|L-S|, |L-S|+1, ..., |L+S|`. Since the shell is
-# less than half full, Hund's third rule dictates that the smaller :math:`J` 
+# less than half full, Hund's third rule dictates that the smaller :math:`J`
 # states have the lower energies.

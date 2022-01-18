@@ -1,0 +1,28 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-symlinks
+      - id: end-of-file-fixer
+        exclude: |
+          (?x)^(
+            src/|
+            docs/|
+            github_deploy_key_nsls_ii_edrixs.enc
+          )
+      - id: trailing-whitespace
+        exclude: |
+          (?x)^(
+            src/|
+            docs/|
+            github_deploy_key_nsls_ii_edrixs.enc
+          )
+  - repo: https://github.com/PyCQA/flake8.git
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        exclude: ^examples/
+        entry: flake8 --max-line-length=115

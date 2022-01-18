@@ -5,6 +5,7 @@ coverage
 flake8
 pytest
 sphinx
+pre-commit
 # These are dependencies of various sphinx extensions for documentation.
 ipython
 matplotlib

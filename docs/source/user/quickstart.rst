@@ -13,7 +13,7 @@ edrixs can be used as a simple ED calculator to get eigenvalues (eigenvectors) o
 We will give an example to get eigenvalues for a :math:`t_{2g}`-orbital system (:math:`l_{eff}=1`). There are 6 orbitals including spin.
 
 Launch your favorite python terminal::
-    
+
     >>> import edrixs
     >>> import scipy
     >>> norb = 6
