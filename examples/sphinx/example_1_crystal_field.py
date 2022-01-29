@@ -193,7 +193,7 @@ for evalue, row in zip(e, nd_expt.T):
 # highest energy :math:`x^2-y^2` and :math:`3z^2-r^2` orbitals. i.e. we have
 # gone from low-spin to high spin. Working out the balance between these two
 # states is often one of the first things one wants to determine upon the
-# discovery of an interesting new material [1]_. 
+# discovery of an interesting new material [1]_.
 
 ##############################################################################
 #

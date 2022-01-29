@@ -73,21 +73,29 @@ Ready to contribute? Here's how to set up `edrixs` for local development.
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
+5. Commit your changes::
 
-    $ flake8 edrixs tests
+    $ pre-commit install
+
+    Now you can commit your changes. All commits will be checked
+    via `pre-commit` including `flake8`.
+
+    $ git commit -a -m "Your commit message"
+
+6. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
+
     $ python setup.py test
     $ tox
 
    To get flake8 and tox, just pip install them into your virtualenv.
 
-6. Commit your changes and push your branch to GitHub::
+7. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+8. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
@@ -101,4 +109,3 @@ Before you submit a pull request, check that it meets these guidelines:
 3. The pull request should work for Python 2.7, 3.3, 3.4, 3.5 and for PyPy. Check
    https://travis-ci.org/mrakitin/edrixs/pull_requests
    and make sure that the tests pass for all supported Python versions.
-

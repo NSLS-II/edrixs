@@ -9,15 +9,15 @@ edrixs using the example of a Hubbard dimer. We want to solve the equation
     \\begin{equation}
     \\hat{H} = \\sum_{i,j}  \\sum_{\\sigma} t_{i,j} \\hat{f}^{\\dagger}_{i,\\sigma} \\hat{f}_{j, \\sigma}
     + U \\sum_{i} \\hat{n}_{i,\\uparrow}\\hat{n}_{i,\\downarrow},
-    \\end{equation} 
+    \\end{equation}
 
-which involves two sites labeled with indices :math:`i` or :math:`j` with two 
+which involves two sites labeled with indices :math:`i` or :math:`j` with two
 electrons of spin :math:`\\sigma\\in{\\uparrow,\\downarrow}`. :math:`t_{i,j}`
 is the hopping between sites, :math:`\\hat{f}^{\\dagger}_{i,\\sigma}` is the
-creation operators, and 
+creation operators, and
 :math:`\\hat{n}^{\\dagger}_{i,\\sigma}=\\hat{f}^{\\dagger}_{i,\\sigma}\\hat{f}_{i,\\sigma}`
-is the number operator. The main task is to represent this Hamiltonian and 
-the related spin operator using the EDRIXS two-fermion and four-fermion form 
+is the number operator. The main task is to represent this Hamiltonian and
+the related spin operator using the EDRIXS two-fermion and four-fermion form
 where :math:`\\alpha,\\beta,\\delta,\\gamma` are the indices of the single
 particle basis.
 
@@ -26,7 +26,7 @@ particle basis.
     \\hat{H} = \\sum_{\\alpha,\\beta} t_{\\alpha,\\beta} \\hat{f}^{\\dagger}_{\\alpha} \\hat{f}_{\\beta}
     + \\sum_{\\alpha,\\beta,\\gamma,\\delta} U_{\\alpha,\\beta,\\gamma,\\delta}
     \\hat{f}^{\\dagger}_{\\alpha}\\hat{f}^{\\dagger}_{\\beta}\\hat{f}_{\\gamma}\\hat{f}_{\\delta}.
-    \\end{equation} 
+    \\end{equation}
 
 """
 
@@ -52,15 +52,15 @@ basis = edrixs.get_fock_bin_by_N(norb, noccu)
 ################################################################################
 # Create function to populate and diagonalize matrices
 # ------------------------------------------------------------------------------
-# The Coulomb and hopping matrices :code:`umat` and :code:`emat` will be 
+# The Coulomb and hopping matrices :code:`umat` and :code:`emat` will be
 # represented by :math:`4\times4\times4\times4` and :math:`4\times4` matrices,
 # respectively. Note that we needed to specify
 # that these are, in general, complex, although
 # they happen to contain only real numbers in this case. We follow the convention
 # that these are ordered first by site and then by spin:
-# :math:`|0\uparrow>, |0\downarrow>, |1\uparrow>, |1\downarrow>`. 
+# :math:`|0\uparrow>, |0\downarrow>, |1\uparrow>, |1\downarrow>`.
 # Consequently the :math:`2\times2` and :math:`2\times2\times2\times2` block
-# diagonal structures of the matrices will contain the on-site interactions. 
+# diagonal structures of the matrices will contain the on-site interactions.
 # The converse is true for the hopping between the sites.
 # From here let us generate a function to build and diagonalize the Hamiltonian.
 # We need to generate the Coulomb matrix for the on-site interactions and
@@ -73,13 +73,13 @@ def diagonalize(U, t, extra_emat=None):
     U_mat_1site = edrixs.get_umat_slater('s', U)
     umat[:2, :2, :2, :2,] = umat[2:, 2:, 2:, 2:] = U_mat_1site
     emat[2, 0] = emat[3, 1] = emat[0, 2] = emat[1, 3] = t
-    
+
     if extra_emat is not None:
         emat = emat + extra_emat
 
     H = (edrixs.build_opers(2, emat, basis)
          + edrixs.build_opers(4, umat, basis))
- 
+
     e, v = scipy.linalg.eigh(H)
     return e, v
 
@@ -93,7 +93,7 @@ print(e)
 
 ################################################################################
 # To analyze what is going on we can determine the spin expectation values
-# of the cluster. Building the operators follows the same form as the 
+# of the cluster. Building the operators follows the same form as the
 # Hamiltonian and the previous example.
 spin_mom_one_site = edrixs.get_spin_momentum(ll)
 spin_mom = np.zeros((3, norb, norb), dtype=np.complex128)
@@ -105,7 +105,7 @@ opS_squared = (np.dot(opS[0], opS[0]) + np.dot(opS[1], opS[1])
 
 ################################################################################
 # This time let us include a tiny magnetic field along the :math:`z`-axis, so
-# that we have a well-defined measurement axis and print out the expectation 
+# that we have a well-defined measurement axis and print out the expectation
 # values.
 zeeman = np.zeros((norb, norb), dtype=np.complex128)
 zeeman[:2, :2] = zeeman[2:, 2:] = 1e-8*spin_mom_one_site[2]
@@ -118,12 +118,12 @@ header = "{:<10s}\t{:<6s}\t{:<6s}"
 print(header.format("E", "S(S+1)", "<Sz>"))
 for i in range(len(e)):
     print("{:<2f}\t{:.1f}\t{:.1f}".format(e[i], Ssq_exp[i], Sz_exp[i]))
-    
+
 ################################################################################
-# For :math:`U \gg t` the two states with double occupancy acquire an energy of 
+# For :math:`U \gg t` the two states with double occupancy acquire an energy of
 # approximately :math:`U`. The low energy states are a :math:`S=0` singlet and
 # and :math:`S=1` triplet, which are split by :math:`4t^2/U`, which is the
-# magnetic exchange term. 
+# magnetic exchange term.
 
 ################################################################################
 # :math:`U` dependence
@@ -150,7 +150,7 @@ def get_single_particle_repesentations(v):
         rep = sum([vec*weight for weight, vec
                         in zip(v[:, i], np.array(basis))])
         reps.append(rep)
-    
+
     return np.array(reps)
 
 t = 1
@@ -162,8 +162,8 @@ for U in [10000, 0.0001]:
     print("\n")
 
 ################################################################################
-# For :math:`U \gg t` the ground state maximizes its magnetic exchange 
-# energy saving. In the :math:`U \ll t` condition the ground state maximizes 
+# For :math:`U \gg t` the ground state maximizes its magnetic exchange
+# energy saving. In the :math:`U \ll t` condition the ground state maximizes
 # its kinetic energy saving. Since both states share the same parity, the
 # cross-over between them is smooth. This type of physics is at play in current
 # research on quantum materials [1]_ [2]_.
@@ -173,4 +173,4 @@ for U in [10000, 0.0001]:
 # .. rubric:: Footnotes
 #
 # .. [1] Y. Wang et al., `Phys. Rev. Lett. 122, 106401 (2019) <https://www.doi.org/10.1103/PhysRevLett.122.106401>`_.
-# .. [2] A. Revelli et al., `Science Advances 5, eaav4020 (2019) <https://doi.org/10.1126/sciadv.aav4020>`_. 
+# .. [2] A. Revelli et al., `Science Advances 5, eaav4020 (2019) <https://doi.org/10.1126/sciadv.aav4020>`_.

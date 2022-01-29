@@ -14,4 +14,3 @@ dependencies:
   - hdf5
   - seaborn
   - sphinx-gallery
-

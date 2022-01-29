@@ -21,7 +21,7 @@ models including:
   See Ref. [1]_ section 5.2. This allows the modeling of dimer excitations in RIXS where electrons transition between atoms.
   We used this model in our manuscript on Ba5AlIr2O11. [2]_
 * `Anderson impurity model <https://github.com/NSLS-II/edrixs/tree/master/examples/cpc/two_site_cluster>`_.
-  See Ref. [1]_ section 5.3. This addresses Ba2YOsO6. 
+  See Ref. [1]_ section 5.3. This addresses Ba2YOsO6.
 
 
 Extended examples
@@ -48,7 +48,7 @@ Thus far we have addressed.
 * Single atom model for O-edge RIXS on
   `URu2Si2 from <https://github.com/NSLS-II/edrixs/tree/master/examples/more/RIXS/URu2Si2>`_
   including both 5f and 5d orbitals from Ref. [5]_.
-* Single atom model for 
+* Single atom model for
   `L-edge RIXS on URu2Si2 <https://github.com/NSLS-II/edrixs/tree/master/examples/more/RIXS/U_L3>`_
   from Ref. [6]_.
 
@@ -57,8 +57,8 @@ Thus far we have addressed.
 
 .. [1] Y. Wang et al.,
        `Comput. Phys. Commun 243, 151-165 (2019) <https://doi.org/10.1016/j.cpc.2019.04.018>`_
-.. [2] Y. Wang et al., 
-       `Phys. Rev. Lett. 122, 106401 (2019) <https://doi.org/10.1103/PhysRevLett.122.106401>`_. 
+.. [2] Y. Wang et al.,
+       `Phys. Rev. Lett. 122, 106401 (2019) <https://doi.org/10.1103/PhysRevLett.122.106401>`_.
 .. [3] G. Fabbris et al.,
        `Phys. Rev. Lett. 118, 156402 (2017) <https://doi.org/10.1103/PhysRevLett.118.156402>`_
 .. [4]  G. Fabbris et al.,
@@ -67,4 +67,3 @@ Thus far we have addressed.
        `Phys. Rev. Lett. 114, 236401 (2015) <https://doi.org/10.1103/PhysRevLett.114.236401>`_
 .. [6] Y. Wang et al.,
        `Phys. Rev. B 96, 085146 (2017) <https://doi.org/10.1103/PhysRevB.96.085146>`_
-    

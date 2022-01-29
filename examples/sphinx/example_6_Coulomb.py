@@ -13,7 +13,7 @@ that one might not anticipate. Our example is based on a :math:`d` atomic shell.
 # Create matrix
 # ------------------------------------------------------------------------------
 # The Coulomb interaction between two particles can be written as
-# 
+#
 #   .. math::
 #     \begin{equation}
 #     \hat{H} = \frac{1}{2}
@@ -22,15 +22,15 @@ that one might not anticipate. Our example is based on a :math:`d` atomic shell.
 #     |\hat{\psi}^\sigma(\mathbf{r})|^2 \frac{e^2}{R}
 #     |\hat{\psi}^{\sigma^\prime}(\mathbf{r})|^2,
 #     \end{equation}
-# 
+#
 # where :math:`\hat{\psi}^\sigma(\mathbf{r})` is the electron wavefunction, with
 # spin :math:`\sigma`, and :math:`R=|r-r^\prime|` is the electron separation.
 # Solving our problem in this form is difficult due to the need to symmeterize
 # the wavefunction to follow fermionic statistics.
-# Using second quantization, we can use operators to impose the required 
+# Using second quantization, we can use operators to impose the required
 # particle exchange statistics and write the equation in terms of
-# a tensor :math:`U` 
-# 
+# a tensor :math:`U`
+#
 #   .. math::
 #     \begin{equation}
 #     \hat{H} = \sum_{\alpha,\beta,\gamma,\delta,\sigma,\sigma^\prime}
@@ -39,9 +39,9 @@ that one might not anticipate. Our example is based on a :math:`d` atomic shell.
 #     \hat{f}^{\dagger}_{\beta\sigma^\prime}
 #     \hat{f}_{t\sigma^\prime}\hat{f}_{\delta\sigma},
 #     \end{equation}
-# 
+#
 # where :math:`\alpha`, :math:`\beta`, :math:`\gamma`, :math:`\delta` are
-# orbital indices and :math:`\hat{f}^{\dagger}` 
+# orbital indices and :math:`\hat{f}^{\dagger}`
 # (:math:`\hat{f}`) are the creation (anihilation) operators.
 # For a :math:`d`-electron system, we have :math:`10` distinct spin-orbitals
 # (:math:`5` orbitals each with :math:`2` spins), which makes matrix the
@@ -71,16 +71,16 @@ umat_chb = edrixs.get_umat_slater('d', F0, F2, F4)
 # constructs the required matrix via Gaunt coeficents from
 # :func:`.get_gaunt`. Two alternative parameterizations are common.
 # The first are the Racah parameters, which are
-# 
+#
 #   .. math::
 #     \begin{eqnarray}
 #     A &=& F^0 - \frac{49}{441} F^4 \\
 #     B &=& \frac{1}{49}F^2 - \frac{5}{441}F^4 \\
 #     C &=& \frac{35}{441}F^4.
 #     \end{eqnarray}
-# 
-# or an alternative form for the Slater integrals 
-# 
+#
+# or an alternative form for the Slater integrals
+#
 #   .. math::
 #     \begin{eqnarray}
 #     F_0 &=& F^0  \\
@@ -94,7 +94,7 @@ umat_chb = edrixs.get_umat_slater('d', F0, F2, F4)
 # Basis transform
 # ------------------------------------------------------------------------------
 # If we want to use the real harmonic basis, we can use a tensor
-# transformation, which imposes the following orbital order 
+# transformation, which imposes the following orbital order
 # :math:`3z^2-r^2, xz, yz, x^2-y^2, xy`, each of which involves
 # :math:`\uparrow, \downarrow` spin pairs. Let's perform this transformation and
 # store a list of these orbitals.
@@ -106,14 +106,14 @@ orbitals = ['3z^2-r^2', 'xz', 'yz', 'x^2-y^2', 'xy']
 # ------------------------------------------------------------------------------
 # Tensor :math:`U` is a  series of matrix
 # elements
-# 
+#
 #   .. math::
 #     \begin{equation}
 #     \langle\psi_{\gamma,\delta}^{\bar{\sigma},\bar{\sigma}^\prime}
 #     |\hat{H}|
 #     \psi_{\alpha,\beta}^{\sigma,\sigma^\prime}\rangle
 #     \end{equation}
-# 
+#
 # the combination of which defines the energetic cost of pairwise
 # electron-electron interactions between states :math:`\alpha,\sigma`
 # and :math:`\beta,\sigma^\prime`. In EDRIXS we follow the convention of
@@ -125,11 +125,11 @@ orbitals = ['3z^2-r^2', 'xz', 'yz', 'x^2-y^2', 'xy']
 # "exchange" interactions. The former come from electrons in the same orbital
 # and the later involve swapping orbital labels for electrons. We will use
 # :math:`U_0` and :math:`J` as a shorthand for distinguishing these.
-# 
+#
 # Before we describe the different types of interactions, we note that since
 # the Coulomb interaction is real, and due to the spin symmmetry properties
 # of the process :math:`U` always obeys
-# 
+#
 #   .. math::
 #     \begin{equation}
 #     U_{\alpha\sigma,\beta\sigma^\prime,\gamma\sigma^\prime,\delta\sigma} =
@@ -137,28 +137,28 @@ orbitals = ['3z^2-r^2', 'xz', 'yz', 'x^2-y^2', 'xy']
 #     U_{\delta\sigma,\gamma\sigma^\prime,\beta\sigma^\prime,\alpha\sigma} =
 #     U_{\gamma\sigma,\delta\sigma^\prime,\alpha\sigma^\prime,\beta\sigma}.
 #     \end{equation}
-# 
+#
 #
 # 1. Intra orbital
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The direct Coulomb energy cost to double-occupy an orbital comes from terms
 # like :math:`U_{\alpha\sigma,\alpha\bar\sigma,\alpha\bar\sigma,\alpha\sigma}`.
-# In this notation, we use :math:`\sigma^\prime` to denote that the matrix 
+# In this notation, we use :math:`\sigma^\prime` to denote that the matrix
 # element is summed over all pairs and :math:`\bar{\sigma}` to denote sums
 # over all opposite spin pairs. Due to rotational symmetry, all these
 # elements are the same and equal to
-# 
+#
 #   .. math::
 #     \begin{eqnarray}
 #     U_0 &=& \frac{A}{2} + 2B + \frac{3C}{2}\\
 #         &=& \frac{F_0}{2} + 2F_2 + 18F_4
 #     \end{eqnarray}
-# 
+#
 # Let's print these to demonstrate where these live in the array
 for i in range(0, 5):
     val = umat[i*2, i*2 + 1, i*2 + 1, i*2].real
     print(f"{orbitals[i]:<8} \t {val:.3f}")
-    
+
 ################################################################################
 # 2. Inter orbital Coulomb interactions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -199,7 +199,7 @@ for i, j in itertools.combinations(range(5), 2):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Another set of terms that one might not immediately anticipate involve three
 # orbitals like
-# 
+#
 #   .. math::
 #     \begin{equation}
 #     U_{\alpha\sigma, \gamma\sigma', \beta\sigma', \gamma\sigma} \\
@@ -207,7 +207,7 @@ for i, j in itertools.combinations(range(5), 2):
 #     (1-\delta_{\sigma\sigma'})
 #     U_{\alpha\sigma, \beta\sigma', \gamma\sigma', \gamma\sigma}
 #     \end{equation}
-# 
+#
 # for :math:`\alpha=3z^2-r^2, \beta=x^2-y^2, \gamma=xz/yz`.
 # These are needed to maintain the rotational symmetry of the interations.
 # See :ref:`table_3_orbital` for the expressions. We can print some of
@@ -227,7 +227,7 @@ for i, j, k, l in ijkl:
 ################################################################################
 # 6. Four orbital
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Futher multi-orbital terms include 
+# Futher multi-orbital terms include
 # :math:`U_{\alpha\sigma,\beta\sigma^\prime,\gamma\sigma^\prime,\delta\sigma}`.
 # We can find these here in the matrix:
 ijkl = [[0, 1, 2, 4],
@@ -265,7 +265,7 @@ def diagonalize(ten_dq, umat):
 
 basis = edrixs.get_fock_bin_by_N(10, 2)
 umat_no_multiorbital = np.copy(umat)
-B = F2/49 - 5*F4/441 
+B = F2/49 - 5*F4/441
 for val in [np.sqrt(3)*B/2, np.sqrt(3)*B, 3*B/2]:
     umat_no_multiorbital[(np.abs(umat)- val) < 1e-6] = 0
 
@@ -285,7 +285,7 @@ for cind, (ax, ten_dq) in enumerate(zip(axs, ten_dqs)):
 
 fig.suptitle("Eigenvalues with 3&4-orbital effects on/off")
 fig.subplots_adjust(wspace=.3)
-axs[0].set_ylabel('Eigenvalues (eV)')    
+axs[0].set_ylabel('Eigenvalues (eV)')
 fig.subplots_adjust(top=.8)
 plt.show()
 
@@ -296,12 +296,12 @@ plt.show()
 # the right eigenenergies. As :math:`10D_q` get large, this mixing is switched
 # off and the spectra start to become independent of whether the 3 & 4 orbital
 # orbital terms are included or not.
-# 
 #
-# 
+#
+#
 # .. _table_2_orbital:
 # .. table:: Table of 2 orbital interactions
-# 
+#
 #    +-----------------------------+------------------+-----------------------+----------------+--------------------+
 #    |Orbitals :math:`\alpha,\beta`|:math:`U_0` Racah | :math:`U_0` Slater    |:math:`J` Racah |:math:`J` Slater    |
 #    +=============================+==================+=======================+================+====================+
@@ -325,11 +325,11 @@ plt.show()
 #    +-----------------------------+------------------+-----------------------+----------------+--------------------+
 #    |:math:`x^2-y^2, xy`          |:math:`A/2+2B+C/2`|:math:`F_0+4F_2-34F_4` | :math:`C/2`    |:math:`35F_4/2`     |
 #    +-----------------------------+------------------+-----------------------+----------------+--------------------+
-# 
-# 
+#
+#
 # .. _table_3_orbital:
 # .. table:: Table of 3 orbital interactions
-# 
+#
 #    +-----------------------------+-------------+----------------------------------------------------+-----------------------------------------------------+
 #    |Orbitals :math:`\alpha,\beta,\gamma,\delta`|:math:`\langle\alpha\beta|\gamma\delta\rangle` Racah|:math:`\langle\alpha\beta|\gamma\delta\rangle` Slater|
 #    +=============================+=============+====================================================+=====================================================+
@@ -345,11 +345,11 @@ plt.show()
 #    +-------------------------------------------+----------------------------------------------------+-----------------------------------------------------+
 #    |:math:`yz, yz, x^2-y^2, 3z^2-r^2`          | :math:`-\sqrt{3}B/2`                               | :math:`-\sqrt{3}F_2/2+5\sqrt{3}F_4/2`               |
 #    +-------------------------------------------+----------------------------------------------------+-----------------------------------------------------+
-# 
-# 
+#
+#
 # .. _table_4_orbital:
 # .. table:: Table of 4 orbital interactions
-# 
+#
 #    +-----------------------------+-------------+----------------------------------------------------+-----------------------------------------------------+
 #    |Orbitals :math:`\alpha,\beta,\gamma,\delta`|:math:`\langle\alpha\beta|\gamma\delta\rangle` Racah|:math:`\langle\alpha\beta|\gamma\delta\rangle` Slater|
 #    +=============================+=============+====================================================+=====================================================+
@@ -373,8 +373,8 @@ plt.show()
 #    +-------------------------------------------+----------------------------------------------------+-----------------------------------------------------+
 #    |:math:`x^2-y^2 , xy, yz, xz`               | :math:`3B/2`                                       | :math:`3F_2/2-15F_4/2`                              |
 #    +-------------------------------------------+----------------------------------------------------+-----------------------------------------------------+
-# 
-# 
+#
+#
 # .. rubric:: Footnotes
 #
 # .. [1] MSugano S, Tanabe Y and Kamimura H. 1970. Multiplets of
