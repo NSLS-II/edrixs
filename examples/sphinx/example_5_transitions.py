@@ -60,7 +60,7 @@ def make_eigenvector(orbital_index, B, case='d'):
     Psi = np.zeros(2*norb, dtype=complex)
     Psi[::2] = psi*U[0]
     Psi[1::2] = psi*D[0]
-    return Psi/np.sqrt(2)
+    return Psi
 
 
 ################################################################################
