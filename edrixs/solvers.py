@@ -326,7 +326,7 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
         Type of polarization, options can be:
 
         - ('linear', alpha), linear polarization, where alpha is the angle between the
-          polarization vector and the scattering plane.
+          polarization vector and the scattering plane in radians.
 
         - ('left', 0), left circular polarization.
 
@@ -456,7 +456,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         (str1, alpha, str2, beta)
 
         where, str1 (str2) can be 'linear', 'left', 'right', and alpha (beta) is
-        the angle (in radian) between the linear polarization vector and the scattering plane.
+        the angle (in radians) between the linear polarization vector and the scattering plane.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
     gs_list: 1d list of ints
@@ -1103,7 +1103,7 @@ def xas_1v1c_fort(comm, shell_name, ominc, *, gamma_c=0.1,
         Type of polarization, options can be:
 
         - ('linear', alpha), linear polarization, where alpha is the angle between the
-          polarization vector and the scattering plane.
+          polarization vector and the scattering plane in radians.
 
         - ('left', 0), left circular polarization.
 
@@ -1214,7 +1214,7 @@ def xas_2v1c_fort(comm, shell_name, ominc, *, gamma_c=0.1,
         Type of polarization, options can be:
 
         - ('linear', alpha), linear polarization, where alpha is the angle between the
-          polarization vector and the scattering plane.
+          polarization vector and the scattering plane in radians.
 
         - ('left', 0), left circular polarization.
 
@@ -1465,7 +1465,7 @@ def rixs_1v1c_fort(comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
         (str1, alpha, str2, beta)
 
         where, str1 (str2) can be 'linear', 'left', 'right', and alpha (beta) is
-        the angle (in radian) between the linear polarization vector and the scattering plane.
+        the angle (in radians) between the linear polarization vector and the scattering plane.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
     num_gs: int
@@ -1584,7 +1584,7 @@ def rixs_2v1c_fort(comm, shell_name, ominc, eloss, *, gamma_c=0.1, gamma_f=0.1,
         (str1, alpha, str2, beta)
 
         where, str1 (str2) can be 'linear', 'left', 'right', and alpha (beta) is
-        the angle (in radian) between the linear polarization vector and the scattering plane.
+        the angle (in radians) between the linear polarization vector and the scattering plane.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
     num_gs: int
@@ -2290,7 +2290,7 @@ def xas_siam_fort(comm, shell_name, nbath, ominc, *, gamma_c=0.1,
         Type of polarization, options can be:
 
         - ('linear', alpha), linear polarization, where alpha is the angle between the
-          polarization vector and the scattering plane.
+          polarization vector and the scattering plane in radians.
 
         - ('left', 0), left circular polarization.
 
@@ -2509,7 +2509,7 @@ def rixs_siam_fort(comm, shell_name, nbath, ominc, eloss, *, gamma_c=0.1, gamma_
         (str1, alpha, str2, beta)
 
         where, str1 (str2) can be 'linear', 'left', 'right', and alpha (beta) is
-        the angle (in radian) between the linear polarization vector and the scattering plane.
+        the angle (in radians) between the linear polarization vector and the scattering plane.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
     num_gs: int
