@@ -67,8 +67,9 @@ def make_eigenvector(orbital_index, B, case='d'):
 # Let's put the spin along the :math:`[1 1 0]` direction and
 # recall from the :ref:`sphx_glr_auto_examples_example_1_crystal_field.py`
 # example that edrixs uses the standard orbital order of
-# :math:`d_{3z^2-r^2}, d_{xz}, d_{yz}, d_{x^2-y^2}, d_{xy}`, so we want the third
-# index. Using this, we can build spin-up and -down eigenvectors.
+# :math:`d_{3z^2-r^2}, d_{xz}, d_{yz}, d_{x^2-y^2}, d_{xy}`, so we want the
+# :code:`orbital_index = 3` element. Using this, we can build spin-up and -down
+# eigenvectors.
 orbital_index = 3
 B = np.array([1, 1, 0])
 
@@ -78,9 +79,9 @@ excitedstate_vector = make_eigenvector(orbital_index, -B)
 ################################################################################
 # Transition operators
 # ------------------------------------------------------------------------------
-# Here we are considering a :math:`L`-edge :math:`2p_{3/2} \rightarrow 3d`
+# Here we are considering a :math:`L_3`-edge :math:`2p_{3/2} \rightarrow 3d`
 # transition. We can read this matrix from the edrixs database, keeping in
-# mind that there are in fact three operations for :math:`x, y, \& z` directions.
+# mind that there are in fact three operations for :math:`x, y,` & :math:`z` directions.
 # We will also need the :math:`3d \rightarrow 2p_{3/2}` operation, which we can
 # generate as the conjugate transpose.
 
@@ -118,7 +119,7 @@ F_SF = get_F(groundstate_vector, excitedstate_vector)
 # Let's consider the common case of fixing the total scattering angle at
 # :code:`two_theta = 90` and choosing a series of incident angles :code:`thins`.
 # Since the detector does not resolve polarization, we need to add both outgoing
-# polarizations. It is then convenient to use function :code:`dipole_polvec_rixs`
+# polarizations. It is then convenient to use function :func:`.dipole_polvec_rixs`
 # to obtain the incoming and outgoing polarization vectors.
 thins = np.linspace(0, 90)
 two_theta = 90
