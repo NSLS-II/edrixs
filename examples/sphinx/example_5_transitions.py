@@ -75,7 +75,7 @@ excitedstate_vector = get_eigenvector(orbital_index, 1)
 # keeping in mind that there are in fact three operations for
 # :math:`x, y,` & :math:`z` directions. Note that edrixs provides operators
 # in electron notation. If we define :math:`D` as the transition operator in
-# electron language, "math:`D^\dagger` is the operator in the hole language
+# electron language, :math:`D^\dagger` is the operator in the hole language
 # we are using for this example.
 # The angular dependence of a RIXS transition can be conveniently described
 # using the scattering matrix, which is a :math:`3\times3` element object that
