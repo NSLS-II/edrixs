@@ -18,7 +18,7 @@ set(src
   opavg_driver.f90)
 
 add_library(edrixs ${src})
-target_link_libraries(edrixs PUBLIC MPI::MPI_Fortran LAPACK::LAPACK ARPACK::PARPACK)
+target_link_libraries(edrixs PUBLIC MPI::MPI_Fortran LAPACK::LAPACK PARPACK::PARPACK)
 
 install(TARGETS edrixs DESTINATION lib)
 
