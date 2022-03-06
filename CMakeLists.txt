@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.17.3 FATAL_ERROR) # 3.17 > for Python3_SOABI
 
-project (EDRIXS Fortran)
+project (EDRIXS C Fortran)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -32,5 +32,20 @@ endif()
 # use a custom find module because arpack-ng config module doesn't provide full paths to libs
 # see https://github.com/opencollab/arpack-ng/pull/311
 find_package(arpack MODULE REQUIRED COMPONENTS serial parallel)
+
+find_package(Python3 3.8 REQUIRED COMPONENTS Interpreter Development NumPy)
+
+# Grab the variables from a local Python installation
+# F2PY headers
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}"
+  -c "import numpy.f2py; print(numpy.f2py.get_include())"
+  OUTPUT_VARIABLE F2PY_INCLUDE_DIR
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+message(STATUS "Python3_INCLUDE_DIRS: ${Python3_INCLUDE_DIRS}")
+message(STATUS "F2PY_INCLUDE_DIR: ${F2PY_INCLUDE_DIR}")
+message(STATUS "Python3_NumPy_INCLUDE_DIRS: ${Python3_NumPy_INCLUDE_DIRS}")
 
 add_subdirectory(src)
