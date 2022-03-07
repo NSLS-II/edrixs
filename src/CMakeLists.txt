@@ -34,7 +34,9 @@ if (EDRIXS_PY_INTERFACE)
   set(f2py_module_name fedrixs)
   set(fortran_src_file "${CMAKE_CURRENT_SOURCE_DIR}/pyapi.f90")
   set(f2py_module_c "${f2py_module_name}module.c")
-  set(generated_module_file "${f2py_module_name}${Python3_SOABI}")
+  set(generated_module_file "${f2py_module_name}.${Python3_SOABI}")
+
+  message(STATUS "generated_module_file: ${generated_module_file}")
 
   # Generate sources
   add_custom_target(
@@ -68,7 +70,7 @@ if (EDRIXS_PY_INTERFACE)
        ${f2py_module_name}
       PROPERTIES
           PREFIX ""
-          OUTPUT_NAME ${f2py_module_name}
+          OUTPUT_NAME ${generated_module_file}
           LINKER_LANGUAGE C
       )
 endif()
