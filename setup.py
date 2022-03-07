@@ -2,10 +2,13 @@ import os
 import platform
 import subprocess
 import sys
-import versioneer
 from setuptools import find_packages, setup, Extension
 from setuptools.command.build_ext import build_ext
 from pprint import pprint
+
+# needed for setuptools.build_meta to pickup vendored versioneer.py
+sys.path.insert(0, os.path.dirname(__file__))
+import versioneer
 
 # Command line flags forwarded to CMake (for debug purpose)
 cmake_cmd_args = []
@@ -70,7 +73,7 @@ class cmake_build_ext(build_ext):
 
         for ext in self.extensions:
 
-            # NOTE CMakeExtension("edrixs.foo") results in extdir pointing to edrixs subdir (foo is ignored)
+            extfname = self.get_ext_filename(ext.name)
             extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
             cfg = 'Debug' if _get_env_variable('EDRIXS_DEBUG') == 'ON' else 'Release'
 
