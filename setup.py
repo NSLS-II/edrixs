@@ -75,23 +75,14 @@ class cmake_build_ext(build_ext):
             cfg = 'Debug' if _get_env_variable('EDRIXS_DEBUG') == 'ON' else 'Release'
 
             cmake_args = [
+                '-DEDRIXS_PY_INTERFACE=ON',
                 '-DCMAKE_BUILD_TYPE=%s' % cfg,
-                # Ask CMake to place the resulting library in the directory
-                # containing the extension
+                # Ask CMake to place the resulting library in the directory containing the extension
                 '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir),
-                # Other intermediate static libraries are placed in a
-                # temporary build directory instead
+                # Other intermediate static libraries are placed in a temporary build directory instead
                 '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), self.build_temp),
-                # Install executables in edrixs/bin so that they are accessible and can be wrapped (not sure if this is right approach)
-                # see discussion here https://discuss.python.org/t/packaging-a-compiled-executable/9954/
-                '-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), os.path.join(extdir, "bin")),
-                # Hint CMake to use the same Python executable that
-                # is launching the build, prevents possible mismatching if
-                # multiple versions of Python are installed
-                # FIXME this hint doesn't seem to work on newer cmake
-                '-DPYTHON_EXECUTABLE={}'.format(sys.executable),
-                # Add other project-specific CMake arguments if needed
-                # ...
+                # Don't need executables for python lib
+                '-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), self.build_temp)
             ]
 
             # We can handle some platform-specific settings at our discretion
@@ -138,7 +129,10 @@ setup(
     packages=find_packages(exclude=["docs", "tests", "bin", "examples", "src"]),
     entry_points={
         "console_scripts": [
-            # 'some.module:some_function',
+            "ed.x=edrixs.scripts:ed",
+            "xas.x=edrixs.scripts:xas",
+            "rixs.x=edrixs.scripts:rixs",
+            "opavg.x=edrixs.scripts:opavg"
         ],
     },
     include_package_data=True,
