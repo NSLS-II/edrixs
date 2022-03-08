@@ -38,12 +38,6 @@ if (EDRIXS_PY_INTERFACE)
 
   message(STATUS "generated_module_file: ${generated_module_file}")
 
-  # Generate sources
-  add_custom_target(
-    genpyf
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${f2py_module_c}"
-    )
-
   add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${f2py_module_c}"
     COMMAND ${Python3_EXECUTABLE} -m "numpy.f2py"
@@ -51,7 +45,7 @@ if (EDRIXS_PY_INTERFACE)
                      -m ${f2py_module_name}
                      --lower # Important
     DEPENDS ${fortran_src_file} # Fortran source
-    )
+  )
 
   # Set up target
   add_library(${f2py_module_name} SHARED
@@ -62,9 +56,6 @@ if (EDRIXS_PY_INTERFACE)
 
   target_include_directories(${f2py_module_name} PUBLIC ${Python3_INCLUDE_DIRS} ${F2PY_INCLUDE_DIR} ${Python3_NumPy_INCLUDE_DIRS})
   target_link_libraries(${f2py_module_name} PUBLIC edrixs)
-
-  # Depend on sources
-  add_dependencies(${f2py_module_name} genpyf)
 
   set_target_properties(
        ${f2py_module_name}
