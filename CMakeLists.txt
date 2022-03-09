@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.17.3 FATAL_ERROR) # 3.17 > for Python3_SOABI
 
 project (EDRIXS C Fortran)
 
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type configuration" FORCE)
+  message(STATUS "Setting default build type: ${CMAKE_BUILD_TYPE}")
+endif()
+
+message(STATUS "CMAKE_COMMAND: ${CMAKE_COMMAND}")
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
@@ -11,8 +19,6 @@ find_package(MPI REQUIRED)
 find_package(LAPACK REQUIRED)
 
 option(EDRIXS_PYINTERFACE "Build python interface" OFF)
-
-message(STATUS "CMAKE_COMMAND: ${CMAKE_COMMAND}")
 
 # see https://gitlab.kitware.com/cmake/cmake/-/issues/21779
 if (CMAKE_VERSION VERSION_LESS 3.20)
