@@ -10,15 +10,6 @@ from pprint import pprint
 sys.path.insert(0, os.path.dirname(__file__))
 import versioneer
 
-# Command line flags forwarded to CMake (for debug purpose)
-cmake_cmd_args = []
-for f in sys.argv:
-    if f.startswith('-D'):
-        cmake_cmd_args.append(f)
-
-for f in cmake_cmd_args:
-    sys.argv.remove(f)
-
 # NOTE: This file must remain Python 2 compatible for the foreseeable future,
 # to ensure that we error out properly for people with outdated setuptools
 # and/or pip.
@@ -52,12 +43,8 @@ with open(os.path.join(here, "requirements.txt")) as requirements_file:
         if not line.startswith("#")
     ]
 
-def _get_env_variable(name, default='OFF'):
-    if name not in os.environ.keys():
-        return default
-    return os.environ[name]
-
 # adapted from https://martinopilia.com/posts/2018/09/15/building-python-extension.html
+# see also https://github.com/pyscf/pyscf/blob/master/setup.py
 class CMakeExtension(Extension):
     def __init__(self, name, cmake_lists_dir='.', sources=[], **kwargs):
         Extension.__init__(self, name, sources=sources, **kwargs)
@@ -75,49 +62,29 @@ class cmake_build_ext(build_ext):
 
             extfname = self.get_ext_filename(ext.name)
             extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-            cfg = 'Debug' if _get_env_variable('EDRIXS_DEBUG') == 'ON' else 'Release'
 
             cmake_args = [
                 '-DEDRIXS_PY_INTERFACE=ON',
-                '-DCMAKE_BUILD_TYPE=%s' % cfg,
                 # Ask CMake to place the resulting library in the directory containing the extension
-                '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir),
+                '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}'.format(extdir),
                 # Other intermediate static libraries are placed in a temporary build directory instead
-                '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), self.build_temp),
+                '-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY={}'.format(self.build_temp),
                 # Don't need executables for python lib
-                '-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), self.build_temp)
+                '-DCMAKE_RUNTIME_OUTPUT_DIRECTORY={}'.format(self.build_temp)
             ]
 
-            # We can handle some platform-specific settings at our discretion
-            if platform.system() == 'Windows':
-                plat = ('x64' if platform.architecture()[0] == '64bit' else 'Win32')
-                cmake_args += [
-                    # These options are likely to be needed under Windows
-                    '-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE',
-                    '-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir),
-                ]
-                # Assuming that Visual Studio and MinGW are supported compilers
-                if self.compiler.compiler_type == 'msvc':
-                    cmake_args += [
-                        '-DCMAKE_GENERATOR_PLATFORM=%s' % plat,
-                    ]
-                else:
-                    cmake_args += [
-                        '-G', 'MinGW Makefiles',
-                    ]
-
-            cmake_args += cmake_cmd_args
+            configure_args = os.getenv('CMAKE_CONFIGURE_ARGS')
+            if configure_args:
+                cmake_args.extend(configure_args.split(' '))
 
             if not os.path.exists(self.build_temp):
                 os.makedirs(self.build_temp)
 
             # Config
-            subprocess.check_call(['cmake', ext.cmake_lists_dir] + cmake_args,
-                                  cwd=self.build_temp)
+            subprocess.check_call(['cmake', ext.cmake_lists_dir] + cmake_args, cwd=self.build_temp)
 
             # Build
-            subprocess.check_call(['cmake', '--build', '.', '--config', cfg],
-                                  cwd=self.build_temp)
+            subprocess.check_call(['cmake', '--build', '.'], cwd=self.build_temp)
 
 
 
@@ -156,6 +123,6 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
     ],
-    ext_modules=[CMakeExtension("edrixs.fedrixs")], # edrixs.foo puts build outputs under edrixs subdir
+    ext_modules=[CMakeExtension("edrixs.placeholder")], # edrixs.foo puts build outputs under edrixs subdir
     cmdclass={'build_ext' : cmake_build_ext}
 )
