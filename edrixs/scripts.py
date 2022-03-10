@@ -9,6 +9,7 @@ def ed():
 
     ed_fsolver(fcomm, rank, size)
 
+
 def xas():
     from mpi4py import MPI
     from .fedrixs import xas_fsolver
@@ -20,6 +21,7 @@ def xas():
 
     xas_fsolver(fcomm, rank, size)
 
+
 def rixs():
     from mpi4py import MPI
     from .fedrixs import rixs_fsolver
@@ -30,6 +32,7 @@ def rixs():
     fcomm = comm.py2f()
 
     rixs_fsolver(fcomm, rank, size)
+
 
 def opavg():
     from mpi4py import MPI
