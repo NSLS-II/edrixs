@@ -15,15 +15,8 @@ sudo apt-get install -y \
 # installation problems if out of date.
 python -m pip install --upgrade pip setuptools numpy
 
-# Compile Fortran code
-make -C src
-
-# Build Python interface
-python setup.py build_ext --inplace
-python setup.py build_ext
-
 # Install this package and the packages listed in requirements.txt.
-pip install .
+pip install -v .
 
 # Install extra requirements for running tests and building docs.
 pip install -r requirements-dev.txt
