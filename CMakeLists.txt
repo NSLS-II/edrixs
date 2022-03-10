@@ -46,7 +46,7 @@ find_package(arpack MODULE REQUIRED COMPONENTS serial parallel)
 
 if (EDRIXS_PY_INTERFACE)
   message(STATUS "Building python interface")
-  find_package(Python3 3.8 REQUIRED COMPONENTS Interpreter Development NumPy)
+  find_package(Python3 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
 
   # Grab the variables from a local Python installation
   # F2PY headers
