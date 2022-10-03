@@ -30,7 +30,7 @@ Install edrixs by::
 
     conda install -c conda-forge edrixs
 
-We endeavor to keep the conda-forge release but to date, but note that these builds will usually not correspond to the latest version of edrixs, which is available in the `master branch of edrixs <https://github.com/NSLS-II/edrixs>`_.
+We endeavor to keep the conda-forge release up to date, but note that these builds will usually not correspond to the latest version of edrixs, which is available in the `master branch of edrixs <https://github.com/NSLS-II/edrixs>`_.
 
 edrixs will also run on `Google Colaboratory <https://research.google.com/colaboratory/>`_, but does not come installed as default. Installing it requires a you to install conda and then edrixs, which can be done by executing a cell::
 
