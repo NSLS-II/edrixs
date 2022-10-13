@@ -39,7 +39,7 @@ Install via Anaconda (only Linux now)
 
      $ conda create --name edrixs_env python=3.7
      $ conda activate edrixs_env
-     $ conda install -c nsls2forge edrixs
+     $ conda install -c conda-forge edrixs
 
 
 Run edrixs in docker
