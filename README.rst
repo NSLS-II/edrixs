@@ -33,7 +33,7 @@ If you are using the EDRIXS code to do some studies and would like to publish yo
 
 
 Install via Anaconda for Linux and macOS
--------------------------------------
+----------------------------------------
 
   .. code-block:: bash
 
