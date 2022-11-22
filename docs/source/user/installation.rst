@@ -40,7 +40,7 @@ Several tools and libraries are required to build and install edrixs,
    * ARPACK library: `arpack-ng <https://github.com/opencollab/arpack-ng/>`_  with mpi enabled
    * Only Python3 is supported
    * numpy, scipy, sympy, matplotlib, sphinx, numpydoc
-   * mpi4py with same MPI compilers as building edrixs
+   * mpi4py with the same MPI implementation libraries (``openmpi`` or ``mpich``) as building edrixs
 
 Build from source
 =================
