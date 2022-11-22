@@ -1,5 +1,5 @@
 # List required packages in this file, one per line.
-numpy
+numpy<=65.5
 scipy
 sympy
 matplotlib
