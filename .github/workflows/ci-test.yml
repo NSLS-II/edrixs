@@ -17,15 +17,6 @@ jobs:
       matrix:
         python-version: [3.7, 3.8, 3.9, 3.10]
       fail-fast: false
-  test:
-    name: Tests
-    runs-on: macos-latest
-    needs: lint
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9, 3.10]
-      fail-fast: false
-
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
