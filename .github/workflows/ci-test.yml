@@ -11,11 +11,12 @@ jobs:
     - uses: pre-commit/action@v2.0.3
   test:
     name: Tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.host-os }}
     needs: lint
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        host-os: ["ubuntu-latest", "macos-latest"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
       fail-fast: false
     steps:
       - name: Checkout the code
