@@ -1,34 +1,17 @@
 ************
 Installation
 ************
-For those who just want to get started, using the :ref:`docker instructions <edrixsanddocker>` is relatively straightforward and is compatible with essentially all platforms. For linux users :ref:`installing with anaconda <AnacondaInstall>` should also be easy. You can also compile the code from the source for Linux and OSX.
+For Linux and macOS users we suggest :ref:`installing with anaconda <AnacondaInstall>`. For Windows machines, we suggest using the :ref:`docker instructions <edrixsanddocker>`, which are relatively straightforward.  If desired, you can also compile the code from the source for Linux and macOS.
 
-Requirements
-============
-Several tools and libraries are required to build and install edrixs,
-
-   * Fortran compiler: gfortran and ifort are supported
-   * MPI environment: openmpi and mpich are tested
-   * MPI Fortran and C compilers: mpif90, mpicc
-   * BLAS and LAPACK libraries: `OpenBLAS <https://github.com/xianyi/OpenBLAS/>`_ with gfortran and MKL with ifort
-   * ARPACK library: `arpack-ng <https://github.com/opencollab/arpack-ng/>`_  with mpi enabled
-   * Only Python3 is supported
-   * numpy, scipy, sympy, matplotlib, sphinx, numpydoc
-   * mpi4py with same MPI compilers as building edrixs
 
 .. _AnacondaInstall:
 
-Install and use edrixs via Anaconda (only Linux now)
+Install and use edrixs via Anaconda
 ====================================================
-A conda package has been built for Linux systems. To use edrixs via Anaconda, you need first to install `Anaconda <https://www.anaconda.com/distribution/>`_ in your system.
-Then, create and activate a conda env, for example, called ``edrixs_env``::
+A conda package has been built for Linux and macOS systems. To use edrixs via Anaconda, you need first to install `Anaconda <https://www.anaconda.com/distribution/>`_ in your system.
+We recommend installing edrixs into a separate environment, for example, called ``edrixs_env``, together with any other packages you might want to use like this::
 
-    conda create --name edrixs_env python=3.7
-    conda activate edrixs_env
-
-Install edrixs by::
-
-    conda install -c conda-forge edrixs
+    conda create --name edrixs_env -c conda-forge python=3.10 edrixs matplotlib
 
 We endeavor to keep the conda-forge release up to date, but note that these builds will usually not correspond to the latest version of edrixs, which is available in the `master branch of edrixs <https://github.com/NSLS-II/edrixs>`_.
 
@@ -41,11 +24,24 @@ edrixs will also run on `Google Colaboratory <https://research.google.com/colabo
 
 from within a notebook cell.
 
+Requirements
+============
+Several tools and libraries are required to build and install edrixs,
+
+   * Fortran compiler: gfortran and ifort are supported
+   * MPI environment: openmpi and mpich are tested
+   * MPI Fortran and C compilers: mpif90, mpicc
+   * BLAS and LAPACK libraries: `OpenBLAS <https://github.com/xianyi/OpenBLAS/>`_ with gfortran and MKL with ifort
+   * ARPACK library: `arpack-ng <https://github.com/opencollab/arpack-ng/>`_  with mpi enabled
+   * Only Python3 is supported
+   * numpy, scipy, sympy, matplotlib, sphinx, numpydoc
+   * mpi4py with the same MPI implementation libraries (``openmpi`` or ``mpich``) as building edrixs
+
 Build from source
 =================
 We will show how to build edrixs from source on Ubuntu Linux 18.04 and macOS Mojave (OSX 10.14) as examples.
 We will use gcc, gfortran, openmpi and OpenBLAS in these examples.
-Building edrixs on other versions of Linux or OSX, or with Intel's ifort+MKL will be similar.
+Building edrixs on other versions of Linux or macOS, or with Intel's ifort+MKL will be similar.
 
 Ubuntu Linux 18.04
 ------------------
@@ -359,6 +355,6 @@ if no errors, the installation is successful.
 
 All done, enjoy!
 
-.. [#] To change your default python you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias python='/usr/local/bin/python3'`` where the path is determined by calling ``which python3`` from your terminal.
+.. [#] To change your default python you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on macOS. This should be ``alias python='/usr/local/bin/python3'`` where the path is determined by calling ``which python3`` from your terminal.
 
-.. [#] To change your default pip you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on OSX. This should be ``alias pip='/usr/bin/pip3'`` where the path is determined by calling ``which pip3`` from your terminal.
+.. [#] To change your default pip you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on macOS. This should be ``alias pip='/usr/bin/pip3'`` where the path is determined by calling ``which pip3`` from your terminal.
