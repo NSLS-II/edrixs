@@ -1,3 +1,18 @@
+# EDRIXS specific files
+config.in
+coulomb_i.in
+coulomb_n.in
+denmat.dat
+eigvals.dat
+eigvec.*
+fock_i.in
+fock_n.in
+hopping_i.in
+hopping_n.in
+transop_xas.in
+xas.dat
+xas_poles.*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
