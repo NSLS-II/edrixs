@@ -212,7 +212,7 @@ axr.plot(eLs, info[:, 3, 5], 'x', color='C1')
 axr.set_ylabel('$d^2$ fraction', color='C1')
 
 for ax, color in zip([axs[1], axr], ['C0', 'C1']):
-    tick in ax.get_yticklabels():
+    for tick in ax.get_yticklabels():
         tick.set_color(color)
 
 axs[1].set_title('Exciton energy vs. $d^2$ character')
