@@ -135,7 +135,7 @@ ds = np.array([diagonalize(U, JH, t, eL)
 
 ax.plot(eLs, ds[:, 1], 'o', label='$d^0$')
 ax.plot(eLs, ds[:, 2], 's', label='$d^1$')
-ax.plot(eLs, ds[:, 3], '^', label='$d^2$')   
+ax.plot(eLs, ds[:, 3], '^', label='$d^2$')
 ax.legend()
 
 ax.set_title("Location of ground state holes")
