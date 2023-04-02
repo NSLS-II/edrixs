@@ -113,14 +113,14 @@ def diagonalize(U, JH, t, eL, n=1):
 
 
 ################################################################################
-# Where are the holes?
+# Where are the holes for large hopping
 # ------------------------------------------------------------------------------
 # As discussed at the start, we are interested to see interplay between Hund's
 # and charge-transfer physics, which will obviously depend strongly on whether
 # the holes are on Ni or the ligand, so let's check this first.
-# To simplify the physics, we consider the limit where :math:`t` is larger than
-# :math:`U` and vary :math:`e_L` while observing the location of the ground state
-# holes.
+# To simplify the physics, we start by considering the limit where :math:`t` is
+# larger than :math:`U` and vary :math:`e_L` while observing the location of the
+# ground state holes.
 U = 10
 JH = 1
 t = 1e4
@@ -212,8 +212,8 @@ axr.plot(eLs, info[:, 3, 5], 'x', color='C1')
 axr.set_ylabel('$d^2$ fraction', color='C1')
 
 for ax, color in zip([axs[1], axr], ['C0', 'C1']):
-    for t in ax.get_yticklabels():
-        t.set_color(color)
+    tick in ax.get_yticklabels():
+        tick.set_color(color)
 
 axs[1].set_title('Exciton energy vs. $d^2$ character')
 plt.tight_layout()
@@ -228,9 +228,14 @@ plt.show()
 # this paradigm. In the right panel, we see that the exciton energy simply
 # scales with the double occupancy. Overall, we see that even though
 # Hund's interactions are irrelevant for the :math:`d^9\underline{L}`
-# electronic configuration, a strong mixing with the :math:`d^8` component is
-# always present and that this effect dominates the energy of the exciton.
-
+# electronic configuration, whenever :math:`t` is appreciable there is a
+# strong mixing with the :math:`d^8` component is always present, which
+# dominates the energy of the exciton.
+#
+# Another limiting case of the model is where :math:`t` is smaller than the
+# Coulomb interactions. This, however, tends to produce
+# ground state and exciton configurations that correspond to those of distinct
+# atomic models, so this case does not provide any interesting new physics.
 
 ##############################################################################
 #
