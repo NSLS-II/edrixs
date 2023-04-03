@@ -113,49 +113,12 @@ def diagonalize(U, JH, t, eL, n=1):
 
 
 ################################################################################
-# Where are the holes for large hopping
-# ------------------------------------------------------------------------------
-# As discussed at the start, we are interested to see interplay between Hund's
-# and charge-transfer physics, which will obviously depend strongly on whether
-# the holes are on Ni or the ligand, so let's check this first.
-# To simplify the physics, we start by considering the limit where :math:`t` is
-# larger than :math:`U` and vary :math:`e_L` while observing the location of the
-# ground state holes.
-U = 10
-JH = 1
-t = 1e4
-eL = 0
-
-eLs = np.linspace(0, 1e5, 30)
-
-fig, ax = plt.subplots()
-
-ds = np.array([diagonalize(U, JH, t, eL)
-               for eL in eLs])
-
-ax.plot(eLs, ds[:, 1], 'o', label='$d^0$')
-ax.plot(eLs, ds[:, 2], 's', label='$d^1$')
-ax.plot(eLs, ds[:, 3], '^', label='$d^2$')
-ax.legend()
-
-ax.set_title("Location of ground state holes")
-ax.set_xlabel("Energy of ligands (eV)")
-ax.set_ylabel("Number of electrons")
-plt.tight_layout()
-plt.show()
-################################################################################
-# For :math:`|e_L| \ll t` and :math:`U \ll t` the holes are shared in the ratio
-# 0.25:0.5:0.25 as there are two ways to have one hole on Ni. In the limit of
-# large :math:`e_L`, all holes move onto Ni.
-
-################################################################################
 # The atomic limit
 # ------------------------------------------------------------------------------
-# For simplicity, let's consider the atomic limit with :math:`e_L \gg t` where
-# all holes are on nickel and show we understand the ground state triplet and
-# the excited singlet state by computing :math:`S^2` and :math:`S_z` operators.
-# There are six ways to distribute two holes on the four Ni spin-orbitals,
-# so we look at the first six eigenstates.
+# For simplicity, let's start in the atomic limit with :math:`e_L \gg t \gg U`
+# where all holes are on nickel. In this case, there are six ways to distribute
+# two holes on the four Ni spin-orbitals. Let's examine the expectation values
+# of the :math:`S^2` and :math:`S_z` operators.
 U = 10
 JH = 1
 t = 1e4
@@ -177,13 +140,52 @@ for i in range(4, 6):
 # combination of :math:`|\uparrow,\downarrow> - |\downarrow,\uparrow>`
 # with one hole on each orbital.
 
+################################################################################
+# Where are the holes for large hopping
+# ------------------------------------------------------------------------------
+# As discussed at the start, we are interested to see interplay between Hund's
+# and charge-transfer physics, which will obviously depend strongly on whether
+# the holes are on Ni or the ligand. Let's see what happens as :math:`e_L` is
+# reduced while observing the location of the ground state and exciton holes.
+U = 10
+JH = 1
+t = 1e4
+
+eLs = np.linspace(0, 1e5, 30)
+
+fig, axs = plt.subplots(1, 2, figsize=(8, 4))
+
+for ax, ind in zip(axs.ravel(), [0, 5]):
+    ds = np.array([diagonalize(U, JH, t, eL, n=6)
+                   for eL in eLs])
+
+    ax.plot(eLs, ds[:, 1, ind], 'o', label='$d^0$')
+    ax.plot(eLs, ds[:, 2, ind], 's', label='$d^1$')
+    ax.plot(eLs, ds[:, 3, ind], '^', label='$d^2$')
+    ax.set_xlabel("Energy of ligands (eV)")
+    ax.set_ylabel("Number of electrons")
+    ax.legend()
+
+axs[0].set_title("Location of ground state holes")
+axs[1].set_title("Location of exciton holes")
+
+plt.tight_layout()
+plt.show()
+################################################################################
+# For large:math:`|e_L|`, we see that both holes are on nickel as expected. In
+# the opposite limit of :math:`|e_L| \ll t` and :math:`U \ll t` the holes are
+# shared in the ratio 0.25:0.5:0.25 as there are two ways to have one hole on
+# Ni. In the limit of large :math:`e_L`, all holes move onto Ni. Since
+# :math:`t` is large, this applies equally to both the ground state and the
+# exciton.
+
 
 ################################################################################
 # Connecton between atomic and charge transfer limits
 # ------------------------------------------------------------------------------
-# We now examine the cross over between the two limits with :math:`e_L`. Let's
-# first look at the how :math:`<S^2>` changes for the ground state and exciton
-# and then examine how the exciton energy changes.
+# We now examine the quantum numbers during cross over between the two limits
+# with :math:`e_L`. Let's first look at the how :math:`<S^2>` changes for the
+# ground state and exciton and then examine how the exciton energy changes.
 
 U = 10
 JH = 1
@@ -231,11 +233,63 @@ plt.show()
 # electronic configuration, whenever :math:`t` is appreciable there is a
 # strong mixing with the :math:`d^8` component is always present, which
 # dominates the energy of the exciton.
-#
+
+################################################################################
+# Charge transfer excitons
+# ------------------------------------------------------------------------------
 # Another limiting case of the model is where :math:`t` is smaller than the
 # Coulomb interactions. This, however, tends to produce
 # ground state and exciton configurations that correspond to those of distinct
-# atomic models, so this case does not provide any interesting new physics.
+# atomic models. Let's look at the :math:`e_L` dependence in this case.
+U = 20
+JH = 10
+t = .5
+
+eLs = np.linspace(0, 30, 30)
+
+fig, axs = plt.subplots(1, 2, figsize=(8, 4))
+
+for ax, ind in zip(axs.ravel(), [0, 5]):
+    ds = np.array([diagonalize(U, JH, t, eL, n=6)
+                   for eL in eLs])
+
+    ax.plot(eLs, ds[:, 1, ind], 'o', label='$d^0$')
+    ax.plot(eLs, ds[:, 2, ind], 's', label='$d^1$')
+    ax.plot(eLs, ds[:, 3, ind], '^', label='$d^2$')
+    ax.set_xlabel("Energy of ligands (eV)")
+    ax.set_ylabel("Number of electrons")
+    ax.legend()
+
+axs[0].set_title("Location of ground state holes")
+axs[1].set_title("Location of exciton holes")
+
+plt.tight_layout()
+plt.show()
+################################################################################
+# Around :math:`e_L = 10` we see that the excition is a
+# :math:`d^2 \rightarrow d^1` transition or a
+# :math:`d^8 \rightarrow d^{9}\underline{L}` transition in electron language.
+# Let's examine the energy and quantum numbers.
+U = 20
+JH = 10
+t = .5
+eL = 10
+
+e, d0, d1, d2, S_squared_exp, S_z_exp = diagonalize(U, JH, t, eL, n=6)
+
+print("Ground state\nE\t<S(S+1)\tSz>")
+for i in range(4):
+    print(f"{e[i]:.2f}\t{S_squared_exp[i]:.2f}\t{S_z_exp[i]:.2f}")
+
+print("\nExcited state\nE\t<S(S+1)\tSz>")
+for i in range(4, 6):
+    print(f"{e[i]:.2f}\t{S_squared_exp[i]:.2f}\t{S_z_exp[i]:.2f}")
+
+################################################################################
+# We once again see the same quantum numbers, but now the exciton energy is
+# dominated by :math:`e_L` with only a small energy saving from the
+# Hund's interaction.
+
 
 ##############################################################################
 #
