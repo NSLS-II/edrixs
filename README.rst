@@ -2,9 +2,6 @@
 edrixs
 ===============================
 
-.. image:: https://img.shields.io/travis/NSLS-II/edrixs.svg
-        :target: https://travis-ci.org/NSLS-II/edrixs
-
 .. image:: https://img.shields.io/pypi/v/edrixs.svg
         :target: https://pypi.python.org/pypi/edrixs
 
