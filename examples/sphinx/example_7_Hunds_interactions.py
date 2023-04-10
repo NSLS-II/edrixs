@@ -120,9 +120,9 @@ def diagonalize(U, JH, t, eL, n=1):
 # two holes on the four Ni spin-orbitals. Let's examine the expectation values
 # of the :math:`S^2` and :math:`S_z` operators.
 U = 10
-JH = 1
-t = 1e4
-eL = 10e6
+JH = 2
+t = 100
+eL = 1000
 
 e, d0, d1, d2, S_squared_exp, S_z_exp = diagonalize(U, JH, t, eL, n=6)
 
@@ -148,10 +148,10 @@ for i in range(4, 6):
 # the holes are on Ni or the ligand. Let's see what happens as :math:`e_L` is
 # reduced while observing the location of the ground state and exciton holes.
 U = 10
-JH = 1
-t = 1e4
+JH = 2
+t = 100
 
-eLs = np.linspace(0, 1e5, 30)
+eLs = np.linspace(0, 1000, 30)
 
 fig, axs = plt.subplots(1, 2, figsize=(8, 4))
 
@@ -162,7 +162,7 @@ for ax, ind in zip(axs.ravel(), [0, 5]):
     ax.plot(eLs, ds[:, 1, ind], 'o', label='$d^0$')
     ax.plot(eLs, ds[:, 2, ind], 's', label='$d^1$')
     ax.plot(eLs, ds[:, 3, ind], '^', label='$d^2$')
-    ax.set_xlabel("Energy of ligands (eV)")
+    ax.set_xlabel("Energy of ligands $e_L$")
     ax.set_ylabel("Number of electrons")
     ax.legend()
 
@@ -172,7 +172,7 @@ axs[1].set_title("Location of exciton holes")
 plt.tight_layout()
 plt.show()
 ################################################################################
-# For large:math:`|e_L|`, we see that both holes are on nickel as expected. In
+# For large :math:`|e_L|`, we see that both holes are on nickel as expected. In
 # the opposite limit of :math:`|e_L| \ll t` and :math:`U \ll t` the holes are
 # shared in the ratio 0.25:0.5:0.25 as there are two ways to have one hole on
 # Ni. In the limit of large :math:`e_L`, all holes move onto Ni. Since
@@ -188,10 +188,10 @@ plt.show()
 # ground state and exciton and then examine how the exciton energy changes.
 
 U = 10
-JH = 1
-t = 1e4
+JH = 2
+t = 100
 
-eLs = np.linspace(0, 1e5, 20)
+eLs = np.linspace(0, 1000, 30)
 
 info = np.array([diagonalize(U, JH, t, eL, n=6)
                  for eL in eLs])
@@ -201,13 +201,13 @@ fig, axs = plt.subplots(1, 2, figsize=(8, 4))
 
 axs[0].plot(eLs, info[:, 4, 0], label='Ground state')
 axs[0].plot(eLs, info[:, 4, 5], label='Exciton')
-axs[0].set_xlabel('$e_L$')
+axs[0].set_xlabel("Energy of ligands $e_L$")
 axs[0].set_ylabel('$<S^2>$')
 axs[0].set_title('Quantum numbers')
 axs[0].legend()
 
 axs[1].plot(eLs, info[:, 0, 5], '+', color='C0')
-axs[1].set_xlabel('$e_L$')
+axs[1].set_xlabel("Energy of ligands $e_L$")
 axs[1].set_ylabel('Exciton energy', color='C0')
 axr = axs[1].twinx()
 axr.plot(eLs, info[:, 3, 5], 'x', color='C1')
@@ -216,6 +216,9 @@ axr.set_ylabel('$d^2$ fraction', color='C1')
 for ax, color in zip([axs[1], axr], ['C0', 'C1']):
     for tick in ax.get_yticklabels():
         tick.set_color(color)
+
+axs[1].set_ylim(0, 2*JH)
+axr.set_ylim(0, 1)
 
 axs[1].set_title('Exciton energy vs. $d^2$ character')
 plt.tight_layout()
@@ -228,7 +231,7 @@ plt.show()
 # the high spin ground state. Other interactions such as strong tetragonal
 # crystal field would be needed to overcome the Hund's interactions and break
 # this paradigm. In the right panel, we see that the exciton energy simply
-# scales with the double occupancy. Overall, we see that even though
+# scales with the double occupancy. Overall, even though
 # Hund's interactions are irrelevant for the :math:`d^9\underline{L}`
 # electronic configuration, whenever :math:`t` is appreciable there is a
 # strong mixing with the :math:`d^8` component is always present, which
@@ -241,11 +244,11 @@ plt.show()
 # Coulomb interactions. This, however, tends to produce
 # ground state and exciton configurations that correspond to those of distinct
 # atomic models. Let's look at the :math:`e_L` dependence in this case.
-U = 20
-JH = 10
+U = 10
+JH = 2
 t = .5
 
-eLs = np.linspace(0, 30, 30)
+eLs = np.linspace(0, 20, 30)
 
 fig, axs = plt.subplots(1, 2, figsize=(8, 4))
 
@@ -256,9 +259,12 @@ for ax, ind in zip(axs.ravel(), [0, 5]):
     ax.plot(eLs, ds[:, 1, ind], 'o', label='$d^0$')
     ax.plot(eLs, ds[:, 2, ind], 's', label='$d^1$')
     ax.plot(eLs, ds[:, 3, ind], '^', label='$d^2$')
-    ax.set_xlabel("Energy of ligands (eV)")
+    ax.set_xlabel("Energy of ligands $e_L$")
     ax.set_ylabel("Number of electrons")
     ax.legend()
+
+axs[0].axvline(x=7, linestyle=':', color='k')
+axs[1].axvline(x=7, linestyle=':', color='k')
 
 axs[0].set_title("Location of ground state holes")
 axs[1].set_title("Location of exciton holes")
@@ -266,12 +272,12 @@ axs[1].set_title("Location of exciton holes")
 plt.tight_layout()
 plt.show()
 ################################################################################
-# Around :math:`e_L = 10` we see that the excition is a
+# Around :math:`e_L = 7` the plot shows that the excition is primairly a
 # :math:`d^2 \rightarrow d^1` transition or a
 # :math:`d^8 \rightarrow d^{9}\underline{L}` transition in electron language.
 # Let's examine the energy and quantum numbers.
-U = 20
-JH = 10
+U = 10
+JH = 2
 t = .5
 eL = 10
 
@@ -287,7 +293,7 @@ for i in range(4, 6):
 
 ################################################################################
 # We once again see the same quantum numbers, but now the exciton energy is
-# dominated by :math:`e_L` with only a small energy saving from the
+# dominated by :math:`e_L` with some energy saving from the
 # Hund's interaction.
 
 
