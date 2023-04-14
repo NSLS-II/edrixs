@@ -123,7 +123,7 @@ for i in range(3, 6):
     print(f"{e[i]:.2f}\t{S_squared_exp[i]:.2f}\t{S_z_exp[i]:.2f}")
 
 ################################################################################
-# The ground state is a high-spin triplet. The fourth and fith
+# The ground state is a high-spin triplet. The fourth and fifth
 # states (the first excited state) are low-spin singlet excitons at
 # :math:`2 J_H`. These have one hole on each orbital in the antisymmetric
 # combination of :math:`|\uparrow\downarrow>-|\downarrow\uparrow>`.
