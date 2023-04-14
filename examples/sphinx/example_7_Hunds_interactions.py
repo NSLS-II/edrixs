@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Hund's Interactions
-=====================================
+Hund's Interactions in charge transfer insulators
+=================================================
 In this exercise we will solve a toy model relevant to cubic :math:`d^8` charge transfer insulators
 such as NiO or NiPS\\ :sub:`3`. We are interested in better understanding the interplay between the
 Hund's interactions and the charge transfer energy in terms of the energy of the triplet-singlet
@@ -24,15 +24,7 @@ Hamiltonian, which is a simplfied form for the interactions, which treats all or
 equivalent. Daniel Khomskii's book provides a great explanation of this physics [1]_.  We
 parameterize the interactions via Coulomb repulsion parameter :math:`U` and Hund's exchange
 :math:`J_H`. EDRIXS provides this functionality via the  more general
-:func:`.get_umat_kanamori_ge` function. The leading interactions in this function are :math:`U_1`
-and :math:`U_2`, which are the Coulomb energy for electrons residing on the same orbital with
-opposite spin and the Coulomb energy for electrons residing on different orbitals, where
-
-  .. math::
-    \\begin{eqnarray}
-    U_1 &=& U \\\\
-    U_2 &=& U -2J_H.
-    \\end{eqnarray}
+:func:`.get_umat_kanamori` function.
 
 It's also easiest to consider this problem in hole langauge, which means our eight spin-orbitals
 are populated by two fermions.
@@ -64,13 +56,9 @@ noccu = 2
 
 def diagonalize(U, JH, t, eL, n=1):
     # Setup Coulomb matrix
-    U1 = U
-    U2 = U - 2*JH
     umat = np.zeros((norb, norb, norb, norb), dtype=complex)
-    uNi = edrixs.get_umat_kanamori_ge(norb//2, U1, U2, 1e-6, 1e-6, 1e-6)
+    uNi = edrixs.get_umat_kanamori(norb//2, U, JH)
     umat[:norb//2, :norb//2, :norb//2, :norb//2] = uNi
-    uS = edrixs.get_umat_kanamori_ge(norb//2, U1/100, U2/100, 1e-6, 1e-6, 1e-6)
-    umat[norb//2:, norb//2:, norb//2:, norb//2:] = uS
 
     # Setup hopping matrix
     emat = np.zeros((norb, norb), dtype=complex)
@@ -122,23 +110,25 @@ def diagonalize(U, JH, t, eL, n=1):
 U = 10
 JH = 2
 t = 100
-eL = 1000
+eL = 1e10
 
 e, d0, d1, d2, S_squared_exp, S_z_exp = diagonalize(U, JH, t, eL, n=6)
 
 print("Ground state\nE\t<S(S+1)\tSz>")
-for i in range(4):
+for i in range(3):
     print(f"{e[i]:.2f}\t{S_squared_exp[i]:.2f}\t{S_z_exp[i]:.2f}")
 
 print("\nExcited state\nE\t<S(S+1)\tSz>")
-for i in range(4, 6):
+for i in range(3, 6):
     print(f"{e[i]:.2f}\t{S_squared_exp[i]:.2f}\t{S_z_exp[i]:.2f}")
 
 ################################################################################
-# We see a ground state high-spin triplet and a low-spin singlet exciton
-# at :math:`2J_H`. The additional ground state singlet is the antisymmetric
-# combination of :math:`|\uparrow,\downarrow> - |\downarrow,\uparrow>`
-# with one hole on each orbital.
+# The ground state is a high-spin triplet. The fourth and fifth
+# states (the first excited state) are low-spin singlet excitons at
+# :math:`2 J_H`. These have one hole on each orbital in the antisymmetric
+# combination of :math:`|\uparrow\downarrow>-|\downarrow\uparrow>`.
+# The state at :math:`3 J_H` also has one hole on each orbital in the symmetric
+# :math:`|\uparrow\downarrow>+|\downarrow\uparrow>` configuration.
 
 ################################################################################
 # Where are the holes for large hopping
@@ -155,7 +145,7 @@ eLs = np.linspace(0, 1000, 30)
 
 fig, axs = plt.subplots(1, 2, figsize=(8, 4))
 
-for ax, ind in zip(axs.ravel(), [0, 5]):
+for ax, ind in zip(axs.ravel(), [0, 3]):
     ds = np.array([diagonalize(U, JH, t, eL, n=6)
                    for eL in eLs])
 
@@ -200,13 +190,13 @@ fig, axs = plt.subplots(1, 2, figsize=(8, 4))
 
 
 axs[0].plot(eLs, info[:, 4, 0], label='Ground state')
-axs[0].plot(eLs, info[:, 4, 5], label='Exciton')
+axs[0].plot(eLs, info[:, 4, 3], label='Exciton')
 axs[0].set_xlabel("Energy of ligands $e_L$")
 axs[0].set_ylabel('$<S^2>$')
 axs[0].set_title('Quantum numbers')
 axs[0].legend()
 
-axs[1].plot(eLs, info[:, 0, 5], '+', color='C0')
+axs[1].plot(eLs, info[:, 0, 3], '+', color='C0')
 axs[1].set_xlabel("Energy of ligands $e_L$")
 axs[1].set_ylabel('Exciton energy', color='C0')
 axr = axs[1].twinx()
@@ -247,12 +237,13 @@ plt.show()
 U = 10
 JH = 2
 t = .5
+eL = 7
 
 eLs = np.linspace(0, 20, 30)
 
 fig, axs = plt.subplots(1, 2, figsize=(8, 4))
 
-for ax, ind in zip(axs.ravel(), [0, 5]):
+for ax, ind in zip(axs.ravel(), [0, 3]):
     ds = np.array([diagonalize(U, JH, t, eL, n=6)
                    for eL in eLs])
 
@@ -263,8 +254,8 @@ for ax, ind in zip(axs.ravel(), [0, 5]):
     ax.set_ylabel("Number of electrons")
     ax.legend()
 
-axs[0].axvline(x=7, linestyle=':', color='k')
-axs[1].axvline(x=7, linestyle=':', color='k')
+axs[0].axvline(x=eL, linestyle=':', color='k')
+axs[1].axvline(x=eL, linestyle=':', color='k')
 
 axs[0].set_title("Location of ground state holes")
 axs[1].set_title("Location of exciton holes")
@@ -276,25 +267,20 @@ plt.show()
 # :math:`d^2 \rightarrow d^1` transition or a
 # :math:`d^8 \rightarrow d^{9}\underline{L}` transition in electron language.
 # Let's examine the energy and quantum numbers.
-U = 10
-JH = 2
-t = .5
-eL = 10
 
 e, d0, d1, d2, S_squared_exp, S_z_exp = diagonalize(U, JH, t, eL, n=6)
 
 print("Ground state\nE\t<S(S+1)\tSz>")
-for i in range(4):
+for i in range(3):
     print(f"{e[i]:.2f}\t{S_squared_exp[i]:.2f}\t{S_z_exp[i]:.2f}")
 
 print("\nExcited state\nE\t<S(S+1)\tSz>")
-for i in range(4, 6):
+for i in range(3, 6):
     print(f"{e[i]:.2f}\t{S_squared_exp[i]:.2f}\t{S_z_exp[i]:.2f}")
 
 ################################################################################
-# We once again see the same quantum numbers, but now the exciton energy is
-# dominated by :math:`e_L` with some energy saving from the
-# Hund's interaction.
+# We once again see the same quantum numbers, despite the differences in mixing
+# in the ground state and exciton.
 
 
 ##############################################################################
