@@ -10,8 +10,9 @@ from numpy.distutils.core import setup
 # NOTE: This file must remain Python 2 compatible for the foreseeable future,
 # to ensure that we error out properly for people with outdated setuptools
 # and/or pip.
-min_version = (3, 6)
-if sys.version_info < min_version:
+min_version = (3, 7)
+sys_version = sys.version_info
+if sys_version < min_version:
     error = """
 edrixs does not support Python {0}.{1}.
 Python {2}.{3} and above is required. Check your Python version like so:
@@ -23,7 +24,7 @@ Upgrade pip like so:
 
 pip install --upgrade pip
 """.format(
-        *sys.version_info[:2], *min_version
+        *sys_version[:2], *min_version
     )
     sys.exit(error)
 
@@ -32,7 +33,7 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, "README.rst"), encoding="utf-8") as readme_file:
     readme = readme_file.read()
 
-with open(path.join(here, "requirements.txt")) as requirements_file:
+with open(path.join(here, "requirements.txt"), encoding="utf-8") as requirements_file:
     # Parse requirements.txt, ignoring any commented-out lines.
     requirements = [
         line
