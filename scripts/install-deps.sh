@@ -14,7 +14,8 @@ sudo apt-get install -y \
 # These packages are installed in the base environment but may be older
 # versions. Explicitly upgrade them because they often create
 # installation problems if out of date.
-python -m pip install --upgrade pip "setuptools<=65.5.*" numpy
+python -m pip install --upgrade pip "setuptools<=65.5.*"
+python -m pip install --upgrade numpy
 
 # Compile Fortran code
 make -C src
@@ -24,7 +25,7 @@ python setup.py build_ext --inplace
 python setup.py build_ext
 
 # Install this package and the packages listed in requirements.txt.
-pip install .
+pip install -r requirements.txt
 
 # Install extra requirements for running tests and building docs.
 pip install -r requirements-dev.txt
