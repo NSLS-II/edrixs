@@ -22,7 +22,7 @@ import subprocess
 import sys
 sys.path.insert(0, os.path.abspath('../../edrixs'))
 
-subprocess.call('doxygen Doxyfile ../src', shell=True, cwd='..'
+subprocess.call('doxygen Doxyfile ../src', shell=True, cwd='..')
 
 # -- General configuration ------------------------------------------------
 
@@ -46,7 +46,7 @@ extensions = [
     'numpydoc',
     'sphinx_copybutton',
     'sphinx_gallery.gen_gallery',
-    'breathe',
+    'breathe'
 ]
 
 # Configuration options for plot_directive. See:
