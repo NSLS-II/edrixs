@@ -22,7 +22,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../../edrixs'))
 
 import subprocess
-#subprocess.call('doxygen ../Doxyfile', shell=True)
+subprocess.call('doxygen Doxyfile ../src', shell=True, cwd='..'
 
 # -- General configuration ------------------------------------------------
 
