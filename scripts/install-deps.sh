@@ -2,6 +2,7 @@
 
 set -vxeuo pipefail
 sudo apt-get install -y \
+    doxygen \
     gfortran \
     openmpi-bin \
     openmpi-doc \
