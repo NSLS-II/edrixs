@@ -330,7 +330,7 @@ def CT_imp_bath(U_dd, Delta, n):
            E_d &=
            \\frac{10 \\Delta - n (19 +  n) U_{dd}/2}{10 + n}  \\\\
            E_L &=
-           \\frac{n (1+n) U_{dd}/2-\\Delta}{10 + n}
+           \\frac{n ((1+n) U_{dd}/2-\\Delta)}{10 + n}
            \\end{aligned}.
 
     References
@@ -651,7 +651,7 @@ def get_atom_data(atom, v_name, v_noccu, edge=None, trans_to_which=1, label=None
     valence shells and the x-ray resonant edge.
 
     The Slater integrals and spin-orbit coupling are calculated by Cowan's code
-    (https://www.tcd.ie/Physics/people/Cormac.McGuinness/Cowan/) based on Hartree-Fock
+    (https://github.com/mretegan/atomic-parameters) based on Hartree-Fock
     approximation. These numbers are just initial guess and serve as a start point,
     you need to rescale them to reproduce your XAS or RIXS spectra.
 
