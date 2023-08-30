@@ -299,7 +299,7 @@ def CT_imp_bath(U_dd, Delta, n):
         Energy of the bath states :math:`E_L`
 
     Notes
-    ------
+    -----
     We credit our approach to Maurits Hakverkort,
     Heidelberg University.
     We define the state with a full set of bath orbitals to be zero

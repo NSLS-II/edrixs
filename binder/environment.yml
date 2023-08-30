@@ -1,15 +1,15 @@
 name: edrixs_tutorial
 channels:
-  - nsls2forge                     # We added a third party channel
+  - conda-forge
 dependencies:
-  - jupyterlab=2.1.4
-  - edrixs>=0.0.6
-  - ipympl=0.5.*
-  - ipywidgets=7.5.*
+  - jupyterlab=3.*
+  - edrixs>=0.0.8
+  - ipympl=0.9.*
+  - ipywidgets=8.*
   - nodejs
   - openmpi
   - unzip
-  - bokeh=2.0.*
+  - bokeh=3.0.*
   - h5py
   - hdf5
   - seaborn

@@ -17,3 +17,4 @@ edrixs User Guide
    basics
    pythontips
    examples
+   papers

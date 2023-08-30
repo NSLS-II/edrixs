@@ -2,9 +2,6 @@
 edrixs
 ===============================
 
-.. image:: https://img.shields.io/travis/NSLS-II/edrixs.svg
-        :target: https://travis-ci.org/NSLS-II/edrixs
-
 .. image:: https://img.shields.io/pypi/v/edrixs.svg
         :target: https://pypi.python.org/pypi/edrixs
 
@@ -32,14 +29,14 @@ If you are using the EDRIXS code to do some studies and would like to publish yo
 ``EDRIXS: An open source toolkit for simulating spectra of resonant inelastic x-ray scattering, Y.L. Wang, G. Fabbris, M.P.M. Dean and G. Kotliar``, `Computer Physics Communications,243, 151 (2019) <https://doi.org/10.1016/j.cpc.2019.04.018>`_, `arXiv:1812.05735 <https://arxiv.org/abs/1812.05735/>`_.
 
 
-Install via Anaconda (only Linux now)
--------------------------------------
+Install via Anaconda for Linux and macOS
+----------------------------------------
 
   .. code-block:: bash
 
      $ conda create --name edrixs_env python=3.7
      $ conda activate edrixs_env
-     $ conda install -c nsls2forge edrixs
+     $ conda install -c conda-forge edrixs
 
 
 Run edrixs in docker
