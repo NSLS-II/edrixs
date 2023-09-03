@@ -1,4 +1,4 @@
-FROM ubuntu:impish as base
+FROM ubuntu:22.04 as base
 
 # general environment for docker
 ENV DEBIAN_FRONTEND=noninteractive
