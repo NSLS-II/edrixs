@@ -3,12 +3,14 @@ name: CI-Test
 on: [push, pull_request]
 
 jobs:
+
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-    - uses: pre-commit/action@v2.0.3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+    - uses: pre-commit/action@v3.0.0
+
   test:
     name: Tests
     runs-on: ${{ matrix.host-os }}
@@ -20,10 +22,10 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -32,10 +34,16 @@ jobs:
           set -vxeuo pipefail
           bash ./scripts/install-deps.sh
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist/*.whl
+
       - name: Test with pytest
         run: |
           set -vxeuo pipefail
           bash ./scripts/run-tests.sh
+
   docs:
     name: Documentation
     runs-on: ubuntu-latest
@@ -47,10 +55,10 @@ jobs:
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -63,3 +71,8 @@ jobs:
         run: |
           set -vxeuo pipefail
           bash ./scripts/build-docs.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.REPOSITORY_NAME }}-docs
+          path: docs/build/html/

@@ -38,6 +38,11 @@ jobs:
           set -vxeuo pipefail
           bash ./scripts/build-docs.sh
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.REPOSITORY_NAME }}-docs
+          path: docs/build/html/
+
       - name: Deploy documentation to nsls-ii.github.io
         # We pin to the SHA, not the tag, for security reasons.
         # https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/security-hardening-for-github-actions#using-third-party-actions
