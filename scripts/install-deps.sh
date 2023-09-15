@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -vxeuo pipefail
+
+sudo apt-get update -y
 sudo apt-get install -y \
     gfortran \
     openmpi-bin \
@@ -15,11 +17,11 @@ sudo apt-get install -y \
 # installation problems if out of date.
 python -m pip install --upgrade pip "setuptools<=65.5.*" numpy
 
-# Install this package and the packages listed in requirements.txt.
-pip install -v .
-
 # Generate .whl file.
 python setup.py bdist_wheel
+
+# Install this package and the packages listed in requirements.txt.
+pip install -v .
 
 # Install extra requirements for running tests and building docs.
 pip install -r requirements-dev.txt
