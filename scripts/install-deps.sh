@@ -18,7 +18,7 @@ sudo apt-get install -y \
 python -m pip install --upgrade pip "setuptools<=65.5.*" numpy
 
 # # Generate .whl file.
-# python setup.py bdist_wheel
+python -m pip wheel .
 
 # Install this package and the packages listed in requirements.txt.
 pip install -v .
