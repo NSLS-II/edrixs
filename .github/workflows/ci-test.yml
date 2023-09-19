@@ -33,6 +33,9 @@ jobs:
         run: |
           set -vxeuo pipefail
           bash ./scripts/install-deps.sh
+          ls -Al .
+          ls -Al dist/
+          tree .
 
       - uses: actions/upload-artifact@v3
         with:
@@ -54,6 +57,11 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Set env.REPOSITORY_NAME  # just the repo, as opposed to org/repo
+        run: |
+          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}
+          echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
+
       - name: Checkout the code
         uses: actions/checkout@v4
 
