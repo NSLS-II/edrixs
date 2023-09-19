@@ -64,7 +64,7 @@ def get_lminus(ll, ispin=False):
         Whether including spin or not (default: False).
 
     Returns
-    --------
+    -------
     lminus: 2d complex array
         The matrix form of :math:`l^-`.
 
