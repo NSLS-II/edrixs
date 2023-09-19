@@ -39,37 +39,48 @@ Several tools and libraries are required to build and install edrixs,
 
 Build from source
 =================
-We will show how to build edrixs from source on Ubuntu Linux 18.04 and macOS Mojave (OSX 10.14) as examples.
+We will show how to build edrixs from source on Ubuntu Linux 20.04 and macOS Mojave (OSX 10.14) as examples.
 We will use gcc, gfortran, openmpi and OpenBLAS in these examples.
 Building edrixs on other versions of Linux or macOS, or with Intel's ifort+MKL will be similar.
 
-Ubuntu Linux 18.04
+Ubuntu Linux 20.04
 ------------------
 Install compilers and tools::
 
     sudo apt-get update
-    sudo apt-get install gcc libgcc-7-dev gfortran g++
-    sudo apt-get install git autoconf automake ssh wget
-    sudo apt-get install python3 libpython3-dev python3-pip
+    sudo apt-get install build-essential gfortran gcc
+    sudo apt-get install git wget
+    sudo apt-get install python3 libpython3-dev python3-pip python3-venv
 
-We will assume ``python`` pointing to ``python3.7`` and ``pip`` pointing to ``pip3.7`` from now on. If this is not the case, you can make links explicitly [#]_ [#]_.
+Create and activate a python virtual environment for edrixs::
+
+    python3 -m venv VIRTUAL_ENV
+    source VIRTUAL_ENV/bin/activate
+
+where ``VIRTUAL_ENV`` should be replaced by the directory where you wish to install edrixs.
+
+Alternatively create and activate a conda environment for edrixs::
+
+    conda create --name edrixs_env python=3.8
+    conda activate edrixs_env
+
+We will assume ``python`` and ``pip`` are pointing to the activated environment from now on.
 Check we are using the expected python and pip::
 
     which python
-    python --version
     which pip
-    pip --version
+    python --version
 
-Install python libraries::
+Fetch the latest version of ``pip``::
 
-    sudo pip install numpy scipy sympy matplotlib
+    pip install --upgrade pip
 
 openmpi, OpenBLAS, ARPACK can be installed by ``apt-get``, but their versions are old and may not work properly.
 However, they can also be compiled from source easily. In the following, we will show both ways, but we always recommend to build newer ones from source.
 
 openmpi can be installed by::
 
-    sudo apt-get install openmpi-bin libopenmpi-dev
+    sudo apt-get install libopenmpi-dev
 
 or from newer version of source, for example v3.1.4::
 
@@ -151,12 +162,9 @@ Now, we are ready to build edrixs::
 
     git clone https://github.com/NSLS-II/edrixs.git
     cd edrixs
-    make -C src F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack"
-    make -C src install
-    python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext --libraries=openblas,parpack,arpack --library-dirs=/usr/local/lib
-    sudo pip install .
+    pip install -v .
 
-You can add ``edrixs/bin`` to ``PATH``. Start to play with edrixs by::
+Start to play with edrixs by::
 
     python
     >>> import edrixs
@@ -166,7 +174,7 @@ or go to ``examples`` directory to run some examples::
 
     cd examples/more/ED/14orb
     ./get_inputs.py
-    mpirun -np 2 ../../../../src/ed.x
+    mpirun -np 2 ed.x
     mpirun -np 2 ./run_fedsolver.py
     cd ../../RIXS/LaNiO3_thin
     mpirun -np 2 ./run_rixs_fsolver.py
@@ -354,7 +362,5 @@ Go to ``examples`` directory to run some examples::
 if no errors, the installation is successful.
 
 All done, enjoy!
-
-.. [#] To change your default python you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on macOS. This should be ``alias python='/usr/local/bin/python3'`` where the path is determined by calling ``which python3`` from your terminal.
 
 .. [#] To change your default pip you need to add a line to your ``~/.bashrc`` on linux or to your ``~/.bash_profile`` on macOS. This should be ``alias pip='/usr/bin/pip3'`` where the path is determined by calling ``which pip3`` from your terminal.
