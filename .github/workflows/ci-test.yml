@@ -34,13 +34,13 @@ jobs:
           set -vxeuo pipefail
           bash ./scripts/install-deps.sh
           ls -Al .
-          ls -Al ./wheelhouse/
+          ls -Al ./dist/
           tree .
 
       - uses: actions/upload-artifact@v3
         with:
           name: wheels
-          path: ./wheelhouse/*.whl
+          path: dist/*.whl
 
       - name: Test with pytest
         run: |

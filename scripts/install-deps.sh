@@ -15,10 +15,10 @@ sudo apt-get install -y \
 # These packages are installed in the base environment but may be older
 # versions. Explicitly upgrade them because they often create
 # installation problems if out of date.
-python -m pip install --upgrade pip setuptools numpy
+python -m pip install --upgrade pip setuptools wheel numpy
 
 # # Generate .whl file.
-python -m pip wheel --wheel-dir=wheelhouse edrixs
+python setup.py sdist bdist_wheel
 
 # Install this package and the packages listed in requirements.txt.
 pip install -v .
