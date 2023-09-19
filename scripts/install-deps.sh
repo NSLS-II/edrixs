@@ -18,7 +18,7 @@ sudo apt-get install -y \
 python -m pip install --upgrade pip setuptools numpy
 
 # # Generate .whl file.
-python -m pip wheel .
+python -m pip wheel --wheel-dir=wheelhouse edrixs
 
 # Install this package and the packages listed in requirements.txt.
 pip install -v .
