@@ -21,6 +21,11 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
       fail-fast: false
     steps:
+      - name: Set env.REPOSITORY_NAME  # just the repo, as opposed to org/repo
+        run: |
+          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}
+          echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
+
       - name: Checkout the code
         uses: actions/checkout@v4
 
@@ -39,7 +44,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: wheels
+          name: ${{ env.REPOSITORY_NAME }}-wheels
           path: dist/*.whl
 
       - name: Test with pytest
