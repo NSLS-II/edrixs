@@ -103,31 +103,13 @@ Install from source
 
   Be sure to compile OpenBLAS, arpack-ng, mpi4py and edrixs with the same (MPI) Fortran compiler.
 
-* Install Fortran parts of edrixs
+* Install edrixs
 
     .. code-block:: bash
 
-       $ cd src
-       $ make F90=mpif90 LIBS="-L/usr/local/lib -lopenblas -lparpack -larpack"
-       $ make install
+       $ pip install -v .
 
-  where, you may need to change ``F90`` and ``LIBS`` according to your specific environment. There will be problems when using gfortran with MKL, so we recommend ``gfortran+OpenBLAS`` or ``ifort+MKL``. ``libedrixsfortran.a`` will be generated, which will be used when building python interface. The executable ``.x`` files will be installed in ``edrixs/bin`` directory and add the following line in ``.bashrc`` or ``.bash_profile`` file,
-
-    .. code-block:: bash
-
-       export PATH=/root_dir_of_edrixs/edrixs/bin:$PATH
-
-* Install Python parts of edrixs
-
-  Be sure to first make ``libedrixsfortran.a`` in src.
-
-    .. code-block:: bash
-
-       $ python setup.py config_fc --f77exec=mpif90 --f90exec=mpif90 build_ext \
-         --libraries=openblas,parpack,arpack --library-dirs=/usr/lib:/usr/local/lib:/opt/local/lib \
-         --link-objects=./src/libedrixsfortran.a
-       $ pip install .
-
-  where, ``--library-dirs`` ares the paths to search ``--libraries``, please set it according to your environments.
+  There will be problems when using gfortran with MKL, so we recommend ``gfortran+OpenBLAS`` or ``ifort+MKL``. The executable ``.x`` files will be installed in the ``bin`` directory of the active python environment.
+  The fortran library and compiled python extension are built using ``cmake`` which can be configured by setting the ``CMAKE_CONFIGURE_ARGS`` environment variable.
 
 Please see our `online documentation <https://nsls-ii.github.io/edrixs/user/installation.html>`_ for more details of installation.

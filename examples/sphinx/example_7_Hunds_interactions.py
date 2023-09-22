@@ -162,7 +162,7 @@ axs[1].set_title("Location of exciton holes")
 plt.tight_layout()
 plt.show()
 ################################################################################
-# For large :math:`|e_L|`, we see that both holes are on nickel as expected. In
+# For large :math:`e_L`, we see that both holes are on nickel as expected. In
 # the opposite limit of :math:`|e_L| \ll t` and :math:`U \ll t` the holes are
 # shared in the ratio 0.25:0.5:0.25 as there are two ways to have one hole on
 # Ni. In the limit of large :math:`e_L`, all holes move onto Ni. Since
