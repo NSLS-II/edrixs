@@ -19,9 +19,6 @@ sudo apt-get install -y \
 
 python -m pip install --upgrade pip setuptools wheel numpy
 
-# Compile Fortran code
-#make -C src
-
 # # Generate .whl file.
 python setup.py sdist bdist_wheel
 
