@@ -84,7 +84,7 @@ eval_i, eval_n, trans_op = out
 # shown in Figure 1 of Y. Wang et al.,
 # `Computer Physics Communications 243, 151-165 (2019)
 # <https://doi.org/10.1016/j.cpc.2019.04.018>`_. The default
-# setting has x-rays along :math:`z` for :math:`\theta=\pi` rad
+# setting has x-rays along :math:`z` for :math:`\theta=\pi/2` rad
 # and the x-ray beam along :math:`-x` for
 # :math:`\theta=\phi=0`. Parameter :code:`scatter_axis` can be passed to
 # :code:`xas_1v1c_py` to specify a different geometry if desired.
