@@ -44,3 +44,7 @@ Papers using EDRIXS
 * Dimensionality dependent electronic structure of the exfoliated van der Waals antiferromagnet NiPS\ :sub:`3`\ ,  M. F. DiScala, D. Staros, A. de la Torre, A. Lopez, D. Wong, C. Schulz, M. Bartkowiak, B. Rubenstein, K. W. Plumb,  `arXiv:2302.07910 (2023) <https://arxiv.org/abs/2302.07910>`_ 
 
 * Low-energy electronic interactions in ferrimagnetic Sr\ :sub:`2`\ CrReO\ :sub:`6`\  thin films, Guillaume Marcaud, Alex Taekyung Lee, Adam J. Hauser, F. Y. Yang, Sangjae Lee, Diego Casa, Mary Upton, Thomas Gog, Kayahan Saritas, Yilin Wang, Mark P. M. Dean, Hua Zhou, Zhan Zhang, F. J. Walker, Ignace Jarrige, Sohrab Ismail-Beigi, and Charles Ahn, `Phys. Rev. B 108, 075132 (2023) <https://doi.org/10.1103/PhysRevB.108.075132>`_
+
+* Softening of  excitation in the resonant inelastic x-ray scattering spectra as a signature of Hund's coupling in nickelates, U Kumar, C Melnick, G Kotliar, `arXiv:2310.00983 (2023)  <https://arxiv.org/abs/2310.00983>`_
+
+* Interplay of broken symmetry and delocalized excitations in the insulating state of 1T-TaS\ :sub:`2`\, Xun Jia, Anubhab Haldar, Jungho Kim, Yilin Wang, Gilberto Fabbris, Karl Ludwig, Stefanos Kourtis, Mary Upton, Yu Liu, Wenjian Lu, Xuan Luo, Yu-Ping Sun, Diego Casa, Sahar Sharifzadeh, Pierre T. Darancet, Yue Cao, `arXiv:2210.01181 (2023)  <https://arxiv.org/abs/2210.01181>`_
