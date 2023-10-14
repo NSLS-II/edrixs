@@ -18,9 +18,11 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import subprocess
 import sys
 sys.path.insert(0, os.path.abspath('../../edrixs'))
 
+subprocess.call('doxygen Doxyfile ../src', shell=True, cwd='..')
 
 # -- General configuration ------------------------------------------------
 
@@ -44,6 +46,7 @@ extensions = [
     'numpydoc',
     'sphinx_copybutton',
     'sphinx_gallery.gen_gallery',
+    'breathe'
 ]
 
 # Configuration options for plot_directive. See:
@@ -70,8 +73,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'edrixs'
-copyright = '2019, Brookhaven National Lab'
-author = 'Brookhaven National Lab'
+copyright = '2019, Brookhaven National Laboratory'
+author = 'Brookhaven National Laboratory'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -140,6 +143,15 @@ html_sidebars = {
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'edrixs'
 
+# -- Breathe configuration -------------------------------------------------
+
+master_doc = 'index'
+
+breathe_projects = {
+	'Edrixs Doxygen': "build/xml/"
+}
+breathe_default_project = 'Edrixs Doxygen'
+breathe_default_members = ('members', 'undoc-members')
 
 # -- Options for LaTeX output ---------------------------------------------
 

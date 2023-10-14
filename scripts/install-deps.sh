@@ -4,6 +4,7 @@ set -vxeuo pipefail
 
 sudo apt-get update -y
 sudo apt-get install -y \
+    doxygen \
     gfortran \
     openmpi-bin \
     openmpi-doc \
@@ -15,6 +16,7 @@ sudo apt-get install -y \
 # These packages are installed in the base environment but may be older
 # versions. Explicitly upgrade them because they often create
 # installation problems if out of date.
+
 python -m pip install --upgrade pip setuptools wheel numpy
 
 # # Generate .whl file.
