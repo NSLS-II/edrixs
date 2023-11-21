@@ -25,7 +25,6 @@ Follow these steps to use the docker image:
           ports:
             - 8888:8888
           command: "jupyter lab --ip=0.0.0.0 --port=8888 --no-browser"
-    services:
       edrixs-ipython:
           image: edrixs/edrixs
           volumes:
