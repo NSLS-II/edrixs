@@ -7,13 +7,13 @@ edrixs and docker
 Run edrixs in a docker container
 --------------------------------
 
-To make life easier, we have built a docker image based on Ubuntu Linux (18.04) for edrixs, so you don't need to struggle with the installation anymore.
+To make life easier, we have built a docker image based on Ubuntu Linux (22.04) for edrixs, so you don't need to struggle with the installation anymore.
 The docker image can be used on any OS as long as the `docker <https://www.docker.com/>`_ application is available.
 Follow these steps to use the docker image:
 
 * Install the `docker <https://www.docker.com/>`_ application on your system.
 
-* Once Docker is running, create a directory to store data and create a file called docker-compose.yml with contents::
+* Once Docker is running, create a directory to store data and create a file called ``docker-compose.yml`` with contents ::
 
     version:  '3'
     services:
@@ -32,15 +32,16 @@ Follow these steps to use the docker image:
             - ./:/home/rixs
           working_dir: /home/rixs
 
-  and execute
+  and execute::
 
     docker-compose up
 
   This will return a url, which you can open to connect to the jupyter session. 
 
-* If you would like to access a terminal rather than jupyter run::
+* If you would like to access a terminal rather than jupyter run ::
 
-  docker compose run --rm edrixs-ipython
+    docker compose run --rm edrixs-ipython
+
 
 Sharing your code
 -----------------
