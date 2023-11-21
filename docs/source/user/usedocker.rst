@@ -33,7 +33,7 @@ Follow these steps to use the docker image:
 
   and execute ::
 
-    docker-compose up
+    docker compose up
 
   This will return a url, which you can open to connect to the jupyter session. 
 
