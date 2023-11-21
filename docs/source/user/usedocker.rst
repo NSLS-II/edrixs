@@ -32,7 +32,7 @@ Follow these steps to use the docker image:
             - ./:/home/rixs
           working_dir: /home/rixs
 
-  and execute::
+  and execute ::
 
     docker-compose up
 
