@@ -96,7 +96,7 @@ subroutine opavg_driver()
         write(char_I, '(i5)') igs
         fname="eigvec."//trim(adjustl(char_I))
         call read_eigvecs(fname, ndim_i, v_vector_mpi, eigvals(igs))
-        v_vector = v_vector_mpi(end_indx(1,2,myid+1): end_indx(1,2,myid+1)) 
+        v_vector = v_vector_mpi(end_indx(1,2,myid+1): end_indx(2,2,myid+1)) 
         deallocate(v_vector_mpi)
         call MPI_BARRIER(new_comm, ierror)
         call pspmv_csr(new_comm, nblock, end_indx, needed, nloc, nloc, ham_csr, v_vector, w_vector)
