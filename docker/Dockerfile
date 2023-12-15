@@ -51,7 +51,7 @@ RUN curl -L https://github.com/opencollab/arpack-ng/archive/refs/tags/3.8.0.tar.
 FROM dep_builder as app_builder
 
 RUN pip install --upgrade pip setuptools
-RUN pip install numpy scipy sympy matplotlib sphinx mpi4py ipython jupyter jupyterlab
+RUN pip install numpy scipy sympy matplotlib sphinx mpi4py ipython jupyter jupyterlab ipympl ipywidgets lmfit
 
 COPY --chown=docker . edrixs
 
