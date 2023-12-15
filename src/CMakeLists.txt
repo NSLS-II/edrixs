@@ -63,5 +63,6 @@ if (EDRIXS_PY_INTERFACE)
           PREFIX ""
           OUTPUT_NAME ${generated_module_file}
           LINKER_LANGUAGE C
+          LINK_FLAGS "-undefined dynamic_lookup"
       )
 endif()
