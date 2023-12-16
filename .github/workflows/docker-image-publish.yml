@@ -32,6 +32,6 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           tags: |
-            edrixs/edrixs:latest
-            edrixs/edrixs:${{ steps.date.outputs.date }}
+            latest
+            ${{ steps.date.outputs.date }}
           labels: ${{ steps.meta.outputs.labels }}
