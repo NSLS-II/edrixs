@@ -32,8 +32,6 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           tags: |
-            # set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
-            # set tag as day
             type=raw,pattern={{date 'YYYYMMDD' tz='America/New_York'}}
           labels: ${{ steps.meta.outputs.labels }}
