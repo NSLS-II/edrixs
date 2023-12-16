@@ -33,5 +33,4 @@ jobs:
           push: true
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,pattern={{date 'YYYYMMDD' tz='America/New_York'}}
           labels: ${{ steps.meta.outputs.labels }}
