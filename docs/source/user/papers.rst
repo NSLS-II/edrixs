@@ -47,4 +47,6 @@ Papers using EDRIXS
 
 * Softening of  excitation in the resonant inelastic x-ray scattering spectra as a signature of Hund's coupling in nickelates, U Kumar, C Melnick, G Kotliar, `arXiv:2310.00983 (2023)  <https://arxiv.org/abs/2310.00983>`_
 
-* Interplay of broken symmetry and delocalized excitations in the insulating state of 1T-TaS\ :sub:`2`\, Xun Jia, Anubhab Haldar, Jungho Kim, Yilin Wang, Gilberto Fabbris, Karl Ludwig, Stefanos Kourtis, Mary Upton, Yu Liu, Wenjian Lu, Xuan Luo, Yu-Ping Sun, Diego Casa, Sahar Sharifzadeh, Pierre T. Darancet, Yue Cao, `arXiv:2210.01181 (2023)  <https://arxiv.org/abs/2210.01181>`_
+* Interplay of broken symmetry and delocalized excitations in the insulating state of 1T-TaS\ :sub:`2`\, Xun Jia, Anubhab Haldar, Jungho Kim, Yilin Wang, Gilberto Fabbris, Karl Ludwig, Stefanos Kourtis, Mary Upton, Yu Liu, Wenjian Lu, Xuan Luo, Yu-Ping Sun, Diego Casa, Sahar Sharifzadeh, Pierre T. Darancet, Yue Cao, `Phys. Rev. B 108, 205105 (2023)  <https://doi.org/10.1103/PhysRevB.108.205105>`_
+
+* Local site behavior of the 5d and 4f ions in the frustrated pyrochlore Ho\ :sub:`2`\Os\ :sub:`2`\O\ :sub:`7`\, `Phys. Rev. B 109, 054408 (2024)  <https://doi.org/10.1103/PhysRevB.109.054408>`_

@@ -20,7 +20,7 @@ that one might not anticipate. Our example is based on a :math:`d` atomic shell.
 #     \int d\mathbf{r} \int d\mathbf{r}^\prime
 #     \Sigma_{\sigma, \sigma^\prime}
 #     |\hat{\psi}^\sigma(\mathbf{r})|^2 \frac{e^2}{R}
-#     |\hat{\psi}^{\sigma^\prime}(\mathbf{r})|^2,
+#     |\hat{\psi}^{\sigma^\prime}(\mathbf{r^\prime})|^2,
 #     \end{equation}
 #
 # where :math:`\hat{\psi}^\sigma(\mathbf{r})` is the electron wavefunction, with
