@@ -39,7 +39,7 @@ Papers using EDRIXS
 
 * Resonant inelastic X-ray scattering in topological semimetal FeSi, Yao Shen, Anirudh Chandrasekaran, Jennifer Sears, Tiantian Zhang, Xin Han, Youguo Shi, Jiemin Li, Jonathan Pelliciari, Valentina Bisogni, Mark P. M. Dean, Stefanos Kourtis, `arXiv:2301.02677 (2023) <https://arxiv.org/abs/2301.02677>`_ 
 
-* Momentum-independent magnetic excitation continuum in the honeycomb iridate H\ :sub:`3`\ LiIr\ :sub:`2`\ O\ :sub:`6`\ , A. de la Torre, B. Zager, F. Bahrami, M. H. Upton, J. Kim, G. Fabbris, G. -H. Lee, W. Yang, D. Haskel, F. Tafti, K. W. Plumb, `Nature Comm. 14, .5018 (2023) <https://www.nature.com/articles/s41467-023-40769-x>`_ 
+* Momentum-independent magnetic excitation continuum in the honeycomb iridate H\ :sub:`3`\ LiIr\ :sub:`2`\ O\ :sub:`6`\, A. de la Torre, B. Zager, F. Bahrami, M. H. Upton, J. Kim, G. Fabbris, G. -H. Lee, W. Yang, D. Haskel, F. Tafti, K. W. Plumb, `Nature Comm. 14, 5018 (2023) <https://www.nature.com/articles/s41467-023-40769-x>`_ 
 
 * Low-energy electronic interactions in ferrimagnetic Sr\ :sub:`2`\ CrReO\ :sub:`6`\  thin films, Guillaume Marcaud, Alex Taekyung Lee, Adam J. Hauser, F. Y. Yang, Sangjae Lee, Diego Casa, Mary Upton, Thomas Gog, Kayahan Saritas, Yilin Wang, Mark P. M. Dean, Hua Zhou, Zhan Zhang, F. J. Walker, Ignace Jarrige, Sohrab Ismail-Beigi, and Charles Ahn, `Phys. Rev. B 108, 075132 (2023) <https://doi.org/10.1103/PhysRevB.108.075132>`_
 
@@ -49,4 +49,4 @@ Papers using EDRIXS
 
 * Local site behavior of the 5d and 4f ions in the frustrated pyrochlore Ho\ :sub:`2`\Os\ :sub:`2`\O\ :sub:`7`\, S. Calder, Z. Y. Zhao, M. H. Upton, and J.-Q. Yan, `Phys. Rev. B 109, 054408 (2024)  <https://doi.org/10.1103/PhysRevB.109.054408>`_
 
- * Elucidating the Role of Dimensionality on the Electronic Structure of the Van der Waals Antiferromagnet NiPS\ :sub:`3`\ ,  M. F. DiScala, D. Staros, A. de la Torre, A. Lopez, D. Wong, C. Schulz, M. Bartkowiak, B. Rubenstein, K. W. Plumb, `Advanced Physics Research (2024) <https://doi.org/10.1002/apxr.202300096>`_ 
+* Elucidating the Role of Dimensionality on the Electronic Structure of the Van der Waals Antiferromagnet NiPS\ :sub:`3`\ ,  M. F. DiScala, D. Staros, A. de la Torre, A. Lopez, D. Wong, C. Schulz, M. Bartkowiak, B. Rubenstein, K. W. Plumb, `Advanced Physics Research (2024) <https://doi.org/10.1002/apxr.202300096>`_ 
