@@ -58,7 +58,10 @@ COPY --chown=docker . edrixs
 RUN export VERBOSE=1 FFLAGS="-Wall -Wunused -Wextra -Wno-maybe-uninitialized -Ofast -faggressive-loop-optimizations -fno-tree-pre" && \
   pip install -v ./edrixs
 
-from base as app
+FROM app_builder as developer
+  RUN pip install -r edrixs/requirements-dev.txt
+
+FROM base as app
 
 # see https://github.com/open-mpi/ompi/issues/4948
 ENV LD_LIBRARY_PATH="/opt/edrixs/lib" \
