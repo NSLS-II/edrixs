@@ -29,7 +29,7 @@ python setup.py sdist bdist_wheel
 ls -la dist/
 
 # Install this package and the packages listed in requirements.txt.
-pip install "dist/edrixs-*-cp${PYTHON_VERSION_NODOT}*.whl"
+pip install dist/edrixs-*-cp${PYTHON_VERSION_NODOT}*.whl
 
 # Install extra requirements for running tests and building docs.
 pip install -r requirements-dev.txt
