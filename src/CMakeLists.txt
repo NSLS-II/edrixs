@@ -29,6 +29,12 @@ foreach(prog ${progs})
   install(TARGETS ${prog}.x DESTINATION bin)
 endforeach(prog)
 
+if (LINUX)
+  set(LINK_FLAGS "")
+elseif(APPLE)
+  set(LINK_FLAGS "-undefined dynamic_lookup")
+endif()
+
 if (EDRIXS_PY_INTERFACE)
   # Vars
   set(f2py_module_name fedrixs)
@@ -63,6 +69,6 @@ if (EDRIXS_PY_INTERFACE)
           PREFIX ""
           OUTPUT_NAME ${generated_module_file}
           LINKER_LANGUAGE C
-          LINK_FLAGS "-undefined dynamic_lookup"
+          LINK_FLAGS ${LINK_FLAGS}
       )
 endif()
