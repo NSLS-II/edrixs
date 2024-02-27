@@ -15,7 +15,6 @@ if [ "${platform}" == "Linux" ]; then
         libarpack2-dev \
         libparpack2-dev
 elif [ "${platform}" == "Darwin" ]; then
-    gfortran --help
     gfortran --version
     which gfortran
 fi
@@ -27,9 +26,10 @@ python -m pip install --upgrade pip setuptools wheel numpy
 
 # # Generate .whl file.
 python setup.py sdist bdist_wheel
+ls -la dist/
 
 # Install this package and the packages listed in requirements.txt.
-pip install -v .
+pip install "dist/edrixs-*-cp${PYTHON_VERSION_NODOT}*.whl"
 
 # Install extra requirements for running tests and building docs.
 pip install -r requirements-dev.txt
