@@ -2,15 +2,21 @@
 
 set -vxeuo pipefail
 
-sudo apt-get update -y
-sudo apt-get install -y \
-    gfortran \
-    openmpi-bin \
-    openmpi-doc \
-    libopenmpi-dev \
-    libopenblas-dev \
-    libarpack2-dev \
-    libparpack2-dev
+platform="$(uname)"
+
+if [ "${platform}" == "Linux" ]; then
+    sudo apt-get update -y
+    sudo apt-get install -y \
+        gfortran \
+        openmpi-bin \
+        openmpi-doc \
+        libopenmpi-dev \
+        libopenblas-dev \
+        libarpack2-dev \
+        libparpack2-dev
+elif [ "${platform}" == "Darwin" ]; then
+    echo "TODO: fix OSX dependencies"
+fi
 
 # These packages are installed in the base environment but may be older
 # versions. Explicitly upgrade them because they often create
