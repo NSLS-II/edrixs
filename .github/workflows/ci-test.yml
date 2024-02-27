@@ -15,11 +15,17 @@ jobs:
     name: Tests
     runs-on: ${{ matrix.host-os }}
     needs: lint
+
     strategy:
       matrix:
         host-os: ["ubuntu-latest", "macos-latest"]
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
       fail-fast: false
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
     steps:
       - name: Set env.REPOSITORY_NAME  # just the repo, as opposed to org/repo
         run: |
