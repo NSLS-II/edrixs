@@ -33,18 +33,20 @@ jobs:
           echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
 
       - uses: mamba-org/setup-micromamba@v1
-        if: ${{ matrix.host-os }} == 'macos-latest'
+        if: matrix.host-os == 'macos-latest'
         with:
           init-shell: bash
           environment-name: build-env
           create-args: >-
             python=${{ matrix.python-version }}
             gfortran
+            openmpi
 
       - name: Checkout the code
         uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
+        if: matrix.host-os != 'macos-latest'
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
