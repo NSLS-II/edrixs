@@ -15,7 +15,7 @@ if [ "${platform}" == "Linux" ]; then
         libarpack2-dev \
         libparpack2-dev
 elif [ "${platform}" == "Darwin" ]; then
-    echo "TODO: fix OSX dependencies"
+    brew install gfortran
 fi
 
 # These packages are installed in the base environment but may be older
