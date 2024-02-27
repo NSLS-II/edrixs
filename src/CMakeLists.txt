@@ -32,7 +32,7 @@ endforeach(prog)
 if (LINUX)
   set(LINK_FLAGS "")
 elseif(APPLE)
-  set(LINK_FLAGS "-undefined dynamic_lookup")
+  set(LINK_FLAGS "LINK_FLAGS -undefined dynamic_lookup")
 endif()
 
 if (EDRIXS_PY_INTERFACE)
@@ -69,6 +69,6 @@ if (EDRIXS_PY_INTERFACE)
           PREFIX ""
           OUTPUT_NAME ${generated_module_file}
           LINKER_LANGUAGE C
-          LINK_FLAGS ${LINK_FLAGS}
+          ${LINK_FLAGS}
       )
 endif()
