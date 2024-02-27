@@ -15,7 +15,8 @@ if [ "${platform}" == "Linux" ]; then
         libarpack2-dev \
         libparpack2-dev
 elif [ "${platform}" == "Darwin" ]; then
-    brew install gfortran
+    gfortran --help
+    gfortran --version
     which gfortran
 fi
 
