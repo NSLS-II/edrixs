@@ -41,6 +41,7 @@ jobs:
             python=${{ matrix.python-version }}
             gfortran
             openmpi
+            arpack=*=mpi_openmpi*
 
       - name: Checkout the code
         uses: actions/checkout@v4
