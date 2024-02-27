@@ -7,9 +7,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v4
-    - uses: pre-commit/action@v3.0.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+      - uses: pre-commit/action@v3.0.0
 
   test:
     name: Tests
@@ -32,7 +32,11 @@ jobs:
           export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}
           echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
 
-      - uses: mamba-org/setup-micromamba@v1
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Install micromamba with build dependencies
+        uses: mamba-org/setup-micromamba@v1
         if: matrix.host-os == 'macos-latest'
         with:
           init-shell: bash
@@ -43,8 +47,10 @@ jobs:
             openmpi
             arpack=*=mpi_openmpi*
 
-      - name: Checkout the code
-        uses: actions/checkout@v4
+      - name: Install tree program
+        if: matrix.host-os == 'macos-latest'
+        run: |
+          brew install tree
 
       - name: Set up Python ${{ matrix.python-version }}
         if: matrix.host-os != 'macos-latest'
