@@ -57,11 +57,22 @@ if (EDRIXS_PY_INTERFACE)
   target_include_directories(${f2py_module_name} PUBLIC ${Python3_INCLUDE_DIRS} ${F2PY_INCLUDE_DIR} ${Python3_NumPy_INCLUDE_DIRS})
   target_link_libraries(${f2py_module_name} PUBLIC edrixs)
 
-  set_target_properties(
-       ${f2py_module_name}
+  if (LINUX)
+    set_target_properties(
+        ${f2py_module_name}
+        PROPERTIES
+            PREFIX ""
+            OUTPUT_NAME ${generated_module_file}
+            LINKER_LANGUAGE C
+      )
+  elseif(APPLE)
+    set_target_properties(
+      ${f2py_module_name}
       PROPERTIES
           PREFIX ""
           OUTPUT_NAME ${generated_module_file}
           LINKER_LANGUAGE C
-      )
+          LINK_FLAGS "-undefined dynamic_lookup"
+    )
+  endif()
 endif()
