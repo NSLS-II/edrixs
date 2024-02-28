@@ -15,9 +15,11 @@ if [ "${platform}" == "Linux" ]; then
         libarpack2-dev \
         libparpack2-dev
 elif [ "${platform}" == "Darwin" ]; then
-    gfortran --version
-    which gfortran
+    echo "gfortran is expected to exist already."
 fi
+
+gfortran --version
+which gfortran
 
 # These packages are installed in the base environment but may be older
 # versions. Explicitly upgrade them because they often create
