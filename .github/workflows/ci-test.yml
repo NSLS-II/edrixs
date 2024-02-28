@@ -66,17 +66,19 @@ jobs:
             gfortran
             openmpi
 
-      - name: Install tree program
-        if: runner.os == 'macOS'
-        run: |
-          brew install tree
-
       - name: Set up Python ${{ matrix.python-version }}
         # if: matrix.host-os != 'macos-latest'
         if: runner.os != 'macOS'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Install MacOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          set -vxeuo pipefail
+          brew install tree
+          python -m pip install delocate
 
       - name: Install dependencies
         run: |
@@ -85,6 +87,12 @@ jobs:
           tree .
           ls -Al .
           ls -Al ./dist/
+
+      - name: Delocate wheels for MacOS
+        if: runner.os == 'macOS'
+        run: |
+          set -vxeuo pipefail
+          delocate-wheelpython -v ./dist/${{ env.REPOSITORY_NAME }}-*-cp${PYTHON_VERSION_NODOT}*.whl
 
       - uses: actions/upload-artifact@v3
         with:
