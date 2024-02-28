@@ -86,9 +86,9 @@ jobs:
           ls -Al .
           ls -Al ./dist/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-wheel
+          name: ${{ env.REPOSITORY_NAME }}-wheels
           path: dist/*.whl
 
       - name: Test with pytest
@@ -132,7 +132,7 @@ jobs:
           set -vxeuo pipefail
           bash ./scripts/build-docs.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           name: ${{ env.REPOSITORY_NAME }}-docs
           path: docs/build/html/
