@@ -39,9 +39,9 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Set env.REPOSITORY_NAME  # just the repo, as opposed to org/repo
+      - name: Set env vars
         run: |
-          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}
+          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}  # just the repo, as opposed to org/repo
           echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
 
           python_version="${{ matrix.python-version }}"
@@ -109,10 +109,14 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Set env.REPOSITORY_NAME  # just the repo, as opposed to org/repo
+      - name: Set env vars
         run: |
-          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}
+          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}  # just the repo, as opposed to org/repo
           echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
+
+          python_version="${{ matrix.python-version }}"
+          export PYTHON_VERSION_NODOT="${python_version//\./}"
+          echo "PYTHON_VERSION_NODOT=${PYTHON_VERSION_NODOT}" >> $GITHUB_ENV
 
       - name: Checkout the code
         uses: actions/checkout@v4
