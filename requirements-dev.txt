@@ -11,6 +11,7 @@ ipython
 matplotlib
 numpydoc
 Pillow
+breathe
 sphinx-copybutton
 sphinx_rtd_theme
 sphinx-gallery
