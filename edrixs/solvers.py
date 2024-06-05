@@ -529,7 +529,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                
 
         for j, (it, alpha, jt, beta) in enumerate(pol_type):
-            if ((it=='isotropic')||(jt=='isotropic')):
+            if ((it=='isotropic') or (jt=='isotropic')):
                 ei=np.ones(3)/np.sqrt(3)                        # Powder spectrum
                 ef=np.ones(3)/np.sqrt(3)
             else:        
