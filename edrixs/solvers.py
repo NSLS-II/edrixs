@@ -418,7 +418,7 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
 
 def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                  gamma_c=0.1, gamma_f=0.01, thin=1.0, thout=1.0, phi=0.0,
-                 pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None):
+                 pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None, skipGS=False):
     """
     Calculate RIXS for the case of one valence shell plus one core shell with Python solver.
 
@@ -455,8 +455,10 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
 
         (str1, alpha, str2, beta)
 
-        where, str1 (str2) can be 'linear', 'left', 'right', and alpha (beta) is
+        where, str1 (str2) can be 'linear', 'left', 'right', 'isotropic' and alpha (beta) is
         the angle (in radians) between the linear polarization vector and the scattering plane.
+
+        If str1 or str2 is 'isotropic' then the scattering is considered isotropic and the other variables are ignored.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
     gs_list: 1d list of ints
@@ -476,6 +478,8 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         - local :math:`z`-axis: scatter_axis[:,2]
 
         It will be an identity matrix if not provided.
+    skipGS: bool
+        If True, transitions to the ground state(s) (forming the direct peak) are omitted from the calculation. 
 
     Returns
     -------
@@ -522,10 +526,16 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
     for i, om in enumerate(ominc):
         F_fi = scattering_mat(eval_i, eval_n, trans_op[:, :, 0:max(gs_list)+1],
                               trans_emi, om, gamma_core[i])
+               
+
         for j, (it, alpha, jt, beta) in enumerate(pol_type):
-            ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
-                                        scatter_axis, (it, jt))
-            # dipolar transition
+            if ((it=='isotropic')||(jt=='isotropic')):
+                ei=np.ones(3)/np.sqrt(3)                        # Powder spectrum
+                ef=np.ones(3)/np.sqrt(3)
+            else:        
+                ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
+                                        scatter_axis, (it, jt))    
+           # dipolar transition
             if npol == 3:
                 polvec_i[:] = ei
                 polvec_f[:] = ef
@@ -542,8 +552,11 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
             for m in range(npol):
                 for n in range(npol):
                     F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
-            for m, igs in enumerate(gs_list):
-                for n in range(len(eval_i)):
+           
+           excInd = 0
+           if (skipGS) excInd = len(gs_list) 
+           for m, igs in enumerate(gs_list):
+                for n in range(excInd:len(eval_i)):
                     rixs[i, :, j] += (
                         prob[m] * np.abs(F_mag[n, igs])**2 * gamma_final / np.pi /
                         ((eloss - (eval_i[n] - eval_i[igs]))**2 + gamma_final**2)
