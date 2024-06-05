@@ -28,6 +28,7 @@ jobs:
     strategy:
       matrix:
         host-os: ["ubuntu-latest", "macos-latest"]
+        # host-os: ["ubuntu-latest"]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
 
@@ -73,12 +74,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install MacOS dependencies
-        if: runner.os == 'macOS'
-        run: |
-          set -vxeuo pipefail
-          brew install tree
-          python -m pip install delocate
+      # - name: Install MacOS dependencies
+      #   if: runner.os == 'macOS'
+      #   run: |
+      #     set -vxeuo pipefail
+      #     brew install tree
+      #     python -m pip install delocate
 
       - name: Install dependencies
         run: |
@@ -88,11 +89,11 @@ jobs:
           ls -Al .
           ls -Al ./dist/
 
-      - name: Delocate wheels for MacOS
-        if: runner.os == 'macOS'
-        run: |
-          set -vxeuo pipefail
-          delocate-wheelpython -v ./dist/${{ env.REPOSITORY_NAME }}-*-cp${PYTHON_VERSION_NODOT}*.whl
+      # - name: Delocate wheels for MacOS
+      #   if: runner.os == 'macOS'
+      #   run: |
+      #     set -vxeuo pipefail
+      #     delocate-wheelpython -v ./dist/${{ env.REPOSITORY_NAME }}-*-cp${PYTHON_VERSION_NODOT}*.whl
 
       - uses: actions/upload-artifact@v3
         with:
