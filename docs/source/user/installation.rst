@@ -1,14 +1,14 @@
 ************
 Installation
 ************
-For Linux and macOS users we suggest :ref:`installing with anaconda <AnacondaInstall>`. For Windows machines, we suggest using the :ref:`docker instructions <edrixsanddocker>`, which are relatively straightforward.  If desired, you can also compile the code from the source for Linux and macOS.
+For Linux users we suggest :ref:`installing with anaconda <AnacondaInstall>`. For Windows and macOS machines, we suggest using the :ref:`docker instructions <edrixsanddocker>`, which are relatively straightforward.  If desired, you can also compile the code from the source for Linux.
 
 
 .. _AnacondaInstall:
 
 Install and use edrixs via Anaconda
 ====================================================
-A conda package has been built for Linux and macOS systems. To use edrixs via Anaconda, you need first to install `Anaconda <https://www.anaconda.com/distribution/>`_ in your system.
+A conda package has been built for Linux. To use edrixs via Anaconda, you need first to install `Anaconda <https://www.anaconda.com/distribution/>`_ in your system.
 We recommend installing edrixs into a separate environment, for example, called ``edrixs_env``, together with any other packages you might want to use like this::
 
     conda create --name edrixs_env -c conda-forge python=3.10 edrixs matplotlib
