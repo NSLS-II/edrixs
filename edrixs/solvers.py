@@ -480,7 +480,8 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
 
         It will be an identity matrix if not provided.
     skipGS: bool
-        If True, transitions to the ground state(s) (forming the direct peak) are omitted from the calculation. 
+        If True, transitions to the ground state(s) (forming the direct peak) are omitted from
+        the calculation.
 
     Returns
     -------
@@ -532,9 +533,9 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
             if ((it == 'isotropic') or (jt == 'isotropic')):
                 ei = np.ones(3)/np.sqrt(3)                        # Powder spectrum
                 ef = np.ones(3)/np.sqrt(3)
-            else:        
+            else:
                 ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
-                                            scatter_axis, (it, jt))    
+                                            scatter_axis, (it, jt))
             # dipolar transition
             if npol == 3:
                 polvec_i[:] = ei
@@ -552,10 +553,10 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
             for m in range(npol):
                 for n in range(npol):
                     F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
-           
+
             excInd = 0
             if (skipGS):
-                excInd = len(gs_list) 
+                excInd = len(gs_list)
             for m, igs in enumerate(gs_list):
                 for n in range(excInd, len(eval_i)):
                     rixs[i, :, j] += (
