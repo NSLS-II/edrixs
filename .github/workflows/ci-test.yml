@@ -76,11 +76,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # - name: Install MacOS dependencies
-      #   if: runner.os == 'macOS'
-      #   run: |
-      #     set -vxeuo pipefail
-      #     brew install tree
+      - name: Install MacOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          set -vxeuo pipefail
+          brew install tree
       #     python -m pip install delocate
 
       - name: Install dependencies
