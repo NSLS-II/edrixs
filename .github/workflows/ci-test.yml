@@ -4,6 +4,8 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  release:
+    types: [published, created]
 
 jobs:
 
@@ -114,3 +116,29 @@ jobs:
         with:
           name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.host-os }}-docs
           path: docs/build/html/
+
+
+  publish-to-pypi:
+    # Hints from:
+    #   - https://github.com/pypa/gh-action-pypi-publish/discussions/28
+    #   - https://github.com/Lightning-AI/lightning/blob/master/.github/workflows/release-pypi.yml
+    if: github.event_name == 'release'
+    name: Publish to PyPI
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download wheels from GitHub artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: wheels
+          path: dist/
+
+      - name: Publish wheels to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: ./dist/
