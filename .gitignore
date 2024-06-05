@@ -100,3 +100,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# cibuildwheel artifacts
+wheelhouse/

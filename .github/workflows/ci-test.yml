@@ -59,7 +59,7 @@ jobs:
 
       - name: Install micromamba with build dependencies
         uses: mamba-org/setup-micromamba@v1
-        if: runner.os == 'macOS'
+        # if: runner.os == 'macOS'
         with:
           init-shell: bash
           environment-name: build-env
@@ -69,12 +69,12 @@ jobs:
             gfortran
             openmpi
 
-      - name: Set up Python ${{ matrix.python-version }}
-        # if: matrix.host-os != 'macos-latest'
-        if: runner.os != 'macOS'
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
+      # - name: Set up Python ${{ matrix.python-version }}
+      #   # if: matrix.host-os != 'macos-latest'
+      #   if: runner.os != 'macOS'
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: ${{ matrix.python-version }}
 
       - name: Install MacOS dependencies
         if: runner.os == 'macOS'
