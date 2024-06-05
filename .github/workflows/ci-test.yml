@@ -69,7 +69,6 @@ jobs:
             gfortran
             openmpi=4
 
-
       # - name: Set up Python ${{ matrix.python-version }}
       #   # if: matrix.host-os != 'macos-latest'
       #   if: runner.os != 'macOS'
@@ -131,12 +130,17 @@ jobs:
       id-token: write
 
     steps:
+      - name: Set env vars
+        run: |
+          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}  # just the repo, as opposed to org/repo
+          echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v3
 
       - name: Download wheels from GitHub artifacts
         uses: actions/download-artifact@v3
         with:
-          name: wheels
+          name: ${{ env.REPOSITORY_NAME }}-wheels
           path: dist/
 
       - name: Publish wheels to PyPI
