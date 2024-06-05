@@ -458,7 +458,8 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         where, str1 (str2) can be 'linear', 'left', 'right', 'isotropic' and alpha (beta) is
         the angle (in radians) between the linear polarization vector and the scattering plane.
 
-        If str1 or str2 is 'isotropic' then the scattering is considered isotropic and the other variables are ignored.
+        If str1 or str2 is 'isotropic' then the scattering is considered isotropic and the other
+        variables are ignored.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
     gs_list: 1d list of ints
@@ -526,16 +527,15 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
     for i, om in enumerate(ominc):
         F_fi = scattering_mat(eval_i, eval_n, trans_op[:, :, 0:max(gs_list)+1],
                               trans_emi, om, gamma_core[i])
-               
 
         for j, (it, alpha, jt, beta) in enumerate(pol_type):
-            if ((it=='isotropic') or (jt=='isotropic')):
-                ei=np.ones(3)/np.sqrt(3)                        # Powder spectrum
-                ef=np.ones(3)/np.sqrt(3)
+            if ((it == 'isotropic') or (jt == 'isotropic')):
+                ei = np.ones(3)/np.sqrt(3)                        # Powder spectrum
+                ef = np.ones(3)/np.sqrt(3)
             else:        
                 ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
-                                        scatter_axis, (it, jt))    
-           # dipolar transition
+                                            scatter_axis, (it, jt))    
+            # dipolar transition
             if npol == 3:
                 polvec_i[:] = ei
                 polvec_f[:] = ef
@@ -557,7 +557,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
             if (skipGS):
                 excInd = len(gs_list) 
             for m, igs in enumerate(gs_list):
-                for n in range(excInd,len(eval_i)):
+                for n in range(excInd, len(eval_i)):
                     rixs[i, :, j] += (
                         prob[m] * np.abs(F_mag[n, igs])**2 * gamma_final / np.pi /
                         ((eloss - (eval_i[n] - eval_i[igs]))**2 + gamma_final**2)
