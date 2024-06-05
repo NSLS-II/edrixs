@@ -29,8 +29,8 @@ jobs:
 
     strategy:
       matrix:
-        host-os: ["ubuntu-latest", "macos-latest"]
-        # host-os: ["ubuntu-latest"]
+        # host-os: ["ubuntu-latest", "macos-13", "macos-14"]
+        host-os: ["ubuntu-latest"]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
 
@@ -101,7 +101,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ env.REPOSITORY_NAME }}-wheels
-          path: dist/*.whl
+          path: dist/*
 
       - name: Test with pytest
         run: |
