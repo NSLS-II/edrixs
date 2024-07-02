@@ -32,7 +32,7 @@ jobs:
         # host-os: ["ubuntu-latest", "macos-13", "macos-14"]
         policy: ["manylinux2014", "musllinux_1_1", "musllinux_1_2"]
         platform: ["i686", "x86_64"]
-        #host-os: ["ubuntu-latest"]
+        host-os: ["ubuntu-latest"]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
 
