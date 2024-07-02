@@ -122,7 +122,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.host-os }}-docs
+          name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.policy }}-docs
           path: docs/build/html/
 
 
