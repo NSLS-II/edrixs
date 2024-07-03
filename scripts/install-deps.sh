@@ -31,11 +31,7 @@ python -VV
 python -m pip install --upgrade pip setuptools wheel numpy
 
 # # Generate .whl file.
-if [ "${platform}" == "Linux" ]; then
-    python setup.py sdist bdist_wheel --plat-name=manylinux2014_x86_64
-else
-    python setup.py sdist bdist_wheel
-fi
+python setup.py sdist bdist_wheel
 ls -la dist/
 
 # Install this package and the packages listed in requirements.txt.
