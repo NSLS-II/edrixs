@@ -480,7 +480,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
 
         It will be an identity matrix if not provided.
     skipGS: bool
-        If True, transitions to the ground state(s) (forming the direct peak) are omitted from
+        If True, transitions to the ground state(s) (forming the elastic peak) are omitted from
         the calculation.
 
     Returns
