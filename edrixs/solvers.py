@@ -418,7 +418,7 @@ def xas_1v1c_py(eval_i, eval_n, trans_op, ominc, *, gamma_c=0.1, thin=1.0, phi=0
 
 def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                  gamma_c=0.1, gamma_f=0.01, thin=1.0, thout=1.0, phi=0.0,
-                 pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None, skipGS=False):
+                 pol_type=None, gs_list=None, temperature=1.0, scatter_axis=None, skip_gs=False):
     """
     Calculate RIXS for the case of one valence shell plus one core shell with Python solver.
 
