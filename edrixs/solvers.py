@@ -534,7 +534,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                                                           scatter_axis, (it, jt))
             if it.lower() == 'isotropic':
                 ei = np.ones(3)/np.sqrt(3)                        # Powder spectrum
-             if jt.lower() == 'isotropic':   
+            if jt.lower() == 'isotropic':   
                 ef = np.ones(3)/np.sqrt(3)
             # dipolar transition
             if npol == 3:
