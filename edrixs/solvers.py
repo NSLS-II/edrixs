@@ -459,7 +459,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         the angle (in radians) between the linear polarization vector and the scattering plane.
 
         If str1 (or str2) is 'isotropic' then the polarization vector projects equally
-        variables are ignored.
+        along each axis and the other variables are ignored.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
     gs_list: 1d list of ints
