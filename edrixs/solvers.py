@@ -479,7 +479,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         - local :math:`z`-axis: scatter_axis[:,2]
 
         It will be an identity matrix if not provided.
-    skipGS: bool
+    skip_gs: bool
         If True, transitions to the ground state(s) (forming the elastic peak) are omitted from
         the calculation.
 
