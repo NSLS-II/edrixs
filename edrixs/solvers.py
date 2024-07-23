@@ -556,7 +556,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
 
             fs_list = np.arange(len(eval_i))
             if skip_gs:
-                fs_list = np.delete(fs_list,gs_list)
+                fs_list = np.delete(fs_list, gs_list)
             for m, igs in enumerate(gs_list):
                 for n in fs_list:
                     rixs[i, :, j] += (
