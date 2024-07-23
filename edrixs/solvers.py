@@ -458,7 +458,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
         where, str1 (str2) can be 'linear', 'left', 'right', 'isotropic' and alpha (beta) is
         the angle (in radians) between the linear polarization vector and the scattering plane.
 
-        If str1 or str2 is 'isotropic' then the scattering is considered isotropic and the other
+        If str1 (or str2) is 'isotropic' then the polarization vector projects equally
         variables are ignored.
 
         It will set pol_type=[('linear', 0, 'linear', 0)] if not provided.
