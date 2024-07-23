@@ -555,7 +555,7 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                     F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
 
             excInd = 0
-            if skipGS:
+            if skip_gs:
                 excInd = len(gs_list)
             for m, igs in enumerate(gs_list):
                 for n in range(excInd, len(eval_i)):
