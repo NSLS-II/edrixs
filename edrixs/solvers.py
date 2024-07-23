@@ -530,12 +530,12 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                               trans_emi, om, gamma_core[i])
 
         for j, (it, alpha, jt, beta) in enumerate(pol_type):
-            if (it == 'isotropic') or (jt == 'isotropic'):
+            ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
+                                                          scatter_axis, (it, jt))
+            if it.lower() == 'isotropic':
                 ei = np.ones(3)/np.sqrt(3)                        # Powder spectrum
+             if jt.lower() == 'isotropic':   
                 ef = np.ones(3)/np.sqrt(3)
-            else:
-                ei, ef = dipole_polvec_rixs(thin, thout, phi, alpha, beta,
-                                            scatter_axis, (it, jt))
             # dipolar transition
             if npol == 3:
                 polvec_i[:] = ei
