@@ -554,11 +554,11 @@ def rixs_1v1c_py(eval_i, eval_n, trans_op, ominc, eloss, *,
                 for n in range(npol):
                     F_mag[:, :] += np.conj(polvec_f[m]) * F_fi[m, n] * polvec_i[n]
 
-            exc_ind = 0
+            fs_list = np.arange(len(eval_i))
             if skip_gs:
-                exc_ind = len(gs_list)
+                fs_list = np.delete(fs_list,gs_list)
             for m, igs in enumerate(gs_list):
-                for n in range(exc_ind, len(eval_i)):
+                for n in fs_list:
                     rixs[i, :, j] += (
                         prob[m] * np.abs(F_mag[n, igs])**2 * gamma_final / np.pi /
                         ((eloss - (eval_i[n] - eval_i[igs]))**2 + gamma_final**2)
