@@ -91,12 +91,15 @@ slater = ([F0_dd, F2_dd, F4_dd],  # initial
           [F0_dd, F2_dd, F4_dd, F0_dp, F2_dp, G1_dp, G3_dp])  # with core hole
 
 ################################################################################
-# Charge-transfer energy scales
+# Energy of the bath states
 # ------------------------------------------------------------------------------
-# The charge-transfer :math:`\Delta` and Coulomb :math:`U_{dd}` :math:`U_{dp}`
-# parameters determine the centers of the different electronic configurations
-# before they are split. Note that as electrons are moved one has to pay energy
-# costs associated with both charge-transfer and Coulomb interactions. The
+# In the notation used in EDRIXS, :math:`\Delta` sets the energy difference
+# between the bath and impurity states. :math:`\Delta` is defined in the atomic
+# limit without crystal field (i.e. in terms of the centers of the impurity and
+# bath states before hybridization is considered) as the energy for a
+# :math:`d^{n_d} \rightarrow d^{n_d + 1} \underline{L}` transition.
+# Note that as electrons are moved one has to pay energy
+# costs associated with the Coulomb interactions. The
 # energy splitting between the bath and impurity is consequently not simply
 # :math:`\Delta`. One must therefore determine the energies by solving
 # a set of linear equations. See the :ref:`edrixs.utils functions <utils>`
@@ -336,6 +339,6 @@ if __name__ == '__main__':
 # .. [1] Maurits Haverkort et al
 #        `Phys. Rev. B 85, 165113 (2012) <https://doi.org/10.1103/PhysRevB.85.165113>`_.
 # .. [2] A. E. Bocquet et al.,
-#        `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_
+#        `Phys. Rev. B 53, 1161 (1996) <https://doi.org/10.1103/PhysRevB.53.1161>`_.
 # .. [3] Arata Tanaka, and Takeo Jo,
-#        `J. Phys. Soc. Jpn. 63, 2788-2807(1994) <https://doi.org/10.1143/JPSJ.63.2788>`_
+#        `J. Phys. Soc. Jpn. 63, 2788-2807(1994) <https://doi.org/10.1143/JPSJ.63.2788>`_.
