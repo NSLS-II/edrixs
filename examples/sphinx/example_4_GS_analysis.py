@@ -48,7 +48,7 @@ _ = importlib.reload(example_3_AIM_XAS)
 
 from example_3_AIM_XAS import (F0_dd, F2_dd, F4_dd,
                                nd, norb_d, norb_bath, v_noccu,
-                               imp_mat, CF, bath_level,
+                               imp_mat, bath_level,
                                hyb, ext_B, trans_c2n)
 ntot = 20
 ################################################################################
