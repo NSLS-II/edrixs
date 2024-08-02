@@ -82,7 +82,7 @@ plt.show()
 # now we straighforwardly computed
 
 GS_energy = min(e[np.isclose(alphas, 1)])
-lowest_energy_to_transfer_electron = min(e[np.isclose(alphas, 0)])
+lowest_energy_to_transfer_electron = min(e[np.isclose(betas, 1)])
 Delta_ZSA = lowest_energy_to_transfer_electron - GS_energy
 print(f"Charge transfer energy is {Delta_ZSA:.3f} eV")
 
