@@ -5,15 +5,14 @@ set -vxeuo pipefail
 platform="$(uname)"
 
 if [ "${platform}" == "Linux" ]; then
-    # sudo apt-get update -y
-    # sudo apt-get install -y \
-    #     gfortran \
-    #     openmpi-bin \
-    #     openmpi-doc \
-    #     libopenmpi-dev \
-    #     libopenblas-dev \
-    #     libarpack2-dev \
-    #     libparpack2-dev
+    sudo apt-get install -y \
+        gfortran \
+        openmpi-bin \
+        openmpi-doc \
+        libopenmpi-dev \
+        libopenblas-dev \
+        libarpack2-dev \
+        libparpack2-dev
     echo "Skipping system packages installation in favor of conda packages for building."
 elif [ "${platform}" == "Darwin" ]; then
     echo "gfortran is expected to exist already."
@@ -30,8 +29,12 @@ python -VV
 
 python -m pip install --upgrade pip setuptools wheel numpy
 
-# # Generate .whl file.
-python setup.py sdist bdist_wheel
+# Generate .whl file.
+if [ "${platform}" == "Linux" ]; then
+    python setup.py sdist bdist_wheel --plat-name=manylinux2014_x86_64
+else
+    python setup.py sdist bdist_wheel
+fi
 ls -la dist/
 
 # Install this package and the packages listed in requirements.txt.
