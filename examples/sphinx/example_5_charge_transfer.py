@@ -51,14 +51,14 @@ zeeman = ext_B[0] * (2 * sx) + ext_B[1] * (2 * sy) + ext_B[2] * (2 * sz)
 emat_chb[0:norb_d, 0:norb_d] += zeeman
 basis = np.array(edrixs.get_fock_bin_by_N(ntot, v_noccu))
 H = (edrixs.build_opers(2, emat_chb, basis)
-  + edrixs.build_opers(4, umat, basis))
+     + edrixs.build_opers(4, umat, basis))
 
 e, v = scipy.linalg.eigh(H)
 e -= e[0]
 
 num_d_electrons = basis[:, :norb_d].sum(1)
-alphas = np.sum(np.abs(v[num_d_electrons==8, :])**2, axis=0)
-betas = np.sum(np.abs(v[num_d_electrons==9, :])**2, axis=0)
+alphas = np.sum(np.abs(v[num_d_electrons == 8, :])**2, axis=0)
+betas = np.sum(np.abs(v[num_d_electrons == 9, :])**2, axis=0)
 
 ################################################################################
 # Plot
@@ -89,6 +89,32 @@ print(f"Charge transfer energy is {Delta_ZSA:.3f} eV")
 ################################################################################
 # where we have used :code:`np.isclose` to avoid errors from finite numerical
 # precision.
+
+################################################################################
+# Diagonalizing by blocks
+# ------------------------------------------------------------------------------
+# When working on a problem with a large basis, one can take advantage of the
+# lack of hybridization and separately diagonalize the impurity and bath
+# states
+
+energies = []
+
+for n_ligand_holes in [0, 1]:
+    basis_d = edrixs.get_fock_bin_by_N(10, nd + n_ligand_holes)
+    Hd = (edrixs.build_opers(2, emat_chb[:10, :10], basis_d)
+          + edrixs.build_opers(4, umat[:10, :10, :10, :10], basis_d))
+    ed = scipy.linalg.eigh(Hd)[0][0]
+
+    basis_L = edrixs.get_fock_bin_by_N(10, 10 - n_ligand_holes)
+    HL = (edrixs.build_opers(2, emat_chb[10:, 10:], basis_L)
+          + edrixs.build_opers(4, umat[10:, 10:, 10:, 10:], basis_L))
+    eL = scipy.linalg.eigh(HL)[0][0]
+    energies.append(ed + eL)
+
+print(f"Charge transfer energy is {energies[1] - energies[0]:.3f} eV")
+
+################################################################################
+# which yields the same result.
 
 ##############################################################################
 #
