@@ -6,9 +6,9 @@ This example follows the :ref:`sphx_glr_auto_examples_example_3_AIM_XAS.py`
 example and considers the same model. This time we outline how to determine
 the charge transfer energy in the sense defined by Zaanen, Sawatzky, and Allen
 [1]_. That is, a :math:`d^{n_d} \\rightarrow d^{n_d + 1} \\underline{L}` transition
-in the atomic limit, after considering crystal field. Although this can be
-determined analytically, the easiest way is often just to calculate it, as we will
-do here.
+in the atomic limit, after considering Coulomb interactins and crystal field. Although
+this can be determined analytically in some cases, the easiest way is often just to
+calculate it, as we will do here.
 """
 import edrixs
 import numpy as np
@@ -61,7 +61,7 @@ alphas = np.sum(np.abs(v[num_d_electrons == 8, :])**2, axis=0)
 betas = np.sum(np.abs(v[num_d_electrons == 9, :])**2, axis=0)
 
 ################################################################################
-# Plot
+# Energy to lowest energy ligand orbital
 # ------------------------------------------------------------------------------
 # Let's vizualize :math:`\alpha` and :math:`\beta`.
 
@@ -78,13 +78,12 @@ plt.show()
 
 ################################################################################
 # One can see that the mixing between impurity and bath states has disappered
-# because we have turned off the hybridization. The charge transfer energy can
-# now we straighforwardly computed
+# because we have turned off the hybridization. The energy required to
 
 GS_energy = min(e[np.isclose(alphas, 1)])
 lowest_energy_to_transfer_electron = min(e[np.isclose(betas, 1)])
-Delta_ZSA = lowest_energy_to_transfer_electron - GS_energy
-print(f"Charge transfer energy is {Delta_ZSA:.3f} eV")
+E_to_ligand = lowest_energy_to_transfer_electron - GS_energy
+print(f"Energy to lowest energy ligand state is {E_to_ligand:.3f} eV")
 
 ################################################################################
 # where we have used :code:`np.isclose` to avoid errors from finite numerical
@@ -111,10 +110,26 @@ for n_ligand_holes in [0, 1]:
     eL = scipy.linalg.eigh(HL)[0][0]
     energies.append(ed + eL)
 
-print(f"Charge transfer energy is {energies[1] - energies[0]:.3f} eV")
+print(f"Energy to lowest energy ligand state is {energies[1] - energies[0]:.3f} eV")
 
 ################################################################################
 # which yields the same result.
+
+################################################################################
+# Energy splitting in ligand states
+# ------------------------------------------------------------------------------
+# The last thing to consider is that our definition of the charge transfer
+# energy refers to the atomic limit with all hopping terms switch off, whereas
+# the ligand states in the model are already split by the oxygen-oxygen hopping
+# term :math:`T_{pp}` as illustrated below. So the final charge transer energy
+# needs to account for this.
+#
+#     .. image:: /_static/energy_level.png
+#
+
+T_pp = 1
+print(f"Charge transfer is {energies[1] - energies[0] + T_pp:.3f} eV")
+
 
 ##############################################################################
 #
