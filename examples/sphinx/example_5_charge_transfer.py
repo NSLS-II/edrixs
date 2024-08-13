@@ -102,12 +102,13 @@ for n_ligand_holes in [0, 1]:
     basis_d = edrixs.get_fock_bin_by_N(10, nd + n_ligand_holes)
     Hd = (edrixs.build_opers(2, emat_chb[:10, :10], basis_d)
           + edrixs.build_opers(4, umat[:10, :10, :10, :10], basis_d))
-    ed = scipy.linalg.eigh(Hd)[0][0]
+    ed = scipy.linalg.eigh(Hd, eigvals_only=True, subset_by_index=[0, 0])[0]
 
     basis_L = edrixs.get_fock_bin_by_N(10, 10 - n_ligand_holes)
     HL = (edrixs.build_opers(2, emat_chb[10:, 10:], basis_L)
           + edrixs.build_opers(4, umat[10:, 10:, 10:, 10:], basis_L))
-    eL = scipy.linalg.eigh(HL)[0][0]
+    eL = scipy.linalg.eigh(HL, eigvals_only=True, subset_by_index=[0, 0])[0]
+
     energies.append(ed + eL)
 
 print(f"Energy to lowest energy ligand state is {energies[1] - energies[0]:.3f} eV")
