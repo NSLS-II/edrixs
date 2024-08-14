@@ -13,7 +13,7 @@ if [ "${platform}" == "Linux" ]; then
         libopenblas-dev \
         libarpack2-dev \
         libparpack2-dev
-    echo "Skipping system packages installation in favor of conda packages for building."
+    # echo "Skipping system packages installation in favor of conda packages for building."
 elif [ "${platform}" == "Darwin" ]; then
     echo "gfortran is expected to exist already."
 fi
