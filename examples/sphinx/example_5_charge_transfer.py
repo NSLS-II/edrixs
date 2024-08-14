@@ -120,7 +120,7 @@ print(f"Energy to lowest energy ligand state is {energies[1] - energies[0]:.3f} 
 # Energy splitting in ligand states
 # ------------------------------------------------------------------------------
 # The last thing to consider is that our definition of the charge transfer
-# energy refers to the atomic limit with all hopping terms switch off, whereas
+# energy refers to the atomic limit with all hopping terms switched off, whereas
 # the ligand states in the model are already split by the oxygen-oxygen hopping
 # term :math:`T_{pp}` as illustrated below. So the final charge transer energy
 # needs to account for this.
