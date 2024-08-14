@@ -119,8 +119,9 @@ jobs:
 
   publish-docs:
     if: github.repository_owner == 'NSLS-II' && github.ref == 'refs/heads/master'
-    runs-on: ${{ matrix.host-os }}
+    name: Publish docs
     needs: test
+    runs-on: ${{ matrix.host-os }}
     strategy:
       matrix:
         python-version: ["3.10"]
@@ -134,7 +135,7 @@ jobs:
           echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
 
       - name: Download docs from GitHub artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.host-os }}-docs
           path: docs/build/html/
