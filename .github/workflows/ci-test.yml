@@ -117,6 +117,35 @@ jobs:
           name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.host-os }}-docs
           path: docs/build/html/
 
+  publish-docs:
+    if: github.repository_owner == 'NSLS-II' && github.ref == 'refs/heads/master'
+    runs-on: ${{ matrix.host-os }}
+    needs: test
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+        host-os: ["ubuntu-latest"]
+      fail-fast: false
+
+    steps:
+      - name: Download docs from GitHub artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.host-os }}-docs
+          path: docs/build/html/
+
+      - name: Deploy documentation to nsls-ii.github.io
+        # We pin to the SHA, not the tag, for security reasons.
+        # https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/security-hardening-for-github-actions#using-third-party-actions
+        uses: peaceiris/actions-gh-pages@bbdfb200618d235585ad98e965f4aafc39b4c501  # v3.7.3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DOCUMENTATION_DEPLOY_KEY }}
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          external_repository: NSLS-II/NSLS-II.github.io
+          destination_dir: ${{ env.REPOSITORY_NAME }}  # just the repo name, without the "NSLS-II/"
+          keep_files: true  # Keep old files.
+          force_orphan: false  # Keep git history.
 
   publish-to-pypi:
     # Hints from:
