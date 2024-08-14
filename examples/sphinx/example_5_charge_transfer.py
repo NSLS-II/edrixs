@@ -6,7 +6,7 @@ This example follows the :ref:`sphx_glr_auto_examples_example_3_AIM_XAS.py`
 example and considers the same model. This time we outline how to determine
 the charge transfer energy in the sense defined by Zaanen, Sawatzky, and Allen
 [1]_. That is, a :math:`d^{n_d} \\rightarrow d^{n_d + 1} \\underline{L}` transition
-in the atomic limit, after considering Coulomb interactins and crystal field. Although
+in the atomic limit, after considering Coulomb interactions and crystal field. Although
 this can be determined analytically in some cases, the easiest way is often just to
 calculate it, as we will do here.
 """
