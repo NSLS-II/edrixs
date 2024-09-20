@@ -49,4 +49,6 @@ Papers using EDRIXS
 
 * Local site behavior of the 5d and 4f ions in the frustrated pyrochlore Ho\ :sub:`2`\Os\ :sub:`2`\O\ :sub:`7`\, S. Calder, Z. Y. Zhao, M. H. Upton, and J.-Q. Yan, `Phys. Rev. B 109, 054408 (2024)  <https://doi.org/10.1103/PhysRevB.109.054408>`_
 
-* Elucidating the Role of Dimensionality on the Electronic Structure of the Van der Waals Antiferromagnet NiPS\ :sub:`3`\ ,  M. F. DiScala, D. Staros, A. de la Torre, A. Lopez, D. Wong, C. Schulz, M. Bartkowiak, B. Rubenstein, K. W. Plumb, `Advanced Physics Research (2024) <https://doi.org/10.1002/apxr.202300096>`_ 
+* Elucidating the Role of Dimensionality on the Electronic Structure of the Van der Waals Antiferromagnet NiPS\ :sub:`3`\ ,  M. F. DiScala, D. Staros, A. de la Torre, A. Lopez, D. Wong, C. Schulz, M. Bartkowiak, B. Rubenstein, K. W. Plumb, `Advanced Physics Research  3, 2300096 (2024) <https://doi.org/10.1002/apxr.202300096>`_ 
+
+* Experimentally Assessing the Electronic Structure and Spin-State Energetics in MnFe Dimers Using 1s3p Resonant Inelastic X-ray Scattering, Rebeca G. Castillo, Benjamin E. Van Kuiken, Thomas Weyhermüller, and Serena DeBeer, `Inorganic Chemistry (2024) <https://doi.org/10.1021/acs.inorgchem.4c01538>`_ 
