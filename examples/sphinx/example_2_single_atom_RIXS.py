@@ -9,7 +9,7 @@ from Ref. [1]_ as the material in question. The aim of this example is to
 illustrate the proceedure and to provide what we hope is useful advice. What is
 written is not meant to be a replacement for reading the docstrings of the
 functions, which can always be accessed on the
-`edrixs website <https://nsls-ii.github.io/edrixs/reference/index.html>`_ or
+`edrixs website <https://edrixs.github.io/edrixs/reference/index.html>`_ or
 by executing functions with ?? in IPython.
 """
 import edrixs

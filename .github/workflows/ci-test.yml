@@ -92,7 +92,7 @@ jobs:
           ls -Al ./dist/
 
       # - name: Delocate wheels for MacOS
-      #   if: runner.os == 'macOS'
+      #   if: runner.os == '.'
       #   run: |
       #     set -vxeuo pipefail
       #     delocate-wheelpython -v ./dist/${{ env.REPOSITORY_NAME }}-*-cp${PYTHON_VERSION_NODOT}*.whl
@@ -140,7 +140,7 @@ jobs:
           name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.host-os }}-docs
           path: docs/build/html/
 
-      - name: Deploy documentation to nsls-ii.github.io
+      - name: Deploy documentation to edrixs.github.io
         # We pin to the SHA, not the tag, for security reasons.
         # https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/security-hardening-for-github-actions#using-third-party-actions
         uses: peaceiris/actions-gh-pages@bbdfb200618d235585ad98e965f4aafc39b4c501  # v3.7.3
@@ -148,7 +148,7 @@ jobs:
           deploy_key: ${{ secrets.ACTIONS_DOCUMENTATION_DEPLOY_KEY }}
           publish_branch: master
           publish_dir: ./docs/build/html
-          external_repository: NSLS-II/NSLS-II.github.io
+          external_repository: EDRIXS/EDRIXS.github.io
           destination_dir: ${{ env.REPOSITORY_NAME }}  # just the repo name, without the "NSLS-II/"
           keep_files: true  # Keep old files.
           force_orphan: false  # Keep git history.
