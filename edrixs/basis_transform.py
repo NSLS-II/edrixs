@@ -474,7 +474,7 @@ def tmat_r2trig(case, ispin=False):
         # esigma_g =  dxy/ sqrt(3) - 2dyz/sqrt(6)
         t_r2trig[4, 4] = cone/np.sqrt(3)
         t_r2trig[2, 4] = -2*cone/np.sqrt(6)
-    
+
     elif case == '100':
         # a1g = (dzx + dzy + dxy)/sqrt(3)
         t_r2trig[1, 0] = cone/np.sqrt(3)
@@ -498,7 +498,7 @@ def tmat_r2trig(case, ispin=False):
 
     else:
         raise Exception(f"case {case} not implemented."
-                "It should be either '111' or '110'")
+                        "It should be either '111' or '110'")
 
     # the spin order is: up dn up dn ... up dn
     if ispin:
