@@ -708,9 +708,9 @@ def cf_trigonal_d(case, Delta1, Delta2):
         - '100': :math:`z` axis vertical
 
     Delta1: float scalar
-        The :math:`e^\sigma_g` orbitals are Delta1 above the :math:`a^_{1g}`
+        The :math:`e^\\sigma_g` orbitals are Delta1 above the :math:`a^_{1g}`
     Delta1: float scalar
-        The :math:`e^\pi_g` orbitals are Delta2 below the :math:`a^_{1g}`
+        The :math:`e^\\pi_g` orbitals are Delta2 below the :math:`a^_{1g}`
 
     Returns
     -------
@@ -719,11 +719,11 @@ def cf_trigonal_d(case, Delta1, Delta2):
     """
 
     cf_trig = np.zeros((5, 5), dtype=complex)
-    cf_trig[0, 0] = 0 # a1g
-    cf_trig[1, 1] = -Delta2 # epi_g
-    cf_trig[2, 2] = -Delta2 # epi_g
-    cf_trig[3, 3] = Delta1 # esigma_g
-    cf_trig[4, 4] = Delta1 # esigma_g
+    cf_trig[0, 0] = 0  # a1g
+    cf_trig[1, 1] = -Delta2  # epi_g
+    cf_trig[2, 2] = -Delta2  # epi_g
+    cf_trig[3, 3] = Delta1  # esigma_g
+    cf_trig[4, 4] = Delta1  # esigma_g
 
     cf_trig_spin = np.zeros((10, 10), dtype=complex)
     cf_trig_spin[::2, ::2] = cf_trig
@@ -731,11 +731,11 @@ def cf_trigonal_d(case, Delta1, Delta2):
 
     if case == '111':
         cf_real = cb_op(cf_trig_spin, tmat_trig2r('111', ispin=True))
-        cf  = cb_op(cf_real, tmat_r2c('d', ispin=True))
+        cf = cb_op(cf_real, tmat_r2c('d', ispin=True))
         return cf
     elif case == '100':
         cf_real = cb_op(cf_trig_spin, tmat_trig2r('100', ispin=True))
-        cf  = cb_op(cf_real, tmat_r2c('d', ispin=True))
+        cf = cb_op(cf_real, tmat_r2c('d', ispin=True))
         return cf
     else:
         raise Exception(f"case {case} not implemented."
