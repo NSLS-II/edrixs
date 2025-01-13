@@ -146,12 +146,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@bbdfb200618d235585ad98e965f4aafc39b4c501  # v3.7.3
         with:
           deploy_key: ${{ secrets.ACTIONS_DOCUMENTATION_DEPLOY_KEY }}
-          publish_branch: master
           publish_dir: ./docs/build/html
-          external_repository: EDRIXS/EDRIXS.github.io
-          destination_dir: ${{ env.REPOSITORY_NAME }}  # just the repo name, without the "NSLS-II/"
-          keep_files: true  # Keep old files.
-          force_orphan: false  # Keep git history.
 
   publish-to-pypi:
     # Hints from:
