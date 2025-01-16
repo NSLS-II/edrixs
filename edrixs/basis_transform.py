@@ -476,25 +476,44 @@ def tmat_r2trig(case, ispin=False):
         t_r2trig[2, 4] = -2*cone/np.sqrt(6)
 
     elif case == '100':
-        # a1g = (dzx + dzy + dxy)/sqrt(3)
         t_r2trig[1, 0] = cone/np.sqrt(3)
         t_r2trig[2, 0] = cone/np.sqrt(3)
         t_r2trig[4, 0] = cone/np.sqrt(3)
 
-        # epi_g = (2dxy - dyz - dzx)/sqrt(6)
-        t_r2trig[4, 1] = 2/np.sqrt(6)
-        t_r2trig[2, 1] = -cone/np.sqrt(6)
-        t_r2trig[1, 1] = -cone/np.sqrt(6)
+        om = np.exp(1j*2*np.pi/3)
+        t_r2trig[1, 1] = -cone/np.sqrt(3)
+        t_r2trig[2, 1] = -om/np.sqrt(3)
+        t_r2trig[4, 1] = -om**2/np.sqrt(3)
 
-        # epi_g = (dyz - dzx)/sqrt(2)
-        t_r2trig[2, 2] = cone/np.sqrt(2)
-        t_r2trig[1, 2] = -cone/np.sqrt(2)
+        t_r2trig[1, 2] = cone/np.sqrt(3)
+        t_r2trig[2, 2] = om**-1/np.sqrt(3)
+        t_r2trig[4, 2] = om**-2/np.sqrt(3)
 
-        # esigma_g =  dz^2
-        t_r2trig[0, 3] = cone
+        t_r2trig[1, 3] = -cone/np.sqrt(2)
+        t_r2trig[3, 3] = -1j/np.sqrt(2)
 
-        # esigma_g =  dx^2-y^2
-        t_r2trig[3, 4] = cone
+        t_r2trig[1, 4] = cone/np.sqrt(2)
+        t_r2trig[3, 4] = -1j/np.sqrt(2)
+        
+        # # a1g = (dzx + dzy + dxy)/sqrt(3)
+        # t_r2trig[1, 0] = cone/np.sqrt(3)
+        # t_r2trig[2, 0] = cone/np.sqrt(3)
+        # t_r2trig[4, 0] = cone/np.sqrt(3)
+
+        # # epi_g = (2dxy - dyz - dzx)/sqrt(6)
+        # t_r2trig[4, 1] = 2/np.sqrt(6)
+        # t_r2trig[2, 1] = -cone/np.sqrt(6)
+        # t_r2trig[1, 1] = -cone/np.sqrt(6)
+
+        # # epi_g = (dyz - dzx)/sqrt(2)
+        # t_r2trig[2, 2] = cone/np.sqrt(2)
+        # t_r2trig[1, 2] = -cone/np.sqrt(2)
+
+        # # esigma_g =  dz^2
+        # t_r2trig[0, 3] = cone
+
+        # # esigma_g =  dx^2-y^2
+        # t_r2trig[3, 4] = cone
 
     else:
         raise Exception(f"case {case} not implemented."
