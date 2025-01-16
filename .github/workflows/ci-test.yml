@@ -118,6 +118,9 @@ jobs:
           path: docs/build/html/
 
       - name: Deploy
+        permissions:
+          contents: read
+          pages: write
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
