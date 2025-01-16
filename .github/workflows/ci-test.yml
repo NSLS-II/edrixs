@@ -117,10 +117,17 @@ jobs:
           name: ${{ env.REPOSITORY_NAME }}-${{ matrix.python-version }}-${{ matrix.host-os }}-docs
           path: docs/build/html/
 
-      - name: Deploy
-        permissions:
-          contents: read
-          pages: write
+  deploy:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
