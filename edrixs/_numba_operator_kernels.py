@@ -17,6 +17,7 @@ def comb_jit(n, k):
         result = (result * (n - i)) // (i + 1)
     return result
 
+
 @njit(cache=True, inline='always')
 def popcount_u64(value):
     count = 0
@@ -24,6 +25,7 @@ def popcount_u64(value):
         value &= value - np.uint64(1)
         count += 1
     return count
+
 
 @njit(cache=True, inline='always')
 def hash_decoder_jit(rank, norb, nocc):
@@ -48,6 +50,7 @@ def hash_decoder_jit(rank, norb, nocc):
             i -= 1
     return state
 
+
 @njit(cache=True, inline='always')
 def hash_encoder_jit(state, norb):
     if norb < 64:
@@ -60,10 +63,12 @@ def hash_encoder_jit(state, norb):
             k += 1
     return rank
 
+
 @njit(cache=True, inline='always')
 def sign_count_u64(state, orbital):
     prefix = state & ((np.uint64(1) << np.uint64(orbital)) - np.uint64(1))
     return 1 if popcount_u64(prefix) % 2 == 0 else -1
+
 
 @njit(cache=True, inline='always')
 def decode_combinadic_jit(index, norbs, noccus, offsets, sizes):
@@ -76,6 +81,7 @@ def decode_combinadic_jit(index, norbs, noccus, offsets, sizes):
         shell_state = hash_decoder_jit(colex_rank, norbs[n], noccus[n])
         state |= shell_state << np.uint64(offsets[n])
     return state
+
 
 @njit(cache=True, inline='always')
 def encode_combinadic_jit(state, norbs, noccus, offsets, sizes, strides):
@@ -93,6 +99,7 @@ def encode_combinadic_jit(state, norbs, noccus, offsets, sizes, strides):
         shell_rank = sizes[n] - 1 - colex_rank
         index += shell_rank * strides[n]
     return index
+
 
 @njit(cache=True)
 def build_combinadic(
@@ -177,6 +184,7 @@ def build_combinadic(
         np.asarray(cols, dtype=np.int64),
         np.asarray(vals, dtype=np.complex128),
     )
+
 
 @njit(cache=True)
 def build_explicit(
