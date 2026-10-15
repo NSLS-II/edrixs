@@ -48,12 +48,15 @@ overview as needed.
 The physical model
 ==================
 
-There are (so far) three ``edrixs.models`` constructors:
+There are four ``edrixs.models`` constructors:
 
 * :func:`~edrixs.models.model_1v1c` -- one valence shell and one core shell
   (for example, Cu :math:`3d` and :math:`2p`).
 * :func:`~edrixs.models.model_2v1c` -- two valence shells and one core shell.
 * :func:`~edrixs.models.model_siam` -- an Anderson impurity model.
+* :func:`~edrixs.models.model_siam_2d1p` -- a commonly used special case of the
+  Anderson impurity model with one :math:`d` impurity shell, one bath shell,
+  and one :math:`p` core shell (for L-edge spectroscopy).
 
 Each returns a description of the problem, building no operators itself:
 
@@ -116,7 +119,7 @@ It returns the matrix :math:`\langle \Phi_l \rvert \hat{H} \lvert \Phi_r
 \rangle` of the one- and two-body terms above.
 
 :func:`~edrixs.solvers.get_ops` is the spectroscopy-oriented wrapper, which
-builds everything a XAS or RIXS calculation needs in one call:
+builds everything an XAS or RIXS calculation needs in one call:
 
 * ``emat_i``, ``umat_i``, ``basis_i`` and their ``_n`` counterparts -- the two
   Fock spaces, without and with a core hole.
@@ -124,7 +127,8 @@ builds everything a XAS or RIXS calculation needs in one call:
 
 It returns ``hmat_i``, ``hmat_n`` and the many-body transition operators
 ``trans_ops``.  Because XAS and RIXS connect states with no core hole to states
-with exactly one core hole, keeping the two Hamiltonians separate avoids the need to generate a Hamiltonain that spans both spaces and makes
+with exactly one core hole, keeping the two Hamiltonians separate avoids the
+need to generate a Hamiltonian that spans both spaces and makes
 the calculation more efficient.
 
 The Fock-basis encoding and the valence-before-core orbital ordering that both
