@@ -101,6 +101,7 @@ rixs = edrixs.rixs(
     ],
     temperature=temperature,
     backend=backend,
+    backend_kws={"linsys_maxiter": 5000} if backend == "scipy" else {"linsys_max": 5000},
 )
 rixs_spectrum = rixs[0].sum(axis=-1)
 rixs_spectrum /= rixs_spectrum.max()
