@@ -45,12 +45,12 @@ labels without increasing the number of states. This convention avoids the
 energy corrections needed when filled core orbitals are omitted and simplifies
 the construction of transition operators.
 
-Most algorithms for numerical matrix diagonalization perform worse if the matrix
-in quesition has large average offsets on the matrix diagonal.
-For this reason, Model constructors also return an energy offset, ``shift``.
+Numerical diagonalization can lose precision when the diagonal entries have a
+large common energy offset.
+For this reason, model constructors also return an energy offset, ``shift``.
 Passing it to :func:`~edrixs.solvers.ed` with the dense or SciPy backend subtracts
 the offset from the Hamiltonian diagonal before diagonalization and restores
-it to the returned eigenvalues. This preserves identical physics while reducing
+it to the returned eigenvalues. This preserves the physics while reducing
 numerical errors caused by subtracting large, nearly equal numbers.
 
 When computing XAS or RIXS, the relevant resonant denominator is absorbed
