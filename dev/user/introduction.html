@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction to EDRIXS &mdash; EDRIXS 0.post1+g99e83bd documentation</title>
+  <title>Introduction to EDRIXS &mdash; EDRIXS 0.post1+g8c3aa70 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -20,7 +20,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=51b9d047"></script>
+      <script src="../_static/documentation_options.js?v=2f0a07b3"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -149,12 +149,15 @@ through the same material in more physical detail.</p>
 overview as needed.</p>
 <section id="the-physical-model">
 <span id="physical-model"></span><h2>The physical model<a class="headerlink" href="#the-physical-model" title="Link to this heading"></a></h2>
-<p>There are (so far) three <code class="docutils literal notranslate"><span class="pre">edrixs.models</span></code> constructors:</p>
+<p>There are four <code class="docutils literal notranslate"><span class="pre">edrixs.models</span></code> constructors:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../reference/models.html#edrixs.models.model_1v1c" title="edrixs.models.model_1v1c"><code class="xref py py-func docutils literal notranslate"><span class="pre">model_1v1c()</span></code></a> – one valence shell and one core shell
 (for example, Cu <span class="math notranslate nohighlight">\(3d\)</span> and <span class="math notranslate nohighlight">\(2p\)</span>).</p></li>
 <li><p><a class="reference internal" href="../reference/models.html#edrixs.models.model_2v1c" title="edrixs.models.model_2v1c"><code class="xref py py-func docutils literal notranslate"><span class="pre">model_2v1c()</span></code></a> – two valence shells and one core shell.</p></li>
 <li><p><a class="reference internal" href="../reference/models.html#edrixs.models.model_siam" title="edrixs.models.model_siam"><code class="xref py py-func docutils literal notranslate"><span class="pre">model_siam()</span></code></a> – an Anderson impurity model.</p></li>
+<li><p><a class="reference internal" href="../reference/models.html#edrixs.models.model_siam_2d1p" title="edrixs.models.model_siam_2d1p"><code class="xref py py-func docutils literal notranslate"><span class="pre">model_siam_2d1p()</span></code></a> – a commonly used special case of the
+Anderson impurity model with one <span class="math notranslate nohighlight">\(d\)</span> impurity shell, one bath shell,
+and one <span class="math notranslate nohighlight">\(p\)</span> core shell (for L-edge spectroscopy).</p></li>
 </ul>
 <p>Each returns a description of the problem, building no operators itself:</p>
 <ul class="simple">
@@ -205,7 +208,7 @@ stage.  Pass <code class="docutils literal notranslate"><span class="pre">None</
 <p>It returns the matrix <span class="math notranslate nohighlight">\(\langle \Phi_l \rvert \hat{H} \lvert \Phi_r
 \rangle\)</span> of the one- and two-body terms above.</p>
 <p><a class="reference internal" href="../reference/solvers.html#edrixs.solvers.get_ops" title="edrixs.solvers.get_ops"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_ops()</span></code></a> is the spectroscopy-oriented wrapper, which
-builds everything a XAS or RIXS calculation needs in one call:</p>
+builds everything an XAS or RIXS calculation needs in one call:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">emat_i</span></code>, <code class="docutils literal notranslate"><span class="pre">umat_i</span></code>, <code class="docutils literal notranslate"><span class="pre">basis_i</span></code> and their <code class="docutils literal notranslate"><span class="pre">_n</span></code> counterparts – the two
 Fock spaces, without and with a core hole.</p></li>
@@ -213,7 +216,8 @@ Fock spaces, without and with a core hole.</p></li>
 </ul>
 <p>It returns <code class="docutils literal notranslate"><span class="pre">hmat_i</span></code>, <code class="docutils literal notranslate"><span class="pre">hmat_n</span></code> and the many-body transition operators
 <code class="docutils literal notranslate"><span class="pre">trans_ops</span></code>.  Because XAS and RIXS connect states with no core hole to states
-with exactly one core hole, keeping the two Hamiltonians separate avoids the need to generate a Hamiltonain that spans both spaces and makes
+with exactly one core hole, keeping the two Hamiltonians separate avoids the
+need to generate a Hamiltonian that spans both spaces and makes
 the calculation more efficient.</p>
 <p>The Fock-basis encoding and the valence-before-core orbital ordering that both
 functions assume are set out in <a class="reference internal" href="conventions.html#conventions"><span class="std std-ref">Conventions</span></a>.</p>
