@@ -55,7 +55,7 @@ RIXS_OPTIONS = {
         1e-9, 'GMRES convergence tolerance.', positive_real
     ),
     'linsys_maxiter': OptionSpec(
-        50000, 'Maximum GMRES iterations.', positive_integer
+        5000, 'Maximum GMRES iterations.', positive_integer
     ),
     'linsys_restart': OptionSpec(
         200, 'GMRES restart interval.', positive_integer
