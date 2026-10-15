@@ -19,6 +19,7 @@ delegate their numerical work to a backend selected with ``backend``:
   from disk if desired.
 * ``'petsc'`` reserves the PETSc backend contract but is not yet implemented.
 
+Note that the same backend should be used in each stage of a calculation.
 Backend-specific numerical controls belong in a ``backend_kws`` mapping.  The
 mapping is specific to both the backend *and the operation*.
 

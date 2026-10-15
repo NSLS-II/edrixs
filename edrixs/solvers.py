@@ -241,7 +241,8 @@ def ed(hmat_i, num_evals=1, *, shift=0.0, backend=None, backend_kws=None):
         Fortran ED warns and ignores nonzero shifts, continuing with the
         original Hamiltonian.
     backend : str or None, optional
-        Backend name. When omitted, infer it from ``hmat_i``.
+        Backend name. This must be compatible with the backend choice
+        for ``hmat_i``. When omitted, infer it from ``hmat_i``.
     backend_kws : mapping, optional
         Backend-specific eigensolver options. Accepted names, defaults, and
         constraints are in the EDRIXS backend keyword reference:
@@ -327,7 +328,8 @@ def xas(eval_i, evec_i, hmat_n, trans_op, ominc, *,
         Cartesian axes defining the scattering frame.  The identity matrix is
         used by default.
     backend : {'dense', 'scipy', 'fortran', 'petsc'} or None, optional
-        Numerical backend.  If omitted, infer it from ``hmat_n`` and
+        Numerical backend.  This must be compatible with operators passed to
+        the function. If omitted, infer it from ``hmat_n`` and
         ``trans_op``.  The PETSc backend is currently an unimplemented stub.
     backend_kws : mapping or None, optional
         Backend-specific solver settings. Accepted names, defaults, and
@@ -459,7 +461,8 @@ def rixs(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
         If True, also return the continued-fraction pole data.  Default is
         False.
     backend : {'dense', 'scipy', 'fortran', 'petsc'} or None, optional
-        Numerical backend.  If omitted, infer it from the Hamiltonians and
+        Numerical backend. This must be compatible with operators passed to
+        the function. If omitted, infer it from the Hamiltonians and
         ``trans_op``.  The PETSc backend is currently an unimplemented stub.
     backend_kws : mapping or None, optional
         Backend-specific solver settings. Accepted names, defaults, and
