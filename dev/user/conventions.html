@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conventions &mdash; EDRIXS 0.post1+g72ba8a1 documentation</title>
+  <title>Conventions &mdash; EDRIXS 0.post1+g99e83bd documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -20,7 +20,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=b0a5a6e2"></script>
+      <script src="../_static/documentation_options.js?v=51b9d047"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -120,9 +120,7 @@ more detail.</p>
 <section id="energies-and-naming">
 <h2>Energies and naming<a class="headerlink" href="#energies-and-naming" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong>Electron and hole language.</strong> EDRIXS uses electron language by default.
-Using hole language involves inverting the energy levels in <code class="docutils literal notranslate"><span class="pre">emat</span></code> and
-taking the conjugate transpose of the absorption and emission operators.</p></li>
+<li><p><strong>Electron and hole language.</strong> EDRIXS uses electron language by default.</p></li>
 <li><p><strong>Units.</strong> All energies are in <strong>eV</strong>.</p></li>
 <li><p><strong>Initial and intermediate states.</strong> Throughout EDRIXS, an <code class="docutils literal notranslate"><span class="pre">_i</span></code> suffix
 labels the initial and final states, which have no core hole, while <code class="docutils literal notranslate"><span class="pre">_n</span></code>
@@ -152,11 +150,16 @@ Because these orbitals are fully occupied, including them changes the state
 labels without increasing the number of states. This convention avoids the
 energy corrections needed when filled core orbitals are omitted and simplifies
 the construction of transition operators.</p>
-<p>Model constructors also return an energy offset, <code class="docutils literal notranslate"><span class="pre">shift</span></code>. Passing it to
-<a class="reference internal" href="../reference/solvers.html#edrixs.solvers.ed" title="edrixs.solvers.ed"><code class="xref py py-func docutils literal notranslate"><span class="pre">ed()</span></code></a> with the dense or SciPy backend subtracts the offset
-from the Hamiltonian diagonal before diagonalization and restores it to the
-returned eigenvalues. This preserves the physics while reducing numerical
-errors caused by subtracting large, nearly equal numbers.</p>
+<p>Numerical diagonalization can lose precision when the diagonal entries have a
+large common energy offset.
+For this reason, model constructors also return an energy offset, <code class="docutils literal notranslate"><span class="pre">shift</span></code>.
+Passing it to <a class="reference internal" href="../reference/solvers.html#edrixs.solvers.ed" title="edrixs.solvers.ed"><code class="xref py py-func docutils literal notranslate"><span class="pre">ed()</span></code></a> with the dense or SciPy backend subtracts
+the offset from the Hamiltonian diagonal before diagonalization and restores
+it to the returned eigenvalues. This preserves the physics while reducing
+numerical errors caused by subtracting large, nearly equal numbers.</p>
+<p>When computing XAS or RIXS, the relevant resonant denominator is absorbed
+into the matrix prior to the matrix operations, so a separate <code class="docutils literal notranslate"><span class="pre">shift</span></code> is
+not needed.</p>
 </section>
 <section id="default-orbital-ordering-and-single-particle-bases">
 <h2>Default orbital ordering and single-particle bases<a class="headerlink" href="#default-orbital-ordering-and-single-particle-bases" title="Link to this heading"></a></h2>

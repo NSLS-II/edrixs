@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>edrixs.solvers &mdash; EDRIXS 0.post1+g72ba8a1 documentation</title>
+  <title>edrixs.solvers &mdash; EDRIXS 0.post1+g99e83bd documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -19,7 +19,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b0a5a6e2"></script>
+      <script src="../../_static/documentation_options.js?v=51b9d047"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -341,7 +341,8 @@
 <span class="sd">        Fortran ED warns and ignores nonzero shifts, continuing with the</span>
 <span class="sd">        original Hamiltonian.</span>
 <span class="sd">    backend : str or None, optional</span>
-<span class="sd">        Backend name. When omitted, infer it from ``hmat_i``.</span>
+<span class="sd">        Backend name. This must be compatible with the backend choice</span>
+<span class="sd">        for ``hmat_i``. When omitted, infer it from ``hmat_i``.</span>
 <span class="sd">    backend_kws : mapping, optional</span>
 <span class="sd">        Backend-specific eigensolver options. Accepted names, defaults, and</span>
 <span class="sd">        constraints are in the EDRIXS backend keyword reference:</span>
@@ -430,7 +431,8 @@
 <span class="sd">        Cartesian axes defining the scattering frame.  The identity matrix is</span>
 <span class="sd">        used by default.</span>
 <span class="sd">    backend : {'dense', 'scipy', 'fortran', 'petsc'} or None, optional</span>
-<span class="sd">        Numerical backend.  If omitted, infer it from ``hmat_n`` and</span>
+<span class="sd">        Numerical backend.  This must be compatible with operators passed to</span>
+<span class="sd">        the function. If omitted, infer it from ``hmat_n`` and</span>
 <span class="sd">        ``trans_op``.  The PETSc backend is currently an unimplemented stub.</span>
 <span class="sd">    backend_kws : mapping or None, optional</span>
 <span class="sd">        Backend-specific solver settings. Accepted names, defaults, and</span>
@@ -565,7 +567,8 @@
 <span class="sd">        If True, also return the continued-fraction pole data.  Default is</span>
 <span class="sd">        False.</span>
 <span class="sd">    backend : {'dense', 'scipy', 'fortran', 'petsc'} or None, optional</span>
-<span class="sd">        Numerical backend.  If omitted, infer it from the Hamiltonians and</span>
+<span class="sd">        Numerical backend. This must be compatible with operators passed to</span>
+<span class="sd">        the function. If omitted, infer it from the Hamiltonians and</span>
 <span class="sd">        ``trans_op``.  The PETSc backend is currently an unimplemented stub.</span>
 <span class="sd">    backend_kws : mapping or None, optional</span>
 <span class="sd">        Backend-specific solver settings. Accepted names, defaults, and</span>

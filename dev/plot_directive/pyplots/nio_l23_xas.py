@@ -73,11 +73,6 @@ rixs = edrixs.rixs(
         ('linear', 0, 'linear', np.pi / 2),
     ],
     backend=backend,
-    backend_kws={
-        'nkryl': 45,
-        'linsys_tol': 1e-10,
-        'linsys_maxiter': 1000,
-    },
 )
 rixs_spectrum = rixs[0].sum(axis=-1)
 rixs_spectrum /= rixs_spectrum.max()

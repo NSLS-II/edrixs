@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>solvers &mdash; EDRIXS 0.post1+g72ba8a1 documentation</title>
+  <title>solvers &mdash; EDRIXS 0.post1+g99e83bd documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -20,7 +20,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=b0a5a6e2"></script>
+      <script src="../_static/documentation_options.js?v=51b9d047"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -195,7 +195,8 @@ Hamiltonian is not modified. Default zero; PETSc requires zero.
 Fortran ED warns and ignores nonzero shifts, continuing with the
 original Hamiltonian.</p>
 </dd>
-<dt><strong>backend</strong><span class="classifier">str or None, optional</span></dt><dd><p>Backend name. When omitted, infer it from <code class="docutils literal notranslate"><span class="pre">hmat_i</span></code>.</p>
+<dt><strong>backend</strong><span class="classifier">str or None, optional</span></dt><dd><p>Backend name. This must be compatible with the backend choice
+for <code class="docutils literal notranslate"><span class="pre">hmat_i</span></code>. When omitted, infer it from <code class="docutils literal notranslate"><span class="pre">hmat_i</span></code>.</p>
 </dd>
 <dt><strong>backend_kws</strong><span class="classifier">mapping, optional</span></dt><dd><p>Backend-specific eigensolver options. Accepted names, defaults, and
 constraints are in the EDRIXS backend keyword reference:
@@ -793,7 +794,8 @@ is False.</p>
 <dt><strong>return_poles</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, also return the continued-fraction pole data.  Default is
 False.</p>
 </dd>
-<dt><strong>backend</strong><span class="classifier">{‘dense’, ‘scipy’, ‘fortran’, ‘petsc’} or None, optional</span></dt><dd><p>Numerical backend.  If omitted, infer it from the Hamiltonians and
+<dt><strong>backend</strong><span class="classifier">{‘dense’, ‘scipy’, ‘fortran’, ‘petsc’} or None, optional</span></dt><dd><p>Numerical backend. This must be compatible with operators passed to
+the function. If omitted, infer it from the Hamiltonians and
 <code class="docutils literal notranslate"><span class="pre">trans_op</span></code>.  The PETSc backend is currently an unimplemented stub.</p>
 </dd>
 <dt><strong>backend_kws</strong><span class="classifier">mapping or None, optional</span></dt><dd><p>Backend-specific solver settings. Accepted names, defaults, and
@@ -1224,7 +1226,8 @@ initial states.  Default is <code class="docutils literal notranslate"><span cla
 <dt><strong>scatter_axis</strong><span class="classifier">array-like of float, shape (3, 3), or None, optional</span></dt><dd><p>Cartesian axes defining the scattering frame.  The identity matrix is
 used by default.</p>
 </dd>
-<dt><strong>backend</strong><span class="classifier">{‘dense’, ‘scipy’, ‘fortran’, ‘petsc’} or None, optional</span></dt><dd><p>Numerical backend.  If omitted, infer it from <code class="docutils literal notranslate"><span class="pre">hmat_n</span></code> and
+<dt><strong>backend</strong><span class="classifier">{‘dense’, ‘scipy’, ‘fortran’, ‘petsc’} or None, optional</span></dt><dd><p>Numerical backend.  This must be compatible with operators passed to
+the function. If omitted, infer it from <code class="docutils literal notranslate"><span class="pre">hmat_n</span></code> and
 <code class="docutils literal notranslate"><span class="pre">trans_op</span></code>.  The PETSc backend is currently an unimplemented stub.</p>
 </dd>
 <dt><strong>backend_kws</strong><span class="classifier">mapping or None, optional</span></dt><dd><p>Backend-specific solver settings. Accepted names, defaults, and
