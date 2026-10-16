@@ -28,7 +28,7 @@ ED_OPTIONS = {
         optional_positive_integer,
     ),
     'tol': OptionSpec(1e-10, 'LOBPCG convergence tolerance.', positive_real),
-    'maxiter': OptionSpec(200, 'Maximum LOBPCG iterations.', positive_integer),
+    'maxiter': OptionSpec(1000, 'Maximum LOBPCG iterations.', positive_integer),
     'seed': OptionSpec(None, 'Seed used to generate the initial LOBPCG block.'),
     'initial_guess': OptionSpec(
         None,
@@ -57,7 +57,7 @@ RIXS_OPTIONS = {
         positive_real,
     ),
     'linsys_maxiter': OptionSpec(
-        50000, 'Maximum GMRES iterations.', positive_integer
+        50000, 'Maximum GMRES restart cycles.', positive_integer
     ),
     'linsys_restart': OptionSpec(
         200, 'GMRES restart interval.', positive_integer

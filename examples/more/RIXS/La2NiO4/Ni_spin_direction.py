@@ -219,7 +219,12 @@ res_e = om_mesh[np.argmax(xas[:, -1])]
 
 # Compute a RIXS MAP
 om_mesh, om_offset, eloss_mesh, rixs = get_rixs(eval_i, eval_n, dipole_op, gamma_c=0.5, emi_res=.1)
-art = ax_RIXS.pcolorfast(eloss_mesh, om_mesh + om_offset, rixs[:, :, 0:2].sum(2))
+art = ax_RIXS.pcolormesh(
+    eloss_mesh,
+    om_mesh + om_offset,
+    rixs[:, :, 0:2].sum(2),
+    shading='auto',
+)
 ax_RIXS.set_ylabel('Incident energy (eV)')
 ax_RIXS.set_xlabel('Energy loss')
 plt.colorbar(art, ax=ax_RIXS)

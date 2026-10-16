@@ -8,7 +8,7 @@ Run EDRIXS in a docker container
 --------------------------------
 
 To make life easier, we have built a Docker image based on Ubuntu Linux 24.04
-for edrixs, so you do not need to install its compiler toolchain yourself.
+for EDRIXS, so you do not need to install its compiler toolchain yourself.
 The image is published for both AMD64 and ARM64 systems.
 The ``latest`` tag tracks the latest stable release. For reproducible work,
 pin a release tag such as ``edrixs/edrixs:v0.1.3``.

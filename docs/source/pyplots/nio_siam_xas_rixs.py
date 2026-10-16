@@ -62,8 +62,8 @@ hmat_i, hmat_n, trans_ops = edrixs.get_ops(*problem, backend=backend)
 eval_i, evec_i = edrixs.ed(
     hmat_i, shift=shift,
     num_evals=3,
-    backend=backend
-    )
+    backend=backend,
+)
 
 # Isotropic XAS
 temperature = 300
@@ -79,7 +79,6 @@ xas = edrixs.xas(
     pol_type=[('isotropic', 0)],
     temperature=temperature,
     backend=backend,
-    backend_kws={'nkryl': 120},
 )[:, 0]
 xas /= xas.max()
 
@@ -102,11 +101,6 @@ rixs = edrixs.rixs(
     ],
     temperature=temperature,
     backend=backend,
-    backend_kws={
-        'nkryl': 190,
-        'linsys_tol': 1e-10,
-        'linsys_maxiter': 2000,
-    },
 )
 rixs_spectrum = rixs[0].sum(axis=-1)
 rixs_spectrum /= rixs_spectrum.max()

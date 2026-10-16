@@ -45,7 +45,7 @@ and activate the build environment::
         "arpack=*=mpi_openmpi*" openmpi gfortran \
         "petsc=*=complex_*" petsc4py \
         "slepc=*=complex_*" slepc4py \
-        "libblas=*=*openblas" cmake ninja pip setuptools wheel \
+        "libblas=*=*openblas" cmake ninja numba pip setuptools wheel \
         sphinx ipython numpydoc pillow sphinx-copybutton sphinx-gallery \
         sphinx_rtd_theme pytest
     conda activate edrixs_env

@@ -20,6 +20,8 @@ delegate their numerical work to a backend selected with ``backend``:
 * ``'petsc'`` uses distributed PETSc matrices, SLEPc eigensolvers, and PETSc
   Krylov solvers.  It is intended for larger Hilbert spaces and MPI runs.
 
+Use the same backend when constructing operators, diagonalizing the Hamiltonian,
+and calculating spectra.
 Backend-specific numerical controls belong in a ``backend_kws`` mapping.  The
 mapping is specific to both the backend *and the operation*.
 

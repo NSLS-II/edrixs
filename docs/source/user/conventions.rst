@@ -15,8 +15,6 @@ Energies and naming
 ===================
 
 * **Electron and hole language.** EDRIXS uses electron language by default.
-  Using hole language involves inverting the energy levels in ``emat`` and
-  taking the conjugate transpose of the absorption and emission operators.
 * **Units.** All energies are in **eV**.
 * **Initial and intermediate states.** Throughout EDRIXS, an ``_i`` suffix
   labels the initial and final states, which have no core hole, while ``_n``
@@ -47,11 +45,17 @@ labels without increasing the number of states. This convention avoids the
 energy corrections needed when filled core orbitals are omitted and simplifies
 the construction of transition operators.
 
-Model constructors also return an energy offset, ``shift``. Passing it to
-:func:`~edrixs.solvers.ed` with the dense, SciPy, or PETSc backend subtracts
-the offset from the Hamiltonian diagonal before diagonalization and restores it to the
-returned eigenvalues. This preserves the physics while reducing numerical
-errors caused by subtracting large, nearly equal numbers.
+Numerical diagonalization can lose precision when the diagonal entries have a
+large common energy offset.
+For this reason, model constructors also return an energy offset, ``shift``.
+Passing it to :func:`~edrixs.solvers.ed` with the dense, SciPy, or PETSc backend subtracts
+the offset from the Hamiltonian diagonal before diagonalization and restores
+it to the returned eigenvalues. This preserves the physics while reducing
+numerical errors caused by subtracting large, nearly equal numbers.
+
+When computing XAS or RIXS, the relevant resonant denominator is absorbed
+into the matrix prior to the matrix operations, so a separate ``shift`` is
+not needed.
 
 Default orbital ordering and single-particle bases
 ==================================================
