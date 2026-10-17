@@ -90,6 +90,7 @@ def test_materialize_each_distinct_factory_once_per_solver_call(solver, monkeypa
         return result
 
     monkeypatch.setattr(solvers.scipy_backend, solver + '_scipy', backend)
+
     def run():
         if solver == 'ed':
             return ed(factory)
@@ -106,6 +107,7 @@ def test_distinct_factories_build_independently(monkeypatch):
     matrices = [object(), object()]
     calls = []
     factories = [labeled(lambda i=i: calls.append(i) or matrices[i]) for i in range(2)]
+
     def backend(energies, states, hamiltonian, transitions, grid, **kwargs):
         assert hamiltonian is matrices[0]
         assert transitions == [matrices[1], matrices[0], matrices[1]]
@@ -119,6 +121,7 @@ def test_fortran_handles_pass_through_without_calling(solver, monkeypatch):
     handle = FortranDiskOperator()
     assert handle.backend == 'fortran'
     result = object()
+
     def backend(*args, **kwargs):
         index = 0 if solver == 'ed' else 2
         assert args[index] is handle

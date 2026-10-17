@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import scipy.sparse as sp
 
-from edrixs.solvers import build_op, ed, rixs, xas
+from edrixs.solvers import build_op, rixs, xas
 
 from operator_factories import operator_factory, operator_factories
 
