@@ -49,77 +49,83 @@ def test_factory_builds_fresh_matrices_and_retains_coefficient_references(backen
     assert sorted(second.diagonal()) == [2., 3.]
 
 
-@pytest.mark.parametrize('solver,bad_kind', [
-    (solver, bad_kind)
-    for solver in ['ed', 'xas', 'rixs']
-    for bad_kind in ['missing', 'unknown', 'mixed']
-    if solver != 'ed' or bad_kind != 'mixed'
-])
-def test_labels_are_validated_before_any_construction(solver, bad_kind):
-    calls = []
-    good = labeled(lambda: calls.append(1))
-    bad = (object() if bad_kind == 'missing' else
-           labeled(lambda: calls.append(2), 'BAD' if bad_kind == 'unknown' else 'dense'))
-    expected = TypeError if bad_kind == 'missing' else ValueError
-    with pytest.raises(expected):
-        if solver == 'ed':
-            ed(bad)
-        elif solver == 'xas':
-            xas(None, None, good, [good, bad, good], None)
-        else:
-            rixs(None, None, good, good, [good, bad, good], None, None)
-    assert calls == []
-
-
+@pytest.mark.parametrize('backend_name', ['dense', 'scipy', 'petsc', 'fortran'])
 @pytest.mark.parametrize('solver', ['ed', 'xas', 'rixs'])
-def test_materialize_each_distinct_factory_once_per_solver_call(solver, monkeypatch):
-    calls = []
-    matrix = object()
-    factory = labeled(lambda: calls.append(1) or matrix)
+def test_public_solver_dispatches_factories_without_building(solver, backend_name, monkeypatch):
+    def forbidden():
+        raise AssertionError('Public wrapper must not build matrices')
+
+    factory = labeled(forbidden, backend_name)
     result = object()
 
     def backend(*args, **kwargs):
         if solver == 'ed':
-            assert args[0] is matrix
+            assert args[0] is factory
         elif solver == 'xas':
-            assert args[2] is matrix
-            assert all(op is matrix for op in args[3])
+            assert args[2] is factory
+            assert all(op is factory for op in args[3])
         else:
-            assert args[2] is matrix and args[3] is matrix
-            assert all(op is matrix for op in args[4])
+            assert args[2] is factory and args[3] is factory
+            assert all(op is factory for op in args[4])
         return result
 
-    monkeypatch.setattr(solvers.scipy_backend, solver + '_scipy', backend)
-
-    def run():
-        if solver == 'ed':
-            return ed(factory)
-        if solver == 'xas':
-            return xas(None, None, factory, [factory] * 3, None)
-        return rixs(None, None, factory, factory, [factory] * 3, None, None)
-    assert run() is result
-    assert calls == [1]
-    assert run() is result
-    assert calls == [1, 1]
+    module = getattr(solvers, backend_name + '_backend')
+    monkeypatch.setattr(module, solver + '_' + backend_name, backend)
+    if solver == 'ed':
+        actual = ed(factory)
+    elif solver == 'xas':
+        actual = xas(None, None, factory, [factory] * 3, None)
+    else:
+        actual = rixs(None, None, factory, factory, [factory] * 3, None, None)
+    assert actual is result
 
 
-def test_distinct_factories_build_independently(monkeypatch):
-    matrices = [object(), object()]
+@pytest.mark.parametrize('backend_name', ['dense', 'scipy'])
+@pytest.mark.parametrize('solver', ['ed', 'xas', 'rixs'])
+def test_backend_eagerly_builds_each_factory_argument(backend_name, solver):
     calls = []
-    factories = [labeled(lambda i=i: calls.append(i) or matrices[i]) for i in range(2)]
+    factory = partial(lambda: calls.append(1) or np.diag([1., 2.]))
+    module = getattr(solvers, backend_name + '_backend')
+    run = getattr(module, solver + '_' + backend_name)
+    for _ in range(2):
+        if solver == 'ed':
+            run(factory, num_evals=2)
+        elif solver == 'xas':
+            run([0.], np.eye(2)[:, :1], factory, [factory] * 3, [1.])
+        else:
+            run([0.], np.eye(2)[:, :1], factory, factory, [factory] * 3, [1.], [0.])
+    assert calls == [1] * (2 * {'ed': 1, 'xas': 4, 'rixs': 5}[solver])
 
-    def backend(energies, states, hamiltonian, transitions, grid, **kwargs):
-        assert hamiltonian is matrices[0]
-        assert transitions == [matrices[1], matrices[0], matrices[1]]
-    monkeypatch.setattr(solvers.scipy_backend, 'xas_scipy', backend)
-    xas(None, None, factories[0], [factories[1], factories[0], factories[1]], None)
-    assert calls == [0, 1]
+
+@pytest.mark.parametrize('backend_name', ['dense', 'scipy'])
+def test_backend_builds_all_inputs_before_calculation(backend_name, monkeypatch):
+    calls = []
+    factories = [labeled(lambda i=i: calls.append(i) or np.eye(2), backend_name)
+                 for i in range(5)]
+    module = getattr(solvers, backend_name + '_backend')
+    if backend_name == 'dense':
+        def stop(*args, **kwargs):
+            assert calls == list(range(5))
+            raise RuntimeError('calculation started')
+
+        monkeypatch.setattr(module.scipy.linalg, 'eigh', stop)
+    else:
+        def stop(*args, **kwargs):
+            assert calls == list(range(5))
+            raise RuntimeError('calculation started')
+
+        monkeypatch.setattr(module, '_shift_hamiltonian', stop)
+    with pytest.raises(RuntimeError, match='calculation started'):
+        getattr(module, 'rixs_' + backend_name)(
+            [0.], np.eye(2)[:, :1], *factories[:2], factories[2:], [1.], [0.]
+        )
 
 
 @pytest.mark.parametrize('solver', ['ed', 'xas', 'rixs'])
 def test_fortran_handles_pass_through_without_calling(solver, monkeypatch):
     handle = FortranDiskOperator()
     assert handle.backend == 'fortran'
+    assert handle() is handle
     result = object()
 
     def backend(*args, **kwargs):
@@ -165,3 +171,25 @@ def test_get_ops_returns_labeled_factories(small_1v1c_problem):
     values, vectors = ed(hi, num_evals=1)
     assert len(values) == 1
     assert vectors.shape[1] == 1
+
+
+@pytest.mark.parametrize('solver', ['xas', 'rixs'])
+def test_dispatch_reads_only_primary_hamiltonian_label(solver, monkeypatch):
+    primary = labeled(lambda: None, 'scipy')
+    other = object()
+    result = object()
+
+    def backend(*args, **kwargs):
+        assert args[2] is primary
+        if solver == 'rixs':
+            assert args[3] is other
+        else:
+            assert args[3] == [other] * 3
+        return result
+
+    monkeypatch.setattr(solvers.scipy_backend, solver + '_scipy', backend)
+    if solver == 'xas':
+        actual = xas(None, None, primary, [other] * 3, None)
+    else:
+        actual = rixs(None, None, primary, other, [other] * 3, None, None)
+    assert actual is result

@@ -1,5 +1,7 @@
 """Unit tests for SciPy spectra and numerical solver handoffs."""
 
+from operator_factories import operator_factory, operator_factories
+
 import numpy as np
 import pytest
 import scipy.sparse as sp
@@ -23,10 +25,11 @@ def test_real_spectroscopy_inputs_match_single_level_response(array, operator):
     denominator = (np.array(ominc) - 2)**2 + gamma_c**2
 
     xas = backend.xas_scipy(
-        eval_i, evec_i, hmat_n, trans_op, ominc, gamma_c=gamma_c,
+        eval_i, evec_i, operator_factory(hmat_n), operator_factories(trans_op), ominc, gamma_c=gamma_c,
     )
     rixs = backend.rixs_scipy(
-        eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss,
+        eval_i, evec_i, operator_factory(hmat_i), operator_factory(hmat_n),
+        operator_factories(trans_op), ominc, eloss,
         gamma_c=gamma_c, gamma_f=gamma_f, thin=0, thout=0,
         scatter_axis=np.eye(3).tolist(),
     )
@@ -65,11 +68,11 @@ def test_spectra_are_invariant_to_large_energy_offsets(operator, offset_i, offse
     ominc_shifted = ominc + (offset_n - offset_i)
 
     xas_expected = backend.xas_scipy(
-        energies, vectors, operator(hn), transitions, ominc,
+        energies, vectors, operator_factory(operator(hn)), operator_factories(transitions), ominc,
         gamma_c=gamma_c, temperature=3000., backend_kws={'nkryl': 4},
     )
     xas_actual = backend.xas_scipy(
-        energies + offset_i, vectors, hn_shifted, transitions, ominc_shifted,
+        energies + offset_i, vectors, operator_factory(hn_shifted), operator_factories(transitions), ominc_shifted,
         gamma_c=gamma_c, temperature=3000., backend_kws={'nkryl': 4},
     )
     assert_allclose(xas_actual, xas_expected, rtol=2e-11, atol=2e-12)
@@ -80,12 +83,12 @@ def test_spectra_are_invariant_to_large_energy_offsets(operator, offset_i, offse
                      'linsys_maxiter': 20, 'linsys_restart': 4},
     )
     rixs_expected = backend.rixs_scipy(
-        energies, vectors, operator(hi), operator(hn), transitions,
-        ominc, eloss, **options,
+        energies, vectors, operator_factory(operator(hi)), operator_factory(operator(hn)),
+        operator_factories(transitions), ominc, eloss, **options,
     )
     rixs_actual, poles = backend.rixs_scipy(
-        energies + offset_i, vectors, hi_shifted, hn_shifted, transitions,
-        ominc_shifted, eloss, return_poles=True, **options,
+        energies + offset_i, vectors, operator_factory(hi_shifted), operator_factory(hn_shifted),
+        operator_factories(transitions), ominc_shifted, eloss, return_poles=True, **options,
     )
     assert_allclose(rixs_actual, rixs_expected, rtol=2e-11, atol=2e-12)
     for channels in poles:
@@ -123,8 +126,8 @@ def test_rixs_poles_preserve_energy_polarization_and_state_order():
     gamma_c, gamma_f = [0.2, 0.3], np.array([0.05, 0.06, 0.07])
     temperature = 3000.0
     spectrum, poles = backend.rixs_scipy(
-        energies, np.eye(2)[:, ::-1], np.diag([0.0, 0.4]), np.diag([2.0, 3.0]),
-        [np.diag([1.0, 2.0]), np.diag([3.0, 4.0]), np.diag([5.0, 6.0])],
+        energies, np.eye(2)[:, ::-1], operator_factory(np.diag([0.0, 0.4])), operator_factory(np.diag([2.0, 3.0])),
+        operator_factories([np.diag([1.0, 2.0]), np.diag([3.0, 4.0]), np.diag([5.0, 6.0])]),
         ominc, eloss, gamma_c=gamma_c, gamma_f=gamma_f,
         thin=0, thout=0, temperature=temperature, return_poles=True,
         pol_type=[('linear', 0, 'linear', 0),
@@ -163,8 +166,8 @@ def test_zero_rhs_short_circuits_rixs_contribution(monkeypatch):
 
     monkeypatch.setattr(backend, "gmres", forbidden_gmres)
     spectrum, poles = backend.rixs_scipy(
-        [0.0], [[1.0], [0.0]], np.eye(2), np.eye(3),
-        [np.zeros((3, 2))] * 3, [1.0], [0.0, 0.2], return_poles=True,
+        [0.0], [[1.0], [0.0]], operator_factory(np.eye(2)), operator_factory(np.eye(3)),
+        operator_factories([np.zeros((3, 2))] * 3), [1.0], [0.0, 0.2], return_poles=True,
     )
 
     assert_allclose(spectrum, 0)
@@ -184,8 +187,8 @@ def test_gmres_failure_is_reported_with_context(monkeypatch):
 
     with pytest.raises(RuntimeError, match=r"istate=0.*omega=1.25.*info=7"):
         backend.rixs_scipy(
-            [0.0], [[1.0], [0.0]], np.eye(2), np.eye(2),
-            [np.eye(2)] * 3, [1.25], [0.0],
+            [0.0], [[1.0], [0.0]], operator_factory(np.eye(2)), operator_factory(np.eye(2)),
+            operator_factories([np.eye(2)] * 3), [1.25], [0.0],
         )
 
 
@@ -210,9 +213,9 @@ def test_rixs_backend_uses_gmres_options(monkeypatch, tolerance_name):
     result = backend.rixs_scipy(
         np.array([0.0]),
         np.array([[1.0], [0.0]]),
-        np.eye(2),
-        np.eye(2),
-        [np.eye(2)] * 3,
+        operator_factory(np.eye(2)),
+        operator_factory(np.eye(2)),
+        operator_factories([np.eye(2)] * 3),
         np.array([1.0]),
         np.array([0.0]),
         backend_kws={'linsys_tol': 1e-8, 'linsys_maxiter': 20,

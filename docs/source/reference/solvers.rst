@@ -3,12 +3,15 @@ solvers
 
 ``build_op`` returns a zero-argument ``functools.partial`` with a ``.backend``
 attribute. Numerical ``get_ops`` returns these factories for both Hamiltonians
-and each transition component. ``ed``, ``xas``, and ``rixs`` take the factories,
-validate their labels, and construct their matrices. Fortran disk handles carry the same label and are passed
-through without being called.
+and each transition component. ``ed`` and ``rixs`` dispatch using
+``hmat_i.backend``; ``xas`` uses ``hmat_n.backend``. The backend receives the
+factories unchanged. All staged backend solvers require factories.
+Dense, SciPy, and PETSc ED and XAS construct all inputs at calculation start.
+Only PETSc RIXS accepts ``matrix_lifetime`` in ``backend_kws``.
+Fortran disk handles are callable, returning themselves; native Fortran manages
+actual matrix construction.
 
 Call a numerical factory explicitly to obtain a concrete matrix for arithmetic.
-See :ref:`lazy-operators` for examples, lifetime semantics, and migration notes.
 
 .. automodule:: edrixs.solvers
    :members:

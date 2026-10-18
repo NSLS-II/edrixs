@@ -11,7 +11,7 @@ def operator_factory(matrix, backend='scipy'):
     """Keep existing factory labels, or label an explicitly supplied matrix."""
     if hasattr(matrix, 'backend'):
         return matrix
-    factory = partial(_identity, matrix)
+    factory = partial(matrix.copy) if backend == 'petsc' else partial(_identity, matrix)
     factory.backend = backend
     return factory
 

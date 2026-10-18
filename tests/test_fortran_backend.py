@@ -124,6 +124,13 @@ def test_fortran_backend_uses_native_files_and_f2py_solvers(tmp_path, monkeypatc
         assert (tmp_path / filename).is_file()
 
     hmat_i, hmat_n, transitions = get_ops_disk()
+    matrix_calls = []
+
+    def instantiate(handle):
+        matrix_calls.append(handle)
+        return handle
+
+    monkeypatch.setattr(fortran_backend.FortranDiskOperator, '__call__', instantiate)
 
     eval_i, evec_i = ed(operator_factory(hmat_i, 'scipy'))
     np.testing.assert_allclose(eval_i, [-0.25])
@@ -149,6 +156,7 @@ def test_fortran_backend_uses_native_files_and_f2py_solvers(tmp_path, monkeypatc
         backend_kws={'linsys_max': 17},
     )
 
+    assert matrix_calls == [hmat_i, hmat_n, *transitions, hmat_i, hmat_n, *transitions]
     assert absorption.shape == (1, 1)
     assert scattering.shape == (1, 1, 1)
     assert 'linsys_max=17' in Path('config.in').read_text().splitlines()

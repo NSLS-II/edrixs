@@ -1,4 +1,9 @@
-"""SciPy implementation of EDRIXS operator construction and Krylov solvers."""
+"""SciPy implementation of EDRIXS operator construction and Krylov solvers.
+
+Solvers accept factories returning arrays, sparse matrices, or LinearOperators.
+Each supplied factory is called after solver-option validation at calculation
+start, including repeated arguments.
+"""
 
 from __future__ import annotations
 
@@ -9,7 +14,9 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.sparse.linalg import LinearOperator, aslinearoperator, gmres, lobpcg
 
-from .._solvers_helpers import _expand_broadening, _group_rixs_incoming
+from .._solvers_helpers import (
+    _expand_broadening, _group_rixs_incoming,
+)
 from .krylov import lanczos_tridiagonal
 from .options import OPTIONS, validate_options
 from ..photon_transition import (
@@ -18,7 +25,6 @@ from ..photon_transition import (
 from ..poles import get_spectra_from_poles
 
 __all__ = [
-    'owns_operator_scipy',
     'build_op_scipy',
     'ed_scipy', 'xas_scipy', 'rixs_scipy',
 ]
@@ -30,8 +36,8 @@ def ed_scipy(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
 
     Parameters
     ----------
-    hmat_i : ndarray, sparse matrix or LinearOperator
-        Square Hermitian initial/final Hamiltonian.
+    hmat_i : callable
+        Factory returning a square Hermitian initial/final Hamiltonian.
     num_evals : int, optional
         Number of lowest-energy eigenpairs to return.
     shift : float, optional
@@ -54,6 +60,7 @@ def ed_scipy(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
     """
     kws = {name: option.default for name, option in OPTIONS['ed'].items()}
     kws.update(validate_options('ed', backend_kws))
+    hmat_i = hmat_i()
     blocksize = kws['blocksize']
     if shift != 0:
         hmat_i = _shift_hamiltonian(hmat_i, shift)
@@ -128,11 +135,11 @@ def xas_scipy(
         Retained initial-state eigenvectors. Column ``i`` corresponds to
         ``eval_i[i]``.
 
-    hmat_n : sparse matrix or scipy.sparse.linalg.LinearOperator
-        Intermediate-state Hamiltonian.
+    hmat_n : callable
+        Factory returning the intermediate-state Hamiltonian.
 
-    trans_op : sequence
-        Transition operators mapping the initial Hilbert space to the
+    trans_op : sequence of callables
+        Factories returning transition operators mapping the initial Hilbert space to the
         intermediate Hilbert space. The sequence length must be 3 for a
         dipole transition or 5 for a quadrupole transition.
 
@@ -166,6 +173,8 @@ def xas_scipy(
         Spectrum with shape ``(len(ominc), len(pol_type))``.
     """
     kws = validate_options('xas', backend_kws)
+    hmat_n = hmat_n()
+    trans_op = [operator() for operator in trans_op]
     nkryl = kws.get('nkryl', OPTIONS['xas']['nkryl'].default)
     eval_i, evec_i, trans_op = _prepare_transition_inputs(
         eval_i, evec_i, trans_op
@@ -252,10 +261,10 @@ def rixs_scipy(
     evec_i : 2d array
         Retained initial-state eigenvectors in the basis of ``hmat_i``.
         Column ``i`` corresponds to ``eval_i[i]``.
-    hmat_i, hmat_n : sparse matrix or LinearOperator
-        Initial/final and intermediate Hamiltonians.
-    trans_op : sequence
-        Transition operators mapping the initial/final Hilbert space to the
+    hmat_i, hmat_n : callable
+        Factories returning the initial/final and intermediate Hamiltonians.
+    trans_op : sequence of callables
+        Factories returning transition operators mapping the initial/final Hilbert space to the
         intermediate Hilbert space. The sequence length must be 3 or 5.
         Custom LinearOperators must supply an adjoint action (``rmatvec``
         or ``_adjoint``) for emission.
@@ -292,6 +301,9 @@ def rixs_scipy(
     """
     kws = {name: option.default for name, option in OPTIONS['rixs'].items()}
     kws.update(validate_options('rixs', backend_kws))
+    hmat_i = hmat_i()
+    hmat_n = hmat_n()
+    trans_op = [operator() for operator in trans_op]
     eval_i, evec_i, trans_op = _prepare_transition_inputs(
         eval_i, evec_i, trans_op
     )
@@ -399,15 +411,6 @@ def rixs_scipy(
         if return_poles:
             poles_all.append(incident_poles)
     return (spectrum, poles_all) if return_poles else spectrum
-
-
-def owns_operator_scipy(operator):
-    """Return whether ``operator`` is natively accepted by the SciPy backend."""
-    return (
-        isinstance(operator, np.ndarray)
-        or sp.issparse(operator)
-        or isinstance(operator, LinearOperator)
-    )
 
 
 # -----------------------------------------------------------------------------

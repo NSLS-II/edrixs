@@ -33,12 +33,6 @@ requires_petsc_slepc = pytest.mark.skipif(
 # -----------------------------------------------------------------------------
 
 
-def test_owns_operator_returns_false_for_non_petsc_objects():
-    """Recognition must never raise when given ordinary Python/NumPy objects."""
-    assert backend.owns_operator_petsc(np.eye(2)) is False
-    assert backend.owns_operator_petsc(object()) is False
-
-
 def test_backend_kws_validation():
     assert validate_options('xas', None) == {}
     assert validate_options('xas', {"nkryl": 50}) == {"nkryl": 50}
@@ -58,7 +52,7 @@ def test_ed_petsc_rejects_nonpositive_num_evals(num_evals):
     if HAS_PETSC and HAS_SLEPC:
         pytest.skip("covered by numeric tests when PETSc/SLEPc are present")
     with pytest.raises((ValueError, ImportError)):
-        backend.ed_petsc(object(), num_evals=num_evals)
+        backend.ed_petsc(operator_factory(object(), 'petsc'), num_evals=num_evals)
 
 
 def test_rixs_petsc_rejects_unknown_options_before_importing_petsc():
@@ -77,7 +71,6 @@ def test_rixs_petsc_rejects_unknown_options_before_importing_petsc():
 
 def test_public_symbols_are_exported():
     for name in (
-        "owns_operator_petsc",
         "build_op_petsc",
         "ed_petsc",
         "xas_petsc",
@@ -208,7 +201,7 @@ def complex_hermitian_petsc_mat():
 @requires_petsc_slepc
 def test_ed_petsc_returns_lowest_sorted_eigenpairs(complex_hermitian_petsc_mat):
     mat, expected_eigenvalues = complex_hermitian_petsc_mat
-    evals, evecs = backend.ed_petsc(mat, num_evals=3)
+    evals, evecs = backend.ed_petsc(operator_factory(mat, 'petsc'), num_evals=3)
 
     assert len(evals) == 3
     assert len(evecs) == 3
@@ -225,7 +218,7 @@ def test_ed_petsc_returns_lowest_sorted_eigenpairs(complex_hermitian_petsc_mat):
 def test_ed_petsc_rejects_too_many_requested(complex_hermitian_petsc_mat):
     mat, expected_eigenvalues = complex_hermitian_petsc_mat
     with pytest.raises((RuntimeError, ValueError)):
-        backend.ed_petsc(mat, num_evals=len(expected_eigenvalues) + 5)
+        backend.ed_petsc(operator_factory(mat, 'petsc'), num_evals=len(expected_eigenvalues) + 5)
 
 
 @requires_petsc

@@ -47,9 +47,8 @@ the problem files.
 
 Both ``get_ops(..., backend='fortran')`` and ``get_ops_disk()`` return disk
 handles with ``.backend == 'fortran'``. Pass them directly to public ``ed``,
-``xas``, and ``rixs`` without a ``backend`` keyword. These handles are not
-callable matrix factories; the solvers pass them directly to the file-backed
-Fortran implementation. See :ref:`lazy-operators`.
+``xas``, and ``rixs``. The handles are callable and return themselves; the
+Fortran backends call them while native Fortran manages matrix construction.
 
 ``ed``
 ======

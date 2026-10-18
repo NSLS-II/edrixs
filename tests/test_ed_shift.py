@@ -100,7 +100,7 @@ def test_backend_centers_before_diagonalization_and_restores_energies(
         monkeypatch.setattr(sp.csr_matrix, 'toarray', forbidden)
     if direct:
         values, actual_vectors = getattr(module, 'ed_' + backend)(
-            operator, num_evals=2, shift=shift)
+            operator_factory(operator, backend), num_evals=2, shift=shift)
     else:
         values, actual_vectors = edrixs.ed(
             operator_factory(operator, backend), num_evals=2, shift=shift)
@@ -140,13 +140,15 @@ def test_public_ed_passes_shift_and_hamiltonian_to_backend(backend, shift, monke
     result = (np.array([2.]), object())
 
     def solver(actual, **kwargs):
-        assert actual is operator
+        assert actual is factory
         assert kwargs == {'num_evals': 1, 'shift': shift, 'backend_kws': None}
         return result
 
     module = getattr(solvers, backend + '_backend')
     monkeypatch.setattr(module, 'ed_' + backend, solver)
-    assert edrixs.ed(operator_factory(operator, backend), shift=shift) is result
+    factory = (lambda: operator) if backend != 'fortran' else operator
+    factory.backend = backend
+    assert edrixs.ed(factory, shift=shift) is result
 
 
 @pytest.mark.parametrize('direct', [False, True])

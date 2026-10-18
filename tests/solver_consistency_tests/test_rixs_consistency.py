@@ -36,9 +36,9 @@ def test_direct_and_labeled_scipy_rixs_match(small_1v1c_problem):
         },
     )
 
-    explicit = rixs_scipy(**common)
     common.update(hmat_i=operator_factory(hmat_i), hmat_n=operator_factory(hmat_n),
                   trans_op=operator_factories(transitions))
+    explicit = rixs_scipy(**common)
     inferred = rixs(**common)
 
     assert_allclose(inferred, explicit, rtol=1e-11, atol=1e-12)

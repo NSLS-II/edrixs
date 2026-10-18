@@ -129,9 +129,11 @@ prepares everything an XAS or RIXS calculation needs in one call:
 It returns ``hmat_i``, ``hmat_n`` and the many-body transition operators
 ``trans_ops`` as labeled factories for numerical backends, or disk handles for
 Fortran. Pass these directly to ``ed``, ``xas``, and ``rixs``; the solvers read
-their ``.backend`` labels and construct the matrices. These solver functions
+their ``.backend`` labels and pass the factories to the backend for matrix
+construction. These solver functions
 do not accept a ``backend`` keyword. Because XAS and RIXS connect states with
-no core hole to states with exactly one core hole, keeping the two Hamiltonians separate avoids the
+no core hole to states with exactly one core hole, keeping the two Hamiltonians
+separate avoids the
 need to generate a Hamiltonian that spans both spaces and makes
 the calculation more efficient.
 

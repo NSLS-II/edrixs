@@ -11,6 +11,11 @@ New calculation interface
 * Return labeled matrix factories from ``build_op`` and numerical ``get_ops``.
   Call a factory explicitly for matrix arithmetic. ``ed``, ``xas``, and ``rixs``
   now dispatch using ``.backend`` labels and no longer accept ``backend=``.
+* Construct matrices inside the numerical backends. Dense and SciPy eagerly
+  materialize inputs at calculation start, as do PETSc ED and XAS. Only PETSc
+  RIXS accepts ``matrix_lifetime`` with
+  ``'retain'`` (default) and ``'recompute'`` policies for reusing matrices or
+  releasing and rebuilding them between operations.
 
 * Introduce a staged workflow that separates physical model construction,
   many-body operator construction, diagonalization, and spectral calculations:
@@ -47,8 +52,8 @@ Compatibility and migration
 * ``build_op`` and numerical ``get_ops`` now return factories rather than
   matrices. Call a factory to obtain a matrix for arithmetic. Public ``ed``,
   ``xas``, and ``rixs`` require labeled factories or Fortran disk handles and
-  reject the removed ``backend`` keyword. Use backend-specific solver functions
-  for raw matrix inputs. See :ref:`lazy-operators` for migration examples.
+  reject the removed ``backend`` keyword. Backend-specific staged solvers also
+  require factories. See :ref:`lazy-operators`.
 * Deprecate the legacy model-specific Python and Fortran solver wrappers in
   favor of the staged interface. Existing wrappers emit deprecation warnings.
 * Reject isotropic RIXS polarization; specify incoming and outgoing

@@ -40,8 +40,6 @@ from .dense_backend import dense_backend
 from .fortran_backend import fortran_backend
 from ._solvers_helpers import (
     _ed_1or2_valence_1core,
-    _infer_backend,
-    _materialize_operators,
     _rixs_1or2_valence_1core,
     _xas_1or2_valence_1core,
 )
@@ -236,7 +234,7 @@ def ed(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
     """
     Compute low-energy initial states through a numerical backend.
 
-    Read ``hmat_i.backend`` and call the factory before diagonalization.
+    Read ``hmat_i.backend`` and pass the factory to that backend.
     Fortran disk handles are passed directly to the Fortran backend.
 
     Parameters
@@ -262,22 +260,12 @@ def ed(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
         Lowest retained eigenpairs, with eigenvalues on the original energy
         reference even when a nonzero ``shift`` is supplied.
     """
-    backend_name = _infer_backend(hmat_i)
-    hmat_i, = _materialize_operators(backend_name, hmat_i)
-    match backend_name:
-        case 'scipy':
-            ed_backend = scipy_backend.ed_scipy
-        case 'dense':
-            ed_backend = dense_backend.ed_dense
-        case 'petsc':
-            ed_backend = petsc_backend.ed_petsc
-        case 'fortran':
-            ed_backend = fortran_backend.ed_fortran
-        case _:
-            raise ValueError(
-                "Unknown backend {!r}; expected 'scipy', 'dense', 'petsc', or "
-                "'fortran'".format(backend_name)
-            )
+    ed_backend = {
+        'scipy': scipy_backend.ed_scipy,
+        'dense': dense_backend.ed_dense,
+        'petsc': petsc_backend.ed_petsc,
+        'fortran': fortran_backend.ed_fortran,
+    }[hmat_i.backend]
 
     return ed_backend(
         hmat_i,
@@ -295,9 +283,9 @@ def xas(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     Calculate X-ray absorption spectra through a numerical backend.
 
     Backend-neutral physical arguments are passed directly. Numerical
-    controls such as the SciPy Lanczos dimension belong in ``backend_kws``.
-    The backend is read from the operators' ``.backend`` labels. All labels
-    must agree; numerical factories are called once per distinct object.
+    controls belong in ``backend_kws``.
+    The backend is read from ``hmat_n.backend``. The backend controls matrix
+    construction and lifetime.
 
     Parameters
     ----------
@@ -367,23 +355,12 @@ def xas(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     ...     pol_type=[('isotropic', 0.0)]
     ... )
     """
-    trans_op = list(trans_op)
-    backend_name = _infer_backend(hmat_n, *trans_op)
-    hmat_n, *trans_op = _materialize_operators(backend_name, hmat_n, *trans_op)
-    match backend_name:
-        case 'scipy':
-            xas_backend = scipy_backend.xas_scipy
-        case 'dense':
-            xas_backend = dense_backend.xas_dense
-        case 'petsc':
-            xas_backend = petsc_backend.xas_petsc
-        case 'fortran':
-            xas_backend = fortran_backend.xas_fortran
-        case _:
-            raise ValueError(
-                "Unknown backend {!r}; expected 'scipy', 'dense', 'petsc', or "
-                "'fortran'".format(backend_name)
-            )
+    xas_backend = {
+        'scipy': scipy_backend.xas_scipy,
+        'dense': dense_backend.xas_dense,
+        'petsc': petsc_backend.xas_petsc,
+        'fortran': fortran_backend.xas_fortran,
+    }[hmat_n.backend]
 
     return xas_backend(
         eval_i, evec_i, hmat_n, trans_op, ominc,
@@ -405,10 +382,9 @@ def rixs(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
     Calculate resonant inelastic X-ray scattering spectra through a backend.
 
     Backend-neutral physical arguments are passed directly. Numerical
-    controls such as SciPy Lanczos and GMRES settings belong in
-    ``backend_kws``. The backend is read from the Hamiltonian and transition
-    operator ``.backend`` labels, which must all agree. Numerical factories
-    are called once per distinct object.
+    controls belong in
+    ``backend_kws``. The backend is read from ``hmat_i.backend`` and controls
+    matrix construction and lifetime.
 
     If ``skip_gs`` is true, transitions into the retained initial-state
     subspace are omitted from the final-state spectrum, matching the legacy
@@ -503,25 +479,12 @@ def rixs(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
     ...     pol_type=[('linear', 0.0, 'linear', 0.0)]
     ... )
     """
-    trans_op = list(trans_op)
-    backend_name = _infer_backend(hmat_i, hmat_n, *trans_op)
-    hmat_i, hmat_n, *trans_op = _materialize_operators(
-        backend_name, hmat_i, hmat_n, *trans_op
-    )
-    match backend_name:
-        case 'scipy':
-            rixs_backend = scipy_backend.rixs_scipy
-        case 'dense':
-            rixs_backend = dense_backend.rixs_dense
-        case 'petsc':
-            rixs_backend = petsc_backend.rixs_petsc
-        case 'fortran':
-            rixs_backend = fortran_backend.rixs_fortran
-        case _:
-            raise ValueError(
-                "Unknown backend {!r}; expected 'scipy', 'dense', 'petsc', or "
-                "'fortran'".format(backend_name)
-            )
+    rixs_backend = {
+        'scipy': scipy_backend.rixs_scipy,
+        'dense': dense_backend.rixs_dense,
+        'petsc': petsc_backend.rixs_petsc,
+        'fortran': fortran_backend.rixs_fortran,
+    }[hmat_i.backend]
 
     return rixs_backend(
         eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss,

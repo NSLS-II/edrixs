@@ -29,7 +29,8 @@ def test_incoming_groups_use_exact_coefficients_and_preserve_indices():
     assert _group_rixs_incoming([]) == []
 
 
-@pytest.fixture(params=['scipy', 'petsc', 'shifted_pminres'])
+@pytest.fixture(params=['scipy', 'petsc', 'shifted_pminres',
+                        'petsc_recompute', 'shifted_pminres_recompute'])
 def runner(request, monkeypatch):
     """Run a small dense input problem through either backend; count real solves."""
     if request.param == 'scipy':
@@ -43,7 +44,14 @@ def runner(request, monkeypatch):
             return original(*args, **kwargs)
 
         monkeypatch.setattr(backend, 'gmres', counted)
-        return backend.rixs_scipy, lambda: len(counts)
+
+        def run(energies, vectors, hi, hn, transitions, ominc, eloss, **kwargs):
+            return backend.rixs_scipy(
+                energies, vectors, operator_factory(hi), operator_factory(hn),
+                operator_factories(transitions), ominc, eloss, **kwargs,
+            )
+
+        return run, lambda: len(counts)
 
     PETSc = pytest.importorskip('petsc4py.PETSc')
     options = PETSc.Options()
@@ -65,9 +73,12 @@ def runner(request, monkeypatch):
     initial_count = event.getPerfInfo(stage.id)['count']
 
     def run(energies, vectors, hi, hn, transitions, ominc, eloss, **kwargs):
-        if request.param == 'petsc':
+        if request.param.startswith('petsc'):
             kwargs['backend_kws'] = dict(kwargs.get('backend_kws', {}),
                                          ksp_type='gmres')
+        if request.param.endswith('_recompute'):
+            kwargs['backend_kws'] = dict(kwargs.get('backend_kws', {}),
+                                         matrix_lifetime='recompute')
         objects = []
 
         def matrix(array):

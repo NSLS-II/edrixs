@@ -1,4 +1,8 @@
-"""Exact dense-matrix implementation of the staged solver interface."""
+"""Exact dense-matrix implementation of the staged solver interface.
+
+Solvers accept matrix factories. After validating solver options, each supplied
+factory is called at calculation start, including repeated arguments.
+"""
 
 from __future__ import annotations
 
@@ -18,7 +22,6 @@ from ..utils import boltz_dist
 from .options import validate_options
 
 __all__ = [
-    'owns_operator_dense',
     'build_op_dense',
     'ed_dense',
     'xas_dense',
@@ -32,7 +35,7 @@ def ed_dense(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
     ``shift`` is a real energy offset. The input Hamiltonian is not modified.
     """
     validate_options('ed', backend_kws)
-    hamiltonian = np.asarray(hmat_i)
+    hamiltonian = np.asarray(hmat_i())
     dimension = hamiltonian.shape[0]
     if num_evals < 1:
         raise ValueError("num_evals must be a positive integer")
@@ -58,6 +61,8 @@ def xas_dense(
         scatter_axis=None, backend_kws=None):
     """Calculate XAS by summing over the exact intermediate eigenstates."""
     validate_options('xas', backend_kws)
+    hmat_n = hmat_n()
+    trans_op = [operator() for operator in trans_op]
     hamiltonian_n = np.asarray(hmat_n)
     energies_i, vectors_i = _initial_states(eval_i, evec_i)
     transitions = _transition_array(
@@ -127,6 +132,9 @@ def rixs_dense(
         skip_gs=False, return_poles=False, backend_kws=None):
     """Calculate RIXS by summing over exact intermediate and final states."""
     validate_options('rixs', backend_kws)
+    hmat_i = hmat_i()
+    hmat_n = hmat_n()
+    trans_op = [operator() for operator in trans_op]
     hamiltonian_i = np.asarray(hmat_i)
     hamiltonian_n = np.asarray(hmat_n)
     energies_i, vectors_i = _initial_states(
@@ -243,11 +251,6 @@ def rixs_dense(
                 poles[incident_index][channel] = records
 
     return (spectrum, poles) if return_poles else spectrum
-
-
-def owns_operator_dense(operator):
-    """Return whether ``operator`` is a dense NumPy matrix."""
-    return isinstance(operator, np.ndarray) and operator.ndim == 2
 
 
 def build_op_dense(

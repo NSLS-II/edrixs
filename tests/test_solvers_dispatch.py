@@ -22,8 +22,8 @@ def test_build_op_requires_exact_backend_name(backend):
         build_op(np.eye(2), np.zeros((2, 2, 2, 2)), object(), backend=backend)
 
 
-def test_public_xas_uses_inferred_scipy_backend():
-    """XAS infers SciPy ownership from all supplied operators."""
+def test_public_xas_uses_labeled_scipy_backend():
+    """XAS dispatches using the intermediate Hamiltonian label."""
     hmat_n = sp.diags([1.0, 2.0], format="csr")
     transitions = [
         sp.eye(2, format="csr"),
@@ -45,8 +45,8 @@ def test_public_xas_uses_inferred_scipy_backend():
     assert np.all(np.isfinite(spectrum))
 
 
-def test_public_rixs_uses_inferred_scipy_backend():
-    """RIXS infers the SciPy backend from the supplied operators."""
+def test_public_rixs_uses_labeled_scipy_backend():
+    """RIXS dispatches using the initial Hamiltonian label."""
     hmat_i = sp.diags([0.0, 0.8], format="csr")
     hmat_n = sp.diags([1.5, 2.2], format="csr")
     transitions = [

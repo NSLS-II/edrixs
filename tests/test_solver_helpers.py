@@ -2,7 +2,6 @@
 
 import numpy as np
 import pytest
-import scipy.sparse as sp
 from numpy.testing import assert_allclose
 
 import edrixs._solvers_helpers as helpers
@@ -48,14 +47,3 @@ def test_expand_broadening_accepts_scalar_or_exact_length_array():
 
     with pytest.raises(ValueError, match="shape"):
         helpers._expand_broadening([0.1], 2, "gamma")
-
-
-def test_infer_backend_recognizes_labels():
-    from operator_factories import operator_factory
-    assert helpers._infer_backend(operator_factory(np.eye(2), 'dense')) == 'dense'
-    assert helpers._infer_backend(operator_factory(sp.eye(2), 'scipy')) == 'scipy'
-
-
-def test_infer_backend_rejects_unknown_operator_types():
-    with pytest.raises(TypeError, match="backend attribute"):
-        helpers._infer_backend(object())

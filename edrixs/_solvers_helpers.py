@@ -38,37 +38,6 @@ def _group_rixs_incoming(polarizations):
     return groups
 
 
-def _infer_backend(*operators):
-    """Validate operator labels before any matrix construction."""
-    if not operators:
-        raise TypeError("Expected at least one labeled operator")
-    labels = []
-    for operator in operators:
-        if not hasattr(operator, 'backend'):
-            raise TypeError("Operators must have a .backend attribute; use build_op or get_ops")
-        backend = operator.backend
-        if backend not in ('dense', 'scipy', 'petsc', 'fortran'):
-            raise ValueError("Unknown backend {!r}".format(backend))
-        if backend != 'fortran' and not callable(operator):
-            raise TypeError("Numerical operators must be callable matrix factories")
-        labels.append(backend)
-    if any(label != labels[0] for label in labels):
-        raise ValueError("All operators must have the same backend")
-    return labels[0]
-
-
-def _materialize_operators(backend, *operators):
-    """Build each distinct numerical factory once within a solver call."""
-    if backend == 'fortran':
-        return list(operators)
-    matrices = {}
-    for operator in operators:
-        key = id(operator)
-        if key not in matrices:
-            matrices[key] = operator()
-    return [matrices[id(operator)] for operator in operators]
-
-
 def _rotated_transition_blocks(case, loc_axis=None):
     """
     Build transition blocks in global coordinates for a shell-transition case.
