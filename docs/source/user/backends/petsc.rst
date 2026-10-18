@@ -42,28 +42,9 @@ Only PETSc ``rixs`` accepts ``matrix_lifetime`` in ``backend_kws``:
 * ``'retain'`` (default) builds each required factory on first use, keeps its
   matrix for reuse during the calculation, and destroys it before returning.
 * ``'recompute'`` builds a matrix for each operation and destroys it immediately
-  afterward, rebuilding it for later uses. Each linear solve or
-  Lanczos run keeps its Hamiltonian for that complete phase. Transition
-  components are built and released individually during each application.
+  afterward, rebuilding it for later uses. This reduces peak memory usage at the
+  cost of more CPU time. Can be useful for the biggest possible jobs 
 
-For example::
-
-    spectrum = edrixs.rixs(
-        eval_i, evec_i, hmat_i, hmat_n, trans_ops, ominc, eloss,
-        backend_kws={'matrix_lifetime': 'recompute', 'nkryl': 200},
-    )
-
-``'recompute'`` keeps at most one assembled many-body operator resident at
-a time, at the cost of repeated assembly.
-It releases the intermediate Hamiltonian before emission and final-state
-Lanczos calculations, while preserving shared correction vectors across
-outgoing polarization channels. Unused operators are not constructed.
-
-Factories passed to PETSc must return fresh matrices that the backend can
-modify and destroy. Backend-specific solvers also require factories; repeated
-arguments may be instantiated independently. Returned eigenvectors remain owned
-by the caller. Matrices obtained by explicitly calling a factory outside a solver
-are also owned by the caller. All ranks must use the same lifetime policy.
 
 ``build_op`` and ``get_ops``
 ============================

@@ -84,8 +84,8 @@ print(message.format(norb, noccu, comb(norb, noccu), len(basis)))
 #                      \hat{f}_{k}\hat{f}_{l}|F_r\rangle
 #
 # For now we just build the :code:`umat` piece. :code:`backend='dense'`
-# selects full matrices including the zeros. build_op returns a callable;
-# ed calls it to construct the matrix when needed.
+# selects full matrices including the zeros. :code:`build_op` returns
+# a callable; ed calls it to construct the matrix when needed.
 backend = 'dense'
 H = edrixs.build_op(None, umat, basis, backend=backend)
 
