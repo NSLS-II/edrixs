@@ -6,12 +6,13 @@ Backend
 
 The :ref:`introduction` describes the four stages of a calculation.  Stages two
 to four -- building operators, diagonalizing, and assembling spectra --
-delegate their numerical work to a backend selected with ``backend``:
+delegate their numerical work to a backend selected with ``backend`` when
+calling ``build_op`` or ``get_ops``:
 
-* ``'dense'`` returns full NumPy matrices and uses exact dense
+* ``'dense'`` builds full NumPy matrices and uses exact dense
   diagonalization and explicit eigenstate sums.  It is intended for small
   problems, reference calculations, and pedagogy.
-* ``'scipy'`` returns SciPy sparse matrices and uses LOBPCG, Lanczos, and GMRES.
+* ``'scipy'`` builds SciPy CSR matrices and uses LOBPCG, Lanczos, and GMRES.
   It is the default backend.
 * ``'fortran'`` uses the native MPI solvers and communicates through files in
   the current working directory.  We provide the function
@@ -20,10 +21,34 @@ delegate their numerical work to a backend selected with ``backend``:
 * ``'petsc'`` uses distributed PETSc matrices, SLEPc eigensolvers, and PETSc
   Krylov solvers.  It is intended for larger Hilbert spaces and MPI runs.
 
-Use the same backend when constructing operators, diagonalizing the Hamiltonian,
-and calculating spectra.
-Backend-specific numerical controls belong in a ``backend_kws`` mapping.  The
+Backend-specific numerical controls belong in a ``backend_kws`` mapping. The
 mapping is specific to both the backend *and the operation*.
+
+.. _lazy-operators:
+
+Operator factories and solver dispatch
+======================================
+
+``build_op`` returns a callable that constructs the matrix when called. This
+lets callers defer matrix allocation and recreate matrices when needed. Its
+``.backend`` attribute identifies the numerical backend and the matrix
+representation it will produce.
+
+Numerical ``get_ops`` returns these callables for both Hamiltonians
+and every transition component. Public ``ed`` and ``rixs`` dispatch using
+``hmat_i.backend``; ``xas`` uses ``hmat_n.backend``. They pass the factories
+unchanged to the selected backend and assume all operators are suitable for it.
+Dense, SciPy, and PETSc ED and XAS call every supplied factory at calculation
+start. Repeated arguments may be instantiated independently. Only PETSc RIXS
+accepts ``matrix_lifetime`` in ``backend_kws``; see :doc:`backends/petsc`.
+All staged solver entry points, including backend-specific functions, require
+factories or callable Fortran disk handles.
+
+For matrix arithmetic or direct access to matrix methods, call the factory
+explicitly::
+
+    number_op = edrixs.build_op(number_coefficients, None, basis, backend='dense')
+    number_matrix = number_op()
 
 Numerical precision
 ===================

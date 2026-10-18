@@ -88,8 +88,8 @@ def test_parent_mpi_nonroot_does_not_write_problem_files(tmp_path, monkeypatch):
     hmat_i, hmat_n, transitions = fortran_backend.write_problem(
         *problem[:7], backend_kws={'comm': comm},
     )
-    assert fortran_backend.owns_operator_fortran(hmat_i)
-    assert fortran_backend.owns_operator_fortran(hmat_n)
+    assert isinstance(hmat_i, fortran_backend.FortranDiskOperator)
+    assert isinstance(hmat_n, fortran_backend.FortranDiskOperator)
     assert len(transitions) == 5
     assert comm.barriers == 2
 

@@ -26,7 +26,25 @@ eigenpairs with SLEPc's Krylov--Schur method, and evaluates XAS and RIXS with
 distributed Lanczos and KSP solves.  Importing EDRIXS does not import PETSc;
 ``petsc4py`` and ``slepc4py`` are loaded only when this backend is used.
 
+``build_op`` and ``get_ops`` return factories labeled with
+``.backend == 'petsc'``. Calling a factory assembles its distributed matrix;
+public ``ed``, ``xas``, and ``rixs`` read the labels and pass the factories to
+the PETSc backend. All MPI ranks in the matrix communicator must participate
+in construction and solver calls. See :ref:`lazy-operators`.
+
 Options are specific to the stage where they are supplied.
+
+Matrix lifetime
+===============
+
+Only PETSc ``rixs`` accepts ``matrix_lifetime`` in ``backend_kws``:
+
+* ``'retain'`` (default) builds each required factory on first use, keeps its
+  matrix for reuse during the calculation, and destroys it before returning.
+* ``'recompute'`` builds a matrix for each operation and destroys it immediately
+  afterward, rebuilding it for later uses. This reduces peak memory usage at the
+  cost of more CPU time. Can be useful for the biggest possible jobs 
+
 
 ``build_op`` and ``get_ops``
 ============================
@@ -47,12 +65,15 @@ see PETSc's `matrix type overview
 ======
 
 Pass the final model output as ``ed(hmat_i, shift=shift)`` to subtract the
-filled-core shell energy from a copy of the distributed Hamiltonian before
+filled-core shell energy from the factory-created distributed Hamiltonian before
 diagonalization. Returned eigenvalues retain the original energy reference.
 With a nonzero ``shift``, ``eigval_tol`` is an absolute residual tolerance for
 the shifted problem, avoiding division by a near-zero centered eigenvalue.
 With ``shift=0``, it is a relative residual tolerance, scaled by the eigenvalue
 magnitude.
+
+ED calls its factory once and destroys the matrix before returning.
+``matrix_lifetime`` is not accepted for ED.
 
 .. backend-options:: petsc ed
 
@@ -64,11 +85,15 @@ by `EPS.setDimensions
 ``xas``
 =======
 
-XAS and RIXS center distributed matrix copies using the lowest retained initial
+XAS builds all supplied factories once at calculation start and retains the
+matrices for the calculation. Factory-created matrices are destroyed before
+returning. ``matrix_lifetime`` is not accepted for XAS.
+
+XAS and RIXS center factory-created distributed matrices using the lowest retained initial
 energy and the first incident energy, which should lie near resonance. RIXS
 also centers the final Hamiltonian. Spectra are evaluated on these relative
 energies before restoring the original reference in returned pole dictionaries.
-Input matrices are unchanged.
+Factory-created Hamiltonians are shifted in place.
 
 .. backend-options:: petsc xas
 

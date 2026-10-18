@@ -13,6 +13,8 @@ from edrixs.petsc_backend.options import validate_options
 from edrixs.scipy_backend.krylov import lanczos_tridiagonal as lanczos_scipy
 from edrixs.solvers import build_op, ed
 
+from operator_factories import operator_factory
+
 
 HAS_PETSC = importlib.util.find_spec("petsc4py") is not None
 HAS_SLEPC = importlib.util.find_spec("slepc4py") is not None
@@ -29,12 +31,6 @@ requires_petsc_slepc = pytest.mark.skipif(
 # -----------------------------------------------------------------------------
 # Contract / logic tests (no PETSc runtime required)
 # -----------------------------------------------------------------------------
-
-
-def test_owns_operator_returns_false_for_non_petsc_objects():
-    """Recognition must never raise when given ordinary Python/NumPy objects."""
-    assert backend.owns_operator_petsc(np.eye(2)) is False
-    assert backend.owns_operator_petsc(object()) is False
 
 
 def test_backend_kws_validation():
@@ -56,7 +52,7 @@ def test_ed_petsc_rejects_nonpositive_num_evals(num_evals):
     if HAS_PETSC and HAS_SLEPC:
         pytest.skip("covered by numeric tests when PETSc/SLEPc are present")
     with pytest.raises((ValueError, ImportError)):
-        backend.ed_petsc(object(), num_evals=num_evals)
+        backend.ed_petsc(operator_factory(object(), 'petsc'), num_evals=num_evals)
 
 
 def test_rixs_petsc_rejects_unknown_options_before_importing_petsc():
@@ -75,7 +71,6 @@ def test_rixs_petsc_rejects_unknown_options_before_importing_petsc():
 
 def test_public_symbols_are_exported():
     for name in (
-        "owns_operator_petsc",
         "build_op_petsc",
         "ed_petsc",
         "xas_petsc",
@@ -175,7 +170,7 @@ def test_public_ed_scipy_and_petsc_agree_on_constructed_operator():
         backend="scipy",
         basis_method="combinadic",
         use_numba=False,
-    )
+    )()
     petsc_matrix = build_op(
         emat,
         umat,
@@ -184,10 +179,10 @@ def test_public_ed_scipy_and_petsc_agree_on_constructed_operator():
         basis_method="combinadic",
         use_numba=False,
         backend_kws={"comm": PETSc.COMM_SELF},
-    )
+    )()
 
-    eval_s, _ = ed(scipy_matrix, num_evals=2, backend="scipy")
-    eval_p, _ = ed(petsc_matrix, num_evals=2, backend="petsc")
+    eval_s, _ = ed(operator_factory(scipy_matrix, "scipy"), num_evals=2)
+    eval_p, _ = ed(operator_factory(petsc_matrix, "petsc"), num_evals=2)
 
     assert_allclose(eval_p, eval_s, rtol=0, atol=1e-8)
 
@@ -206,7 +201,7 @@ def complex_hermitian_petsc_mat():
 @requires_petsc_slepc
 def test_ed_petsc_returns_lowest_sorted_eigenpairs(complex_hermitian_petsc_mat):
     mat, expected_eigenvalues = complex_hermitian_petsc_mat
-    evals, evecs = backend.ed_petsc(mat, num_evals=3)
+    evals, evecs = backend.ed_petsc(operator_factory(mat, 'petsc'), num_evals=3)
 
     assert len(evals) == 3
     assert len(evecs) == 3
@@ -223,7 +218,7 @@ def test_ed_petsc_returns_lowest_sorted_eigenpairs(complex_hermitian_petsc_mat):
 def test_ed_petsc_rejects_too_many_requested(complex_hermitian_petsc_mat):
     mat, expected_eigenvalues = complex_hermitian_petsc_mat
     with pytest.raises((RuntimeError, ValueError)):
-        backend.ed_petsc(mat, num_evals=len(expected_eigenvalues) + 5)
+        backend.ed_petsc(operator_factory(mat, 'petsc'), num_evals=len(expected_eigenvalues) + 5)
 
 
 @requires_petsc

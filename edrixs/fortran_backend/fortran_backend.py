@@ -21,7 +21,7 @@ import warnings
 import numpy as np
 import scipy.sparse as sp
 
-from ..fock_basis import FockBasisSpec, build_fock_basis
+from ..fock_basis import build_fock_basis
 from ..photon_transition import dipole_polvec_xas, dipole_polvec_rixs, quadrupole_polvec, unit_wavevector
 from ..poles import get_spectra_from_poles, merge_pole_dicts
 from .iostream_fortran import (
@@ -31,26 +31,27 @@ from .options import OPTIONS, validate_options
 
 __all__ = [
     'FortranDiskOperator', 'get_ops_disk', 'write_problem', 'ed_fortran',
-    'xas_fortran', 'rixs_fortran', 'owns_operator_fortran',
+    'xas_fortran', 'rixs_fortran',
 ]
 
 
 class FortranDiskOperator:
     """Stateless marker identifying the disk-backed Fortran backend.
 
-    The handle contains no operator data or path.  Subsequent calls using
-    ``backend='fortran'`` read the native input and output files from the
-    current working directory.
+    The handle contains no operator data or path. Its ``backend`` label
+    selects the Fortran solvers, which read native input and output files
+    from the current working directory.
     """
+
+    backend = 'fortran'
+
+    def __call__(self):
+        return self
 
     def __repr__(self):
         return f"<Fortran disk handle: using files in {Path.cwd()}>"
 
     __str__ = __repr__
-
-
-def owns_operator_fortran(operator):
-    return isinstance(operator, FortranDiskOperator)
 
 
 def _read_config():
@@ -120,12 +121,6 @@ def _write_fock_basis(basis, num_core_orbs, fname):
         stream.write(f'{len(states)}\n')
         for state in sorted(states):
             stream.write(f'{state}\n')
-
-
-def _write_fock_sector(nv, nocc, nc, fname, *, core_hole=False):
-    """Stage a legacy fixed-occupancy sector through the full-core convention."""
-    basis = FockBasisSpec.from_args(nv, nocc, nc, nc - int(core_hole))
-    _write_fock_basis(basis, nc, fname)
 
 
 def _reduce_initial_integrals(emat, umat, num_val_orbs):
@@ -273,6 +268,7 @@ def ed_fortran(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
             UserWarning, stacklevel=2,
         )
     options = validate_options('ed', backend_kws)
+    hmat_i = hmat_i()
     nvector = int(options.get('nvector', num_evals))
     if nvector > num_evals:
         raise ValueError("backend_kws['nvector'] cannot exceed num_evals")
@@ -340,6 +336,8 @@ def xas_fortran(eval_i, evec_i, hmat_n, trans_op, ominc, *, gamma_c=0.1,
                 scatter_axis=None, backend_kws=None):
     """Run XAS collectively on the existing MPI communicator."""
     options = validate_options('xas', backend_kws)
+    hmat_n = hmat_n()
+    trans_op = [operator() for operator in trans_op]
     num_gs = int(options.get('num_gs', len(eval_i)))
     if num_gs > len(eval_i):
         raise ValueError("backend_kws['num_gs'] cannot exceed len(eval_i)")
@@ -397,6 +395,9 @@ def rixs_fortran(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss,
                  skip_gs=False, return_poles=False, backend_kws=None):
     """Run RIXS collectively on the existing MPI communicator."""
     options = validate_options('rixs', backend_kws)
+    hmat_i = hmat_i()
+    hmat_n = hmat_n()
+    trans_op = [operator() for operator in trans_op]
     num_gs = int(options.get('num_gs', len(eval_i)))
     if num_gs > len(eval_i):
         raise ValueError("backend_kws['num_gs'] cannot exceed len(eval_i)")

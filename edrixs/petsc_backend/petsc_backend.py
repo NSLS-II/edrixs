@@ -13,7 +13,6 @@ import numpy as np
 from .options import OPTIONS, validate_options
 
 __all__ = [
-    'owns_operator_petsc',
     'build_op_petsc',
     'ed_petsc', 'xas_petsc', 'rixs_petsc',
 ]
@@ -27,14 +26,14 @@ def ed_petsc(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
 
     Parameters
     ----------
-    hmat_i : petsc4py.PETSc.Mat
-        Square Hermitian many-body Hamiltonian, e.g. from
-        :func:`build_op_petsc`.
+    hmat_i : callable
+        Factory returning a fresh square Hermitian PETSc matrix. The matrix
+        is destroyed before returning; returned eigenvectors belong to the caller.
     num_evals : int, optional
         Number of lowest eigenpairs to return.
     shift : float, optional
         Real offset subtracted before diagonalization and restored to the
-        returned eigenvalues. The supplied distributed matrix is not modified.
+        returned eigenvalues. The factory-created matrix is shifted in place.
         A nonzero shift selects an absolute residual tolerance; with zero
         shift the residual tolerance is relative to the eigenvalue magnitude.
     backend_kws : mapping, optional
@@ -65,12 +64,12 @@ def ed_petsc(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
     if num_evals < 1:
         raise ValueError("num_evals must be a positive integer")
 
+    hmat_i = hmat_i()
     comm = hmat_i.getComm()
     rank = comm.getRank()
 
     centered = hmat_i
     if shift != 0:
-        centered = hmat_i.copy()
         centered.shift(-shift)
 
     eps = SLEPc.EPS().create(comm=comm)
@@ -122,8 +121,7 @@ def ed_petsc(hmat_i, num_evals=1, *, shift=0.0, backend_kws=None):
     finally:
         vr.destroy()
         eps.destroy()
-        if shift != 0:
-            centered.destroy()
+        centered.destroy()
 
 
 def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
@@ -139,8 +137,9 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     :func:`edrixs.poles.get_spectra_from_poles`.
 
     The lowest initial energy and first incident energy center internal
-    matrix copies near resonance. Input matrices and public energy references
-    are preserved.
+    matrices near resonance. Public energy references are preserved.
+    Factories are built once at calculation start and their
+    matrices are destroyed before returning. XAS has no matrix_lifetime option.
 
     Parameters
     ----------
@@ -149,10 +148,10 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     evec_i : sequence of petsc4py.PETSc.Vec
         Retained initial-state eigenvectors (e.g. from :func:`ed_petsc`).
         ``evec_i[k]`` corresponds to ``eval_i[k]``.
-    hmat_n : petsc4py.PETSc.Mat
-        Intermediate-state Hamiltonian.
-    trans_op : sequence of petsc4py.PETSc.Mat
-        Transition operators mapping the initial Hilbert space to the
+    hmat_n : callable
+        Factory returning a fresh intermediate-state PETSc matrix.
+    trans_op : sequence of callables
+        Factories returning fresh transition matrices mapping the initial Hilbert space to the
         intermediate Hilbert space. The sequence length must be 3 (dipole)
         or 5 (quadrupole).
     ominc : 1d array
@@ -181,6 +180,8 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
         Spectrum with shape ``(len(ominc), len(pol_type))``.
     """
     kws = validate_options('xas', backend_kws)
+    hmat_n = hmat_n()
+    trans_op = [operator() for operator in trans_op]
     _petsc_module()
     from .lanczos import lanczos_tridiagonal
     from ..poles import get_spectra_from_poles, merge_pole_dicts
@@ -221,7 +222,7 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     omega_ref = ominc[0] if n_om else 0.0
     eval_i = eval_i - energy_ref
     ominc = ominc - omega_ref
-    centered = hmat_n.copy()
+    centered = hmat_n
     centered.shift(-energy_ref)
     centered.shift(-omega_ref)
 
@@ -272,6 +273,8 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
         return xas
     finally:
         centered.destroy()
+        for matrix in trans_op:
+            matrix.destroy()
 
 
 def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
@@ -292,8 +295,8 @@ def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
     vector, but retain separate final-state Lanczos calculations and poles.
 
     The lowest initial energy and first incident energy center internal
-    matrix copies near resonance. Input matrices and public energy references
-    are preserved.
+    matrices near resonance. Public energy references are preserved.
+    Factory-created matrices are shifted in place and destroyed before returning.
 
     Parameters
     ----------
@@ -302,10 +305,10 @@ def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
     evec_i : sequence of petsc4py.PETSc.Vec
         Retained initial-state eigenvectors (e.g. from :func:`ed_petsc`).
         ``evec_i[k]`` corresponds to ``eval_i[k]``.
-    hmat_i, hmat_n : petsc4py.PETSc.Mat
-        Initial/final and intermediate Hamiltonians.
-    trans_op : sequence of petsc4py.PETSc.Mat
-        Transition operators mapping the initial Hilbert space to the
+    hmat_i, hmat_n : callable
+        Factories returning fresh initial/final and intermediate PETSc matrices.
+    trans_op : sequence of callables
+        Factories returning fresh transition matrices mapping the initial Hilbert space to the
         intermediate Hilbert space. The sequence length must be 3 (dipole)
         or 5 (quadrupole).
     ominc, eloss : 1d arrays
@@ -328,6 +331,10 @@ def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
     backend_kws : mapping, optional
         Extra options. Recognized keys:
 
+        - ``matrix_lifetime`` : ``'retain'`` (default) builds required matrices
+          on first use and keeps them until return. ``'recompute'`` builds,
+          uses, and destroys one operator at a time, rebuilding between phases.
+          Each complete solve or Lanczos run keeps its matrix throughout.
         - ``nkryl`` : maximum final-state Lanczos dimension (default ``200``).
         - ``linsys_tol`` : KSP absolute tolerance ``atol`` (default ``1e-10``).
           For standard KSP types the relative tolerance remains at PETSc's
@@ -408,23 +415,15 @@ def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
     energy_ref = min(eval_i, default=0.0)
     omega_ref = ominc[0] if n_om else 0.0
     relative_evals = eval_i - energy_ref
-    centered_i = hmat_i.copy()
-    centered_i.shift(-energy_ref)
-    centered_n = hmat_n.copy()
-    centered_n.shift(-energy_ref)
-    centered_n.shift(-omega_ref)
-
-    # Reusable shifted-system matrix and Krylov solver.
-    shifted = centered_n.duplicate(copy=True)
-    ksp = PETSc.KSP().create(hmat_n.getComm())
-    solution = shifted.createVecRight()
-    rhs_buffer = shifted.createVecLeft()
-    rhs_work = rhs_buffer.duplicate()
+    matrix_lifetime = kws.pop('matrix_lifetime', OPTIONS['rixs']['matrix_lifetime'].default)
+    matrices = [None] * ntrans
+    centered_i = None
+    shifted = None
+    ksp = None
+    solution = None
+    rhs = None
+    previous_z = 0.0
     try:
-        _configure_rixs_ksp(
-            ksp, ksp_type, linsys_tol, linsys_maxiter, pminres_library,
-        )
-
         rixs = np.zeros((n_om, neloss, len(pol_type)), dtype=float)
         poles = []
         for iom, omega in enumerate(ominc):
@@ -437,22 +436,47 @@ def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
                     continue
                 z = (omega - omega_ref) + relative_evals[ig] + 1j * gamma_core[iom]
 
-                # The shifted operator depends on energy/state, not polarization.
-                shifted.zeroEntries()
-                shifted.axpy(-1.0, centered_n,
-                             structure=PETSc.Mat.Structure.SAME_NONZERO_PATTERN)
-                shifted.shift(z)
-                ksp.setOperators(shifted)
-
                 for polvec_i, channels in incoming_groups:
-                    # RHS: D_k |i>  (initial -> intermediate)
-                    rhs = _apply_trans_combination(
-                        trans_op, polvec_i, evec_i[ig],
-                        out=rhs_buffer, work=rhs_work,
-                    )
+                    # Absorption: assemble only components with nonzero coefficients.
+                    rhs = None
+                    for index, coefficient in enumerate(polvec_i):
+                        if coefficient == 0:
+                            continue
+                        if matrix_lifetime == 'retain':
+                            if matrices[index] is None:
+                                matrices[index] = trans_op[index]()
+                            matrix = matrices[index]
+                        if matrix_lifetime == 'recompute':
+                            matrix = trans_op[index]()
+                        term = matrix.createVecLeft()
+                        matrix.mult(evec_i[ig], term)
+                        term.scale(coefficient)
+                        if matrix_lifetime == 'recompute':
+                            matrix.destroy()
+                        if rhs is None:
+                            rhs = term
+                        else:
+                            rhs.axpy(1.0, term)
+                            term.destroy()
+
+                    # Keep the correction vector for all matching outgoing channels.
                     sol = None
-                    # Vec.norm is collective: every rank takes the same branch.
-                    if rhs.norm() != 0:
+                    if rhs is not None and rhs.norm() != 0:
+                        if shifted is None:
+                            shifted = hmat_n()
+                            shifted.shift(-energy_ref)
+                            shifted.shift(-omega_ref)
+                            shifted.scale(-1.0)
+                            previous_z = 0.0
+                            ksp = PETSc.KSP().create(shifted.getComm())
+                            _configure_rixs_ksp(
+                                ksp, ksp_type, linsys_tol, linsys_maxiter, pminres_library,
+                            )
+                        shifted.shift(z - previous_z)
+                        previous_z = z
+                        ksp.setOperators(shifted)
+                        if solution is None:
+                            solution = shifted.createVecRight()
                         sol = solution
                         sol.zeroEntries()
                         ksp.solve(rhs, sol)
@@ -462,22 +486,51 @@ def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
                                     omega, ig, ksp.getConvergedReason()
                                 )
                             )
+                        if matrix_lifetime == 'recompute':
+                            ksp.destroy()
+                            ksp = None
+                            shifted.destroy()
+                            shifted = None
+                    if rhs is not None:
+                        rhs.destroy()
+                        rhs = None
 
                     for ip, polvec_f in channels:
                         alpha_i, beta_i, norm_i = np.array([0.0]), np.array([]), 0.0
                         if sol is not None:
-                            # Emission and projection never modify the shared solution.
-                            seed = _apply_trans_combination_adjoint(
-                                trans_op, np.conj(polvec_f), sol
-                            )
+                            seed = evec_i[ig].duplicate()
+                            seed.set(0)
+                            # Emission: apply and release each component separately.
+                            for index, coefficient in enumerate(np.conj(polvec_f)):
+                                if coefficient == 0:
+                                    continue
+                                if matrix_lifetime == 'retain':
+                                    if matrices[index] is None:
+                                        matrices[index] = trans_op[index]()
+                                    matrix = matrices[index]
+                                if matrix_lifetime == 'recompute':
+                                    matrix = trans_op[index]()
+                                term = matrix.createVecRight()
+                                matrix.multHermitian(sol, term)
+                                seed.axpy(coefficient, term)
+                                term.destroy()
+                                if matrix_lifetime == 'recompute':
+                                    matrix.destroy()
                             try:
                                 if skip_gs:
                                     for gs_vec in evec_i:
                                         # PETSc dot conjugates its second argument.
                                         seed.axpy(-seed.dot(gs_vec), gs_vec)
-                                alpha_i, beta_i, norm_i = lanczos_tridiagonal(
-                                    centered_i, seed, nkryl=nkryl
-                                )
+                                if seed.norm() != 0:
+                                    if centered_i is None:
+                                        centered_i = hmat_i()
+                                        centered_i.shift(-energy_ref)
+                                    alpha_i, beta_i, norm_i = lanczos_tridiagonal(
+                                        centered_i, seed, nkryl=nkryl
+                                    )
+                                    if matrix_lifetime == 'recompute':
+                                        centered_i.destroy()
+                                        centered_i = None
                             finally:
                                 seed.destroy()
 
@@ -503,24 +556,19 @@ def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,
 
         return (rixs, poles) if return_poles else rixs
     finally:
-        ksp.destroy()
-        solution.destroy()
-        rhs_buffer.destroy()
-        rhs_work.destroy()
-        shifted.destroy()
-        centered_n.destroy()
-        centered_i.destroy()
-
-
-def owns_operator_petsc(operator):
-    """
-    Return whether ``operator`` is a petsc4py matrix or linear operator.
-    """
-    try:
-        PETSc = _petsc_module()
-    except ImportError:
-        return False
-    return isinstance(operator, (PETSc.Mat, PETSc.Vec))
+        if ksp is not None:
+            ksp.destroy()
+        if solution is not None:
+            solution.destroy()
+        if rhs is not None:
+            rhs.destroy()
+        if shifted is not None:
+            shifted.destroy()
+        if centered_i is not None:
+            centered_i.destroy()
+        for matrix in matrices:
+            if matrix is not None:
+                matrix.destroy()
 
 
 # -----------------------------------------------------------------------------
@@ -707,27 +755,6 @@ def _apply_trans_combination(operators, coefficients, vector, *, out=None, work=
     finally:
         if work is None:
             temporary.destroy()
-
-
-def _apply_trans_combination_adjoint(operators, coefficients, vector):
-    """
-    Apply ``sum_k coeff[k] * operators[k]^H @ vector`` (intermediate -> initial).
-    """
-    result = None
-    for coefficient, operator in zip(coefficients, operators):
-        if coefficient == 0:
-            continue
-        term = operator.createVecRight()
-        operator.multHermitian(vector, term)
-        term.scale(coefficient)
-        if result is None:
-            result = term
-        else:
-            result.axpy(1.0, term)
-    if result is None:
-        result = operators[0].createVecRight()
-        result.zeroEntries()
-    return result
 
 
 def _xas_pole_dict(hmat_n, seeds, eval_i, nkryl, lanczos_tridiagonal):

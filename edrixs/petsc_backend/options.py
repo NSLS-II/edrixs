@@ -50,6 +50,21 @@ def _nonempty_string(value, label):
         raise ValueError("{} must not be empty".format(label))
 
 
+def _matrix_lifetime(value, label):
+    if not isinstance(value, str):
+        raise TypeError("{} must be 'retain' or 'recompute'".format(label))
+    if value not in ('retain', 'recompute'):
+        raise ValueError("{} must be 'retain' or 'recompute'".format(label))
+
+
+MATRIX_LIFETIME = OptionSpec(
+    'retain',
+    "Matrix lifetime: 'retain' builds on first use and reuses until return; "
+    "'recompute' rebuilds for each solver phase or transition application.",
+    _matrix_lifetime,
+)
+
+
 COMM = OptionSpec(
     DynamicDefault('PETSc.COMM_WORLD'),
     'PETSc or mpi4py communicator used to distribute the operator.',
@@ -110,6 +125,7 @@ XAS_OPTIONS = {
 }
 
 RIXS_OPTIONS = {
+    'matrix_lifetime': MATRIX_LIFETIME,
     'nkryl': OptionSpec(
         200, 'Maximum final-state Lanczos dimension.', positive_integer
     ),

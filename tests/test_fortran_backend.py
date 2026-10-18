@@ -12,6 +12,8 @@ from edrixs.fortran_backend.iostream_fortran import write_config, write_umat
 from edrixs.models import model_1v1c
 from edrixs.solvers import ed, get_ops, get_ops_disk, rixs, xas
 
+from operator_factories import operator_factory, operator_factories
+
 
 def _write_poles(stem):
     Path(f'{stem}.1').write_text(
@@ -122,22 +124,39 @@ def test_fortran_backend_uses_native_files_and_f2py_solvers(tmp_path, monkeypatc
         assert (tmp_path / filename).is_file()
 
     hmat_i, hmat_n, transitions = get_ops_disk()
+    matrix_calls = []
 
-    eval_i, evec_i = ed(hmat_i)
+    def instantiate(handle):
+        matrix_calls.append(handle)
+        return handle
+
+    monkeypatch.setattr(fortran_backend.FortranDiskOperator, '__call__', instantiate)
+
+    eval_i, evec_i = ed(operator_factory(hmat_i, 'scipy'))
     np.testing.assert_allclose(eval_i, [-0.25])
     assert type(evec_i) is type(hmat_i)
     assert not vars(evec_i)
     assert str(tmp_path) in repr(evec_i)
 
     absorption = xas(
-        eval_i, evec_i, hmat_n, transitions, np.array([0.0]),
+        eval_i,
+        evec_i,
+        operator_factory(hmat_n, 'scipy'),
+        operator_factories(transitions, 'scipy'),
+        np.array([0.0]),
     )
     scattering = rixs(
-        eval_i, evec_i, hmat_i, hmat_n, transitions,
-        np.array([0.0]), np.array([0.0]),
+        eval_i,
+        evec_i,
+        operator_factory(hmat_i, 'scipy'),
+        operator_factory(hmat_n, 'scipy'),
+        operator_factories(transitions, 'scipy'),
+        np.array([0.0]),
+        np.array([0.0]),
         backend_kws={'linsys_max': 17},
     )
 
+    assert matrix_calls == [hmat_i, hmat_n, *transitions, hmat_i, hmat_n, *transitions]
     assert absorption.shape == (1, 1)
     assert scattering.shape == (1, 1, 1)
     assert 'linsys_max=17' in Path('config.in').read_text().splitlines()
