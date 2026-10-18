@@ -23,12 +23,7 @@ get_fock_basis_petsc = get_fock_basis_combinadic
 
 
 def _default_preallocation(emat, umat, nr, tol_e, tol_u):
-    """Return today's simple PETSc preallocation policy.
-
-    Keeping this policy separate makes it possible to replace the heuristic
-    with exact local diagonal/off-diagonal counts without touching the shared
-    operator kernels.
-    """
+    """Estimate row-wise preallocation from retained coefficient counts."""
     ne = int(np.count_nonzero(np.abs(emat) > tol_e)) if emat is not None else 0
     if umat is None:
         nu = 0
@@ -40,7 +35,7 @@ def _default_preallocation(emat, umat, nr, tol_e, tol_u):
 
 
 def _create_matrix(PETSc, comm, nl, nr, preallocation):
-    """Create the final PETSc matrix using the current CPU-AIJ policy."""
+    """Create and preallocate an AIJ matrix for row-wise insertion."""
     hmat = PETSc.Mat().create(comm=comm)
     hmat.setSizes(((None, nl), (None, nr)))
     hmat.setType(PETSc.Mat.Type.AIJ)
@@ -55,7 +50,7 @@ def _create_matrix(PETSc, comm, nl, nr, preallocation):
 
 
 def _work_ranges(hmat, chunk_cols):
-    """Yield today's MPI work decomposition as bounded owned-column ranges."""
+    """Yield bounded ranges of locally owned basis columns."""
     cstart, cend = hmat.getOwnershipRangeColumn()
     for start in range(cstart, cend, chunk_cols):
         yield start, min(start + chunk_cols, cend)
@@ -70,9 +65,8 @@ def _insert_entries(hmat, rows, cols, vals, PETSc):
     cols = np.asarray(cols, dtype=PETSc.IntType)
     vals = np.asarray(vals, dtype=PETSc.ScalarType)
 
-    # AIJ is row-oriented.  Sorting is bounded by one work chunk rather than
-    # the complete local sparse matrix.  A future GPU/COO insertion strategy
-    # can replace this helper without changing the operator kernels.
+    # Group entries by row for setValues. Sorting is bounded by one work
+    # chunk; COO assembly does not use this insertion helper.
     order = np.argsort(rows, kind='mergesort')
     rows = rows[order]
     cols = cols[order]
@@ -94,7 +88,7 @@ def _insert_entries(hmat, rows, cols, vals, PETSc):
 
 
 def _finalize_matrix(hmat, mat_type):
-    """Finalize PETSc assembly using the current post-assembly conversion."""
+    """Assemble the matrix and apply an optional matrix-type conversion."""
     hmat.assemblyBegin()
     hmat.assemblyEnd()
     if mat_type is not None:
@@ -114,9 +108,10 @@ def build_op_petsc_matrix(
     nnz_guess_per_row=None,
     mat_type=None,
     assembly_chunk_cols=4096,
+    assembly_method='row',
     use_numba=True,
 ):
-    """Build the final PETSc matrix from backend-selected bounded work units."""
+    """Build an AIJ matrix with chunked row insertion or bulk COO assembly."""
     from petsc4py import PETSc
 
     if rb is None:
@@ -129,6 +124,42 @@ def build_op_petsc_matrix(
         raise ValueError("assembly_chunk_cols must be a positive integer")
 
     nl, nr = len(lb), len(rb)
+    if assembly_method == 'coo':
+        hmat = PETSc.Mat().create(comm=comm)
+        hmat.setSizes(((None, nl), (None, nr)))
+        hmat.setType(PETSc.Mat.Type.AIJ)
+        build_range = prepare_operator_entry_kernel(
+            emat, umat, lb, rb, tol_e=tol_e, tol_u=tol_u, use_numba=use_numba,
+        )
+
+        # Count first so filling never needs concatenation or oversized buffers.
+        nentries = 0
+        for start, end in _work_ranges(hmat, assembly_chunk_cols):
+            entries = build_range(start, end)
+            nentries += entries[2].size
+            del entries
+        coo_rows = np.empty(nentries, dtype=PETSc.IntType)
+        coo_cols = np.empty(nentries, dtype=PETSc.IntType)
+        coo_vals = np.empty(nentries, dtype=PETSc.ScalarType)
+        offset = 0
+        for start, end in _work_ranges(hmat, assembly_chunk_cols):
+            entries = build_range(start, end)
+            stop = offset + entries[2].size
+            coo_rows[offset:stop] = entries[0]
+            coo_cols[offset:stop] = entries[1]
+            coo_vals[offset:stop] = entries[2]
+            offset = stop
+            del entries
+
+        # PETSc handles sorting, repeated coordinates, and remote contributions.
+        hmat.setPreallocationCOO(coo_rows, coo_cols)
+        del coo_rows, coo_cols
+        hmat.setValuesCOO(coo_vals, addv=PETSc.InsertMode.INSERT_VALUES)
+        del coo_vals
+        if mat_type is not None:
+            hmat = hmat.convert(mat_type)
+        return hmat
+
     if nnz_guess_per_row is None:
         nnz_guess_per_row = _default_preallocation(
             emat, umat, nr, tol_e, tol_u

@@ -51,12 +51,26 @@ Only PETSc ``rixs`` accepts ``matrix_lifetime`` in ``backend_kws``:
 
 .. backend-options:: petsc get_ops
 
+Two matrix construction options are available. ``assembly_method='row'`` is
+the default and inserts entries by row in bounded chunks.
+``assembly_method='coo'`` counts contributions in a first pass, then generates
+them again into exact-sized coordinate and value arrays for bulk PETSc COO
+assembly. PETSc combines duplicate coordinates and communicates remote entries.
+Both options produce AIJ (CSR) matrices before optional ``mat_type`` conversion;
+COO describes the assembly interface, rather than the final storage format.
+Both options support the same solver lifetime policies.
+COO avoids the Python row-insertion loop but requires full local entry buffers
+and PETSc's COO mappings, so compare assembly time and peak memory for your
+problem. ``assembly_chunk_cols`` bounds individual kernel calls for both
+methods; COO still collects all local contributions before insertion.
+
 ``nnz_guess_per_row`` controls PETSc matrix preallocation.  Leaving it unset
 uses an estimate from the retained one- and two-body coefficients. With multiple
 MPI ranks, the hint is applied separately to the local-column and remote-column
 blocks of each rank's matrix rows. With one rank it applies to the sequential
 matrix. Larger hints reserve more memory but can avoid reallocations during
-assembly; they do not change the matrix values. A
+row assembly; they do not change the matrix values. COO computes its pattern
+directly and ignores this hint. A
 ``mat_type`` such as ``'aijcusparse'`` can select an accelerated matrix format;
 see PETSc's `matrix type overview
 <https://petsc.org/release/manual/mat/#basic-matrix-operations>`__.

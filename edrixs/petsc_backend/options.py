@@ -57,6 +57,13 @@ def _matrix_lifetime(value, label):
         raise ValueError("{} must be 'retain' or 'recompute'".format(label))
 
 
+def _assembly_method(value, label):
+    if not isinstance(value, str):
+        raise TypeError("{} must be 'row' or 'coo'".format(label))
+    if value not in ('row', 'coo'):
+        raise ValueError("{} must be 'row' or 'coo'".format(label))
+
+
 MATRIX_LIFETIME = OptionSpec(
     'retain',
     "Matrix lifetime: 'retain' builds on first use and reuses until return; "
@@ -73,6 +80,12 @@ COMM = OptionSpec(
 
 CONSTRUCTION_OPTIONS = {
     'comm': COMM,
+    'assembly_method': OptionSpec(
+        'row',
+        "Assembly method: 'row' inserts bounded chunks by row; 'coo' uses "
+        'bulk COO assembly with full local coordinate and value buffers.',
+        _assembly_method,
+    ),
     'tol_e': OptionSpec(
         1e-10,
         'Discard one-body coefficients whose magnitude does not exceed this threshold.',
@@ -86,7 +99,7 @@ CONSTRUCTION_OPTIONS = {
     'nnz_guess_per_row': OptionSpec(
         None,
         'Nonzeros per row reserved separately for local and remote column blocks '
-        'under MPI; estimated automatically when omitted.',
+        'under MPI; estimated automatically when omitted. Used only by row assembly.',
         _optional_nonnegative_integer,
     ),
     'mat_type': OptionSpec(
@@ -96,7 +109,8 @@ CONSTRUCTION_OPTIONS = {
     ),
     'assembly_chunk_cols': OptionSpec(
         4096,
-        'Number of owned basis columns generated before entries are inserted.',
+        'Number of owned basis columns generated per kernel call. COO still '
+        'collects all local entries before bulk insertion.',
         positive_integer,
     ),
 }

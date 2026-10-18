@@ -31,7 +31,8 @@ def assert_matrix_values_and_allocations(matrix, expected):
 @pytest.mark.parametrize('distributed', [False, True])
 @pytest.mark.parametrize('size', [1, 16])
 @pytest.mark.parametrize('hint', [None, 16])
-def test_dense_one_electron_operator_preallocation(distributed, size, hint):
+@pytest.mark.parametrize('assembly_method', ['row', 'coo'])
+def test_dense_one_electron_operator_preallocation(distributed, size, hint, assembly_method):
     """All-to-all hopping needs more than the default five remote entries/row.
 
     The size-one case also exercises empty ownership ranges under MPI.
@@ -43,7 +44,9 @@ def test_dense_one_electron_operator_preallocation(distributed, size, hint):
     expected = raw + raw.conj().T
     matrix = build_op(
         expected, None, FockBasisSpec.from_args(size, 1), backend='petsc',
-        use_numba=False, backend_kws={'comm': comm, 'nnz_guess_per_row': hint},
+        use_numba=False, backend_kws={
+            'comm': comm, 'nnz_guess_per_row': hint, 'assembly_method': assembly_method,
+        },
     )()
     try:
         assert_matrix_values_and_allocations(matrix, expected)
