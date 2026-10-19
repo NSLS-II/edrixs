@@ -88,6 +88,14 @@ def test_petsc_staged_rixs_uses_standardized_iteration_name():
         validate_options('rixs', {'linsys_max': 10})
 
 
+@pytest.mark.parametrize('value,error', [(None, TypeError), (1, TypeError), ('COO', ValueError)])
+def test_petsc_rejects_invalid_assembly_method(value, error):
+    from edrixs.petsc_backend.options import validate_options
+
+    with pytest.raises(error, match='assembly_method'):
+        validate_options('build_op', {'assembly_method': value})
+
+
 def test_legacy_fortran_rixs_signatures_are_unchanged():
     for function in (rixs_1v1c_fort, rixs_2v1c_fort, rixs_siam_fort):
         parameters = inspect.signature(function).parameters

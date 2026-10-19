@@ -604,13 +604,18 @@ def build_op_petsc(emat, umat, lb, rb=None, *, use_numba=True, backend_kws=None)
         - ``comm`` : PETSc communicator (default ``PETSc.COMM_WORLD``).
         - ``tol_e`` : threshold for retaining ``emat`` entries.
         - ``tol_u`` : threshold for retaining ``umat`` entries.
+        - ``assembly_method`` : ``'row'`` (default) inserts bounded chunks by
+          row. ``'coo'`` uses two passes through the entry kernel and bulk COO
+          insertion, requiring full local coordinate and value buffers. Both
+          options produce AIJ (CSR) matrices before optional type conversion.
         - ``nnz_guess_per_row`` : nonzeros per row to reserve, separately for
           local and remote column blocks under MPI. Larger hints use more
-          memory but can avoid reallocations during assembly.
+          memory but can avoid reallocations during row assembly. Ignored by COO.
         - ``mat_type`` : optional PETSc matrix type to convert to after
           assembly, e.g. ``'aijcusparse'``.
         - ``assembly_chunk_cols`` : number of owned basis columns generated
-          before entries are flushed into PETSc (default ``4096``).
+          per kernel call (default ``4096``). COO collects the resulting entries
+          into full local buffers before insertion.
 
     Returns
     -------
@@ -631,6 +636,9 @@ def build_op_petsc(emat, umat, lb, rb=None, *, use_numba=True, backend_kws=None)
     assembly_chunk_cols = kws.pop(
         'assembly_chunk_cols', OPTIONS['build_op']['assembly_chunk_cols'].default
     )
+    assembly_method = kws.pop(
+        'assembly_method', OPTIONS['build_op']['assembly_method'].default
+    )
 
     return build_op_petsc_matrix(
         emat, umat, lb, rb,
@@ -640,6 +648,7 @@ def build_op_petsc(emat, umat, lb, rb=None, *, use_numba=True, backend_kws=None)
         nnz_guess_per_row=nnz_guess_per_row,
         mat_type=mat_type,
         assembly_chunk_cols=assembly_chunk_cols,
+        assembly_method=assembly_method,
         use_numba=use_numba,
     )
 
