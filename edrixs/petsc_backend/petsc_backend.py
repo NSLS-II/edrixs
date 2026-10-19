@@ -138,8 +138,8 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
 
     The lowest initial energy and first incident energy center internal
     matrices near resonance. Public energy references are preserved.
-    Factories are built once at calculation start and their
-    matrices are destroyed before returning. XAS has no matrix_lifetime option.
+    Matrices are built on first use and destroyed before returning. The
+    matrix_lifetime option controls reuse between operations.
 
     Parameters
     ----------
@@ -171,6 +171,9 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     backend_kws : mapping, optional
         Extra options. Recognized keys:
 
+        - ``matrix_lifetime`` : ``'retain'`` (default) caches matrices on first
+          use until return; ``'recompute'`` rebuilds each transition component
+          per application and the Hamiltonian per nonzero Lanczos seed.
         - ``nkryl`` : maximum intermediate-state Lanczos dimension
           (default ``200``).
 
@@ -180,8 +183,6 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
         Spectrum with shape ``(len(ominc), len(pol_type))``.
     """
     kws = validate_options('xas', backend_kws)
-    hmat_n = hmat_n()
-    trans_op = [operator() for operator in trans_op]
     _petsc_module()
     from .lanczos import lanczos_tridiagonal
     from ..poles import get_spectra_from_poles, merge_pole_dicts
@@ -191,12 +192,12 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     )
 
     nkryl = int(kws.pop('nkryl', OPTIONS['xas']['nkryl'].default))
+    matrix_lifetime = kws.pop('matrix_lifetime', OPTIONS['xas']['matrix_lifetime'].default)
 
     eval_i = np.asarray(eval_i, dtype=float)
     ominc = np.asarray(ominc, dtype=float)
     evec_i = list(evec_i)
-    num_gs = len(evec_i)
-    if len(eval_i) != num_gs:
+    if len(eval_i) != len(evec_i):
         raise ValueError("len(eval_i) must equal len(evec_i)")
 
     ntrans = len(trans_op)
@@ -222,9 +223,64 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     omega_ref = ominc[0] if n_om else 0.0
     eval_i = eval_i - energy_ref
     ominc = ominc - omega_ref
-    centered = hmat_n
-    centered.shift(-energy_ref)
-    centered.shift(-omega_ref)
+    centered = None
+    matrices = [None] * ntrans
+
+    def build_poles(coefficients):
+        nonlocal centered
+        pole_dict = {'npoles': [], 'eigval': [], 'norm': [],
+                     'alpha': [], 'beta': []}
+        for energy, vector in zip(eval_i, evec_i):
+            seed = None
+            try:
+                for index, coefficient in enumerate(coefficients):
+                    if coefficient == 0:
+                        continue
+                    matrix = None
+                    term = None
+                    try:
+                        if matrix_lifetime == 'retain':
+                            if matrices[index] is None:
+                                matrices[index] = trans_op[index]()
+                            matrix = matrices[index]
+                        else:
+                            matrix = trans_op[index]()
+                        term = matrix.createVecLeft()
+                        matrix.mult(vector, term)
+                        if seed is None:
+                            term.scale(coefficient)
+                            seed, term = term, None
+                        else:
+                            seed.axpy(coefficient, term)
+                    finally:
+                        if term is not None:
+                            term.destroy()
+                        if matrix_lifetime == 'recompute' and matrix is not None:
+                            matrix.destroy()
+
+                alpha_i, beta_i, norm_i = np.array([0.0]), np.array([]), 0.0
+                if seed is not None and seed.norm() != 0:
+                    if centered is None:
+                        centered = hmat_n()
+                        centered.shift(-energy_ref)
+                        centered.shift(-omega_ref)
+                    try:
+                        alpha_i, beta_i, norm_i = lanczos_tridiagonal(
+                            centered, seed, nkryl=nkryl
+                        )
+                    finally:
+                        if matrix_lifetime == 'recompute':
+                            centered.destroy()
+                            centered = None
+                pole_dict['npoles'].append(len(alpha_i))
+                pole_dict['eigval'].append(float(energy))
+                pole_dict['norm'].append(norm_i)
+                pole_dict['alpha'].append(alpha_i)
+                pole_dict['beta'].append(beta_i)
+            finally:
+                if seed is not None:
+                    seed.destroy()
+        return pole_dict
 
     xas = np.zeros((n_om, len(pol_type)), dtype=float)
     poles = []
@@ -237,13 +293,7 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
                 for k in range(ntrans):
                     coeffs = np.zeros(ntrans, dtype=complex)
                     coeffs[k] = 1.0
-                    seeds = [
-                        _apply_trans_combination(trans_op, coeffs, evec_i[ig])
-                        for ig in range(num_gs)
-                    ]
-                    pole_dict = _xas_pole_dict(
-                        centered, seeds, eval_i, nkryl, lanczos_tridiagonal
-                    )
+                    pole_dict = build_poles(coeffs)
                     xas[:, it] += get_spectra_from_poles(
                         pole_dict, ominc, gamma_core, temperature
                     ) / ntrans
@@ -256,13 +306,7 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
                     polvec[:] = pol
                 else:
                     polvec[:] = quadrupole_polvec(pol, kvec)
-                seeds = [
-                    _apply_trans_combination(trans_op, polvec, evec_i[ig])
-                    for ig in range(num_gs)
-                ]
-                pole_dict = _xas_pole_dict(
-                    centered, seeds, eval_i, nkryl, lanczos_tridiagonal
-                )
+                pole_dict = build_poles(polvec)
                 poles.append(pole_dict)
                 xas[:, it] = get_spectra_from_poles(
                     pole_dict, ominc, gamma_core, temperature
@@ -272,9 +316,11 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
 
         return xas
     finally:
-        centered.destroy()
-        for matrix in trans_op:
-            matrix.destroy()
+        if centered is not None:
+            centered.destroy()
+        for matrix in matrices:
+            if matrix is not None:
+                matrix.destroy()
 
 
 def rixs_petsc(eval_i, evec_i, hmat_i, hmat_n, trans_op, ominc, eloss, *,

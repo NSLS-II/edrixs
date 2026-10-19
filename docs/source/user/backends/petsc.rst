@@ -37,7 +37,7 @@ Options are specific to the stage where they are supplied.
 Matrix lifetime
 ===============
 
-Only PETSc ``rixs`` accepts ``matrix_lifetime`` in ``backend_kws``:
+PETSc ``xas`` and ``rixs`` accept ``matrix_lifetime`` in ``backend_kws``:
 
 * ``'retain'`` (default) builds each required factory on first use, keeps its
   matrix for reuse during the calculation, and destroys it before returning.
@@ -99,9 +99,15 @@ by `EPS.setDimensions
 ``xas``
 =======
 
-XAS builds all supplied factories once at calculation start and retains the
-matrices for the calculation. Factory-created matrices are destroyed before
-returning. ``matrix_lifetime`` is not accepted for XAS.
+XAS accepts ``matrix_lifetime`` in ``backend_kws``. The default ``'retain'``
+builds required transition components and the intermediate Hamiltonian on first
+use and keeps them until calculation exit. With ``'recompute'``, each transition
+component is destroyed after its application, and the intermediate Hamiltonian
+is rebuilt and destroyed for each nonzero seed's Lanczos calculation. At most
+one factory-created matrix is alive at a time in this mode. Components with
+zero polarization coefficients and Hamiltonians for zero seeds are skipped.
+Both policies destroy factory-created matrices before returning, including on
+failure; initial-state eigenvectors remain owned by the caller.
 
 XAS and RIXS center factory-created distributed matrices using the lowest retained initial
 energy and the first incident energy, which should lie near resonance. RIXS
