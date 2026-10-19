@@ -57,7 +57,7 @@ def _work_ranges(hmat, chunk_cols):
 
 
 def _insert_entries(hmat, rows, cols, vals, PETSc):
-    """Insert one bounded contribution buffer using PETSc ``setValues``."""
+    """Insert one bounded contribution buffer using PETSc bulk row insertion."""
     if rows.size == 0:
         return
 
@@ -65,26 +65,23 @@ def _insert_entries(hmat, rows, cols, vals, PETSc):
     cols = np.asarray(cols, dtype=PETSc.IntType)
     vals = np.asarray(vals, dtype=PETSc.ScalarType)
 
-    # Group entries by row for setValues. Sorting is bounded by one work
+    # Group entries by row for setValuesIJV. Sorting is bounded by one work
     # chunk; COO assembly does not use this insertion helper.
     order = np.argsort(rows, kind='mergesort')
     rows = rows[order]
     cols = cols[order]
     vals = vals[order]
 
-    start = 0
-    while start < rows.size:
-        row = int(rows[start])
-        end = start + 1
-        while end < rows.size and rows[end] == rows[start]:
-            end += 1
-        hmat.setValues(
-            row,
-            cols[start:end],
-            vals[start:end],
-            addv=PETSc.InsertMode.ADD_VALUES,
-        )
-        start = end
+    # Keep row grouping and insertion out of Python's per-entry/per-row loops.
+    # rowmap includes global rows, including remote rows generated from locally
+    # owned columns. Repeated coordinates still accumulate with ADD_VALUES.
+    indptr = np.concatenate((
+        [0], np.flatnonzero(rows[1:] != rows[:-1]) + 1, [rows.size],
+    )).astype(PETSc.IntType, copy=False)
+    hmat.setValuesIJV(
+        indptr, cols, vals, rowmap=rows[indptr[:-1]],
+        addv=PETSc.InsertMode.ADD_VALUES,
+    )
 
 
 def _finalize_matrix(hmat, mat_type):

@@ -72,3 +72,26 @@ def test_rectangular_preallocation_with_column_owned_insertion(distributed, shap
         assert_matrix_values_and_allocations(matrix, expected)
     finally:
         matrix.destroy()
+
+
+@pytest.mark.parametrize('chunk_size', [1, 4, 100])
+def test_bulk_row_insertion_preserves_unsorted_duplicates_and_global_rows(chunk_size):
+    """Column-owned chunks may revisit sparse global rows and duplicate entries."""
+    matrix = _create_matrix(PETSc, PETSc.COMM_WORLD, 7, 9, 9)
+    rows = np.array([6, 2, 6, 0, 2, 6, 0, 2, 6, 2, 0, 6])
+    columns = np.array([8, 3, 1, 5, 3, 8, 0, 7, 4, 3, 5, 1])
+    values = np.array([1, 2j, 3, 4j, -1j, -1, 5, 6j, 7, 2, 1j, -2])
+    expected = np.zeros((7, 9), dtype=complex)
+    np.add.at(expected, (rows, columns), values)
+    try:
+        lo, hi = matrix.getOwnershipRangeColumn()
+        owned = (columns >= lo) & (columns < hi)
+        rows, columns, values = rows[owned], columns[owned], values[owned]
+        for start in range(0, len(rows), chunk_size):
+            stop = start + chunk_size
+            _insert_entries(matrix, rows[start:stop], columns[start:stop],
+                            values[start:stop], PETSc)
+        _finalize_matrix(matrix, None)
+        assert_matrix_values_and_allocations(matrix, expected)
+    finally:
+        matrix.destroy()
