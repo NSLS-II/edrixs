@@ -43,8 +43,10 @@ def petsc_problem():
     state = PETSc.Vec().createMPI(4, comm=PETSc.COMM_WORLD)
     state.set(0)
     start, end = state.getOwnershipRange()
+    local = state.getArray()
     if start == 0 and end > 0:
-        state.getArray()[0] = 1
+        local[0] = 1
+    del local
     try:
         yield petsc_backend, initial, intermediate, transitions, state, build, built, peak
     finally:
@@ -141,7 +143,7 @@ def test_failure_releases_all_owned_matrices(petsc_problem, lifetime, monkeypatc
     assert all(not matrix.handle for _, matrix in built)
 
 
-@pytest.mark.parametrize('solver', ['rixs'])
+@pytest.mark.parametrize('solver', ['xas', 'rixs'])
 @pytest.mark.parametrize('bad', [None, 1, 'cached', 'RETAIN'])
 def test_invalid_lifetime_rejected_before_construction(solver, bad):
     from edrixs.petsc_backend import petsc_backend
@@ -151,7 +153,10 @@ def test_invalid_lifetime_rejected_before_construction(solver, bad):
 
     source = factory(forbidden)
     expected = TypeError if bad is None or isinstance(bad, int) else ValueError
-    args = {'ed': [source], 'rixs': [None, None, source, source, [source] * 3, None, None]}[solver]
+    args = {
+        'xas': [None, None, source, [source] * 3, None],
+        'rixs': [None, None, source, source, [source] * 3, None, None],
+    }[solver]
     with pytest.raises(expected, match='matrix_lifetime'):
         getattr(petsc_backend, solver + '_petsc')(*args, backend_kws={'matrix_lifetime': bad})
 
@@ -202,23 +207,15 @@ def test_zero_rhs_skips_hamiltonians_and_unused_components(petsc_problem, lifeti
     assert all(not matrix.handle for _, matrix in built)
 
 
-@pytest.mark.parametrize('value', ['retain', 'recompute', None])
-def test_xas_rejects_matrix_lifetime(value):
-    from edrixs.petsc_backend import petsc_backend
-
-    with pytest.raises(TypeError, match='matrix_lifetime'):
-        petsc_backend.xas_petsc(None, None, None, [], None,
-                                backend_kws={'matrix_lifetime': value})
-
-
 @pytest.mark.parametrize('ntrans', [3, 5])
 @pytest.mark.parametrize('offset', [0., 2.**40])
 @pytest.mark.parametrize('repeated', [False, True])
-def test_xas_builds_factories_once_at_start(petsc_problem, ntrans, offset, repeated):
+@pytest.mark.parametrize('lifetime', [None, 'retain', 'recompute'])
+def test_xas_lifetime_spectra(petsc_problem, ntrans, offset, repeated, lifetime):
     from edrixs import xas
     from edrixs.scipy_backend.scipy_backend import xas_scipy
 
-    _, _, hn, transitions, state, build, built, _ = petsc_problem
+    _, _, hn, transitions, state, build, built, peak = petsc_problem
     transitions = transitions[:ntrans]
     hamiltonian = factory(partial(build, hn + offset * np.eye(4), 'hn'))
     operators = [factory(partial(build, array, component))
@@ -226,15 +223,37 @@ def test_xas_builds_factories_once_at_start(petsc_problem, ntrans, offset, repea
     if repeated:
         operators = [operators[0]] * ntrans
         transitions = [transitions[0]] * ntrans
+    second = state.duplicate()
+    second.set(0)
+    start, end = second.getOwnershipRange()
+    local = second.getArray()
+    if start <= 1 < end:
+        local[1 - start] = 1
+    del local
+    polarizations = [('isotropic', 0), ('linear', .2), ('left', 0), ('right', 0)]
     expected = xas_scipy(
-        [0.], np.eye(4)[:, :1], operator_factory(hn),
+        [0., .25], np.eye(4)[:, :2], operator_factory(hn),
         operator_factories(transitions), [2.25, 2.75],
+        pol_type=polarizations, temperature=3000,
     )
-    actual = xas([offset], [state], hamiltonian, operators, [2.25, 2.75])
+    options = {} if lifetime is None else {'matrix_lifetime': lifetime}
+    try:
+        actual = xas([offset, offset + .25], [state, second], hamiltonian,
+                     operators, [2.25, 2.75], pol_type=polarizations,
+                     temperature=3000, backend_kws=options)
+        assert state.norm() == pytest.approx(1)
+        assert second.norm() == pytest.approx(1)
+    finally:
+        second.destroy()
     assert_allclose(actual, expected, rtol=1e-9, atol=1e-10)
     roles = [role for role, _ in built]
-    assert len(roles) == ntrans + 1
-    assert roles[0] == 'hn'
+    if lifetime == 'recompute':
+        assert peak[0] == 1
+        assert roles.count('hn') == 2 * (ntrans + 3)
+        assert len(roles) > ntrans + 1
+    else:
+        assert len(roles) == ntrans + 1
+        assert roles.count('hn') == 1
     assert all(not matrix.handle for _, matrix in built)
 
 
@@ -244,3 +263,68 @@ def test_ed_rejects_matrix_lifetime(value):
 
     with pytest.raises(TypeError, match='matrix_lifetime'):
         petsc_backend.ed_petsc(None, backend_kws={'matrix_lifetime': value})
+
+
+@pytest.mark.parametrize('lifetime', ['retain', 'recompute'])
+def test_xas_zero_seeds_skip_unused_matrices(petsc_problem, lifetime):
+    backend, _, _, _, state, build, built, _ = petsc_problem
+
+    def forbidden():
+        raise AssertionError('Unused matrix was constructed')
+
+    zero = factory(partial(build, np.zeros((4, 4)), 'zero'))
+    unused = factory(forbidden)
+    actual = backend.xas_petsc(
+        [0.], [state], unused, [zero, zero, unused], [2.], thin=np.pi / 2,
+        pol_type=[('left', 0)], backend_kws={'matrix_lifetime': lifetime},
+    )
+    assert_allclose(actual, 0)
+    assert len(built) == 2
+    assert all(not matrix.handle for _, matrix in built)
+
+
+@pytest.mark.parametrize('lifetime', ['retain', 'recompute'])
+@pytest.mark.parametrize('failure', ['factory', 'hamiltonian', 'lanczos', 'mult'])
+def test_xas_failure_releases_owned_objects(petsc_problem, lifetime, failure, monkeypatch):
+    backend, _, hn, transitions, state, build, built, _ = petsc_problem
+    from edrixs.petsc_backend import lanczos
+
+    def fail(*args, **kwargs):
+        raise RuntimeError('injected failure')
+
+    vectors = []
+
+    class TrackedMatrix:
+        def __init__(self, matrix):
+            self.matrix = matrix
+
+        def createVecLeft(self):
+            vector = self.matrix.createVecLeft()
+            vectors.append(vector)
+            return vector
+
+        def mult(self, source, target):
+            if failure == 'mult':
+                fail()
+            self.matrix.mult(source, target)
+
+        def destroy(self):
+            self.matrix.destroy()
+
+    def transition(index):
+        if failure == 'factory' and index == 1:
+            fail()
+        return TrackedMatrix(build(transitions[index], index))
+
+    operators = [factory(partial(transition, index)) for index in range(3)]
+    hamiltonian = factory(fail if failure == 'hamiltonian' else partial(build, hn, 'hn'))
+    if failure == 'lanczos':
+        monkeypatch.setattr(lanczos, 'lanczos_tridiagonal', fail)
+    with pytest.raises(RuntimeError, match='injected failure'):
+        backend.xas_petsc(
+            [0.], [state], hamiltonian, operators, [2.], thin=np.pi / 2,
+            pol_type=[('left', 0)], backend_kws={'matrix_lifetime': lifetime},
+        )
+    assert all(not matrix.handle for _, matrix in built)
+    assert all(not vector.handle for vector in vectors)
+    assert state.norm() == pytest.approx(1)

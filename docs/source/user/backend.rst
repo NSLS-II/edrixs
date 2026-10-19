@@ -38,9 +38,9 @@ Numerical ``get_ops`` returns these callables for both Hamiltonians
 and every transition component. Public ``ed`` and ``rixs`` dispatch using
 ``hmat_i.backend``; ``xas`` uses ``hmat_n.backend``. They pass the factories
 unchanged to the selected backend and assume all operators are suitable for it.
-Dense, SciPy, and PETSc ED and XAS call every supplied factory at calculation
-start. Repeated arguments may be instantiated independently. Only PETSc RIXS
-accepts ``matrix_lifetime`` in ``backend_kws``; see :doc:`backends/petsc`.
+Dense, SciPy, and PETSc ED call every supplied factory at calculation
+start. Repeated arguments may be instantiated independently. PETSc XAS and RIXS
+accept ``matrix_lifetime`` in ``backend_kws``; see :doc:`backends/petsc`.
 All staged solver entry points, including backend-specific functions, require
 factories or callable Fortran disk handles.
 

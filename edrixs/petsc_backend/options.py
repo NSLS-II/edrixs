@@ -133,6 +133,7 @@ ED_OPTIONS = {
 }
 
 XAS_OPTIONS = {
+    'matrix_lifetime': MATRIX_LIFETIME,
     'nkryl': OptionSpec(
         200, 'Maximum intermediate-state Lanczos dimension.', positive_integer
     ),

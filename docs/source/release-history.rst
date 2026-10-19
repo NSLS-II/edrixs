@@ -12,8 +12,8 @@ New calculation interface
   Call a factory explicitly for matrix arithmetic. ``ed``, ``xas``, and ``rixs``
   now dispatch using ``.backend`` labels and no longer accept ``backend=``.
 * Construct matrices inside the numerical backends. Dense and SciPy eagerly
-  materialize inputs at calculation start, as do PETSc ED and XAS. Only PETSc
-  RIXS accepts ``matrix_lifetime`` with
+  materialize inputs at calculation start, as does PETSc ED. PETSc XAS and
+  RIXS accept ``matrix_lifetime`` with
   ``'retain'`` (default) and ``'recompute'`` policies for reusing matrices or
   releasing and rebuilding them between operations.
 
