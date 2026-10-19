@@ -185,7 +185,7 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     kws = validate_options('xas', backend_kws)
     _petsc_module()
     from .lanczos import lanczos_tridiagonal
-    from ..poles import get_spectra_from_poles, merge_pole_dicts
+    from ..poles import get_spectra_from_poles
     from .._solvers_helpers import _expand_broadening
     from ..photon_transition import (
         dipole_polvec_xas, quadrupole_polvec, unit_wavevector,
@@ -226,93 +226,76 @@ def xas_petsc(eval_i, evec_i, hmat_n, trans_op, ominc, *,
     centered = None
     matrices = [None] * ntrans
 
-    def build_poles(coefficients):
-        nonlocal centered
-        pole_dict = {'npoles': [], 'eigval': [], 'norm': [],
-                     'alpha': [], 'beta': []}
-        for energy, vector in zip(eval_i, evec_i):
-            seed = None
-            try:
-                for index, coefficient in enumerate(coefficients):
-                    if coefficient == 0:
-                        continue
-                    matrix = None
-                    term = None
-                    try:
-                        if matrix_lifetime == 'retain':
-                            if matrices[index] is None:
-                                matrices[index] = trans_op[index]()
-                            matrix = matrices[index]
-                        else:
-                            matrix = trans_op[index]()
-                        term = matrix.createVecLeft()
-                        matrix.mult(vector, term)
-                        if seed is None:
-                            term.scale(coefficient)
-                            seed, term = term, None
-                        else:
-                            seed.axpy(coefficient, term)
-                    finally:
-                        if term is not None:
-                            term.destroy()
-                        if matrix_lifetime == 'recompute' and matrix is not None:
-                            matrix.destroy()
-
-                alpha_i, beta_i, norm_i = np.array([0.0]), np.array([]), 0.0
-                if seed is not None and seed.norm() != 0:
-                    if centered is None:
-                        centered = hmat_n()
-                        centered.shift(-energy_ref)
-                        centered.shift(-omega_ref)
-                    try:
-                        alpha_i, beta_i, norm_i = lanczos_tridiagonal(
-                            centered, seed, nkryl=nkryl
-                        )
-                    finally:
-                        if matrix_lifetime == 'recompute':
-                            centered.destroy()
-                            centered = None
-                pole_dict['npoles'].append(len(alpha_i))
-                pole_dict['eigval'].append(float(energy))
-                pole_dict['norm'].append(norm_i)
-                pole_dict['alpha'].append(alpha_i)
-                pole_dict['beta'].append(beta_i)
-            finally:
-                if seed is not None:
-                    seed.destroy()
-        return pole_dict
-
     xas = np.zeros((n_om, len(pol_type)), dtype=float)
-    poles = []
     try:
         for it, (pt, alpha) in enumerate(pol_type):
             kind = pt.strip().lower()
             if kind == 'isotropic':
-                # Sum over the Cartesian (or spherical) components individually.
-                pole_dicts = []
-                for k in range(ntrans):
-                    coeffs = np.zeros(ntrans, dtype=complex)
-                    coeffs[k] = 1.0
-                    pole_dict = build_poles(coeffs)
-                    xas[:, it] += get_spectra_from_poles(
-                        pole_dict, ominc, gamma_core, temperature
-                    ) / ntrans
-                    pole_dicts.append(pole_dict)
-                poles.append(merge_pole_dicts(pole_dicts))
+                # Average spectra from individual Cartesian or spherical components.
+                coefficient_vectors = np.eye(ntrans, dtype=complex)
             elif kind in ('linear', 'left', 'right'):
                 pol = dipole_polvec_xas(thin, phi, alpha, scatter_axis, pt)
-                polvec = np.zeros(ntrans, dtype=complex)
-                if ntrans == 3:
-                    polvec[:] = pol
-                else:
-                    polvec[:] = quadrupole_polvec(pol, kvec)
-                pole_dict = build_poles(polvec)
-                poles.append(pole_dict)
-                xas[:, it] = get_spectra_from_poles(
-                    pole_dict, ominc, gamma_core, temperature
-                )
+                polvec = pol if ntrans == 3 else quadrupole_polvec(pol, kvec)
+                coefficient_vectors = [polvec]
             else:
                 raise ValueError("Unknown XAS polarization type: {}".format(pt))
+
+            for coefficients in coefficient_vectors:
+                pole_dict = {'npoles': [], 'eigval': [], 'norm': [],
+                             'alpha': [], 'beta': []}
+                for energy, vector in zip(eval_i, evec_i):
+                    seed = None
+                    try:
+                        for index, coefficient in enumerate(coefficients):
+                            if coefficient == 0:
+                                continue
+                            matrix = None
+                            term = None
+                            try:
+                                if matrix_lifetime == 'retain':
+                                    if matrices[index] is None:
+                                        matrices[index] = trans_op[index]()
+                                    matrix = matrices[index]
+                                else:
+                                    matrix = trans_op[index]()
+                                term = matrix.createVecLeft()
+                                matrix.mult(vector, term)
+                                if seed is None:
+                                    term.scale(coefficient)
+                                    seed, term = term, None
+                                else:
+                                    seed.axpy(coefficient, term)
+                            finally:
+                                if term is not None:
+                                    term.destroy()
+                                if matrix_lifetime == 'recompute' and matrix is not None:
+                                    matrix.destroy()
+
+                        alpha_i, beta_i, norm_i = np.array([0.0]), np.array([]), 0.0
+                        if seed is not None and seed.norm() != 0:
+                            if centered is None:
+                                centered = hmat_n()
+                                centered.shift(-energy_ref)
+                                centered.shift(-omega_ref)
+                            try:
+                                alpha_i, beta_i, norm_i = lanczos_tridiagonal(
+                                    centered, seed, nkryl=nkryl
+                                )
+                            finally:
+                                if matrix_lifetime == 'recompute':
+                                    centered.destroy()
+                                    centered = None
+                        pole_dict['npoles'].append(len(alpha_i))
+                        pole_dict['eigval'].append(float(energy))
+                        pole_dict['norm'].append(norm_i)
+                        pole_dict['alpha'].append(alpha_i)
+                        pole_dict['beta'].append(beta_i)
+                    finally:
+                        if seed is not None:
+                            seed.destroy()
+                xas[:, it] += get_spectra_from_poles(
+                    pole_dict, ominc, gamma_core, temperature
+                ) / len(coefficient_vectors)
 
         return xas
     finally:
